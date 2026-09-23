@@ -67,20 +67,25 @@ end;
 $$;
 
 -- True when the calling user has the admin role. Security definer so it can
--- read profiles without recursing through profile policies.
+-- read profiles without recursing through profile policies. plpgsql so the
+-- body is not validated before public.profiles exists (created in 0002).
+-- Callable by anon too: it returns false when there is no user, and public
+-- read policies on templates and categories reference it.
 create or replace function public.is_admin()
 returns boolean
-language sql
+language plpgsql
 stable
 security definer
 set search_path = ''
 as $$
-  select exists (
+begin
+  return exists (
     select 1 from public.profiles p
     where p.id = auth.uid() and p.role = 'admin'
   );
+end;
 $$;
 
-revoke all on function public.is_admin() from public, anon;
-grant execute on function public.is_admin() to authenticated;
+revoke all on function public.is_admin() from public;
+grant execute on function public.is_admin() to anon, authenticated;
 revoke all on function public.generate_token() from public, anon, authenticated;

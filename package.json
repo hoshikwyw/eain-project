@@ -9,7 +9,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
-    "test:rls": "node --test --env-file=.env.local supabase/tests/rls.test.ts"
+    "test:rls": "node --test --env-file=.env.local supabase/tests/rls.test.mts"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.3.3",

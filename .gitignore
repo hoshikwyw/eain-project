@@ -42,3 +42,9 @@ next-env.d.ts
 
 # keep the example env file in git
 !.env.example
+
+# generated from supabase/migrations for manual SQL editor runs
+/supabase/ALL_MIGRATIONS.sql
+
+# supabase cli scratch
+/supabase/.temp/
