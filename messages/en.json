@@ -1,0 +1,84 @@
+{
+  "brand": {
+    "name": "Eain",
+    "tagline": "Digital gifts that feel like home.",
+    "splashTagline": "A little gift, made with love."
+  },
+  "nav": {
+    "templates": "Templates",
+    "howItWorks": "How it works",
+    "login": "Log in",
+    "createGift": "Create a Gift",
+    "menu": "Menu"
+  },
+  "hero": {
+    "title": "Digital gifts that feel like home.",
+    "subtitle": "Make something special. Give it to someone.",
+    "primaryCta": "Create a Gift",
+    "secondaryCta": "Explore Templates",
+    "note": "The person you send it to never needs an account."
+  },
+  "categories": {
+    "title": "For every kind of connection",
+    "birthday": "Birthday",
+    "love": "Love",
+    "friendship": "Friendship",
+    "memories": "Memories",
+    "thankYou": "Thank You",
+    "celebration": "Celebration"
+  },
+  "howItWorks": {
+    "title": "How Eain works",
+    "choose": "Choose",
+    "chooseText": "Pick a template that fits the moment.",
+    "create": "Create",
+    "createText": "Add your words, photos and a question.",
+    "share": "Share",
+    "shareText": "Send a link or a QR code.",
+    "open": "They open",
+    "openText": "No account and no app needed.",
+    "reply": "They can reply",
+    "replyText": "Their answer comes back to you."
+  },
+  "features": {
+    "templatesTitle": "Beautiful Templates",
+    "templatesText": "Ready-to-use templates for every occasion.",
+    "sharingTitle": "Easy Sharing",
+    "sharingText": "Share with a link or a QR code.",
+    "interactiveTitle": "Interactive Experience",
+    "interactiveText": "Add questions and messages to make it personal.",
+    "trackTitle": "Track & Connect",
+    "trackText": "See when it is opened and get a response."
+  },
+  "finalCta": {
+    "title": "Someone deserves something special.",
+    "button": "Create Your Gift"
+  },
+  "footer": {
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "security": "Security",
+    "cookies": "Cookie Policy",
+    "report": "Report a Gift",
+    "contact": "Contact",
+    "promise": "Your memories are yours."
+  },
+  "settings": {
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "language": "Language",
+    "switchToEnglish": "English",
+    "switchToBurmese": "မြန်မာ"
+  },
+  "common": {
+    "comingSoon": "Coming soon",
+    "loading": "Loading"
+  },
+  "notFound": {
+    "title": "This page is not here",
+    "text": "The link may be wrong, or the page may have moved.",
+    "home": "Back to home"
+  }
+}
