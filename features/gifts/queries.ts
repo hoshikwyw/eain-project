@@ -1,12 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
-import type { Gift, GiftEvent, GiftRecipient, GiftSection, Template } from "@/types/database";
-import {
-  coverContentSchema,
-  finalMessageContentSchema,
-  giftThemeSchema,
-  messageContentSchema,
-  type PostcardContent,
-} from "./schemas";
+import type { Gift, GiftEvent, GiftMedia, GiftRecipient, Template } from "@/types/database";
+import { signMedia } from "./media";
+import type { MediaItem, Section, ThemeVariant } from "./schemas";
+import { sectionsFromRows, variantFromTheme } from "./sections";
+import { getTemplateStyle, type TemplateStyle } from "./templates";
 
 export type GiftListItem = Gift & {
   recipient: Pick<GiftRecipient, "name" | "first_opened_at"> | null;
@@ -43,27 +40,30 @@ export async function listMyGifts(): Promise<GiftListItem[]> {
 export type EditorGift = {
   gift: Gift;
   template: Pick<Template, "id" | "slug" | "name_en" | "name_my">;
-  sections: GiftSection[];
+  style: TemplateStyle;
+  variant: ThemeVariant;
+  sections: Section[];
   recipient: GiftRecipient | null;
-  content: PostcardContent;
+  mediaRows: GiftMedia[];
+  media: Record<string, MediaItem>;
 };
 
 /** One gift with everything the editor needs, or null when not found or not owned. */
 export async function getEditorGift(giftId: string): Promise<EditorGift | null> {
   const supabase = await createClient();
-  const { data: gift } = await supabase.from("gifts").select("*").eq("id", giftId).neq("status", "deleted").maybeSingle();
+  const { data: gift } = await supabase
+    .from("gifts")
+    .select("*")
+    .eq("id", giftId)
+    .neq("status", "deleted")
+    .maybeSingle();
   if (!gift) return null;
 
-  const [{ data: template }, { data: sections }, { data: recipient }] = await Promise.all([
+  const [{ data: template }, { data: sections }, { data: recipient }, { data: mediaRows }] = await Promise.all([
     supabase.from("templates").select("id, slug, name_en, name_my").eq("id", gift.template_id).single(),
     supabase.from("gift_sections").select("*").eq("gift_id", giftId).order("position"),
-    supabase
-      .from("gift_recipients")
-      .select("*")
-      .eq("gift_id", giftId)
-      .order("created_at")
-      .limit(1)
-      .maybeSingle(),
+    supabase.from("gift_recipients").select("*").eq("gift_id", giftId).order("created_at").limit(1).maybeSingle(),
+    supabase.from("gift_media").select("*").eq("gift_id", giftId).order("created_at"),
   ]);
 
   if (!template) return null;
@@ -71,9 +71,12 @@ export async function getEditorGift(giftId: string): Promise<EditorGift | null> 
   return {
     gift,
     template,
-    sections: sections ?? [],
+    style: getTemplateStyle(template.slug),
+    variant: variantFromTheme(gift.theme),
+    sections: sectionsFromRows(sections ?? []),
     recipient,
-    content: postcardContentFromSections(sections ?? [], gift.theme, recipient?.name ?? ""),
+    mediaRows: mediaRows ?? [],
+    media: await signMedia(mediaRows ?? []),
   };
 }
 
@@ -89,29 +92,4 @@ export async function getGiftDetail(giftId: string): Promise<GiftDetail | null> 
     .eq("gift_id", giftId)
     .order("created_at", { ascending: true });
   return { ...editor, events: events ?? [] };
-}
-
-/**
- * Turns stored sections into what the postcard component renders.
- * Tolerant of missing or malformed content so a bad row never breaks a page.
- */
-export function postcardContentFromSections(
-  sections: Pick<GiftSection, "type" | "content" | "position">[],
-  theme: unknown,
-  recipientName: string,
-): PostcardContent {
-  const ordered = [...sections].sort((a, b) => a.position - b.position);
-  const cover = coverContentSchema.safeParse(ordered.find((s) => s.type === "text")?.content);
-  const message = messageContentSchema.safeParse(ordered.find((s) => s.type === "message")?.content);
-  const final = finalMessageContentSchema.safeParse(ordered.find((s) => s.type === "final_message")?.content);
-  const parsedTheme = giftThemeSchema.safeParse(theme ?? {});
-
-  return {
-    heading: cover.success ? cover.data.heading : "",
-    message: message.success ? message.data.text : "",
-    finalMessage: final.success ? final.data.text : "",
-    signature: final.success ? final.data.signature : "",
-    recipientName,
-    variant: parsedTheme.success ? parsedTheme.data.variant : "blossom",
-  };
 }

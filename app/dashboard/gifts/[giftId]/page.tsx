@@ -1,15 +1,15 @@
-import { Check, Circle, Pencil } from "lucide-react";
+import { Check, Circle, Copy, Pencil } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { ConfirmButton } from "@/components/gift/confirm-button";
 import { GiftStatusChip } from "@/components/gift/gift-status-chip";
+import { GiftView } from "@/components/gift/gift-view";
 import { SharePanel } from "@/components/gift/share-panel";
-import { BirthdayPostcard } from "@/components/gift/templates/birthday-postcard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { deleteGift, publishGift, regenerateGiftLink, unpublishGift } from "@/features/gifts/actions";
+import { deleteGift, duplicateGift, publishGift, regenerateGiftLink, unpublishGift } from "@/features/gifts/actions";
 import { getGiftDetail } from "@/features/gifts/queries";
 import { getCurrentProfile } from "@/features/profile/queries";
 import { makeQr } from "@/lib/qr";
@@ -27,7 +27,7 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
   const [data, profile] = await Promise.all([getGiftDetail(giftId), getCurrentProfile()]);
   if (!data) notFound();
 
-  const { gift, recipient, events, content } = data;
+  const { gift, recipient, events } = data;
   const opened = Boolean(recipient?.first_opened_at);
   const isPublished = gift.status === "published";
 
@@ -65,6 +65,11 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
           {t("linkRegenerated")}
         </p>
       )}
+      {query.error === "duplicate" && (
+        <p role="alert" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
+          {t("duplicateFailed")}
+        </p>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         <div className="flex flex-col gap-6">
@@ -89,7 +94,15 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
               <CardTitle>{t("preview")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <BirthdayPostcard content={content} senderName={profile.display_name} compact />
+              <GiftView
+                sections={data.sections}
+                media={data.media}
+                variant={data.variant}
+                style={data.style}
+                recipientName={recipient?.name ?? ""}
+                senderName={profile.display_name}
+                compact
+              />
             </CardContent>
           </Card>
         </div>
@@ -115,9 +128,7 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
                         {event ? <Check className="size-3" /> : <Circle className="size-2" />}
                       </span>
                       <div>
-                        <p className={event ? "text-sm font-semibold" : "text-sm text-muted-foreground"}>
-                          {t(`events.${type}`)}
-                        </p>
+                        <p className={event ? "text-sm font-semibold" : "text-sm text-muted-foreground"}>{t(`events.${type}`)}</p>
                         {event && (
                           <p className="text-xs text-muted-foreground">
                             {format.dateTime(new Date(event.created_at), { dateStyle: "medium", timeStyle: "short" })}
@@ -152,6 +163,12 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
                   </Button>
                 </form>
               ) : null}
+              <form action={duplicateGift.bind(null, gift.id)}>
+                <Button type="submit" variant="secondary" className="w-full">
+                  <Copy />
+                  {t("duplicate")}
+                </Button>
+              </form>
               <form action={regenerateGiftLink.bind(null, gift.id)}>
                 <ConfirmButton variant="secondary" className="w-full" confirmText={t("regenerateConfirm")}>
                   {t("regenerateLink")}

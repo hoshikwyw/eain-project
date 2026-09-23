@@ -1,0 +1,149 @@
+"use client";
+
+import { Lock, Search } from "lucide-react";
+import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { useMemo, useState } from "react";
+import { palettes } from "@/components/gift/palettes";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Chip } from "@/components/ui/chip";
+import { Input } from "@/components/ui/input";
+import { createGift } from "@/features/gifts/actions";
+import type { ThemeVariant } from "@/features/gifts/schemas";
+
+export type TemplateCard = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  categoryId: string;
+  category: string;
+  isPremium: boolean;
+  pointPrice: number;
+  available: boolean;
+  variant: ThemeVariant;
+};
+
+type Props = {
+  templates: TemplateCard[];
+  categories: { id: string; name: string }[];
+  /** create: buttons create a gift. browse: buttons link to /create. */
+  mode: "create" | "browse";
+};
+
+/** Template library with category chips and search. Filtering is client-side; the list is small. */
+export function TemplateGrid({ templates, categories, mode }: Props) {
+  const t = useTranslations("create");
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState<string | null>(null);
+
+  const usedCategories = useMemo(() => {
+    const ids = new Set(templates.map((x) => x.categoryId));
+    return categories.filter((c) => ids.has(c.id));
+  }, [templates, categories]);
+
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return templates.filter(
+      (x) =>
+        (!category || x.categoryId === category) &&
+        (!q || x.name.toLowerCase().includes(q) || x.description.toLowerCase().includes(q) || x.category.toLowerCase().includes(q)),
+    );
+  }, [templates, query, category]);
+
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-3">
+        <div className="relative">
+          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t("searchPlaceholder")}
+            aria-label={t("searchPlaceholder")}
+            className="pl-10"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <FilterChip active={category === null} onClick={() => setCategory(null)}>
+            {t("allCategories")}
+          </FilterChip>
+          {usedCategories.map((c) => (
+            <FilterChip key={c.id} active={category === c.id} onClick={() => setCategory(c.id)}>
+              {c.name}
+            </FilterChip>
+          ))}
+        </div>
+      </div>
+
+      {visible.length === 0 ? (
+        <p className="py-10 text-center text-sm text-muted-foreground">{t("noResults")}</p>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {visible.map((template) => (
+            <Card key={template.id} className={template.available ? "" : "opacity-80"}>
+              <CardContent className="flex h-full flex-col gap-4 p-5">
+                <div
+                  style={palettes[template.variant]}
+                  className="flex aspect-[4/3] items-end rounded-xl p-4 text-[color:var(--t-fg)] [background:var(--t-bg)]"
+                >
+                  <span className="font-display text-xl font-semibold">{template.name}</span>
+                </div>
+                <div className="flex flex-1 flex-col gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="font-semibold">{template.name}</h2>
+                    <Chip tone="neutral">{template.category}</Chip>
+                    {template.isPremium ? (
+                      <Chip tone="brand">
+                        <Lock className="size-3" />
+                        {template.pointPrice}
+                      </Chip>
+                    ) : (
+                      <Chip tone="success">{t("free")}</Chip>
+                    )}
+                  </div>
+                  <p className="text-sm text-muted-foreground">{template.description}</p>
+                </div>
+                {mode === "create" && template.available ? (
+                  <form action={createGift}>
+                    <input type="hidden" name="template" value={template.slug} />
+                    <Button type="submit" className="w-full">
+                      {t("useTemplate")}
+                    </Button>
+                  </form>
+                ) : mode === "browse" && template.available ? (
+                  <Button asChild className="w-full">
+                    <Link href={`/create?template=${template.slug}`}>{t("useTemplate")}</Link>
+                  </Button>
+                ) : (
+                  <Button variant="secondary" className="w-full" disabled>
+                    {template.isPremium ? t("premiumSoon") : t("comingSoon")}
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={
+        active
+          ? "rounded-full bg-primary px-3.5 py-1.5 text-sm font-semibold text-primary-foreground"
+          : "rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground"
+      }
+    >
+      {children}
+    </button>
+  );
+}

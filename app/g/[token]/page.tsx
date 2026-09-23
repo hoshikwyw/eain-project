@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { GiftReveal } from "@/components/gift/gift-reveal";
-import { BirthdayPostcard } from "@/components/gift/templates/birthday-postcard";
+import { GiftView } from "@/components/gift/gift-view";
 import { getPublicGift } from "@/features/gifts/public";
 import { GiftUnavailable } from "./unavailable";
 
@@ -27,7 +27,15 @@ export default async function PublicGiftPage({ params }: PageProps<"/g/[token]">
 
   return (
     <GiftReveal token={token}>
-      <BirthdayPostcard content={gift.content} senderName={gift.senderName} />
+      <GiftView
+        sections={gift.sections}
+        media={gift.media}
+        variant={gift.variant}
+        style={gift.style}
+        recipientName={gift.recipientName}
+        senderName={gift.senderName}
+        animate
+      />
     </GiftReveal>
   );
 }

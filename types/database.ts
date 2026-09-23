@@ -97,6 +97,19 @@ export interface GiftSection extends Record<string, unknown> {
   updated_at: string;
 }
 
+export interface GiftMedia extends Record<string, unknown> {
+  id: string;
+  gift_id: string;
+  owner_id: string;
+  storage_path: string;
+  thumb_path: string | null;
+  mime_type: "image/jpeg" | "image/png" | "image/webp";
+  bytes: number;
+  width: number | null;
+  height: number | null;
+  created_at: string;
+}
+
 export interface GiftRecipient extends Record<string, unknown> {
   id: string;
   gift_id: string;
@@ -190,6 +203,12 @@ export interface Database {
         GiftSection,
         Pick<GiftSection, "gift_id" | "type" | "position" | "content">,
         Partial<Pick<GiftSection, "type" | "position" | "content">>
+      >;
+      gift_media: Table<
+        GiftMedia,
+        Pick<GiftMedia, "gift_id" | "owner_id" | "storage_path" | "mime_type" | "bytes"> &
+          Partial<Pick<GiftMedia, "id" | "thumb_path" | "width" | "height">>,
+        ReadOnly
       >;
       gift_recipients: Table<
         GiftRecipient,

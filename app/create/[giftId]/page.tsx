@@ -2,7 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { PostcardEditor } from "@/components/editor/postcard-editor";
+import { GiftEditor } from "@/components/editor/gift-editor";
 import { Logo } from "@/components/brand/logo";
 import { GiftStatusChip } from "@/components/gift/gift-status-chip";
 import { LocaleToggle } from "@/components/settings/locale-toggle";
@@ -37,12 +37,16 @@ export default async function EditGiftPage({ params, searchParams }: PageProps<"
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-6xl px-4 pb-28 pt-2">
-        <PostcardEditor
+      <div className="mx-auto w-full max-w-6xl px-4 pt-2 pb-28">
+        <GiftEditor
           giftId={data.gift.id}
-          title={data.gift.title}
           status={data.gift.status}
-          initial={data.content}
+          title={data.gift.title}
+          recipientName={data.recipient?.name ?? ""}
+          variant={data.variant}
+          sections={data.sections}
+          media={Object.values(data.media)}
+          style={data.style}
           senderName={profile.display_name}
           publishError={query.error === "publish"}
         />
