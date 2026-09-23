@@ -36,7 +36,29 @@ Not needed: Docker, a custom domain, an email provider, a payment provider.
    - service_role key → `SUPABASE_SERVICE_ROLE_KEY` (server only, never sent to the browser)
 4. In Authentication, then Providers, then Email: turn **off** "Confirm email". The free built-in mailer allows only a few emails per hour, so V1 does not depend on it.
 5. In Authentication, then URL Configuration: set Site URL to `http://localhost:5173` and add `http://localhost:5173/auth/callback` to Redirect URLs. Add the Vercel URL later.
-6. Migrations in `supabase/migrations` are applied with the Supabase CLI (`pnpm dlx supabase db push`) linked to the project. The CLI needs a personal access token from your Supabase account page. No Docker is needed for `db push`.
+6. Apply the migrations in `supabase/migrations` with the Supabase CLI. No Docker is needed for these commands:
+
+```
+pnpm dlx supabase login
+pnpm dlx supabase link --project-ref <your-project-ref>
+pnpm dlx supabase db push
+```
+
+   The project ref is the part before `.supabase.co` in the project URL. Login opens the browser for a personal access token.
+
+7. Restart `pnpm dev` so the new `.env.local` is read. Sign up at http://localhost:5173/auth/signup. The new profile receives 100 welcome points.
+
+8. Run the security tests, which create two throwaway users and check that neither can reach the other's data:
+
+```
+pnpm test:rls
+```
+
+9. To make yourself an admin later, run in the Supabase SQL editor:
+
+```
+update public.profiles set role = 'admin' where id = '<your-user-id>';
+```
 
 A second Supabase project for production can be created later with the same steps.
 

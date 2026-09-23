@@ -1,0 +1,13 @@
+# Minimal Supabase CLI config. Link a hosted project with:
+#   pnpm dlx supabase login
+#   pnpm dlx supabase link --project-ref <ref>
+#   pnpm dlx supabase db push
+# No local Docker stack is used in V1.
+project_id = "eain"
+
+[db]
+major_version = 17
+
+[db.migrations]
+enabled = true
+schema_paths = []

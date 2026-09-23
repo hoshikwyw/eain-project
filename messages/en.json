@@ -80,5 +80,95 @@
     "title": "This page is not here",
     "text": "The link may be wrong, or the page may have moved.",
     "home": "Back to home"
+  },
+  "auth": {
+    "welcomeBack": "Welcome back",
+    "loginSubtitle": "Log in to see your gifts and responses.",
+    "signupSubtitle": "Start with 100 welcome points.",
+    "createAccount": "Create account",
+    "logIn": "Log in",
+    "signUp": "Sign up",
+    "continueWithGoogle": "Continue with Google",
+    "or": "or",
+    "displayName": "Your name",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "At least 8 characters.",
+    "noAccount": "New to Eain?",
+    "haveAccount": "Already have an account?",
+    "errors": {
+      "invalid": "Please check your details and try again.",
+      "credentials": "That email or password is not right.",
+      "exists": "An account with this email already exists. Try logging in.",
+      "unknown": "Something went wrong. Please try again.",
+      "notConfigured": "Accounts are not set up on this server yet."
+    },
+    "notices": {
+      "confirm": "Check your email to confirm your account, then log in.",
+      "oauthFailed": "Google sign-in did not complete. Please try again.",
+      "notConfigured": "Accounts are not set up on this server yet."
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome back, {name}!",
+    "welcomeSubtitle": "Create, share and make someone's day extra special.",
+    "createNewGift": "Create New Gift",
+    "createFirstGift": "Create your first gift",
+    "recentGifts": "Recent Gifts",
+    "recentGiftsEmpty": "No gifts yet. Your first one is waiting to be made.",
+    "notificationsEmpty": "Nothing here yet. You will see when a gift is opened or answered.",
+    "comingSoon": "Coming in the next part.",
+    "nav": {
+      "dashboard": "Dashboard",
+      "gifts": "My Gifts",
+      "templates": "Templates",
+      "points": "Points",
+      "notifications": "Notifications",
+      "settings": "Settings",
+      "create": "Create"
+    },
+    "stats": {
+      "giftsCreated": "Gifts Created",
+      "opened": "Opened",
+      "responses": "Responses",
+      "pointsBalance": "Points Balance"
+    },
+    "points": {
+      "title": "Points & Rewards",
+      "subtitle": "Points unlock premium templates and effects.",
+      "total": "Total points",
+      "history": "Point history",
+      "buy": "Buy points",
+      "empty": "No transactions yet.",
+      "earn": {
+        "create": "Create a gift",
+        "opened": "Someone opens it",
+        "response": "Receive a response"
+      },
+      "types": {
+        "earn": "Earned",
+        "purchase": "Purchased",
+        "spend": "Spent",
+        "refund": "Refunded",
+        "bonus": "Bonus"
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "profile": "Profile",
+      "profileDescription": "How your name appears on the gifts you send.",
+      "displayName": "Display name",
+      "language": "Language",
+      "notifications": "Notifications",
+      "notifyOnOpen": "Notify me when a gift is opened",
+      "notifyOnResponse": "Notify me when someone responds",
+      "save": "Save changes",
+      "saved": "Saved",
+      "invalid": "Please check the form.",
+      "error": "Could not save. Please try again.",
+      "account": "Account",
+      "deleteSoon": "Account deletion arrives in a later part.",
+      "signOut": "Log out"
+    }
   }
 }
