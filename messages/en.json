@@ -81,6 +81,75 @@
     "text": "The link may be wrong, or the page may have moved.",
     "home": "Back to home"
   },
+  "create": {
+    "title": "Choose a template",
+    "subtitle": "Pick a starting point. You can change every word and colour.",
+    "back": "Back",
+    "free": "Free",
+    "useTemplate": "Use this template",
+    "comingSoon": "Coming soon",
+    "errors": {
+      "template": "That template is not available yet.",
+      "premium": "Premium templates unlock with points in a later part.",
+      "unknown": "Could not create the gift. Please try again."
+    }
+  },
+  "editor": {
+    "back": "Back",
+    "title": "Gift title",
+    "titleHint": "Only you see this. It helps you find the gift later.",
+    "recipientName": "Who is it for?",
+    "recipientPlaceholder": "Their name",
+    "heading": "Heading",
+    "message": "Your message",
+    "finalMessage": "Closing line",
+    "signature": "Signed as",
+    "theme": "Look",
+    "variants": {
+      "blossom": "Blossom day",
+      "night": "Lovely night"
+    },
+    "save": "Save",
+    "saved": "Saved",
+    "invalid": "Please fill in the heading and message.",
+    "error": "Could not save. Please try again.",
+    "preview": "Preview",
+    "livePreview": "Live preview",
+    "backToEdit": "Back to editing",
+    "publish": "Publish gift",
+    "republish": "Update published gift",
+    "publishHint": "Publishing creates a private link only people you share it with can open.",
+    "publishedHint": "This gift is live. Saved changes appear for the receiver right away.",
+    "publishError": "Could not publish. Save your changes and try again.",
+    "saveFirst": "Save your changes before publishing.",
+    "manage": "Share and manage"
+  },
+  "gift": {
+    "previewTitle": "A gift for you",
+    "someone": "Someone made something special for you.",
+    "specialForYou": "A special gift, just for you",
+    "openYourGift": "Open Your Gift",
+    "noAccountNeeded": "No account needed.",
+    "madeWith": "Made with Eain",
+    "makeYourOwn": "Make your own gift",
+    "unavailableTitle": "This gift is not available",
+    "unavailableText": "The link may be incomplete, or the sender may have taken the gift down.",
+    "goHome": "Go to Eain"
+  },
+  "share": {
+    "link": "Gift link",
+    "copy": "Copy",
+    "copied": "Copied",
+    "nativeShare": "Share",
+    "shareText": "I made something special for you.",
+    "anyoneWithLink": "Anyone with this link can open the gift. Share it only with the person it is for.",
+    "qrAlt": "QR code for the gift link",
+    "downloadQr": "Download QR"
+  },
+  "templatesPage": {
+    "title": "Templates",
+    "subtitle": "Start from one of these. Every word and colour is yours to change."
+  },
   "auth": {
     "welcomeBack": "Welcome back",
     "loginSubtitle": "Log in to see your gifts and responses.",
@@ -118,6 +187,53 @@
     "recentGiftsEmpty": "No gifts yet. Your first one is waiting to be made.",
     "notificationsEmpty": "Nothing here yet. You will see when a gift is opened or answered.",
     "comingSoon": "Coming in the next part.",
+    "viewAll": "View all",
+    "gifts": {
+      "count": "{count} of {max} gifts",
+      "for": "For {name}",
+      "noRecipient": "No recipient name yet",
+      "limitReached": "You have reached the limit of 5 gifts. Delete one to make room.",
+      "deleted": "The gift was deleted. Its link no longer works.",
+      "edit": "Edit",
+      "share": "Share",
+      "shareDescription": "Send the link or QR code to the person this is for.",
+      "publishToShare": "Publish the gift to get its link and QR code.",
+      "publishNow": "Publish now",
+      "justPublished": "Your gift is live. Share the link below.",
+      "linkRegenerated": "A new link was created. The old one no longer works.",
+      "preview": "Preview",
+      "activity": "Activity",
+      "notOpenedYet": "Not opened yet",
+      "manage": "Manage",
+      "unpublish": "Unpublish",
+      "publishAgain": "Publish again",
+      "regenerateLink": "Regenerate link",
+      "regenerateHint": "Use this if the link reached the wrong person. The old link stops working.",
+      "regenerateConfirm": "Create a new link? Anyone with the old link will lose access.",
+      "delete": "Delete gift",
+      "deleteConfirm": "Delete this gift? Its link will stop working right away.",
+      "status": {
+        "draft": "Draft",
+        "published": "Published",
+        "unpublished": "Unpublished",
+        "opened": "Opened"
+      },
+      "events": {
+        "created": "Created",
+        "published": "Published",
+        "opened": "Opened",
+        "viewed": "Viewed to the end",
+        "responded": "Responded"
+      }
+    },
+    "notifications": {
+      "markAllRead": "Mark all as read",
+      "titles": {
+        "giftOpened": "Your gift \"{giftTitle}\" was opened.",
+        "responseReceived": "You received a response to \"{giftTitle}\".",
+        "generic": "You have a new notification."
+      }
+    },
     "nav": {
       "dashboard": "Dashboard",
       "gifts": "My Gifts",

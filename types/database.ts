@@ -1,15 +1,25 @@
 /**
- * Database types for the tables Part B touches.
+ * Database types for the tables and functions the app touches.
  *
- * Hand-written to match supabase/migrations. Once a project is linked,
- * regenerate the full file with:
+ * Hand-written to match supabase/migrations. Once the CLI can reach the
+ * project, regenerate with:
  *   pnpm dlx supabase gen types typescript --linked > types/database.ts
- * and delete this notice.
  */
 
 export type UserRole = "user" | "admin";
 export type GiftStatus = "draft" | "published" | "unpublished" | "deleted";
 export type GiftType = "postcard" | "website" | "memory" | "interactive";
+export type SectionType =
+  | "text"
+  | "image"
+  | "photo_grid"
+  | "timeline"
+  | "quote"
+  | "message"
+  | "question"
+  | "choice"
+  | "reaction"
+  | "final_message";
 export type GiftEventType =
   | "created"
   | "published"
@@ -25,7 +35,7 @@ export type GiftEventType =
 export type PointTransactionType = "earn" | "purchase" | "spend" | "refund" | "bonus";
 export type NotificationType = "gift_opened" | "response_received" | "points_earned" | "system";
 
-type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export interface Profile extends Record<string, unknown> {
   id: string;
@@ -75,6 +85,29 @@ export interface Gift extends Record<string, unknown> {
   updated_at: string;
   published_at: string | null;
   deleted_at: string | null;
+}
+
+export interface GiftSection extends Record<string, unknown> {
+  id: string;
+  gift_id: string;
+  type: SectionType;
+  position: number;
+  content: Json;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GiftRecipient extends Record<string, unknown> {
+  id: string;
+  gift_id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  recipient_token: string;
+  first_opened_at: string | null;
+  last_opened_at: string | null;
+  open_count: number;
+  created_at: string;
 }
 
 export interface GiftEvent extends Record<string, unknown> {
@@ -153,6 +186,16 @@ export interface Database {
         Pick<Gift, "sender_id" | "template_id"> & Partial<Pick<Gift, "title" | "theme">>,
         Partial<Pick<Gift, "title" | "status" | "theme" | "template_id" | "deleted_at">>
       >;
+      gift_sections: Table<
+        GiftSection,
+        Pick<GiftSection, "gift_id" | "type" | "position" | "content">,
+        Partial<Pick<GiftSection, "type" | "position" | "content">>
+      >;
+      gift_recipients: Table<
+        GiftRecipient,
+        Pick<GiftRecipient, "gift_id"> & Partial<Pick<GiftRecipient, "name" | "email" | "phone">>,
+        Partial<Pick<GiftRecipient, "name" | "email" | "phone">>
+      >;
       gift_events: Table<GiftEvent, ReadOnly, ReadOnly>;
       gift_responses: Table<GiftResponse, ReadOnly, ReadOnly>;
       categories: Table<Category>;
@@ -161,11 +204,22 @@ export interface Database {
     Views: Record<string, never>;
     Functions: {
       is_admin: { Args: Record<string, never>; Returns: boolean };
+      publish_gift: { Args: { p_gift_id: string }; Returns: Gift };
+      unpublish_gift: { Args: { p_gift_id: string }; Returns: Gift };
+      regenerate_gift_link: { Args: { p_gift_id: string }; Returns: Gift };
+      delete_gift: { Args: { p_gift_id: string }; Returns: undefined };
+      record_gift_open: { Args: { p_share_token: string; p_session_id: string }; Returns: boolean };
+      record_gift_viewed: { Args: { p_share_token: string; p_session_id: string }; Returns: boolean };
+      check_rate_limit: {
+        Args: { p_key: string; p_limit: number; p_window_seconds: number };
+        Returns: boolean;
+      };
     };
     Enums: {
       user_role: UserRole;
       gift_status: GiftStatus;
       gift_type: GiftType;
+      section_type: SectionType;
       gift_event_type: GiftEventType;
       point_transaction_type: PointTransactionType;
       notification_type: NotificationType;

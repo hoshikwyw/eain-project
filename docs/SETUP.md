@@ -50,10 +50,11 @@ pnpm dlx supabase db push
 
 7. Restart `pnpm dev` so the new `.env.local` is read. Sign up at http://localhost:5173/auth/signup. The new profile receives 100 welcome points.
 
-8. Run the security tests, which create two throwaway users and check that neither can reach the other's data:
+8. Run the security tests, which create two throwaway users and check that neither can reach the other's data, and the core loop test, which needs the dev server running:
 
 ```
 pnpm test:rls
+pnpm test:core
 ```
 
 9. To make yourself an admin later, run in the Supabase SQL editor:
