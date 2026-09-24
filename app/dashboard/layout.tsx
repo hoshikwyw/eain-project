@@ -30,7 +30,9 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
           <LocaleToggle />
           <ThemeToggle />
         </div>
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 pb-28 md:pb-10">{children}</main>
+        <main id="main" className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 pb-28 md:pb-10">
+          {children}
+        </main>
       </div>
       <BottomNav unreadCount={unreadCount} />
     </div>

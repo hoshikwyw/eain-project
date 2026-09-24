@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cache } from "react";
+import { track } from "@/lib/analytics";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { signMedia } from "./media";
 import type { MediaItem, PublicQuestion, ResponseSubmission, Section, ThemeVariant } from "./schemas";
@@ -89,6 +90,7 @@ export async function recordReceiverEvent(
   const admin = createAdminClient();
   if (type === "opened") {
     const { data, error } = await admin.rpc("record_gift_open", { p_share_token: token, p_session_id: sessionId });
+    if (!error && data === true) await track("gift_opened", null);
     return !error && data === true;
   }
   const { data, error } = await admin.rpc("record_receiver_event", {
@@ -113,7 +115,10 @@ export async function submitResponse(token: string, submission: ResponseSubmissi
       number: a.number ?? null,
     })),
   });
-  if (!error) return { ok: true };
+  if (!error) {
+    await track("response_submitted", null, { answers: submission.answers.length });
+    return { ok: true };
+  }
   if (error.code === "P0002") return { ok: false, reason: "not-found" };
   if (error.code === "23505") return { ok: false, reason: "duplicate" };
   if (error.code === "22023") return { ok: false, reason: "invalid" };

@@ -12,11 +12,69 @@
     "menu": "Menu"
   },
   "hero": {
+    "badge": "Free to start · 100 welcome points",
     "title": "Digital gifts that feel like home.",
     "subtitle": "Make something special. Give it to someone.",
     "primaryCta": "Create a Gift",
     "secondaryCta": "Explore Templates",
     "note": "The person you send it to never needs an account."
+  },
+  "connections": {
+    "title": "Made for every kind of connection",
+    "subtitle": "Not only for couples. A home can be a friend, a family, a classroom or a team.",
+    "friends": "Friends",
+    "friendsText": "For the one who is always there.",
+    "couples": "Couples",
+    "couplesText": "Anniversaries, apologies, everyday love.",
+    "family": "Family",
+    "familyText": "Parents, siblings, the whole house.",
+    "classmates": "Classmates",
+    "classmatesText": "Farewells, exams, reunions.",
+    "coworkers": "Coworkers",
+    "coworkersText": "Thank-yous and congratulations at work.",
+    "distance": "Long distance",
+    "distanceText": "Close the gap with a small surprise."
+  },
+  "showcase": {
+    "title": "Start from a template",
+    "subtitle": "Ten looks for birthdays, thanks, memories and more. Every word and colour is yours to change.",
+    "cta": "See all templates"
+  },
+  "trust": {
+    "title": "Private by default. Shared by choice.",
+    "privateTitle": "Only through your link",
+    "privateText": "A gift is visible only to people who have its link. You can turn it off or change the link any time.",
+    "receiverTitle": "Nothing asked of them",
+    "receiverText": "No account, no app, no tracking of where they are or what device they use.",
+    "yoursTitle": "Your memories are yours",
+    "yoursText": "We never sell your data or use your gifts for advertising or AI training.",
+    "learnMore": "Read how we protect your gifts"
+  },
+  "legal": {
+    "updated": "Last updated {date}",
+    "draftNotice": "This is a draft written by the Eain team in plain language. It will be reviewed by a lawyer before public launch, and it is not legal advice.",
+    "summary": "In short",
+    "fullText": "Full text",
+    "related": "Related pages",
+    "links": {
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "security": "Security",
+      "cookies": "Cookies",
+      "contact": "Contact"
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Questions, requests to delete your data, or something that does not look right. We read everything.",
+    "emailTitle": "Email us",
+    "emailText": "For account questions, data deletion requests and anything else.",
+    "emailSoon": "A contact address will be published here before public launch. Until then, use the report link on any gift page for content issues.",
+    "reportTitle": "Report a gift",
+    "reportText": "Every gift page has a \"Report this gift\" link at the bottom. Reports go straight to our moderators and do not need an account.",
+    "securityTitle": "Found a security issue?",
+    "securityText": "Please tell us privately before sharing it publicly. We will acknowledge and fix it.",
+    "securityLink": "How we protect your gifts"
   },
   "categories": {
     "title": "For every kind of connection",
@@ -74,7 +132,15 @@
   },
   "common": {
     "comingSoon": "Coming soon",
-    "loading": "Loading"
+    "loading": "Loading",
+    "skipToContent": "Skip to content"
+  },
+  "errorPage": {
+    "title": "Something went wrong",
+    "text": "Your gifts are safe. Try again, or head back home.",
+    "retry": "Try again",
+    "home": "Home",
+    "reference": "Reference {id}"
   },
   "notFound": {
     "title": "This page is not here",

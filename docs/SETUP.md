@@ -83,7 +83,9 @@ A Google sign-up creates the profile through the same trigger as email sign-up, 
 
 Facebook sign-in is deferred. It needs Meta business verification.
 
-## Deploy to Vercel (any time after Part A)
+## Deploy to Vercel
+
+The full pre-launch list, including Supabase settings, environment variables, the keep-alive cron and the production smoke test, is in [LAUNCH.md](LAUNCH.md). Short version:
 
 1. Push the repository to GitHub.
 2. Import it at vercel.com. Framework is detected as Next.js. Build command `pnpm build`.

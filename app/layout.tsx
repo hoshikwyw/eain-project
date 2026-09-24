@@ -1,16 +1,20 @@
 import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import { SkipLink } from "@/components/layout/skip-link";
 import { ThemeProvider } from "@/components/settings/theme-provider";
 import { fontVariables } from "@/lib/fonts";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("brand");
+  const site = process.env.NEXT_PUBLIC_SITE_URL;
   return {
+    metadataBase: site ? new URL(site) : undefined,
     title: { default: "Eain", template: "%s · Eain" },
     description: t("tagline"),
     applicationName: "Eain",
+    openGraph: { siteName: "Eain", type: "website" },
   };
 }
 
@@ -31,7 +35,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     <html lang={locale} className={`${fontVariables} h-full antialiased`} suppressHydrationWarning>
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider>
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            <SkipLink />
+            {children}
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>
