@@ -11,9 +11,26 @@ export type Decoration = "petals" | "stars" | "confetti" | "hearts" | "sparkles"
 /** card: one framed card. scroll: each section is its own card, revealed as you scroll. */
 export type Layout = "card" | "scroll";
 
+/**
+ * Visual design of a template: frame, heading treatment, background pattern
+ * and how sections are dressed. See components/gift/gift-renderer.tsx.
+ */
+export type Design =
+  | "postcard"
+  | "party"
+  | "elegant"
+  | "playful"
+  | "botanical"
+  | "certificate"
+  | "letter"
+  | "minimal"
+  | "scrapbook"
+  | "bold";
+
 export type TemplateStyle = {
   decoration: Decoration;
   layout: Layout;
+  design: Design;
   defaultVariant: ThemeVariant;
   /** Composed scene for this template, from scripts/compose-illustrations.mjs. */
   illustration: string;
@@ -54,6 +71,7 @@ const timeline = (items: { date: string; title: string; text: string }[]): Secti
 
 export const templates: Record<string, TemplateDefinition> = {
   "birthday-postcard": {
+    design: "postcard",
     decoration: "petals",
     layout: "card",
     defaultVariant: "blossom",
@@ -70,6 +88,7 @@ export const templates: Record<string, TemplateDefinition> = {
     ],
   },
   "birthday-surprise": {
+    design: "party",
     decoration: "confetti",
     layout: "scroll",
     defaultVariant: "sunset",
@@ -81,6 +100,7 @@ export const templates: Record<string, TemplateDefinition> = {
     ],
   },
   anniversary: {
+    design: "elegant",
     decoration: "hearts",
     layout: "scroll",
     defaultVariant: "night",
@@ -95,6 +115,7 @@ export const templates: Record<string, TemplateDefinition> = {
     ],
   },
   friendship: {
+    design: "playful",
     decoration: "sparkles",
     layout: "card",
     defaultVariant: "mint",
@@ -106,6 +127,7 @@ export const templates: Record<string, TemplateDefinition> = {
     ],
   },
   "thank-you": {
+    design: "botanical",
     decoration: "leaves",
     layout: "card",
     defaultVariant: "mint",
@@ -116,6 +138,7 @@ export const templates: Record<string, TemplateDefinition> = {
     ],
   },
   appreciation: {
+    design: "certificate",
     decoration: "sparkles",
     layout: "card",
     defaultVariant: "sunset",
@@ -126,6 +149,7 @@ export const templates: Record<string, TemplateDefinition> = {
     ],
   },
   "miss-you": {
+    design: "letter",
     decoration: "stars",
     layout: "card",
     defaultVariant: "night",
@@ -137,6 +161,7 @@ export const templates: Record<string, TemplateDefinition> = {
     ],
   },
   "general-postcard": {
+    design: "minimal",
     decoration: "petals",
     layout: "card",
     defaultVariant: "blossom",
@@ -147,6 +172,7 @@ export const templates: Record<string, TemplateDefinition> = {
     ],
   },
   "memory-timeline": {
+    design: "scrapbook",
     decoration: "stars",
     layout: "scroll",
     defaultVariant: "night",
@@ -162,6 +188,7 @@ export const templates: Record<string, TemplateDefinition> = {
     ],
   },
   congratulations: {
+    design: "bold",
     decoration: "confetti",
     layout: "card",
     defaultVariant: "sunset",
@@ -176,6 +203,7 @@ export const templates: Record<string, TemplateDefinition> = {
 export const fallbackStyle: TemplateStyle = {
   decoration: "petals",
   layout: "card",
+  design: "minimal",
   defaultVariant: "blossom",
   illustration: "/brand/lovebirds.webp",
 };
@@ -183,7 +211,7 @@ export const fallbackStyle: TemplateStyle = {
 export function getTemplateStyle(slug: string): TemplateStyle {
   const t = templates[slug];
   return t
-    ? { decoration: t.decoration, layout: t.layout, defaultVariant: t.defaultVariant, illustration: illustrationFor(slug) }
+    ? { decoration: t.decoration, layout: t.layout, design: t.design, defaultVariant: t.defaultVariant, illustration: illustrationFor(slug) }
     : fallbackStyle;
 }
 

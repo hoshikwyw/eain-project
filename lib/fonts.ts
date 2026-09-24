@@ -1,9 +1,18 @@
 import {
+  Caveat,
   Fraunces,
   Noto_Sans_Myanmar,
   Noto_Serif_Myanmar,
   Plus_Jakarta_Sans,
 } from "next/font/google";
+
+/** Handwriting for playful and letter-style templates. Latin only; Burmese falls back. */
+export const caveat = Caveat({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+  variable: "--font-caveat",
+  display: "swap",
+});
 
 /** Interface text. */
 export const jakarta = Plus_Jakarta_Sans({
@@ -38,6 +47,7 @@ export const notoSerifMyanmar = Noto_Serif_Myanmar({
 export const fontVariables = [
   jakarta.variable,
   fraunces.variable,
+  caveat.variable,
   notoSansMyanmar.variable,
   notoSerifMyanmar.variable,
 ].join(" ");

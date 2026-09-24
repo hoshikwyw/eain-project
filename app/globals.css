@@ -132,6 +132,7 @@
   --font-display:
     var(--font-fraunces), var(--font-myanmar-serif), var(--font-myanmar), ui-serif, Georgia,
     serif;
+  --font-hand: var(--font-caveat), var(--font-myanmar), cursive;
 }
 
 @layer base {
@@ -175,6 +176,27 @@
 
   .float-slow {
     animation: eain-float 6s ease-in-out infinite;
+  }
+
+  /* Template background patterns. They read palette variables, so they follow the gift's look. */
+  .pattern-dots {
+    background-image: radial-gradient(var(--t-deco) 1.6px, transparent 1.7px);
+    background-size: 18px 18px;
+  }
+  .pattern-stripes {
+    background-image: repeating-linear-gradient(135deg, var(--t-deco) 0 6px, transparent 6px 20px);
+  }
+  .pattern-lines {
+    background-image: repeating-linear-gradient(transparent 0 31px, var(--t-accent-soft) 31px 32px);
+  }
+  .pattern-grid {
+    background-image:
+      linear-gradient(var(--t-accent-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--t-accent-soft) 1px, transparent 1px);
+    background-size: 26px 26px;
+  }
+  .pattern-rays {
+    background-image: repeating-conic-gradient(from 0deg at 50% -20%, var(--t-deco) 0 4deg, transparent 4deg 12deg);
   }
 }
 
