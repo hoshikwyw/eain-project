@@ -2,8 +2,8 @@ import { Search } from "lucide-react";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { AdminFlash } from "@/components/admin/flash";
 import { PageHeader } from "@/components/dashboard/page-header";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
 import { adjustPoints, setUserRole } from "@/features/admin/actions";
@@ -50,9 +50,9 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/admin
                     <input type="hidden" name="userId" value={u.id} />
                     <Input name="amount" type="number" required placeholder="±50" className="h-9 w-24 text-sm" />
                     <Input name="description" placeholder={t("users.reason")} maxLength={200} className="h-9 w-40 text-sm" />
-                    <Button type="submit" size="sm" variant="secondary">
+                    <SubmitButton size="sm" variant="secondary">
                       {t("users.adjust")}
-                    </Button>
+                    </SubmitButton>
                   </form>
                   {u.id !== me.id && (
                     <form action={setUserRole} className="flex items-center gap-1.5">
@@ -61,9 +61,9 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/admin
                         <option value="user">{t("users.roles.user")}</option>
                         <option value="admin">{t("users.roles.admin")}</option>
                       </select>
-                      <Button type="submit" size="sm" variant="secondary">
+                      <SubmitButton size="sm" variant="secondary">
                         {t("users.setRole")}
-                      </Button>
+                      </SubmitButton>
                     </form>
                   )}
                 </div>

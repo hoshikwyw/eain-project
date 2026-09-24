@@ -1,8 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { AdminFlash } from "@/components/admin/flash";
 import { PageHeader } from "@/components/dashboard/page-header";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
 import { updateTemplate } from "@/features/admin/actions";
@@ -59,9 +59,9 @@ export default async function AdminTemplatesPage({ searchParams }: PageProps<"/a
                       aria-label={t("templates.price")}
                       className="h-9 w-24 text-sm"
                     />
-                    <Button type="submit" size="sm" variant="secondary">
+                    <SubmitButton size="sm" variant="secondary">
                       {t("templates.save")}
-                    </Button>
+                    </SubmitButton>
                   </div>
                 </form>
               </CardContent>

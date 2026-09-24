@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { LinkPending } from "@/components/ui/link-pending";
 import { cn } from "@/lib/utils";
 import { isActivePath, mobileNavKeys, navItems } from "./nav-items";
 
@@ -28,6 +29,7 @@ export function BottomNav({ unreadCount }: { unreadCount: number }) {
       >
         <Icon className="size-5" />
         <span>{t(key)}</span>
+        <LinkPending className="absolute top-1 right-2 size-3" />
         {key === "notifications" && unreadCount > 0 && (
           <span className="absolute top-1.5 right-[calc(50%-14px)] size-2 rounded-full bg-brand" />
         )}

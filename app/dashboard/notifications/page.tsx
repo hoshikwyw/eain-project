@@ -2,8 +2,8 @@ import { Bell } from "lucide-react";
 import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/dashboard/page-header";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { markAllNotificationsRead } from "@/features/notifications/actions";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
@@ -31,9 +31,9 @@ export default async function NotificationsPage() {
         action={
           hasUnread ? (
             <form action={markAllNotificationsRead}>
-              <Button type="submit" variant="secondary" size="sm">
+              <SubmitButton variant="secondary" size="sm">
                 {t("notifications.markAllRead")}
-              </Button>
+              </SubmitButton>
             </form>
           ) : undefined
         }

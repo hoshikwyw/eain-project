@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { createGift } from "@/features/gifts/actions";
 import type { ThemeVariant } from "@/features/gifts/schemas";
 import { unlockTemplate } from "@/features/points/actions";
@@ -146,9 +147,9 @@ function TemplateAction({
     return mode === "create" ? (
       <form action={createGift}>
         <input type="hidden" name="template" value={template.slug} />
-        <Button type="submit" className="w-full">
+        <SubmitButton className="w-full" pendingLabel={t("creating")}>
           {t("useTemplate")}
-        </Button>
+        </SubmitButton>
       </form>
     ) : (
       <Button asChild className="w-full">
@@ -172,10 +173,10 @@ function TemplateAction({
       return (
         <form action={unlockTemplate}>
           <input type="hidden" name="template" value={template.slug} />
-          <Button type="submit" variant="soft" className="w-full">
+          <SubmitButton variant="soft" className="w-full" pendingLabel={t("unlocking")}>
             <Lock />
             {t("unlockFor", { points: template.pointPrice })}
-          </Button>
+          </SubmitButton>
         </form>
       );
     }

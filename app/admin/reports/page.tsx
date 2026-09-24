@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { resolveReport } from "@/features/admin/actions";
 import { listReports, requireAdmin } from "@/features/admin/queries";
 
@@ -74,24 +75,24 @@ export default async function AdminReportsPage({ searchParams }: PageProps<"/adm
                           <form action={resolveReport}>
                             <input type="hidden" name="reportId" value={r.id} />
                             <input type="hidden" name="status" value="reviewing" />
-                            <Button type="submit" size="sm" variant="ghost">
+                            <SubmitButton size="sm" variant="ghost">
                               {t("reports.markReviewing")}
-                            </Button>
+                            </SubmitButton>
                           </form>
                         )}
                         <form action={resolveReport}>
                           <input type="hidden" name="reportId" value={r.id} />
                           <input type="hidden" name="status" value="resolved" />
-                          <Button type="submit" size="sm" variant="ghost">
+                          <SubmitButton size="sm" variant="ghost">
                             {t("reports.resolve")}
-                          </Button>
+                          </SubmitButton>
                         </form>
                         <form action={resolveReport}>
                           <input type="hidden" name="reportId" value={r.id} />
                           <input type="hidden" name="status" value="dismissed" />
-                          <Button type="submit" size="sm" variant="ghost">
+                          <SubmitButton size="sm" variant="ghost">
                             {t("reports.dismiss")}
-                          </Button>
+                          </SubmitButton>
                         </form>
                       </>
                     )}

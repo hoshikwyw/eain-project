@@ -1,8 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { ProfileForm } from "@/components/dashboard/profile-form";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { signOut } from "@/features/auth/actions";
 import { getCurrentProfile } from "@/features/profile/queries";
 import { createClient } from "@/lib/supabase/server";
@@ -36,9 +36,7 @@ export default async function SettingsPage() {
         </CardHeader>
         <CardContent>
           <form action={signOut}>
-            <Button type="submit" variant="secondary">
-              {t("signOut")}
-            </Button>
+            <SubmitButton variant="secondary">{t("signOut")}</SubmitButton>
           </form>
         </CardContent>
       </Card>

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, ChevronUp, Eye, Plus, Save, Send, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Eye, Loader2, Plus, Save, Send, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useActionState, useMemo, useState } from "react";
@@ -9,6 +9,7 @@ import { variantSwatch } from "@/components/gift/palettes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { publishGift, saveGift } from "@/features/gifts/actions";
 import {
   MAX_SECTIONS,
@@ -198,8 +199,8 @@ export function GiftEditor(props: Props) {
         </div>
 
         <div className="sticky bottom-20 flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card/95 p-3 backdrop-blur md:bottom-4">
-          <Button type="submit" disabled={saving}>
-            <Save />
+          <Button type="submit" disabled={saving} aria-busy={saving}>
+            {saving ? <Loader2 className="animate-spin" /> : <Save />}
             {saving ? t("saving") : t("save")}
           </Button>
           <Button type="button" variant="secondary" className="lg:hidden" onClick={() => setShowPreview(true)}>
@@ -236,10 +237,10 @@ export function GiftEditor(props: Props) {
             {props.publishError && <p className="text-sm text-destructive">{t("publishError")}</p>}
             <div className="flex flex-wrap gap-2">
               <form action={publishAction}>
-                <Button type="submit" variant={props.status === "published" ? "secondary" : "primary"}>
+                <SubmitButton variant={props.status === "published" ? "secondary" : "primary"} pendingLabel={t("publishing")}>
                   <Send />
                   {props.status === "published" ? t("republish") : t("publish")}
-                </Button>
+                </SubmitButton>
               </form>
               <Button asChild variant="ghost">
                 <Link href={`/dashboard/gifts/${props.giftId}`}>{t("manage")}</Link>

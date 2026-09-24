@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Logo } from "@/components/brand/logo";
 import { Chip } from "@/components/ui/chip";
+import { LinkPending } from "@/components/ui/link-pending";
 import { cn } from "@/lib/utils";
 import { isActivePath, navItems } from "./nav-items";
 
@@ -44,6 +45,7 @@ export function Sidebar({ displayName, email, pointsBalance, unreadCount, isAdmi
             >
               <Icon className="size-4.5" />
               <span className="flex-1">{t(key)}</span>
+              <LinkPending />
               {key === "points" && <Chip tone="brand">{pointsBalance}</Chip>}
               {key === "notifications" && unreadCount > 0 && <Chip tone="brand">{unreadCount}</Chip>}
             </Link>

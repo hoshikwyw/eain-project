@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { LinkPending } from "@/components/ui/link-pending";
 import { cn } from "@/lib/utils";
 
 const items = [
@@ -28,11 +29,12 @@ export function AdminNav() {
             href={href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "shrink-0 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors",
+              "inline-flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors",
               active ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >
             {t(key)}
+            <LinkPending className="size-3" />
           </Link>
         );
       })}

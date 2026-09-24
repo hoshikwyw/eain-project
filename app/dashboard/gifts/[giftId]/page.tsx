@@ -9,6 +9,7 @@ import { GiftView } from "@/components/gift/gift-view";
 import { SharePanel } from "@/components/gift/share-panel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { deleteGift, duplicateGift, publishGift, regenerateGiftLink, unpublishGift } from "@/features/gifts/actions";
 import { getGiftDetail, getGiftResponses } from "@/features/gifts/queries";
 import { getCurrentProfile } from "@/features/profile/queries";
@@ -84,7 +85,7 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
                 <SharePanel url={shareUrl} qrSvg={qr.svg} qrPngDataUrl={qr.pngDataUrl} title={gift.title} />
               ) : (
                 <form action={publishGift.bind(null, gift.id)}>
-                  <Button type="submit">{t("publishNow")}</Button>
+                  <SubmitButton>{t("publishNow")}</SubmitButton>
                 </form>
               )}
             </CardContent>
@@ -183,22 +184,22 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
             <CardContent className="flex flex-col gap-2">
               {isPublished ? (
                 <form action={unpublishGift.bind(null, gift.id)}>
-                  <Button type="submit" variant="secondary" className="w-full">
+                  <SubmitButton variant="secondary" className="w-full">
                     {t("unpublish")}
-                  </Button>
+                  </SubmitButton>
                 </form>
               ) : gift.status === "unpublished" ? (
                 <form action={publishGift.bind(null, gift.id)}>
-                  <Button type="submit" variant="secondary" className="w-full">
+                  <SubmitButton variant="secondary" className="w-full">
                     {t("publishAgain")}
-                  </Button>
+                  </SubmitButton>
                 </form>
               ) : null}
               <form action={duplicateGift.bind(null, gift.id)}>
-                <Button type="submit" variant="secondary" className="w-full">
+                <SubmitButton variant="secondary" className="w-full">
                   <Copy />
                   {t("duplicate")}
-                </Button>
+                </SubmitButton>
               </form>
               <form action={regenerateGiftLink.bind(null, gift.id)}>
                 <ConfirmButton variant="secondary" className="w-full" confirmText={t("regenerateConfirm")}>
