@@ -5,8 +5,11 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { MediaItem, Section } from "@/features/gifts/schemas";
+import { QUESTION_KINDS, REACTIONS, type MediaItem, type QuestionKind, type Section } from "@/features/gifts/schemas";
 import { PhotoPicker } from "./photo-picker";
+
+const selectClass =
+  "h-11 rounded-xl border border-input bg-card px-3.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40";
 
 type Props = {
   section: Section;
@@ -177,6 +180,96 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
           </Field>
         </>
       );
+    case "question": {
+      const c = section.content;
+      const tq = (key: Parameters<typeof t>[0]) => t(key);
+      const defaultOptions = (kind: QuestionKind) => {
+        const opt = (label: string) => ({ id: crypto.randomUUID(), label });
+        switch (kind) {
+          case "yes_no":
+            return [opt(tq("yes")), opt(tq("no"))];
+          case "reaction":
+            return REACTIONS.map((r) => opt(r));
+          case "choice":
+            return [opt(""), opt("")];
+          default:
+            return [];
+        }
+      };
+      const setOptions = (options: typeof c.options) => onChange({ ...section, content: { ...c, options } });
+      const editableOptions = c.kind === "choice" || c.kind === "yes_no";
+      return (
+        <div className="flex flex-col gap-4">
+          <div className="grid gap-4 sm:grid-cols-[1fr_auto]">
+            <Field label={t("prompt")} htmlFor={`${id}-prompt`}>
+              <Input
+                id={`${id}-prompt`}
+                value={c.prompt}
+                maxLength={300}
+                required
+                placeholder={t("promptPlaceholder")}
+                onChange={(e) => onChange({ ...section, content: { ...c, prompt: e.target.value } })}
+              />
+            </Field>
+            <Field label={t("answerType")} htmlFor={`${id}-kind`}>
+              <select
+                id={`${id}-kind`}
+                value={c.kind}
+                className={selectClass}
+                onChange={(e) => {
+                  const kind = e.target.value as QuestionKind;
+                  onChange({ ...section, content: { ...c, kind, options: defaultOptions(kind) } });
+                }}
+              >
+                {QUESTION_KINDS.map((k) => (
+                  <option key={k} value={k}>
+                    {t(`kinds.${k}`)}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          </div>
+
+          {editableOptions && (
+            <div className="flex flex-col gap-2">
+              <span className="text-sm font-semibold">{t("options")}</span>
+              {c.options.map((o, i) => (
+                <div key={o.id} className="flex gap-2">
+                  <Input
+                    aria-label={t("optionLabel", { n: i + 1 })}
+                    value={o.label}
+                    maxLength={120}
+                    required
+                    onChange={(e) => setOptions(c.options.map((x) => (x.id === o.id ? { ...x, label: e.target.value } : x)))}
+                  />
+                  {c.kind === "choice" && c.options.length > 2 && (
+                    <Button type="button" variant="ghost" size="icon" aria-label={t("removeOption")} onClick={() => setOptions(c.options.filter((x) => x.id !== o.id))}>
+                      <Trash2 />
+                    </Button>
+                  )}
+                </div>
+              ))}
+              {c.kind === "choice" && c.options.length < 6 && (
+                <Button type="button" variant="secondary" size="sm" className="self-start" onClick={() => setOptions([...c.options, { id: crypto.randomUUID(), label: "" }])}>
+                  <Plus />
+                  {t("addOption")}
+                </Button>
+              )}
+            </div>
+          )}
+
+          <label className="flex items-center gap-3 text-sm">
+            <input
+              type="checkbox"
+              checked={c.required}
+              onChange={(e) => onChange({ ...section, content: { ...c, required: e.target.checked } })}
+              className="size-4 accent-primary"
+            />
+            {t("required")}
+          </label>
+        </div>
+      );
+    }
     case "final_message":
       return (
         <div className="grid gap-4 sm:grid-cols-2">

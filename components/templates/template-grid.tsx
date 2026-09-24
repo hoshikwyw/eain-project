@@ -11,6 +11,7 @@ import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
 import { createGift } from "@/features/gifts/actions";
 import type { ThemeVariant } from "@/features/gifts/schemas";
+import { unlockTemplate } from "@/features/points/actions";
 
 export type TemplateCard = {
   id: string;
@@ -21,6 +22,9 @@ export type TemplateCard = {
   category: string;
   isPremium: boolean;
   pointPrice: number;
+  /** Free, or premium and already paid for by this user. */
+  unlocked: boolean;
+  /** Has a layout in code and is unlocked. */
   available: boolean;
   variant: ThemeVariant;
 };
@@ -30,10 +34,14 @@ type Props = {
   categories: { id: string; name: string }[];
   /** create: buttons create a gift. browse: buttons link to /create. */
   mode: "create" | "browse";
+  /** Signed-in user's balance, for unlock buttons. Null when browsing signed out. */
+  pointsBalance?: number | null;
+  /** Slug to scroll to and highlight, e.g. after a premium redirect. */
+  highlightSlug?: string;
 };
 
 /** Template library with category chips and search. Filtering is client-side; the list is small. */
-export function TemplateGrid({ templates, categories, mode }: Props) {
+export function TemplateGrid({ templates, categories, mode, pointsBalance = null, highlightSlug }: Props) {
   const t = useTranslations("create");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
@@ -83,7 +91,17 @@ export function TemplateGrid({ templates, categories, mode }: Props) {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {visible.map((template) => (
-            <Card key={template.id} className={template.available ? "" : "opacity-80"}>
+            <Card
+              key={template.id}
+              id={`template-${template.slug}`}
+              className={
+                template.slug === highlightSlug
+                  ? "ring-2 ring-primary"
+                  : template.available || (template.isPremium && !template.unlocked)
+                    ? ""
+                    : "opacity-80"
+              }
+            >
               <CardContent className="flex h-full flex-col gap-4 p-5">
                 <div
                   style={palettes[template.variant]}
@@ -106,28 +124,75 @@ export function TemplateGrid({ templates, categories, mode }: Props) {
                   </div>
                   <p className="text-sm text-muted-foreground">{template.description}</p>
                 </div>
-                {mode === "create" && template.available ? (
-                  <form action={createGift}>
-                    <input type="hidden" name="template" value={template.slug} />
-                    <Button type="submit" className="w-full">
-                      {t("useTemplate")}
-                    </Button>
-                  </form>
-                ) : mode === "browse" && template.available ? (
-                  <Button asChild className="w-full">
-                    <Link href={`/create?template=${template.slug}`}>{t("useTemplate")}</Link>
-                  </Button>
-                ) : (
-                  <Button variant="secondary" className="w-full" disabled>
-                    {template.isPremium ? t("premiumSoon") : t("comingSoon")}
-                  </Button>
-                )}
+                <TemplateAction template={template} mode={mode} pointsBalance={pointsBalance} />
               </CardContent>
             </Card>
           ))}
         </div>
       )}
     </div>
+  );
+}
+
+function TemplateAction({
+  template,
+  mode,
+  pointsBalance,
+}: {
+  template: TemplateCard;
+  mode: "create" | "browse";
+  pointsBalance: number | null;
+}) {
+  const t = useTranslations("create");
+
+  if (template.available) {
+    return mode === "create" ? (
+      <form action={createGift}>
+        <input type="hidden" name="template" value={template.slug} />
+        <Button type="submit" className="w-full">
+          {t("useTemplate")}
+        </Button>
+      </form>
+    ) : (
+      <Button asChild className="w-full">
+        <Link href={`/create?template=${template.slug}`}>{t("useTemplate")}</Link>
+      </Button>
+    );
+  }
+
+  if (template.isPremium && !template.unlocked) {
+    if (mode === "browse" || pointsBalance === null) {
+      return (
+        <Button asChild variant="secondary" className="w-full">
+          <Link href={`/create?template=${template.slug}`}>
+            <Lock />
+            {t("unlockFor", { points: template.pointPrice })}
+          </Link>
+        </Button>
+      );
+    }
+    if (pointsBalance >= template.pointPrice) {
+      return (
+        <form action={unlockTemplate}>
+          <input type="hidden" name="template" value={template.slug} />
+          <Button type="submit" variant="soft" className="w-full">
+            <Lock />
+            {t("unlockFor", { points: template.pointPrice })}
+          </Button>
+        </form>
+      );
+    }
+    return (
+      <Button asChild variant="secondary" className="w-full">
+        <Link href="/dashboard/points">{t("needMorePoints", { points: template.pointPrice - pointsBalance })}</Link>
+      </Button>
+    );
+  }
+
+  return (
+    <Button variant="secondary" className="w-full" disabled>
+      {t("comingSoon")}
+    </Button>
   );
 }
 

@@ -56,6 +56,7 @@ pnpm dlx supabase db push
 pnpm test:rls
 pnpm test:core
 pnpm test:media
+pnpm test:responses
 ```
 
 9. To make yourself an admin later, run in the Supabase SQL editor:

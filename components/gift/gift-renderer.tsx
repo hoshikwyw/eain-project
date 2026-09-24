@@ -1,4 +1,4 @@
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, MessageCircleQuestion } from "lucide-react";
 import { Lovebirds } from "@/components/brand/lovebirds";
 import type { MediaItem, Section, ThemeVariant } from "@/features/gifts/schemas";
 import type { Decoration, TemplateStyle } from "@/features/gifts/templates";
@@ -18,8 +18,13 @@ type Props = {
   placeholders?: boolean;
   /** Staggered entrance animation for the receiver page. */
   animate?: boolean;
+  /**
+   * Questions are answered in the reply form under the gift. "preview" shows a
+   * static card in place (editor and dashboard); "hidden" drops them (receiver).
+   */
+  questionMode?: "preview" | "hidden";
   /** Labels the renderer needs; passed in so this stays a server-safe component. */
-  labels: { forName: string; forYou: string; addPhoto: string };
+  labels: { forName: string; forYou: string; addPhoto: string; questionNote: string };
 };
 
 /**
@@ -36,12 +41,15 @@ export function GiftRenderer({
   compact,
   placeholders,
   animate,
+  questionMode = "preview",
   labels,
 }: Props) {
   const name = recipientName.trim();
   const eyebrow = name ? labels.forName.replace("{name}", name) : labels.forYou;
 
-  const body = sections.map((section, index) => (
+  const visible = questionMode === "hidden" ? sections.filter((s) => s.type !== "question") : sections;
+
+  const body = visible.map((section, index) => (
     <SectionView
       key={section.id}
       section={section}
@@ -50,6 +58,7 @@ export function GiftRenderer({
       compact={compact}
       placeholders={placeholders}
       addPhotoLabel={labels.addPhoto}
+      questionNote={labels.questionNote}
       isFirst={index === 0}
     />
   ));
@@ -62,7 +71,7 @@ export function GiftRenderer({
         <div className={cn("relative flex flex-col", compact ? "gap-3" : "gap-4")}>
           {body.map((node, i) => (
             <div
-              key={sections[i]!.id}
+              key={visible[i]!.id}
               style={animate ? { animationDelay: `${Math.min(i, 6) * 120}ms` } : undefined}
               className={cn(
                 "rounded-2xl bg-[color:var(--t-card)]/90 backdrop-blur-sm",
@@ -107,11 +116,40 @@ type SectionProps = {
   compact?: boolean;
   placeholders?: boolean;
   addPhotoLabel: string;
+  questionNote: string;
   isFirst: boolean;
 };
 
-function SectionView({ section, media, senderName, compact, placeholders, addPhotoLabel, isFirst }: SectionProps) {
+function SectionView({ section, media, senderName, compact, placeholders, addPhotoLabel, questionNote, isFirst }: SectionProps) {
   switch (section.type) {
+    case "question":
+      return (
+        <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-[color:var(--t-accent-soft)] p-4">
+          <p className="flex items-center gap-2 text-xs font-semibold tracking-wide uppercase text-[color:var(--t-muted)]">
+            <MessageCircleQuestion className="size-4" />
+            {questionNote}
+          </p>
+          <p className="font-semibold">{section.content.prompt || "…"}</p>
+          {section.content.options.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {section.content.options.map((o) => (
+                <span key={o.id} className="rounded-full border border-[color:var(--t-accent-soft)] px-3 py-1 text-sm">
+                  {o.label}
+                </span>
+              ))}
+            </div>
+          )}
+          {section.content.kind === "rating" && (
+            <div className="flex gap-1.5">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <span key={n} className="grid size-8 place-items-center rounded-full border border-[color:var(--t-accent-soft)] text-sm">
+                  {n}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      );
     case "text": {
       const Heading = isFirst ? "h1" : "h2";
       return (

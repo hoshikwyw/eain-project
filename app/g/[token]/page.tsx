@@ -26,7 +26,7 @@ export default async function PublicGiftPage({ params }: PageProps<"/g/[token]">
   if (!gift) return <GiftUnavailable />;
 
   return (
-    <GiftReveal token={token}>
+    <GiftReveal token={token} questions={gift.questions}>
       <GiftView
         sections={gift.sections}
         media={gift.media}
@@ -35,6 +35,7 @@ export default async function PublicGiftPage({ params }: PageProps<"/g/[token]">
         recipientName={gift.recipientName}
         senderName={gift.senderName}
         animate
+        questionMode="hidden"
       />
     </GiftReveal>
   );

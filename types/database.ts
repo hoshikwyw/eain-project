@@ -132,6 +132,43 @@ export interface GiftEvent extends Record<string, unknown> {
   created_at: string;
 }
 
+export type QuestionType = "choice" | "yes_no" | "short_text" | "reaction" | "rating";
+
+export interface GiftQuestion extends Record<string, unknown> {
+  id: string;
+  gift_id: string;
+  section_id: string | null;
+  type: QuestionType;
+  prompt: string;
+  position: number;
+  is_required: boolean;
+  created_at: string;
+}
+
+export interface GiftQuestionOption extends Record<string, unknown> {
+  id: string;
+  question_id: string;
+  label: string;
+  position: number;
+}
+
+export interface GiftAnswer extends Record<string, unknown> {
+  id: string;
+  response_id: string;
+  question_id: string;
+  option_id: string | null;
+  answer_text: string | null;
+  answer_number: number | null;
+  created_at: string;
+}
+
+export interface TemplateUnlock extends Record<string, unknown> {
+  user_id: string;
+  template_id: string;
+  transaction_id: string;
+  created_at: string;
+}
+
 export interface GiftResponse extends Record<string, unknown> {
   id: string;
   gift_id: string;
@@ -215,6 +252,18 @@ export interface Database {
         Pick<GiftRecipient, "gift_id"> & Partial<Pick<GiftRecipient, "name" | "email" | "phone">>,
         Partial<Pick<GiftRecipient, "name" | "email" | "phone">>
       >;
+      gift_questions: Table<
+        GiftQuestion,
+        Pick<GiftQuestion, "gift_id" | "type" | "prompt"> & Partial<Pick<GiftQuestion, "id" | "section_id" | "position" | "is_required">>,
+        Partial<Pick<GiftQuestion, "type" | "prompt" | "position" | "is_required" | "section_id">>
+      >;
+      gift_question_options: Table<
+        GiftQuestionOption,
+        Pick<GiftQuestionOption, "question_id" | "label"> & Partial<Pick<GiftQuestionOption, "id" | "position">>,
+        Partial<Pick<GiftQuestionOption, "label" | "position">>
+      >;
+      gift_answers: Table<GiftAnswer, ReadOnly, ReadOnly>;
+      template_unlocks: Table<TemplateUnlock, ReadOnly, ReadOnly>;
       gift_events: Table<GiftEvent, ReadOnly, ReadOnly>;
       gift_responses: Table<GiftResponse, ReadOnly, ReadOnly>;
       categories: Table<Category>;
@@ -229,6 +278,15 @@ export interface Database {
       delete_gift: { Args: { p_gift_id: string }; Returns: undefined };
       record_gift_open: { Args: { p_share_token: string; p_session_id: string }; Returns: boolean };
       record_gift_viewed: { Args: { p_share_token: string; p_session_id: string }; Returns: boolean };
+      record_receiver_event: {
+        Args: { p_share_token: string; p_session_id: string; p_type: GiftEventType };
+        Returns: boolean;
+      };
+      submit_gift_response: {
+        Args: { p_share_token: string; p_session_id: string; p_answers: Json };
+        Returns: string;
+      };
+      unlock_template: { Args: { p_template_id: string }; Returns: TemplateUnlock };
       check_rate_limit: {
         Args: { p_key: string; p_limit: number; p_window_seconds: number };
         Returns: boolean;
@@ -239,6 +297,7 @@ export interface Database {
       gift_status: GiftStatus;
       gift_type: GiftType;
       section_type: SectionType;
+      question_type: QuestionType;
       gift_event_type: GiftEventType;
       point_transaction_type: PointTransactionType;
       notification_type: NotificationType;

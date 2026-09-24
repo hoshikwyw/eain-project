@@ -80,6 +80,45 @@ export async function getEditorGift(giftId: string): Promise<EditorGift | null> 
   };
 }
 
+export type ResponseView = {
+  id: string;
+  createdAt: string;
+  answers: { prompt: string; value: string }[];
+};
+
+/** Responses to one gift, readable only by its creator through RLS. */
+export async function getGiftResponses(giftId: string): Promise<ResponseView[]> {
+  const supabase = await createClient();
+  const { data: responses } = await supabase
+    .from("gift_responses")
+    .select("id, created_at")
+    .eq("gift_id", giftId)
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (!responses || responses.length === 0) return [];
+
+  const [{ data: answers }, { data: questions }] = await Promise.all([
+    supabase
+      .from("gift_answers")
+      .select("response_id, question_id, option_id, answer_text, answer_number")
+      .in("response_id", responses.map((r) => r.id)),
+    supabase.from("gift_questions").select("id, prompt, position").eq("gift_id", giftId),
+  ]);
+  const promptById = new Map((questions ?? []).map((q) => [q.id, q]));
+
+  return responses.map((r) => ({
+    id: r.id,
+    createdAt: r.created_at,
+    answers: (answers ?? [])
+      .filter((a) => a.response_id === r.id)
+      .sort((a, b) => (promptById.get(a.question_id)?.position ?? 0) - (promptById.get(b.question_id)?.position ?? 0))
+      .map((a) => ({
+        prompt: promptById.get(a.question_id)?.prompt ?? "",
+        value: a.answer_text ?? (a.answer_number !== null ? `${a.answer_number}/5` : ""),
+      })),
+  }));
+}
+
 export type GiftDetail = EditorGift & { events: GiftEvent[] };
 
 export async function getGiftDetail(giftId: string): Promise<GiftDetail | null> {

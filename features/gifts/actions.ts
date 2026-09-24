@@ -6,8 +6,8 @@ import { getLocale } from "next-intl/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { MEDIA_BUCKET } from "./media";
-import { editorPayloadSchema, type SaveGiftState } from "./schemas";
-import { pruneMediaReferences, rowsFromSections } from "./sections";
+import { editorPayloadSchema, type SaveGiftState, type Section } from "./schemas";
+import { pruneMediaReferences, questionsFromSections, rowsFromSections, sectionsFromRows } from "./sections";
 import { defaultTheme, isAvailableTemplate, templates } from "./templates";
 
 /** Creates a draft from a template and opens the editor. */
@@ -27,8 +27,15 @@ export async function createGiftFromTemplate(slug: string): Promise<never> {
     .eq("is_active", true)
     .maybeSingle();
   if (!template) redirect("/create?error=template");
-  // Premium unlock with points arrives in Part E. Only free templates for now.
-  if (template.is_premium) redirect("/create?error=premium");
+
+  if (template.is_premium) {
+    const { data: unlock } = await supabase
+      .from("template_unlocks")
+      .select("template_id")
+      .eq("template_id", template.id)
+      .maybeSingle();
+    if (!unlock) redirect(`/create?error=premium&template=${slug}`);
+  }
 
   const locale = await getLocale();
 
@@ -92,6 +99,8 @@ export async function saveGift(giftId: string, _prev: SaveGiftState, formData: F
   const { error: insertError } = await supabase.from("gift_sections").insert(rowsFromSections(giftId, sections));
   if (insertError) return { status: "error" };
 
+  if (!(await syncQuestions(supabase, giftId, sections))) return { status: "error" };
+
   const { data: recipient } = await supabase
     .from("gift_recipients")
     .select("id")
@@ -107,6 +116,51 @@ export async function saveGift(giftId: string, _prev: SaveGiftState, formData: F
   revalidatePath(`/create/${giftId}`);
   revalidatePath("/dashboard", "layout");
   return { status: "saved" };
+}
+
+/**
+ * Mirrors question sections into gift_questions and gift_question_options so
+ * answers can reference stable ids. Questions removed from the gift are
+ * deleted along with their answers; options keep their ids across edits.
+ */
+async function syncQuestions(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  giftId: string,
+  sections: Section[],
+): Promise<boolean> {
+  const questions = questionsFromSections(sections);
+  const keepIds = questions.map((q) => q.questionId);
+
+  const { data: existing } = await supabase.from("gift_questions").select("id").eq("gift_id", giftId);
+  const stale = (existing ?? []).map((q) => q.id).filter((id) => !keepIds.includes(id));
+  if (stale.length > 0) {
+    const { error } = await supabase.from("gift_questions").delete().in("id", stale);
+    if (error) return false;
+  }
+
+  for (const q of questions) {
+    const { error } = await supabase.from("gift_questions").upsert(
+      { id: q.questionId, gift_id: giftId, type: q.kind, prompt: q.prompt, position: q.position, is_required: q.required },
+      { onConflict: "id" },
+    );
+    if (error) return false;
+
+    const optionIds = q.options.map((o) => o.id);
+    const { data: existingOptions } = await supabase.from("gift_question_options").select("id").eq("question_id", q.questionId);
+    const staleOptions = (existingOptions ?? []).map((o) => o.id).filter((id) => !optionIds.includes(id));
+    if (staleOptions.length > 0) {
+      const { error: delError } = await supabase.from("gift_question_options").delete().in("id", staleOptions);
+      if (delError) return false;
+    }
+    if (q.options.length > 0) {
+      const { error: optError } = await supabase.from("gift_question_options").upsert(
+        q.options.map((o, position) => ({ id: o.id, question_id: q.questionId, label: o.label, position })),
+        { onConflict: "id" },
+      );
+      if (optError) return false;
+    }
+  }
+  return true;
 }
 
 /** Copies a gift, its sections, recipient name and photos into a new draft. */
@@ -162,19 +216,28 @@ export async function duplicateGift(giftId: string): Promise<void> {
     }
   }
 
+  // Photos get new ids; questions and options get new ids too, so the copy
+  // has its own question rows and answers never cross between gifts.
   const remap = (content: unknown): unknown => {
     const c = (content ?? {}) as Record<string, unknown>;
     if (typeof c.mediaId === "string") return { ...c, mediaId: idMap.get(c.mediaId) ?? null };
     if (Array.isArray(c.mediaIds)) {
       return { ...c, mediaIds: c.mediaIds.map((id) => idMap.get(String(id))).filter(Boolean) };
     }
+    if (typeof c.questionId === "string") {
+      const options = Array.isArray(c.options)
+        ? c.options.map((o) => ({ ...(o as Record<string, unknown>), id: crypto.randomUUID() }))
+        : [];
+      return { ...c, questionId: crypto.randomUUID(), options };
+    }
     return c;
   };
 
   if (sections && sections.length > 0) {
-    await supabase.from("gift_sections").insert(
-      sections.map((s) => ({ gift_id: copy.id, type: s.type, position: s.position, content: remap(s.content) as never })),
-    );
+    const copied = sections.map((s) => ({ gift_id: copy.id, type: s.type, position: s.position, content: remap(s.content) as never }));
+    await supabase.from("gift_sections").insert(copied);
+    const { data: rows } = await supabase.from("gift_sections").select("id, type, content, position").eq("gift_id", copy.id);
+    await syncQuestions(supabase, copy.id, sectionsFromRows(rows ?? []));
   }
   if (recipient) await supabase.from("gift_recipients").insert({ gift_id: copy.id, name: recipient.name });
 

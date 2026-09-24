@@ -10,7 +10,7 @@ import { SharePanel } from "@/components/gift/share-panel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { deleteGift, duplicateGift, publishGift, regenerateGiftLink, unpublishGift } from "@/features/gifts/actions";
-import { getGiftDetail } from "@/features/gifts/queries";
+import { getGiftDetail, getGiftResponses } from "@/features/gifts/queries";
 import { getCurrentProfile } from "@/features/profile/queries";
 import { makeQr } from "@/lib/qr";
 import { getSiteOrigin, giftShareUrl } from "@/lib/site-url";
@@ -24,8 +24,9 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
   const t = await getTranslations("dashboard.gifts");
   const format = await getFormatter();
 
-  const [data, profile] = await Promise.all([getGiftDetail(giftId), getCurrentProfile()]);
+  const [data, profile, responses] = await Promise.all([getGiftDetail(giftId), getCurrentProfile(), getGiftResponses(giftId)]);
   if (!data) notFound();
+  const hasQuestions = data.sections.some((s) => s.type === "question");
 
   const { gift, recipient, events } = data;
   const opened = Boolean(recipient?.first_opened_at);
@@ -88,6 +89,36 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
               )}
             </CardContent>
           </Card>
+
+          {(hasQuestions || responses.length > 0) && (
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("responses.title", { count: responses.length })}</CardTitle>
+                <CardDescription>{responses.length === 0 ? t("responses.empty") : t("responses.description")}</CardDescription>
+              </CardHeader>
+              {responses.length > 0 && (
+                <CardContent>
+                  <ul className="flex flex-col gap-3">
+                    {responses.map((r) => (
+                      <li key={r.id} className="rounded-xl border border-border p-4">
+                        <p className="mb-2 text-xs text-muted-foreground">
+                          {format.dateTime(new Date(r.createdAt), { dateStyle: "medium", timeStyle: "short" })}
+                        </p>
+                        <dl className="flex flex-col gap-2">
+                          {r.answers.map((a, i) => (
+                            <div key={i}>
+                              <dt className="text-xs font-semibold text-muted-foreground">{a.prompt}</dt>
+                              <dd className="text-sm whitespace-pre-line">{a.value}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              )}
+            </Card>
+          )}
 
           <Card>
             <CardHeader>

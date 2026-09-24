@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Star } from "lucide-react";
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Logo } from "@/components/brand/logo";
@@ -6,24 +6,31 @@ import { LocaleToggle } from "@/components/settings/locale-toggle";
 import { ThemeToggle } from "@/components/settings/theme-toggle";
 import { TemplateGrid } from "@/components/templates/template-grid";
 import { Button } from "@/components/ui/button";
+import { Chip } from "@/components/ui/chip";
 import { createGiftFromTemplate } from "@/features/gifts/actions";
 import { loadTemplateCards } from "@/features/gifts/template-cards";
 import { isAvailableTemplate } from "@/features/gifts/templates";
+import { getCurrentProfile } from "@/features/profile/queries";
 
-const ERRORS = ["template", "premium", "unknown"] as const;
+const ERRORS = ["template", "premium", "points", "unknown"] as const;
 
 export default async function CreatePage({ searchParams }: PageProps<"/create">) {
   const params = await searchParams;
+  const requested = typeof params.template === "string" ? params.template : undefined;
+  const error = ERRORS.find((e) => e === params.error);
 
-  // Deep link from the public library: start the gift right away.
-  if (typeof params.template === "string" && isAvailableTemplate(params.template)) {
-    await createGiftFromTemplate(params.template);
+  // Deep link from the public library: start the gift right away. A premium
+  // template that is not unlocked comes back here with error=premium.
+  if (requested && isAvailableTemplate(requested) && !error) {
+    await createGiftFromTemplate(requested);
   }
 
   const t = await getTranslations("create");
   const locale = await getLocale();
-  const error = ERRORS.find((e) => e === params.error);
-  const { templates, categories } = await loadTemplateCards(locale === "my" ? "my" : "en");
+  const [{ templates, categories }, profile] = await Promise.all([
+    loadTemplateCards(locale === "my" ? "my" : "en"),
+    getCurrentProfile(),
+  ]);
 
   return (
     <main className="flex flex-1 flex-col">
@@ -37,6 +44,10 @@ export default async function CreatePage({ searchParams }: PageProps<"/create">)
           <Logo />
         </div>
         <div className="flex items-center gap-1.5">
+          <Chip tone="brand">
+            <Star className="size-3" />
+            {profile.points_balance}
+          </Chip>
           <LocaleToggle />
           <ThemeToggle />
         </div>
@@ -54,7 +65,13 @@ export default async function CreatePage({ searchParams }: PageProps<"/create">)
           </p>
         )}
 
-        <TemplateGrid templates={templates} categories={categories} mode="create" />
+        <TemplateGrid
+          templates={templates}
+          categories={categories}
+          mode="create"
+          pointsBalance={profile.points_balance}
+          highlightSlug={error === "premium" ? requested : undefined}
+        />
       </div>
     </main>
   );

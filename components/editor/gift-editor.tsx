@@ -37,11 +37,26 @@ type Props = {
   publishError?: boolean;
 };
 
-const SECTION_TYPES: EditableSectionType[] = ["text", "message", "image", "photo_grid", "timeline", "quote", "final_message"];
+const SECTION_TYPES: EditableSectionType[] = ["text", "message", "image", "photo_grid", "timeline", "quote", "question", "final_message"];
 
 function emptySection(type: EditableSectionType): Section {
   const id = crypto.randomUUID();
   switch (type) {
+    case "question":
+      return {
+        id,
+        type,
+        content: {
+          questionId: crypto.randomUUID(),
+          kind: "choice",
+          prompt: "",
+          required: false,
+          options: [
+            { id: crypto.randomUUID(), label: "" },
+            { id: crypto.randomUUID(), label: "" },
+          ],
+        },
+      };
     case "text":
       return { id, type, content: { heading: "", subheading: "" } };
     case "message":

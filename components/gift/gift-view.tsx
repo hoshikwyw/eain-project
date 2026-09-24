@@ -9,7 +9,12 @@ export function GiftView(props: Props) {
   return (
     <GiftRenderer
       {...props}
-      labels={{ forName: t("forName", { name: "{name}" }), forYou: t("forYou"), addPhoto: t("addPhoto") }}
+      labels={{
+        forName: t("forName", { name: "{name}" }),
+        forYou: t("forYou"),
+        addPhoto: t("addPhoto"),
+        questionNote: t("questionNote"),
+      }}
     />
   );
 }

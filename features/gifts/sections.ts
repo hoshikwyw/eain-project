@@ -48,6 +48,13 @@ export function pruneMediaReferences(sections: Section[], ownedIds: Set<string>)
   });
 }
 
+/** Question sections in order, with their position among all sections. */
+export function questionsFromSections(sections: Section[]) {
+  return sections
+    .map((s, position) => (s.type === "question" ? { position, ...s.content } : null))
+    .filter((q): q is NonNullable<typeof q> => q !== null);
+}
+
 /** Plain-text heading for previews and titles. */
 export function firstHeading(sections: Section[]): string {
   const cover = sections.find((s) => s.type === "text");

@@ -88,13 +88,15 @@
     "free": "Free",
     "useTemplate": "Use this template",
     "comingSoon": "Coming soon",
-    "premiumSoon": "Unlock with points soon",
+    "unlockFor": "Unlock for {points} points",
+    "needMorePoints": "Need {points} more points",
     "searchPlaceholder": "Search templates",
     "allCategories": "All",
     "noResults": "No templates match. Try another word or category.",
     "errors": {
       "template": "That template is not available yet.",
-      "premium": "Premium templates unlock with points in a later part.",
+      "premium": "This is a premium template. Unlock it with points to use it.",
+      "points": "Not enough points for that template yet.",
       "unknown": "Could not create the gift. Please try again."
     }
   },
@@ -119,6 +121,7 @@
       "photo_grid": "Photo grid",
       "timeline": "Timeline",
       "quote": "Quote",
+      "question": "Question",
       "final_message": "Closing"
     },
     "addSection": "Add a section",
@@ -141,7 +144,24 @@
       "attribution": "Who said it",
       "closingLine": "Closing line",
       "signature": "Signed as",
-      "signatureHint": "Leave empty to use your name."
+      "signatureHint": "Leave empty to use your name.",
+      "prompt": "Your question",
+      "promptPlaceholder": "What is your favourite memory of us?",
+      "answerType": "Answer type",
+      "kinds": {
+        "choice": "Multiple choice",
+        "yes_no": "Yes or no",
+        "short_text": "Short text",
+        "reaction": "Reaction",
+        "rating": "Rating 1 to 5"
+      },
+      "options": "Options",
+      "optionLabel": "Option {n}",
+      "addOption": "Add option",
+      "removeOption": "Remove option",
+      "yes": "Yes",
+      "no": "No",
+      "required": "They must answer this one"
     },
     "photos": {
       "upload": "Add photo",
@@ -183,6 +203,20 @@
     "forName": "For {name}",
     "forYou": "For you",
     "addPhoto": "Add a photo",
+    "questionNote": "They will be asked",
+    "response": {
+      "title": "Send a reply",
+      "subtitle": "Your answer goes only to the person who made this.",
+      "textPlaceholder": "Write a few words",
+      "send": "Send your reply",
+      "sending": "Sending",
+      "invalid": "Please answer the questions marked with a star.",
+      "error": "Could not send. Please try again.",
+      "sentTitle": "Your reply has been sent.",
+      "sentText": "Thank you. They will see it on their side.",
+      "alreadyText": "You have already replied from this device.",
+      "privacy": "No account needed. Only the sender sees your reply."
+    },
     "madeWith": "Made with Eain",
     "makeYourOwn": "Make your own gift",
     "unavailableTitle": "This gift is not available",
@@ -267,6 +301,11 @@
       "deleteConfirm": "Delete this gift? Its link will stop working right away.",
       "duplicate": "Duplicate",
       "duplicateFailed": "Could not duplicate the gift. Please try again.",
+      "responses": {
+        "title": "Responses ({count})",
+        "empty": "No replies yet. They appear here as soon as someone answers.",
+        "description": "Only you can see these."
+      },
       "status": {
         "draft": "Draft",
         "published": "Published",

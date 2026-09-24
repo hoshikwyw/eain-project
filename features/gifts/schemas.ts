@@ -53,8 +53,33 @@ export const finalMessageContentSchema = z.object({
   signature: shortText(80).default(""),
 });
 
+export const questionKindSchema = z.enum(["choice", "yes_no", "short_text", "reaction", "rating"]);
+export type QuestionKind = z.infer<typeof questionKindSchema>;
+export const QUESTION_KINDS = questionKindSchema.options;
+
+export const questionOptionSchema = z.object({
+  id: z.uuid(),
+  label: z.string().trim().min(1).max(120),
+});
+
+/**
+ * A question lives in a section for editing and ordering, and is mirrored
+ * into gift_questions on save so answers can reference stable ids.
+ */
+export const questionContentSchema = z.object({
+  questionId: z.uuid(),
+  kind: questionKindSchema,
+  prompt: z.string().trim().min(1).max(300),
+  required: z.boolean().default(false),
+  options: z.array(questionOptionSchema).max(6).default([]),
+});
+
+/** Fixed reaction set. Stored as options so answers stay plain rows. */
+export const REACTIONS = ["❤️", "😊", "🥹", "🎉", "😂"] as const;
+
 /** A section as the editor and renderer see it. `id` is a client-side key. */
 export const sectionSchema = z.discriminatedUnion("type", [
+  z.object({ id: z.string().max(40), type: z.literal("question"), content: questionContentSchema }),
   z.object({ id: z.string().max(40), type: z.literal("text"), content: coverContentSchema }),
   z.object({ id: z.string().max(40), type: z.literal("message"), content: messageContentSchema }),
   z.object({ id: z.string().max(40), type: z.literal("image"), content: imageContentSchema }),
@@ -91,8 +116,30 @@ export type MediaItem = {
 export const sessionIdSchema = z.string().regex(/^[A-Za-z0-9_-]{8,64}$/);
 
 export const receiverEventSchema = z.object({
-  type: z.enum(["opened", "viewed"]),
+  type: z.enum(["opened", "viewed", "response_started"]),
   sessionId: sessionIdSchema,
 });
+
+/** What the receiver page shows and submits. Never includes creator data. */
+export type PublicQuestion = {
+  id: string;
+  kind: QuestionKind;
+  prompt: string;
+  required: boolean;
+  options: { id: string; label: string }[];
+};
+
+export const answerSchema = z.object({
+  questionId: z.uuid(),
+  optionId: z.uuid().nullable().optional(),
+  text: z.string().trim().max(1000).nullable().optional(),
+  number: z.number().int().min(0).max(10).nullable().optional(),
+});
+
+export const responseSubmissionSchema = z.object({
+  sessionId: sessionIdSchema,
+  answers: z.array(answerSchema).min(1).max(20),
+});
+export type ResponseSubmission = z.infer<typeof responseSubmissionSchema>;
 
 export type SaveGiftState = { status?: "saved" | "invalid" | "error" };
