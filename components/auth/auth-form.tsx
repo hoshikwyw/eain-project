@@ -14,6 +14,8 @@ type Props = {
   next: string;
   notice?: string;
   configured: boolean;
+  /** Google provider is enabled in Supabase Auth. Hidden otherwise so no button is dead. */
+  googleEnabled: boolean;
 };
 
 const initialState: AuthFormState = {};
@@ -25,7 +27,7 @@ function asNotice(value: string | undefined): Notice | undefined {
   return NOTICES.find((n) => n === value);
 }
 
-export function AuthForm({ mode, next, notice, configured }: Props) {
+export function AuthForm({ mode, next, notice, configured, googleEnabled }: Props) {
   const t = useTranslations("auth");
   const action = mode === "login" ? signIn : signUp;
   const [state, formAction, pending] = useActionState(action, initialState);
@@ -35,19 +37,23 @@ export function AuthForm({ mode, next, notice, configured }: Props) {
 
   return (
     <div className="flex flex-col gap-5">
-      <form action={signInWithGoogle}>
-        <input type="hidden" name="next" value={next} />
-        <Button type="submit" variant="secondary" className="w-full" disabled={!configured}>
-          <GoogleMark />
-          {t("continueWithGoogle")}
-        </Button>
-      </form>
+      {googleEnabled && (
+        <>
+          <form action={signInWithGoogle}>
+            <input type="hidden" name="next" value={next} />
+            <Button type="submit" variant="secondary" className="w-full" disabled={!configured}>
+              <GoogleMark />
+              {t("continueWithGoogle")}
+            </Button>
+          </form>
 
-      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-        <span className="h-px flex-1 bg-border" />
-        {t("or")}
-        <span className="h-px flex-1 bg-border" />
-      </div>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />
+            {t("or")}
+            <span className="h-px flex-1 bg-border" />
+          </div>
+        </>
+      )}
 
       <form action={formAction} className="flex flex-col gap-4" noValidate>
         <input type="hidden" name="next" value={next} />

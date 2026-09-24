@@ -69,9 +69,17 @@ A second Supabase project for production can be created later with the same step
 
 ## Part B: Google sign-in (optional but recommended)
 
-1. In Google Cloud Console create a project and an OAuth 2.0 Client ID of type Web application.
-2. Authorized redirect URI: the callback URL shown in Supabase under Authentication, Providers, Google. It looks like `https://xxxx.supabase.co/auth/v1/callback`.
-3. Paste the Client ID and Client Secret into that Supabase Google provider screen and enable it.
+The app already contains the button and the callback route. The login page shows the Google button only once Supabase reports the provider as enabled.
+
+1. Google Cloud Console (console.cloud.google.com): create a project, then APIs & Services, then OAuth consent screen. Choose External, fill app name "Eain", your support email and developer email. Add test users while the app is in testing mode, or publish it.
+2. APIs & Services, then Credentials, then Create credentials, then OAuth client ID, type Web application.
+   - Authorized JavaScript origins: `http://localhost:5173` (add the Vercel URL later).
+   - Authorized redirect URI: `https://<project-ref>.supabase.co/auth/v1/callback`. The exact value is shown in Supabase under Authentication, Sign In / Providers, Google.
+3. Copy the Client ID and Client secret into that Supabase Google provider screen and turn the provider on.
+4. Supabase, Authentication, URL Configuration: Site URL `http://localhost:5173`, and Redirect URLs must include `http://localhost:5173/auth/callback`. Without this, Supabase sends users back to the wrong address after Google.
+5. Reload the login page. The Google button appears within five minutes, or immediately after restarting `pnpm dev`.
+
+A Google sign-up creates the profile through the same trigger as email sign-up, using the Google name and picture, and grants the welcome points.
 
 Facebook sign-in is deferred. It needs Meta business verification.
 

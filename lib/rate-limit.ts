@@ -8,8 +8,13 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * daily, so nothing stored can be traced back to a visitor later.
  */
 export function clientKey(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  const ip = forwarded?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
+  return clientKeyFromHeaders(request.headers);
+}
+
+/** Same key derivation for Server Actions, which see headers() but no Request. */
+export function clientKeyFromHeaders(headers: Headers): string {
+  const forwarded = headers.get("x-forwarded-for");
+  const ip = forwarded?.split(",")[0]?.trim() || headers.get("x-real-ip") || "unknown";
   const day = new Date().toISOString().slice(0, 10);
   const salt = process.env.SUPABASE_SERVICE_ROLE_KEY?.slice(-16) ?? "eain";
   return createHash("sha256").update(`${ip}|${day}|${salt}`).digest("base64url").slice(0, 32);

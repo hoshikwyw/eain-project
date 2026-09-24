@@ -71,6 +71,7 @@ export default async function CreatePage({ searchParams }: PageProps<"/create">)
           mode="create"
           pointsBalance={profile.points_balance}
           highlightSlug={error === "premium" ? requested : undefined}
+          locale={locale === "my" ? "my" : "en"}
         />
       </div>
     </main>

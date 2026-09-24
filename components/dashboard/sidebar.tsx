@@ -1,5 +1,6 @@
 "use client";
 
+import { ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -13,9 +14,10 @@ type Props = {
   email: string;
   pointsBalance: number;
   unreadCount: number;
+  isAdmin?: boolean;
 };
 
-export function Sidebar({ displayName, email, pointsBalance, unreadCount }: Props) {
+export function Sidebar({ displayName, email, pointsBalance, unreadCount, isAdmin }: Props) {
   const pathname = usePathname();
   const t = useTranslations("dashboard.nav");
 
@@ -47,6 +49,15 @@ export function Sidebar({ displayName, email, pointsBalance, unreadCount }: Prop
             </Link>
           );
         })}
+        {isAdmin && (
+          <Link
+            href="/admin"
+            className="mt-2 flex items-center gap-3 rounded-xl border border-dashed border-border px-3 py-2.5 text-sm font-semibold text-muted-foreground hover:bg-secondary hover:text-foreground"
+          >
+            <ShieldCheck className="size-4.5" />
+            {t("admin")}
+          </Link>
+        )}
       </nav>
 
       <div className="mt-4 flex items-center gap-3 rounded-xl border border-border p-3">

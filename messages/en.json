@@ -219,6 +219,7 @@
     },
     "madeWith": "Made with Eain",
     "makeYourOwn": "Make your own gift",
+    "reportThis": "Report this gift",
     "unavailableTitle": "This gift is not available",
     "unavailableText": "The link may be incomplete, or the sender may have taken the gift down.",
     "goHome": "Go to Eain"
@@ -232,6 +233,154 @@
     "anyoneWithLink": "Anyone with this link can open the gift. Share it only with the person it is for.",
     "qrAlt": "QR code for the gift link",
     "downloadQr": "Download QR"
+  },
+  "report": {
+    "title": "Report this gift",
+    "subtitle": "Tell us what is wrong. We review every report.",
+    "back": "Back to gift",
+    "reason": "What is the problem?",
+    "reasons": {
+      "harassment": "Harassment or bullying",
+      "spam": "Spam",
+      "scam": "Scam or fraud",
+      "inappropriate": "Inappropriate content",
+      "copyright": "Copyright violation",
+      "malicious_link": "Malicious or dangerous link",
+      "other": "Something else"
+    },
+    "details": "Details (optional)",
+    "detailsPlaceholder": "Anything that helps us understand",
+    "send": "Send report",
+    "sending": "Sending",
+    "sentTitle": "Thank you.",
+    "sentText": "We received your report and will look at it.",
+    "privacy": "We store only your reason and the text above. No account needed.",
+    "errors": {
+      "invalid": "Please choose a reason.",
+      "rate-limited": "Too many reports from this device. Please try again later.",
+      "not-found": "This gift link is not valid.",
+      "error": "Could not send. Please try again."
+    }
+  },
+  "admin": {
+    "badge": "Admin",
+    "backToDashboard": "Dashboard",
+    "nav": {
+      "overview": "Overview",
+      "users": "Users",
+      "templates": "Templates",
+      "reports": "Reports",
+      "points": "Points",
+      "payments": "Payments",
+      "audit": "Audit log"
+    },
+    "flash": {
+      "ok": {
+        "role": "Role updated.",
+        "points": "Points adjusted.",
+        "template": "Template saved.",
+        "report": "Report updated.",
+        "disabled": "Gift taken offline and the owner notified."
+      },
+      "error": {
+        "invalid": "Please check the form.",
+        "failed": "That did not work. Please try again.",
+        "ownRole": "You cannot change your own role.",
+        "insufficient": "That user does not have enough points to remove."
+      }
+    },
+    "overview": {
+      "title": "Platform overview",
+      "subtitle": "Counts across all users. Nothing here shows private gift content.",
+      "users": "Users",
+      "gifts": "Gifts",
+      "published": "Published",
+      "opened": "Opened gifts",
+      "responses": "Responses",
+      "publishedWeek": "Published, last 7 days",
+      "points": "Points in circulation",
+      "photos": "Photos stored",
+      "openReports": "{count} open reports",
+      "reportsHint": "Reports from receivers about gift content.",
+      "review": "Review",
+      "usageTitle": "Free-tier usage",
+      "usageHint": "Storage and egress are the first limits to reach.",
+      "usage": {
+        "storage": "Photo storage (1 GB free)",
+        "database": "Database size (500 MB free)",
+        "supabase": "Supabase usage page",
+        "vercel": "Vercel usage page",
+        "note": "Egress, function and build usage are only visible on the provider pages."
+      }
+    },
+    "users": {
+      "subtitle": "Search, change roles and correct points. Every action is logged.",
+      "search": "Search by name",
+      "unnamed": "Unnamed",
+      "roles": { "user": "User", "admin": "Admin" },
+      "reason": "Reason",
+      "adjust": "Adjust points",
+      "role": "Role",
+      "setRole": "Set role",
+      "empty": "No users match."
+    },
+    "templates": {
+      "subtitle": "Turn templates on or off, feature them, and set point prices.",
+      "active": "Active",
+      "featured": "Featured",
+      "premium": "Premium",
+      "price": "Point price",
+      "save": "Save",
+      "noLayout": "No layout in code",
+      "note": "A template needs a layout in the code before users can create from it."
+    },
+    "reports": {
+      "subtitle": "Reports from receivers. View the gift, then resolve or take it offline.",
+      "open": "Open",
+      "all": "All",
+      "empty": "No reports. That is good news.",
+      "giftGone": "Gift no longer exists",
+      "viewGift": "View gift",
+      "markReviewing": "Mark reviewing",
+      "resolve": "Resolve",
+      "dismiss": "Dismiss",
+      "status": { "open": "Open", "reviewing": "Reviewing", "resolved": "Resolved", "dismissed": "Dismissed" },
+      "giftStatus": { "draft": "draft", "published": "live", "unpublished": "offline", "deleted": "deleted" },
+      "reasons": {
+        "harassment": "Harassment",
+        "spam": "Spam",
+        "scam": "Scam",
+        "inappropriate": "Inappropriate",
+        "copyright": "Copyright",
+        "malicious_link": "Malicious link",
+        "other": "Other"
+      }
+    },
+    "gift": {
+      "by": "By {name}",
+      "backToReports": "Reports",
+      "reports": "Reports ({count})",
+      "noReports": "No reports on this gift.",
+      "actions": "Actions",
+      "disableHint": "Taking a gift offline keeps the owner's content but stops the link. The owner is notified with your reason.",
+      "reasonPlaceholder": "Reason shown to the owner",
+      "disable": "Take offline",
+      "disableConfirm": "Take this gift offline? The link will stop working and the owner will be notified.",
+      "notLive": "This gift is not live right now."
+    },
+    "points": {
+      "subtitle": "The last 100 ledger entries across all users.",
+      "empty": "No transactions yet."
+    },
+    "payments": {
+      "subtitle": "Real payments are switched off for the first launch.",
+      "off": "Payments are in test mode. Points are earned and granted, never bought. This page will list verified payments once a Myanmar payment provider is connected.",
+      "empty": "No payments."
+    },
+    "audit": {
+      "subtitle": "Every admin action, newest first.",
+      "empty": "No admin actions yet."
+    }
   },
   "templatesPage": {
     "title": "Templates",
@@ -325,6 +474,7 @@
       "titles": {
         "giftOpened": "Your gift \"{giftTitle}\" was opened.",
         "responseReceived": "You received a response to \"{giftTitle}\".",
+        "giftDisabled": "Your gift \"{giftTitle}\" was taken offline by Eain after a report.",
         "generic": "You have a new notification."
       }
     },
@@ -335,7 +485,8 @@
       "points": "Points",
       "notifications": "Notifications",
       "settings": "Settings",
-      "create": "Create"
+      "create": "Create",
+      "admin": "Admin"
     },
     "stats": {
       "giftsCreated": "Gifts Created",

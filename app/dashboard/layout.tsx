@@ -23,6 +23,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
         email={userData.user?.email ?? ""}
         pointsBalance={profile.points_balance}
         unreadCount={unreadCount}
+        isAdmin={profile.role === "admin"}
       />
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex h-14 items-center justify-end gap-1.5 border-b border-border px-4 md:h-16">

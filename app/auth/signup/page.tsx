@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { AuthForm } from "@/components/auth/auth-form";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { getAuthProviders } from "@/lib/auth/providers";
 import { isSupabaseConfigured } from "@/lib/env";
 import { safeNextPath } from "@/lib/auth/paths";
 
@@ -14,10 +15,11 @@ export default async function SignupPage({ searchParams }: PageProps<"/auth/sign
   const t = await getTranslations("auth");
   const params = await searchParams;
   const next = safeNextPath(typeof params.next === "string" ? params.next : null);
+  const providers = await getAuthProviders();
 
   return (
     <AuthShell title={t("createAccount")} subtitle={t("signupSubtitle")}>
-      <AuthForm mode="signup" next={next} configured={isSupabaseConfigured()} />
+      <AuthForm mode="signup" next={next} configured={isSupabaseConfigured()} googleEnabled={providers.google} />
     </AuthShell>
   );
 }

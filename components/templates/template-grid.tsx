@@ -4,7 +4,6 @@ import { Lock, Search } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
-import { palettes } from "@/components/gift/palettes";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
@@ -12,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { createGift } from "@/features/gifts/actions";
 import type { ThemeVariant } from "@/features/gifts/schemas";
 import { unlockTemplate } from "@/features/points/actions";
+import { TemplatePreview } from "./template-preview";
 
 export type TemplateCard = {
   id: string;
@@ -38,10 +38,12 @@ type Props = {
   pointsBalance?: number | null;
   /** Slug to scroll to and highlight, e.g. after a premium redirect. */
   highlightSlug?: string;
+  /** Language for the preview's starting text. */
+  locale: "en" | "my";
 };
 
 /** Template library with category chips and search. Filtering is client-side; the list is small. */
-export function TemplateGrid({ templates, categories, mode, pointsBalance = null, highlightSlug }: Props) {
+export function TemplateGrid({ templates, categories, mode, pointsBalance = null, highlightSlug, locale }: Props) {
   const t = useTranslations("create");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
@@ -103,12 +105,7 @@ export function TemplateGrid({ templates, categories, mode, pointsBalance = null
               }
             >
               <CardContent className="flex h-full flex-col gap-4 p-5">
-                <div
-                  style={palettes[template.variant]}
-                  className="flex aspect-[4/3] items-end rounded-xl p-4 text-[color:var(--t-fg)] [background:var(--t-bg)]"
-                >
-                  <span className="font-display text-xl font-semibold">{template.name}</span>
-                </div>
+                <TemplatePreview slug={template.slug} variant={template.variant} locale={locale} name={template.name} />
                 <div className="flex flex-1 flex-col gap-2">
                   <div className="flex flex-wrap items-center gap-2">
                     <h2 className="font-semibold">{template.name}</h2>

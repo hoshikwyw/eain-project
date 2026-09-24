@@ -106,6 +106,9 @@ export function GiftReveal({ token, questions, children }: Props) {
         <Button asChild variant="soft" size="sm">
           <Link href="/create">{t("makeYourOwn")}</Link>
         </Button>
+        <Link href={`/g/${token}/report`} className="mt-2 text-xs text-muted-foreground underline-offset-4 hover:underline">
+          {t("reportThis")}
+        </Link>
       </div>
     </div>
   );

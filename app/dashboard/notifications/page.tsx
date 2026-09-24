@@ -8,7 +8,7 @@ import { markAllNotificationsRead } from "@/features/notifications/actions";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
-const KNOWN_TITLES = ["giftOpened", "responseReceived"] as const;
+const KNOWN_TITLES = ["giftOpened", "responseReceived", "giftDisabled"] as const;
 
 export default async function NotificationsPage() {
   const t = await getTranslations("dashboard");
@@ -47,7 +47,7 @@ export default async function NotificationsPage() {
         <ul className="flex flex-col gap-2">
           {items.map((n) => {
             const key = KNOWN_TITLES.find((k) => k === n.title_key) ?? "generic";
-            const payload = (n.payload ?? {}) as { giftTitle?: string };
+            const payload = (n.payload ?? {}) as { giftTitle?: string; reason?: string };
             const inner = (
               <Card className={cn(!n.read_at && "border-primary/40")}>
                 <CardContent className="flex items-start gap-3 p-4">
@@ -58,6 +58,7 @@ export default async function NotificationsPage() {
                     <p className={cn("text-sm", !n.read_at && "font-semibold")}>
                       {t(`notifications.titles.${key}`, { giftTitle: payload.giftTitle ?? "" })}
                     </p>
+                    {payload.reason && <p className="text-sm text-muted-foreground">{payload.reason}</p>}
                     <p className="text-xs text-muted-foreground">{format.relativeTime(new Date(n.created_at))}</p>
                   </div>
                   {!n.read_at && <span className="mt-1.5 size-2 rounded-full bg-brand" aria-hidden="true" />}

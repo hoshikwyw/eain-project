@@ -12,7 +12,8 @@
     "test:rls": "node --test --env-file=.env.local supabase/tests/rls.test.mts",
     "test:core": "node --test --env-file=.env.local supabase/tests/core-loop.test.mts",
     "test:media": "node --test --env-file=.env.local supabase/tests/media.test.mts",
-    "test:responses": "node --test --env-file=.env.local supabase/tests/responses.test.mts"
+    "test:responses": "node --test --env-file=.env.local supabase/tests/responses.test.mts",
+    "test:admin": "node --test --env-file=.env.local supabase/tests/admin.test.mts"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.3.3",

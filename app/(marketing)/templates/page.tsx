@@ -24,7 +24,7 @@ export default async function TemplatesPage() {
         <h1 className="font-display text-4xl font-semibold">{t("title")}</h1>
         <p className="mt-2 text-lg text-muted-foreground">{t("subtitle")}</p>
       </div>
-      <TemplateGrid templates={templates} categories={categories} mode="browse" />
+      <TemplateGrid templates={templates} categories={categories} mode="browse" locale={locale === "my" ? "my" : "en"} />
     </div>
   );
 }

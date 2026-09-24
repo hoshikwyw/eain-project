@@ -169,6 +169,46 @@ export interface TemplateUnlock extends Record<string, unknown> {
   created_at: string;
 }
 
+export type ReportReason = "harassment" | "spam" | "scam" | "inappropriate" | "copyright" | "malicious_link" | "other";
+export type ReportStatus = "open" | "reviewing" | "resolved" | "dismissed";
+
+export interface Report extends Record<string, unknown> {
+  id: string;
+  gift_id: string;
+  reporter_id: string | null;
+  reason: ReportReason;
+  details: string;
+  status: ReportStatus;
+  resolved_by: string | null;
+  resolved_at: string | null;
+  created_at: string;
+}
+
+export interface AdminAuditLog extends Record<string, unknown> {
+  id: string;
+  admin_id: string;
+  action: string;
+  target_type: string;
+  target_id: string | null;
+  details: Json;
+  created_at: string;
+}
+
+export type PaymentStatus = "pending" | "verified" | "failed" | "refunded";
+
+export interface Payment extends Record<string, unknown> {
+  id: string;
+  user_id: string;
+  provider: string;
+  provider_reference: string;
+  amount_mmk: number;
+  points: number;
+  status: PaymentStatus;
+  point_transaction_id: string | null;
+  created_at: string;
+  verified_at: string | null;
+}
+
 export interface GiftResponse extends Record<string, unknown> {
   id: string;
   gift_id: string;
@@ -263,6 +303,13 @@ export interface Database {
         Partial<Pick<GiftQuestionOption, "label" | "position">>
       >;
       gift_answers: Table<GiftAnswer, ReadOnly, ReadOnly>;
+      reports: Table<
+        Report,
+        Pick<Report, "gift_id" | "reason"> & Partial<Pick<Report, "reporter_id" | "details">>,
+        Partial<Pick<Report, "status" | "resolved_by" | "resolved_at">>
+      >;
+      admin_audit_logs: Table<AdminAuditLog, ReadOnly, ReadOnly>;
+      payments: Table<Payment, ReadOnly, ReadOnly>;
       template_unlocks: Table<TemplateUnlock, ReadOnly, ReadOnly>;
       gift_events: Table<GiftEvent, ReadOnly, ReadOnly>;
       gift_responses: Table<GiftResponse, ReadOnly, ReadOnly>;
@@ -287,6 +334,28 @@ export interface Database {
         Returns: string;
       };
       unlock_template: { Args: { p_template_id: string }; Returns: TemplateUnlock };
+      admin_log: {
+        Args: { p_action: string; p_target_type: string; p_target_id: string; p_details?: Json };
+        Returns: undefined;
+      };
+      admin_disable_gift: { Args: { p_gift_id: string; p_reason: string }; Returns: undefined };
+      admin_resolve_report: { Args: { p_report_id: string; p_status: ReportStatus }; Returns: undefined };
+      admin_set_role: { Args: { p_user_id: string; p_role: UserRole }; Returns: undefined };
+      admin_adjust_points: {
+        Args: { p_user_id: string; p_amount: number; p_description: string };
+        Returns: PointTransaction;
+      };
+      admin_update_template: {
+        Args: {
+          p_template_id: string;
+          p_is_active: boolean;
+          p_is_featured: boolean;
+          p_is_premium: boolean;
+          p_point_price: number;
+        };
+        Returns: undefined;
+      };
+      admin_stats: { Args: Record<string, never>; Returns: Json };
       check_rate_limit: {
         Args: { p_key: string; p_limit: number; p_window_seconds: number };
         Returns: boolean;
@@ -298,6 +367,8 @@ export interface Database {
       gift_type: GiftType;
       section_type: SectionType;
       question_type: QuestionType;
+      report_reason: ReportReason;
+      report_status: ReportStatus;
       gift_event_type: GiftEventType;
       point_transaction_type: PointTransactionType;
       notification_type: NotificationType;
