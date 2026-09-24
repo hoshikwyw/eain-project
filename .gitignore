@@ -48,3 +48,10 @@ next-env.d.ts
 
 # supabase cli scratch
 /supabase/.temp/
+
+# raw brand exports are processed by scripts/process-brand-images.mjs; keep only outputs
+/public/brand/couple.png
+/public/brand/female.png
+/public/brand/male.png
+/public/brand/eain-mainLogo2.png
+/public/brand/eain-appIcon.png

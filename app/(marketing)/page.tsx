@@ -48,7 +48,7 @@ export default function HomePage() {
             <p className="text-sm text-muted-foreground">{t("hero.note")}</p>
           </div>
           <div className="mx-auto w-full max-w-md">
-            <Lovebirds />
+            <Lovebirds eager />
           </div>
         </div>
       </section>
