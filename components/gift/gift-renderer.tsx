@@ -1,5 +1,4 @@
 import { ImagePlus, MessageCircleQuestion } from "lucide-react";
-import { Lovebirds } from "@/components/brand/lovebirds";
 import type { MediaItem, Section, ThemeVariant } from "@/features/gifts/schemas";
 import type { Decoration, TemplateStyle } from "@/features/gifts/templates";
 import { cn } from "@/lib/utils";
@@ -83,9 +82,7 @@ export function GiftRenderer({
             </div>
           ))}
         </div>
-        <div className={cn("relative mx-auto pt-4", compact ? "max-w-44" : "max-w-64")}>
-          <Lovebirds />
-        </div>
+        <Illustration src={style.illustration} className={cn("relative mx-auto pt-4", compact ? "max-w-60" : "max-w-96")} />
       </div>
     );
   }
@@ -101,11 +98,19 @@ export function GiftRenderer({
       >
         <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[color:var(--t-muted)]">{eyebrow}</p>
         {body}
-        <div className={cn("mx-auto w-full", compact ? "max-w-52" : "max-w-72")}>
-          <Lovebirds />
-        </div>
+        <Illustration src={style.illustration} className={cn("mx-auto w-full", compact ? "max-w-64" : "max-w-md")} />
       </div>
     </article>
+  );
+}
+
+/** The template's composed scene. A static asset, so the image optimiser is bypassed on purpose. */
+function Illustration({ src, className }: { src: string; className?: string }) {
+  return (
+    <div className={className}>
+      {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset */}
+      <img src={src} alt="" width={1200} height={800} loading="lazy" decoding="async" className="float-slow h-auto w-full select-none" draggable={false} />
+    </div>
   );
 }
 

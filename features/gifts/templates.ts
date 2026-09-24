@@ -15,11 +15,15 @@ export type TemplateStyle = {
   decoration: Decoration;
   layout: Layout;
   defaultVariant: ThemeVariant;
+  /** Composed scene for this template, from scripts/compose-illustrations.mjs. */
+  illustration: string;
 };
+
+const illustrationFor = (slug: string) => `/brand/illustrations/${slug}.webp`;
 
 type Locale = "en" | "my";
 
-export type TemplateDefinition = TemplateStyle & {
+export type TemplateDefinition = Omit<TemplateStyle, "illustration"> & {
   defaultSections: (locale: Locale) => Section[];
 };
 
@@ -169,11 +173,18 @@ export const templates: Record<string, TemplateDefinition> = {
   },
 };
 
-export const fallbackStyle: TemplateStyle = { decoration: "petals", layout: "card", defaultVariant: "blossom" };
+export const fallbackStyle: TemplateStyle = {
+  decoration: "petals",
+  layout: "card",
+  defaultVariant: "blossom",
+  illustration: "/brand/lovebirds.webp",
+};
 
 export function getTemplateStyle(slug: string): TemplateStyle {
   const t = templates[slug];
-  return t ? { decoration: t.decoration, layout: t.layout, defaultVariant: t.defaultVariant } : fallbackStyle;
+  return t
+    ? { decoration: t.decoration, layout: t.layout, defaultVariant: t.defaultVariant, illustration: illustrationFor(slug) }
+    : fallbackStyle;
 }
 
 export function isAvailableTemplate(slug: string): boolean {
