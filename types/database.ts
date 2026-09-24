@@ -186,7 +186,8 @@ export interface Report extends Record<string, unknown> {
 
 export interface AdminAuditLog extends Record<string, unknown> {
   id: string;
-  admin_id: string;
+  /** Null once the admin account has been deleted. */
+  admin_id: string | null;
   action: string;
   target_type: string;
   target_id: string | null;

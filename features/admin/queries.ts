@@ -86,10 +86,15 @@ export async function listAuditLogs() {
   const supabase = await createClient();
   const { data: logs } = await supabase.from("admin_audit_logs").select("*").order("created_at", { ascending: false }).limit(200);
   if (!logs || logs.length === 0) return [];
-  const adminIds = [...new Set(logs.map((l) => l.admin_id))];
-  const { data: profiles } = await supabase.from("profiles").select("id, display_name").in("id", adminIds);
+  const adminIds = [...new Set(logs.map((l) => l.admin_id).filter((id): id is string => Boolean(id)))];
+  const { data: profiles } = adminIds.length
+    ? await supabase.from("profiles").select("id, display_name").in("id", adminIds)
+    : { data: [] };
   const nameById = new Map((profiles ?? []).map((p) => [p.id, p.display_name]));
-  return logs.map((l) => ({ ...l, adminName: nameById.get(l.admin_id) ?? l.admin_id.slice(0, 8) }));
+  return logs.map((l) => ({
+    ...l,
+    adminName: l.admin_id ? (nameById.get(l.admin_id) ?? l.admin_id.slice(0, 8)) : "—",
+  }));
 }
 
 /** A gift for moderation preview. Admin read is allowed by the owner policies through is_admin(). */
