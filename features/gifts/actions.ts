@@ -266,6 +266,22 @@ export async function publishGift(giftId: string): Promise<void> {
   redirect(error ? `/create/${giftId}?error=publish` : `/dashboard/gifts/${giftId}?published=1`);
 }
 
+/**
+ * Saves the editor payload, then publishes. Returns the save state when the
+ * save fails so the editor keeps the user's unsaved content on screen.
+ */
+export async function saveAndPublishGift(giftId: string, formData: FormData): Promise<SaveGiftState | void> {
+  const result = await saveGift(giftId, {}, formData);
+  if (result.status !== "saved") return result;
+  await publishGift(giftId);
+}
+
+/** Records that the creator shared a published gift (copy link, share sheet, QR). */
+export async function markGiftShared(giftId: string): Promise<void> {
+  const supabase = await createClient();
+  await supabase.rpc("record_gift_shared", { p_gift_id: giftId });
+}
+
 export async function unpublishGift(giftId: string): Promise<void> {
   await rpcOnGift("unpublish_gift", giftId);
   redirect(`/dashboard/gifts/${giftId}`);

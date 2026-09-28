@@ -335,6 +335,7 @@ export interface Database {
         Returns: string;
       };
       unlock_template: { Args: { p_template_id: string }; Returns: TemplateUnlock };
+      record_gift_shared: { Args: { p_gift_id: string }; Returns: boolean };
       admin_log: {
         Args: { p_action: string; p_target_type: string; p_target_id: string; p_details?: Json };
         Returns: undefined;

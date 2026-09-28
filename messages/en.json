@@ -259,8 +259,10 @@
     "republish": "Update published gift",
     "publishHint": "Publishing creates a private link only people you share it with can open.",
     "publishedHint": "This gift is live. Saved changes appear for the receiver right away.",
-    "publishError": "Could not publish. Save your changes and try again.",
+    "publishError": "Could not publish. Please try again.",
     "saveFirst": "Save your changes before publishing.",
+    "publishSaves": "Publishing saves your latest changes first.",
+    "unsaved": "Unsaved changes",
     "manage": "Share and manage"
   },
   "gift": {
@@ -564,6 +566,40 @@
     "passwordHint": "At least 8 characters.",
     "noAccount": "New to Eain?",
     "haveAccount": "Already have an account?",
+    "forgotLink": "Forgot password?",
+    "forgot": {
+      "title": "Reset your password",
+      "subtitle": "Enter your email and we will send you a link to choose a new password.",
+      "email": "Email",
+      "send": "Send reset link",
+      "sending": "Sending",
+      "sentTitle": "Check your email",
+      "sentText": "If an account exists for that address, a reset link is on its way. It can take a few minutes.",
+      "sameDevice": "Open the link on this same device and browser.",
+      "backToLogin": "Back to log in",
+      "expired": "That reset link has expired or was opened on another device. Request a new one below.",
+      "errors": {
+        "invalid": "Please enter a valid email address.",
+        "rate-limited": "Too many requests from this device. Please try again in an hour.",
+        "notConfigured": "Accounts are not set up on this server yet."
+      }
+    },
+    "reset": {
+      "title": "Choose a new password",
+      "subtitle": "For {email}",
+      "password": "New password",
+      "confirm": "Confirm new password",
+      "hint": "At least 8 characters.",
+      "save": "Save new password",
+      "saving": "Saving",
+      "requestNew": "Request a new link",
+      "errors": {
+        "invalid": "Use at least 8 characters.",
+        "mismatch": "The two passwords do not match.",
+        "error": "Could not update the password. Please try again.",
+        "expired": "Your reset session has expired."
+      }
+    },
     "errors": {
       "invalid": "Please check your details and try again.",
       "credentials": "That email or password is not right.",
@@ -580,6 +616,7 @@
   },
   "dashboard": {
     "welcome": "Welcome back, {name}!",
+    "passwordUpdated": "Your password was changed.",
     "welcomeSubtitle": "Create, share and make someone's day extra special.",
     "createNewGift": "Create New Gift",
     "createFirstGift": "Create your first gift",
@@ -628,6 +665,7 @@
       "events": {
         "created": "Created",
         "published": "Published",
+        "shared": "Shared by you",
         "opened": "Opened",
         "viewed": "Viewed to the end",
         "responded": "Responded"

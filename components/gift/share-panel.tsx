@@ -5,18 +5,23 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { markGiftShared } from "@/features/gifts/actions";
 
-type Props = { url: string; qrSvg: string; qrPngDataUrl: string; title: string };
+type Props = { giftId: string; url: string; qrSvg: string; qrPngDataUrl: string; title: string };
 
-export function SharePanel({ url, qrSvg, qrPngDataUrl, title }: Props) {
+export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title }: Props) {
   const t = useTranslations("share");
   const [copied, setCopied] = useState(false);
   const canShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
+
+  // "Shared" in the timeline means the creator passed the link on. Recorded once per gift.
+  const recordShared = () => void markGiftShared(giftId).catch(() => undefined);
 
   async function copy() {
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
+      recordShared();
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
       // Clipboard blocked: the URL is visible in the input for manual copy.
@@ -26,6 +31,7 @@ export function SharePanel({ url, qrSvg, qrPngDataUrl, title }: Props) {
   async function share() {
     try {
       await navigator.share({ title, text: t("shareText"), url });
+      recordShared();
     } catch {
       // User cancelled or share is unsupported.
     }
@@ -61,7 +67,7 @@ export function SharePanel({ url, qrSvg, qrPngDataUrl, title }: Props) {
           dangerouslySetInnerHTML={{ __html: qrSvg }}
         />
         <Button asChild variant="secondary" size="sm">
-          <a href={qrPngDataUrl} download="eain-gift-qr.png">
+          <a href={qrPngDataUrl} download="eain-gift-qr.png" onClick={recordShared}>
             <Download />
             {t("downloadQr")}
           </a>

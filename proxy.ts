@@ -10,6 +10,7 @@ const AUTH_PAGES = ["/auth/login", "/auth/signup"];
  * - Keeps the Supabase session fresh.
  * - Sends signed-out visitors to login, remembering where they were going.
  * - Sends signed-in visitors away from the login and signup pages.
+ * - Sends visitors without a reset session from /auth/reset to /auth/forgot.
  * Authorization itself is enforced by RLS and server code, not here.
  */
 export async function proxy(request: NextRequest) {
@@ -32,9 +33,14 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(next, request.url));
   }
 
+  // The reset page only works with the session a reset link creates.
+  if (pathname === "/auth/reset" && !user) {
+    return NextResponse.redirect(new URL("/auth/forgot?notice=expired", request.url));
+  }
+
   return response;
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/create/:path*", "/admin/:path*", "/auth/login", "/auth/signup"],
+  matcher: ["/dashboard/:path*", "/create/:path*", "/admin/:path*", "/auth/login", "/auth/signup", "/auth/reset"],
 };

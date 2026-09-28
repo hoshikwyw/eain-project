@@ -10,7 +10,8 @@ import { GiftStatusChip } from "@/components/gift/gift-status-chip";
 import { listMyGifts } from "@/features/gifts/queries";
 import { getCurrentProfile, getDashboardStats } from "@/features/profile/queries";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: PageProps<"/dashboard">) {
+  const notice = (await searchParams).notice;
   const t = await getTranslations("dashboard");
   const profile = await getCurrentProfile();
   const [stats, gifts] = await Promise.all([getDashboardStats(profile.id), listMyGifts()]);
@@ -18,6 +19,11 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      {notice === "passwordUpdated" && (
+        <p role="status" className="rounded-xl bg-success-soft px-3.5 py-2.5 text-sm text-success">
+          {t("passwordUpdated")}
+        </p>
+      )}
       <PageHeader
         title={t("welcome", { name: profile.display_name })}
         subtitle={t("welcomeSubtitle")}

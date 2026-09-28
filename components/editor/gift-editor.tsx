@@ -3,14 +3,13 @@
 import { ChevronDown, ChevronUp, Eye, Loader2, Plus, Save, Send, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
 import { GiftView } from "@/components/gift/gift-view";
 import { variantSwatch } from "@/components/gift/palettes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SubmitButton } from "@/components/ui/submit-button";
-import { publishGift, saveGift } from "@/features/gifts/actions";
+import { saveAndPublishGift, saveGift } from "@/features/gifts/actions";
 import {
   MAX_SECTIONS,
   THEME_VARIANTS,
@@ -85,14 +84,42 @@ export function GiftEditor(props: Props) {
   const [showPreview, setShowPreview] = useState(false);
   const [adding, setAdding] = useState(false);
 
-  const saveAction = saveGift.bind(null, props.giftId);
-  const [state, formAction, saving] = useActionState<SaveGiftState, FormData>(saveAction, {});
-  const publishAction = publishGift.bind(null, props.giftId);
-
   const payload = useMemo<EditorPayload>(
     () => ({ title, recipientName, variant, sections }),
     [title, recipientName, variant, sections],
   );
+  const payloadJson = JSON.stringify(payload);
+
+  // What the server last confirmed as saved, to show unsaved changes.
+  const [lastSaved, setLastSaved] = useState(() =>
+    JSON.stringify({ title: props.title, recipientName: props.recipientName, variant: props.variant, sections: props.sections }),
+  );
+  const dirty = payloadJson !== lastSaved;
+
+  const [state, formAction, saving] = useActionState<SaveGiftState, FormData>(async (prev, fd) => {
+    const result = await saveGift(props.giftId, prev, fd);
+    if (result.status === "saved") setLastSaved(String(fd.get("payload")));
+    return result;
+  }, {});
+
+  // Publish always saves the current editor content first, so nothing typed is lost.
+  const [publishing, startPublish] = useTransition();
+  const [publishState, setPublishState] = useState<SaveGiftState["status"]>();
+  const publish = () =>
+    startPublish(async () => {
+      setPublishState(undefined);
+      const fd = new FormData();
+      fd.set("payload", payloadJson);
+      const result = await saveAndPublishGift(props.giftId, fd);
+      if (result) setPublishState(result.status);
+    });
+
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
   const mediaMap = useMemo(() => Object.fromEntries(media.map((m) => [m.id, m])), [media]);
 
   const updateSection = (next: Section) => setSections((s) => s.map((sec) => (sec.id === next.id ? next : sec)));
@@ -207,7 +234,8 @@ export function GiftEditor(props: Props) {
             <Eye />
             {t("preview")}
           </Button>
-          {state.status === "saved" && <span className="text-sm text-success">{t("saved")}</span>}
+          {dirty && !saving && <span className="text-sm text-muted-foreground">{t("unsaved")}</span>}
+          {!dirty && state.status === "saved" && <span className="text-sm text-success">{t("saved")}</span>}
           {state.status === "invalid" && <span className="text-sm text-destructive">{t("invalid")}</span>}
           {state.status === "error" && <span className="text-sm text-destructive">{t("error")}</span>}
         </div>
@@ -234,19 +262,24 @@ export function GiftEditor(props: Props) {
 
           <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-border bg-card p-4">
             <p className="text-sm text-muted-foreground">{props.status === "published" ? t("publishedHint") : t("publishHint")}</p>
-            {props.publishError && <p className="text-sm text-destructive">{t("publishError")}</p>}
+            {(props.publishError || publishState === "error") && <p className="text-sm text-destructive">{t("publishError")}</p>}
+            {publishState === "invalid" && <p className="text-sm text-destructive">{t("invalid")}</p>}
             <div className="flex flex-wrap gap-2">
-              <form action={publishAction}>
-                <SubmitButton variant={props.status === "published" ? "secondary" : "primary"} pendingLabel={t("publishing")}>
-                  <Send />
-                  {props.status === "published" ? t("republish") : t("publish")}
-                </SubmitButton>
-              </form>
+              <Button
+                type="button"
+                variant={props.status === "published" ? "secondary" : "primary"}
+                onClick={publish}
+                disabled={publishing || saving}
+                aria-busy={publishing}
+              >
+                {publishing ? <Loader2 className="animate-spin" /> : <Send />}
+                {publishing ? t("publishing") : props.status === "published" ? t("republish") : t("publish")}
+              </Button>
               <Button asChild variant="ghost">
                 <Link href={`/dashboard/gifts/${props.giftId}`}>{t("manage")}</Link>
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground">{t("saveFirst")}</p>
+            <p className="text-xs text-muted-foreground">{t("publishSaves")}</p>
           </div>
         </div>
       </div>

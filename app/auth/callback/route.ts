@@ -1,8 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { safeNextPath } from "@/lib/auth/paths";
+import { createClient } from "@/lib/supabase/server";
 
-/** OAuth (PKCE) return URL. Exchanges the code for a session cookie. */
+/**
+ * Return URL for Google sign-in and password-reset links (PKCE).
+ * Exchanges the code for a session cookie, then continues to `next`.
+ */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
   const code = searchParams.get("code");
@@ -14,5 +17,7 @@ export async function GET(request: NextRequest) {
     if (!error) return NextResponse.redirect(`${origin}${next}`);
   }
 
+  // Reset links fail when opened on another device or after expiry.
+  if (next === "/auth/reset") return NextResponse.redirect(`${origin}/auth/forgot?notice=expired`);
   return NextResponse.redirect(`${origin}/auth/login?notice=oauthFailed`);
 }

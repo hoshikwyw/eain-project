@@ -86,7 +86,14 @@ export function AuthForm({ mode, next, notice, configured, googleEnabled }: Prop
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="password">{t("password")}</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">{t("password")}</Label>
+            {mode === "login" && (
+              <Link href="/auth/forgot" className="text-xs font-semibold text-primary underline-offset-4 hover:underline">
+                {t("forgotLink")}
+              </Link>
+            )}
+          </div>
           <Input
             id="password"
             name="password"

@@ -17,7 +17,7 @@ import { makeQr } from "@/lib/qr";
 import { getSiteOrigin, giftShareUrl } from "@/lib/site-url";
 import type { GiftEventType } from "@/types/database";
 
-const TIMELINE = ["created", "published", "opened", "viewed", "responded"] as const satisfies readonly GiftEventType[];
+const TIMELINE = ["created", "published", "shared", "opened", "viewed", "responded"] as const satisfies readonly GiftEventType[];
 
 export default async function GiftDetailPage({ params, searchParams }: PageProps<"/dashboard/gifts/[giftId]">) {
   const { giftId } = await params;
@@ -82,7 +82,7 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
             </CardHeader>
             <CardContent>
               {isPublished && qr ? (
-                <SharePanel url={shareUrl} qrSvg={qr.svg} qrPngDataUrl={qr.pngDataUrl} title={gift.title} />
+                <SharePanel giftId={gift.id} url={shareUrl} qrSvg={qr.svg} qrPngDataUrl={qr.pngDataUrl} title={gift.title} />
               ) : (
                 <form action={publishGift.bind(null, gift.id)}>
                   <SubmitButton>{t("publishNow")}</SubmitButton>

@@ -14,7 +14,9 @@
     "test:media": "node --test --env-file=.env.local supabase/tests/media.test.mts",
     "test:responses": "node --test --env-file=.env.local supabase/tests/responses.test.mts",
     "test:admin": "node --test --env-file=.env.local supabase/tests/admin.test.mts",
-    "test:admin-users": "node --test --env-file=.env.local supabase/tests/admin-users.test.mts"
+    "test:admin-users": "node --test --env-file=.env.local supabase/tests/admin-users.test.mts",
+    "test:part3": "node --test --env-file=.env.local supabase/tests/part3.test.mts",
+    "cleanup:test-users": "node --env-file=.env.local scripts/cleanup-test-users.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.3.3",
