@@ -79,6 +79,60 @@ export async function updateTemplate(formData: FormData): Promise<void> {
   back("/admin/templates", "ok", "template");
 }
 
+/** Full template edit from /admin/templates/[templateId]. */
+export async function updateTemplateDetails(formData: FormData): Promise<void> {
+  const templateId = String(formData.get("templateId") ?? "");
+  const editPath = `/admin/templates/${templateId}`;
+  const parsed = z
+    .object({
+      templateId: z.uuid(),
+      nameEn: z.string().trim().min(1).max(80),
+      nameMy: z.string().trim().min(1).max(80),
+      descriptionEn: z.string().trim().max(300),
+      descriptionMy: z.string().trim().max(300),
+      categoryId: z.uuid(),
+      sortOrder: z.coerce.number().int().min(0).max(9999),
+      isActive: z.boolean(),
+      isFeatured: z.boolean(),
+      isPremium: z.boolean(),
+      pointPrice: z.coerce.number().int().min(0).max(100000),
+    })
+    .safeParse({
+      templateId,
+      nameEn: formData.get("nameEn"),
+      nameMy: formData.get("nameMy"),
+      descriptionEn: formData.get("descriptionEn") ?? "",
+      descriptionMy: formData.get("descriptionMy") ?? "",
+      categoryId: formData.get("categoryId"),
+      sortOrder: formData.get("sortOrder") ?? 0,
+      isActive: formData.get("isActive") === "on",
+      isFeatured: formData.get("isFeatured") === "on",
+      isPremium: formData.get("isPremium") === "on",
+      pointPrice: formData.get("pointPrice") ?? 0,
+    });
+  if (!parsed.success) back(editPath, "error", "invalid");
+  const v = parsed.data;
+  if (v.isPremium && v.pointPrice < 1) back(editPath, "error", "premiumPrice");
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("admin_update_template_details", {
+    p_template_id: v.templateId,
+    p_name_en: v.nameEn,
+    p_name_my: v.nameMy,
+    p_description_en: v.descriptionEn,
+    p_description_my: v.descriptionMy,
+    p_category_id: v.categoryId,
+    p_sort_order: v.sortOrder,
+    p_is_active: v.isActive,
+    p_is_featured: v.isFeatured,
+    p_is_premium: v.isPremium,
+    p_point_price: v.pointPrice,
+  });
+  revalidatePath("/", "layout");
+  if (error) back(editPath, "error", "failed");
+  back(editPath, "ok", "template");
+}
+
 export async function resolveReport(formData: FormData): Promise<void> {
   const parsed = z.object({ reportId: z.uuid(), status: z.enum(["reviewing", "resolved", "dismissed"]) }).safeParse({
     reportId: formData.get("reportId"),

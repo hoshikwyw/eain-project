@@ -355,7 +355,8 @@
         "invalid": "Please check the form.",
         "failed": "That did not work. Please try again.",
         "ownRole": "You cannot change your own role.",
-        "insufficient": "That user does not have enough points to remove."
+        "insufficient": "That user does not have enough points to remove.",
+        "premiumPrice": "A premium template needs a point price of at least 1."
       }
     },
     "overview": {
@@ -394,14 +395,54 @@
       "empty": "No users match."
     },
     "templates": {
-      "subtitle": "Turn templates on or off, feature them, and set point prices.",
+      "subtitle": "Edit names, descriptions, category, order, visibility and point prices. Every change is logged.",
       "active": "Active",
+      "inactive": "Hidden",
       "featured": "Featured",
       "premium": "Premium",
+      "free": "Free",
       "price": "Point price",
-      "save": "Save",
+      "save": "Save changes",
+      "edit": "Edit template",
+      "back": "All templates",
       "noLayout": "No layout in code",
-      "note": "A template needs a layout in the code before users can create from it."
+      "note": "Layouts, designs and starting sections live in the code. This screen edits how each template is listed and sold.",
+      "details": "Details",
+      "detailsHint": "What users see in the template library and picker.",
+      "preview": "Preview",
+      "previewHint": "Starting content in English and Burmese.",
+      "usage": "Usage",
+      "stats": {
+        "gifts": "Gifts",
+        "published": "Published",
+        "unlocks": "Unlocks"
+      },
+      "fields": {
+        "nameEn": "Name (English)",
+        "nameMy": "Name (Burmese)",
+        "descriptionEn": "Description (English)",
+        "descriptionMy": "Description (Burmese)",
+        "category": "Category",
+        "sortOrder": "Display order",
+        "sortOrderHint": "Lower numbers appear first.",
+        "visibility": "Visibility",
+        "activeHint": "Hidden templates disappear from the library. Existing gifts keep working.",
+        "featuredHint": "Shown first on the landing page and highlighted in the library.",
+        "pricing": "Pricing",
+        "premiumHint": "Users spend points once to unlock it for good. Existing unlocks stay valid."
+      },
+      "designs": {
+        "postcard": "Postcard",
+        "party": "Party",
+        "elegant": "Elegant",
+        "playful": "Playful",
+        "botanical": "Botanical",
+        "certificate": "Certificate",
+        "letter": "Letter",
+        "minimal": "Minimal",
+        "scrapbook": "Scrapbook",
+        "bold": "Bold"
+      }
     },
     "reports": {
       "subtitle": "Reports from receivers. View the gift, then resolve or take it offline.",

@@ -6,7 +6,7 @@ type Props = { ok?: string; error?: string };
 export function AdminFlash({ ok, error }: Props) {
   const t = useTranslations("admin.flash");
   const okKeys = ["role", "points", "template", "report", "disabled"] as const;
-  const errorKeys = ["invalid", "failed", "ownRole", "insufficient"] as const;
+  const errorKeys = ["invalid", "failed", "ownRole", "insufficient", "premiumPrice"] as const;
   const okKey = okKeys.find((k) => k === ok);
   const errorKey = errorKeys.find((k) => k === error);
   if (okKey) {

@@ -357,6 +357,26 @@ export interface Database {
         Returns: undefined;
       };
       admin_stats: { Args: Record<string, never>; Returns: Json };
+      admin_update_template_details: {
+        Args: {
+          p_template_id: string;
+          p_name_en: string;
+          p_name_my: string;
+          p_description_en: string;
+          p_description_my: string;
+          p_category_id: string;
+          p_sort_order: number;
+          p_is_active: boolean;
+          p_is_featured: boolean;
+          p_is_premium: boolean;
+          p_point_price: number;
+        };
+        Returns: undefined;
+      };
+      admin_template_stats: {
+        Args: Record<string, never>;
+        Returns: { template_id: string; gifts: number; published: number; unlocks: number }[];
+      };
       check_rate_limit: {
         Args: { p_key: string; p_limit: number; p_window_seconds: number };
         Returns: boolean;

@@ -60,9 +60,35 @@ export async function listReports(scope: "open" | "all") {
   return reports.map((r) => ({ ...r, gift: giftById.get(r.gift_id) ?? null }));
 }
 
+export type TemplateStats = { gifts: number; published: number; unlocks: number };
+
+/** All templates with category name and usage numbers, in display order. */
 export async function listTemplatesAdmin() {
   const supabase = await createClient();
-  const { data } = await supabase.from("templates").select("*").order("sort_order");
+  const [{ data: rows }, { data: categories }, { data: stats }] = await Promise.all([
+    supabase.from("templates").select("*").order("sort_order"),
+    supabase.from("categories").select("id, name_en"),
+    supabase.rpc("admin_template_stats", {}),
+  ]);
+  const categoryName = new Map((categories ?? []).map((c) => [c.id, c.name_en]));
+  const statsById = new Map(
+    (stats ?? []).map((s) => [s.template_id, { gifts: Number(s.gifts), published: Number(s.published), unlocks: Number(s.unlocks) }]),
+  );
+  return (rows ?? []).map((t) => ({
+    ...t,
+    categoryName: categoryName.get(t.category_id) ?? "",
+    stats: statsById.get(t.id) ?? ({ gifts: 0, published: 0, unlocks: 0 } satisfies TemplateStats),
+  }));
+}
+
+export async function getTemplateAdmin(templateId: string) {
+  const all = await listTemplatesAdmin();
+  return all.find((t) => t.id === templateId) ?? null;
+}
+
+export async function listCategoriesAdmin() {
+  const supabase = await createClient();
+  const { data } = await supabase.from("categories").select("id, name_en, name_my, sort_order").order("sort_order");
   return data ?? [];
 }
 

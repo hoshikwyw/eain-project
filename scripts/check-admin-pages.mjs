@@ -22,7 +22,9 @@ try {
   const name = `sb-${ref}-auth-token`;
   const cookie = value.length <= 3180 ? `${name}=${value}` : Array.from({ length: Math.ceil(value.length / 3180) }, (_, i) => `${name}.${i}=${value.slice(i * 3180, (i + 1) * 3180)}`).join("; ");
 
-  for (const path of ["/admin", "/admin/users", "/admin/templates", "/admin/reports", "/admin/reports?scope=all", "/admin/points", "/admin/payments", "/admin/audit", "/dashboard"]) {
+  const { data: firstTemplate } = await service.from("templates").select("id").order("sort_order").limit(1).single();
+  const paths = ["/admin", "/admin/users", "/admin/templates", `/admin/templates/${firstTemplate.id}`, "/admin/reports", "/admin/reports?scope=all", "/admin/points", "/admin/payments", "/admin/audit", "/dashboard"];
+  for (const path of paths) {
     const res = await fetch(`${site}${path}`, { headers: { cookie }, redirect: "manual" });
     const html = await res.text();
     const marker = path === "/dashboard" ? html.includes('href="/admin"') : html.includes("Admin</span>") || html.includes('aria-label="Admin"');
