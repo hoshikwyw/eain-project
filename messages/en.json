@@ -305,6 +305,11 @@
     "qrAlt": "QR code for the gift link",
     "downloadQr": "Download QR"
   },
+  "accountDeleted": {
+    "title": "Your account was deleted",
+    "text": "Your gifts, photos, replies and points are gone, and your gift links no longer work. Thank you for using Eain.",
+    "home": "Back to Eain"
+  },
   "report": {
     "title": "Report this gift",
     "subtitle": "Tell us what is wrong. We review every report.",
@@ -699,6 +704,7 @@
     "points": {
       "title": "Points & Rewards",
       "subtitle": "Points unlock premium templates and effects.",
+      "dailyCap": "You can earn up to 100 points a day from activity.",
       "total": "Total points",
       "history": "Point history",
       "buy": "Buy points",
@@ -730,8 +736,20 @@
       "invalid": "Please check the form.",
       "error": "Could not save. Please try again.",
       "account": "Account",
+      "accountHint": "Log out of Eain on this device.",
       "deleteSoon": "Account deletion arrives in a later part.",
-      "signOut": "Log out"
+      "signOut": "Log out",
+      "deleteTitle": "Delete account",
+      "deleteHint": "Permanently deletes your account, all your gifts and photos, the replies you received, your notifications and points. Gift links you shared stop working. This cannot be undone.",
+      "deleteAdminHint": "Admin accounts cannot delete themselves. Ask another admin to change your role to user first.",
+      "typeEmail": "Type {email} to confirm",
+      "deleteAccount": "Delete my account",
+      "deleteConfirm": "Delete your account and everything in it? This cannot be undone.",
+      "deleteErrors": {
+        "mismatch": "That email does not match your account.",
+        "admin": "Admin accounts cannot delete themselves.",
+        "error": "Your account could not be deleted. Nothing was removed. Please try again."
+      }
     }
   }
 }

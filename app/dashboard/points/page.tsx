@@ -20,7 +20,7 @@ export default async function PointsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={t("nav.points")} subtitle={t("points.subtitle")} />
+      <PageHeader title={t("nav.points")} subtitle={`${t("points.subtitle")} ${t("points.dailyCap")}`} />
 
       <Card className="bg-hero">
         <CardContent className="flex flex-wrap items-center justify-between gap-4 p-6">

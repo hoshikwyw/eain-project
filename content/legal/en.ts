@@ -1,6 +1,6 @@
 import type { LegalContent } from "./types";
 
-const updated = "2026-09-24";
+const updated = "2026-09-28";
 
 export const en: LegalContent = {
   privacy: {
@@ -12,7 +12,7 @@ export const en: LegalContent = {
       "Gift content is private by default and visible only through the link you choose to share.",
       "Receivers never need an account. We do not track their location, device fingerprint or IP address in gift analytics.",
       "We do not sell personal data, and we do not use private gift content for advertising or to train AI.",
-      "You can delete a gift at any time. Account deletion is coming; until then, ask us and we will do it.",
+      "You can delete a gift at any time, and delete your whole account yourself from Settings.",
     ],
     sections: [
       {
@@ -67,7 +67,7 @@ export const en: LegalContent = {
         heading: "Your choices",
         body: [
           "Edit your name, language and notification settings at any time in Settings.",
-          "Delete any gift from its page. To delete your whole account, contact us and we will remove it along with your gifts, photos and replies, keeping only records we must retain for accounting or security.",
+          "Delete any gift from its page. Delete your whole account from Settings: your profile, gifts, photos, the replies you received, notifications and points are removed right away, and your gift links stop working. We keep only records we must retain for accounting or security, such as administrator audit entries.",
         ],
       },
       {

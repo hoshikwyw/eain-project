@@ -113,6 +113,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
                 <span className="font-semibold text-success">+20</span>
               </li>
             </ul>
+            <p className="text-xs text-muted-foreground">{t("points.dailyCap")}</p>
             <Button asChild variant="secondary" size="sm">
               <Link href="/dashboard/points">{t("points.history")}</Link>
             </Button>
