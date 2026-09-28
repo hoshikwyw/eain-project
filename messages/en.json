@@ -349,14 +349,21 @@
         "points": "Points adjusted.",
         "template": "Template saved.",
         "report": "Report updated.",
-        "disabled": "Gift taken offline and the owner notified."
+        "disabled": "Gift taken offline and the owner notified.",
+        "suspended": "Account suspended. They can no longer sign in.",
+        "unsuspended": "Account restored. They can sign in again.",
+        "deleted": "Account deleted with its gifts, photos and replies.",
+        "giftsOffline": "Their published gifts were taken offline and they were notified."
       },
       "error": {
         "invalid": "Please check the form.",
         "failed": "That did not work. Please try again.",
         "ownRole": "You cannot change your own role.",
         "insufficient": "That user does not have enough points to remove.",
-        "premiumPrice": "A premium template needs a point price of at least 1."
+        "premiumPrice": "A premium template needs a point price of at least 1.",
+        "self": "You cannot do that to your own account.",
+        "confirmEmail": "The email you typed does not match this account.",
+        "deleteFailed": "The account could not be deleted. Nothing was removed."
       }
     },
     "overview": {
@@ -384,15 +391,61 @@
       }
     },
     "users": {
-      "subtitle": "Search, change roles and correct points. Every action is logged.",
-      "search": "Search by name",
+      "subtitle": "Every account, how they sign in and what they have made. Open one to manage it.",
+      "search": "Search by name or email",
+      "count": "{count, plural, one {# account} other {# accounts}}",
       "unnamed": "Unnamed",
+      "you": "You",
+      "active": "Active",
+      "suspended": "Suspended",
+      "back": "All users",
       "roles": { "user": "User", "admin": "Admin" },
+      "providers": { "email": "Email", "google": "Google" },
+      "lastSeen": "last signed in {when}",
+      "neverSignedIn": "never signed in",
+      "giftsCount": "{count, plural, one {# gift} other {# gifts}}",
       "reason": "Reason",
       "adjust": "Adjust points",
       "role": "Role",
       "setRole": "Set role",
-      "empty": "No users match."
+      "empty": "No users match.",
+      "detail": {
+        "account": "Account",
+        "status": "Status",
+        "signIn": "Sign-in method",
+        "emailConfirmed": "Email confirmed",
+        "yes": "Yes",
+        "no": "No",
+        "joined": "Joined",
+        "lastSignIn": "Last sign-in",
+        "language": "Language",
+        "points": "Points",
+        "gifts": "Gifts",
+        "giftsSummary": "{total} total, {published} live",
+        "storage": "Photo storage",
+        "giftsTitle": "Gifts ({count})",
+        "giftsHint": "Open a gift to review it or take it offline.",
+        "noGifts": "No gifts yet.",
+        "pointsTitle": "Point history",
+        "history": "Reports and admin actions",
+        "selfNote": "This is your account. Suspending, deleting and changing your own role are disabled.",
+        "adjustHint": "Positive adds a bonus, negative removes points. Goes through the ledger and is logged.",
+        "moderation": "Moderation",
+        "suspendHint": "Suspending blocks sign-in right away. Open sessions end within an hour. Their gifts stay live unless you also take them offline.",
+        "suspendedHint": "This account cannot sign in. Restoring it lets them sign in again with the same data.",
+        "reasonPlaceholder": "Reason, kept in the audit log",
+        "suspend": "Suspend account",
+        "suspendConfirm": "Suspend this account? They will not be able to sign in.",
+        "unsuspend": "Restore account",
+        "offlineReason": "Reason shown to them",
+        "offline": "{count, plural, one {Take # live gift offline} other {Take # live gifts offline}}",
+        "offlineConfirm": "Take {count} live gifts offline? Their links stop working and they are notified.",
+        "deleteTitle": "Delete account",
+        "deleteHint": "Permanently removes the account, its gifts, photos, replies, notifications and points. This cannot be undone.",
+        "typeEmail": "Type {email} to confirm",
+        "delete": "Delete account permanently",
+        "deleteConfirm": "Delete this account and everything in it? This cannot be undone."
+      }
     },
     "templates": {
       "subtitle": "Edit names, descriptions, category, order, visibility and point prices. Every change is logged.",
@@ -516,7 +569,8 @@
       "credentials": "That email or password is not right.",
       "exists": "An account with this email already exists. Try logging in.",
       "unknown": "Something went wrong. Please try again.",
-      "notConfigured": "Accounts are not set up on this server yet."
+      "notConfigured": "Accounts are not set up on this server yet.",
+      "suspended": "This account is suspended. Contact us if you think this is a mistake."
     },
     "notices": {
       "confirm": "Check your email to confirm your account, then log in.",

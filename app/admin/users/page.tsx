@@ -1,15 +1,13 @@
-import { Search } from "lucide-react";
+import { ChevronRight, Search } from "lucide-react";
+import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { AdminFlash } from "@/components/admin/flash";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { Card, CardContent } from "@/components/ui/card";
-import { SubmitButton } from "@/components/ui/submit-button";
 import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
-import { adjustPoints, setUserRole } from "@/features/admin/actions";
-import { listUsers, requireAdmin } from "@/features/admin/queries";
-
-const selectClass = "h-9 rounded-lg border border-input bg-card px-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/40";
+import { requireAdmin } from "@/features/admin/queries";
+import { listUsersAdmin } from "@/features/admin/users";
 
 export default async function AdminUsersPage({ searchParams }: PageProps<"/admin/users">) {
   const me = await requireAdmin();
@@ -17,58 +15,52 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/admin
   const query = typeof params.q === "string" ? params.q : "";
   const t = await getTranslations("admin");
   const format = await getFormatter();
-  const users = await listUsers(query);
+  const users = await listUsersAdmin(query);
 
   return (
     <div className="flex flex-col gap-6">
       <PageHeader title={t("nav.users")} subtitle={t("users.subtitle")} />
       <AdminFlash ok={typeof params.ok === "string" ? params.ok : undefined} error={typeof params.error === "string" ? params.error : undefined} />
 
-      <form className="relative max-w-sm" role="search">
-        <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input name="q" type="search" defaultValue={query} placeholder={t("users.search")} className="pl-10" />
-      </form>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <form className="relative w-full max-w-sm" role="search">
+          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input name="q" type="search" defaultValue={query} placeholder={t("users.search")} className="pl-10" />
+        </form>
+        <p className="text-sm text-muted-foreground">{t("users.count", { count: users.length })}</p>
+      </div>
 
-      <ul className="flex flex-col gap-3">
+      <ul className="flex flex-col gap-2">
         {users.map((u) => (
           <li key={u.id}>
-            <Card>
-              <CardContent className="flex flex-col gap-4 p-4 lg:flex-row lg:items-center">
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-semibold">{u.display_name || t("users.unnamed")}</p>
-                    <Chip tone={u.role === "admin" ? "primary" : "neutral"}>{t(`users.roles.${u.role}`)}</Chip>
-                    <Chip tone="brand">{u.points_balance} pts</Chip>
+            <Link href={`/admin/users/${u.id}`} className="block rounded-2xl">
+              <Card className="transition-colors hover:bg-secondary/60">
+                <CardContent className="flex items-center gap-4 p-4">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-soft text-sm font-bold text-accent-foreground dark:text-brand">
+                    {(u.displayName || u.email).trim().charAt(0).toUpperCase() || "?"}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="truncate font-semibold">{u.displayName || t("users.unnamed")}</p>
+                      {u.id === me.id && <Chip tone="neutral">{t("users.you")}</Chip>}
+                      {u.role === "admin" && <Chip tone="primary">{t("users.roles.admin")}</Chip>}
+                      {u.suspended && <Chip tone="brand">{t("users.suspended")}</Chip>}
+                    </div>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {u.email} · {t(`users.providers.${u.provider === "google" ? "google" : "email"}`)} ·{" "}
+                      {u.lastSignInAt
+                        ? t("users.lastSeen", { when: format.relativeTime(new Date(u.lastSignInAt)) })
+                        : t("users.neverSignedIn")}
+                    </p>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {u.id} · {format.dateTime(new Date(u.created_at), { dateStyle: "medium" })} · {u.locale}
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <form action={adjustPoints} className="flex items-center gap-1.5">
-                    <input type="hidden" name="userId" value={u.id} />
-                    <Input name="amount" type="number" required placeholder="±50" className="h-9 w-24 text-sm" />
-                    <Input name="description" placeholder={t("users.reason")} maxLength={200} className="h-9 w-40 text-sm" />
-                    <SubmitButton size="sm" variant="secondary">
-                      {t("users.adjust")}
-                    </SubmitButton>
-                  </form>
-                  {u.id !== me.id && (
-                    <form action={setUserRole} className="flex items-center gap-1.5">
-                      <input type="hidden" name="userId" value={u.id} />
-                      <select name="role" defaultValue={u.role} className={selectClass} aria-label={t("users.role")}>
-                        <option value="user">{t("users.roles.user")}</option>
-                        <option value="admin">{t("users.roles.admin")}</option>
-                      </select>
-                      <SubmitButton size="sm" variant="secondary">
-                        {t("users.setRole")}
-                      </SubmitButton>
-                    </form>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                  <div className="hidden items-center gap-2 sm:flex">
+                    <Chip tone="neutral">{t("users.giftsCount", { count: u.gifts })}</Chip>
+                    <Chip tone="brand">{u.points} pts</Chip>
+                  </div>
+                  <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                </CardContent>
+              </Card>
+            </Link>
           </li>
         ))}
         {users.length === 0 && <li className="py-8 text-center text-sm text-muted-foreground">{t("users.empty")}</li>}

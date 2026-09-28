@@ -63,7 +63,10 @@ export async function signIn(_prev: AuthFormState, formData: FormData): Promise<
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
-  if (error) return { error: "credentials", fields: { email: values.email } };
+  if (error) {
+    const suspended = error.code === "user_banned" || /banned/i.test(error.message);
+    return { error: suspended ? "suspended" : "credentials", fields: { email: values.email } };
+  }
 
   redirect(safeNextPath(String(formData.get("next") ?? "")));
 }

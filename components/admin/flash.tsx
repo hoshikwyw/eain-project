@@ -5,8 +5,8 @@ type Props = { ok?: string; error?: string };
 /** One-line result banner for admin actions, driven by ?ok= and ?error=. */
 export function AdminFlash({ ok, error }: Props) {
   const t = useTranslations("admin.flash");
-  const okKeys = ["role", "points", "template", "report", "disabled"] as const;
-  const errorKeys = ["invalid", "failed", "ownRole", "insufficient", "premiumPrice"] as const;
+  const okKeys = ["role", "points", "template", "report", "disabled", "suspended", "unsuspended", "deleted", "giftsOffline"] as const;
+  const errorKeys = ["invalid", "failed", "ownRole", "insufficient", "premiumPrice", "self", "confirmEmail", "deleteFailed"] as const;
   const okKey = okKeys.find((k) => k === ok);
   const errorKey = errorKeys.find((k) => k === error);
   if (okKey) {

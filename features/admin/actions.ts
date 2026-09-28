@@ -16,20 +16,28 @@ function back(path: string, key: string, value: string): never {
   redirect(`${url.pathname}${url.search}`);
 }
 
+/** Only admin user pages are allowed as return targets. */
+function returnPath(formData: FormData): string {
+  const value = String(formData.get("returnTo") ?? "");
+  return /^\/admin\/users(\/[0-9a-f-]{36})?$/.test(value) ? value : "/admin/users";
+}
+
 export async function setUserRole(formData: FormData): Promise<void> {
+  const to = returnPath(formData);
   const parsed = z.object({ userId: z.uuid(), role: z.enum(["user", "admin"]) }).safeParse({
     userId: formData.get("userId"),
     role: formData.get("role"),
   });
-  if (!parsed.success) back("/admin/users", "error", "invalid");
+  if (!parsed.success) back(to, "error", "invalid");
   const supabase = await createClient();
   const { error } = await supabase.rpc("admin_set_role", { p_user_id: parsed.data.userId, p_role: parsed.data.role });
   revalidatePath("/admin", "layout");
-  if (error) back("/admin/users", "error", error.message.includes("own role") ? "ownRole" : "failed");
-  back("/admin/users", "ok", "role");
+  if (error) back(to, "error", error.message.includes("own role") ? "ownRole" : "failed");
+  back(to, "ok", "role");
 }
 
 export async function adjustPoints(formData: FormData): Promise<void> {
+  const to = returnPath(formData);
   const parsed = z
     .object({
       userId: z.uuid(),
@@ -37,7 +45,7 @@ export async function adjustPoints(formData: FormData): Promise<void> {
       description: z.string().trim().max(200).default(""),
     })
     .safeParse({ userId: formData.get("userId"), amount: formData.get("amount"), description: formData.get("description") ?? "" });
-  if (!parsed.success) back("/admin/users", "error", "invalid");
+  if (!parsed.success) back(to, "error", "invalid");
   const supabase = await createClient();
   const { error } = await supabase.rpc("admin_adjust_points", {
     p_user_id: parsed.data.userId,
@@ -45,8 +53,8 @@ export async function adjustPoints(formData: FormData): Promise<void> {
     p_description: parsed.data.description,
   });
   revalidatePath("/admin", "layout");
-  if (error) back("/admin/users", "error", error.message.includes("insufficient") ? "insufficient" : "failed");
-  back("/admin/users", "ok", "points");
+  if (error) back(to, "error", error.message.includes("insufficient") ? "insufficient" : "failed");
+  back(to, "ok", "points");
 }
 
 export async function updateTemplate(formData: FormData): Promise<void> {
