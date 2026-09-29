@@ -1,5 +1,5 @@
 import type { GiftSection } from "@/types/database";
-import { giftThemeSchema, sectionSchema, type Section, type ThemeVariant } from "./schemas";
+import { giftThemeSchema, sectionSchema, type Opening, type Section, type ThemeVariant } from "./schemas";
 
 /**
  * Turns stored rows into typed sections. Malformed rows are dropped so one bad
@@ -16,6 +16,12 @@ export function sectionsFromRows(rows: Pick<GiftSection, "id" | "type" | "conten
 export function variantFromTheme(theme: unknown): ThemeVariant {
   const parsed = giftThemeSchema.safeParse(theme ?? {});
   return parsed.success ? parsed.data.variant : "blossom";
+}
+
+/** The gift's opening, or the template default when the gift has none saved. */
+export function openingFromTheme(theme: unknown, fallback: Opening): Opening {
+  const parsed = giftThemeSchema.safeParse(theme ?? {});
+  return (parsed.success && parsed.data.opening) || fallback;
 }
 
 /** Rows to insert for a section list. Client ids are not stored. */

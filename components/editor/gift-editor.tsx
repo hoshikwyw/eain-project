@@ -1,9 +1,10 @@
 "use client";
 
-import { ChevronDown, ChevronUp, Eye, Loader2, Plus, Save, Send, Trash2 } from "lucide-react";
+import { BookOpen, ChevronDown, ChevronUp, Eye, Gift, Loader2, Mail, Play, Plus, Save, ScrollText, Send, Sparkles, Theater, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
+import { GiftOpening, openingDuration, type OpeningStage } from "@/components/gift/gift-opening";
 import { GiftView } from "@/components/gift/gift-view";
 import { DARK_VARIANTS, variantSwatch } from "@/components/gift/palettes";
 import { Button } from "@/components/ui/button";
@@ -12,10 +13,12 @@ import { Label } from "@/components/ui/label";
 import { saveAndPublishGift, saveGift } from "@/features/gifts/actions";
 import {
   MAX_SECTIONS,
+  OPENINGS,
   THEME_VARIANTS,
   type EditableSectionType,
   type EditorPayload,
   type MediaItem,
+  type Opening,
   type SaveGiftState,
   type Section,
   type ThemeVariant,
@@ -30,11 +33,21 @@ type Props = {
   title: string;
   recipientName: string;
   variant: ThemeVariant;
+  opening: Opening;
   sections: Section[];
   media: MediaItem[];
   style: TemplateStyle;
   senderName: string;
   publishError?: boolean;
+};
+
+const OPENING_ICONS: Record<Opening, React.ComponentType<{ className?: string }>> = {
+  envelope: Mail,
+  book: BookOpen,
+  giftbox: Gift,
+  curtain: Theater,
+  scroll: ScrollText,
+  simple: Sparkles,
 };
 
 const SECTION_TYPES: EditableSectionType[] = ["text", "message", "image", "photo_grid", "timeline", "quote", "question", "final_message"];
@@ -76,23 +89,32 @@ function emptySection(type: EditableSectionType): Section {
 
 export function GiftEditor(props: Props) {
   const t = useTranslations("editor");
+  const tGift = useTranslations("gift");
   const [title, setTitle] = useState(props.title);
   const [recipientName, setRecipientName] = useState(props.recipientName);
   const [variant, setVariant] = useState<ThemeVariant>(props.variant);
+  const [opening, setOpening] = useState<Opening>(props.opening);
+  const [openingPreview, setOpeningPreview] = useState<OpeningStage | null>(null);
   const [sections, setSections] = useState<Section[]>(props.sections);
   const [media, setMedia] = useState<MediaItem[]>(props.media);
   const [showPreview, setShowPreview] = useState(false);
   const [adding, setAdding] = useState(false);
 
   const payload = useMemo<EditorPayload>(
-    () => ({ title, recipientName, variant, sections }),
-    [title, recipientName, variant, sections],
+    () => ({ title, recipientName, variant, opening, sections }),
+    [title, recipientName, variant, opening, sections],
   );
   const payloadJson = JSON.stringify(payload);
 
   // What the server last confirmed as saved, to show unsaved changes.
   const [lastSaved, setLastSaved] = useState(() =>
-    JSON.stringify({ title: props.title, recipientName: props.recipientName, variant: props.variant, sections: props.sections }),
+    JSON.stringify({
+      title: props.title,
+      recipientName: props.recipientName,
+      variant: props.variant,
+      opening: props.opening,
+      sections: props.sections,
+    }),
   );
   const dirty = payloadJson !== lastSaved;
 
@@ -120,6 +142,16 @@ export function GiftEditor(props: Props) {
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty]);
+  // Opening preview: show the closed gift for a moment, play it, then close.
+  useEffect(() => {
+    if (!openingPreview) return;
+    const timer =
+      openingPreview === "closed"
+        ? window.setTimeout(() => setOpeningPreview("opening"), 700)
+        : window.setTimeout(() => setOpeningPreview(null), openingDuration(opening) + 300);
+    return () => window.clearTimeout(timer);
+  }, [openingPreview, opening]);
+
   const mediaMap = useMemo(() => Object.fromEntries(media.map((m) => [m.id, m])), [media]);
 
   const updateSection = (next: Section) => setSections((s) => s.map((sec) => (sec.id === next.id ? next : sec)));
@@ -183,6 +215,49 @@ export function GiftEditor(props: Props) {
             </div>
           ))}
         </fieldset>
+
+        <div role="radiogroup" aria-labelledby="opening-label" className="flex flex-col gap-3">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <h2 id="opening-label" className="text-sm font-semibold">
+                {t("opening")}
+              </h2>
+              <p className="text-xs text-muted-foreground">{t("openingHint")}</p>
+            </div>
+            <Button type="button" variant="soft" size="sm" onClick={() => setOpeningPreview("closed")}>
+              <Play />
+              {t("playOpening")}
+            </Button>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {OPENINGS.map((o) => {
+              const Icon = OPENING_ICONS[o];
+              return (
+                <label
+                  key={o}
+                  className={cn(
+                    "flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border p-3 text-center text-xs font-semibold transition-colors",
+                    opening === o ? "border-primary bg-accent text-accent-foreground ring-1 ring-primary" : "border-border hover:bg-secondary",
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name="opening"
+                    value={o}
+                    checked={opening === o}
+                    onChange={() => {
+                      setOpening(o);
+                      setOpeningPreview("closed");
+                    }}
+                    className="sr-only"
+                  />
+                  <Icon className="size-5" />
+                  <span className="leading-tight">{t(`openings.${o}`)}</span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
 
         <div className="flex flex-col gap-3">
           <h2 className="text-sm font-semibold">{t("sections")}</h2>
@@ -288,6 +363,34 @@ export function GiftEditor(props: Props) {
           </div>
         </div>
       </div>
+
+      {openingPreview && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={t("openingPreview")}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/85 p-4 backdrop-blur-sm"
+          onClick={() => setOpeningPreview(null)}
+        >
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="absolute top-4 right-4"
+            aria-label={t("closePreview")}
+            onClick={() => setOpeningPreview(null)}
+          >
+            <X />
+          </Button>
+          <GiftOpening
+            key={opening}
+            kind={opening}
+            variant={variant}
+            stage={openingPreview}
+            label={recipientName ? tGift("forName", { name: recipientName }) : tGift("forYou")}
+          />
+        </div>
+      )}
     </div>
   );
 }

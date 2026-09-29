@@ -197,6 +197,19 @@
     "theme": "အပြင်အဆင်",
     "lightLooks": "အလင်း",
     "darkLooks": "အမှောင်",
+    "opening": "ဖွင့်ပုံ",
+    "openingHint": "လက်ဆောင်ကို နှိပ်ဖွင့်လိုက်ချိန်မှာ သူတို့ မြင်ရမယ့်ပုံ။",
+    "playOpening": "ကြည့်ရန်",
+    "openingPreview": "ဖွင့်ပုံ နမူနာ",
+    "closePreview": "နမူနာ ပိတ်ရန်",
+    "openings": {
+      "envelope": "စာအိတ်",
+      "book": "ပုံပြင်စာအုပ်",
+      "giftbox": "လက်ဆောင်ဘူး",
+      "curtain": "ကန့်လန့်ကာ",
+      "scroll": "ပုရပိုက်",
+      "simple": "ရိုးရိုး ပေါ်လာ"
+    },
     "variants": {
       "blossom": "ပန်းပွင့်နေ့",
       "night": "ချစ်ဖွယ်ည",

@@ -210,6 +210,297 @@
   }
 }
 
+/*
+ * Gift openings, see components/gift/gift-opening.tsx.
+ * Every part runs for the whole --eo-ms and times itself with keyframe
+ * percentages, so one duration keeps the parts in step.
+ */
+.eo {
+  display: grid;
+  place-items: center;
+}
+.eo[data-stage="closed"] .eo-scene {
+  animation: eain-float 3.2s ease-in-out infinite;
+}
+.eo[data-stage="closed"] .eo-box {
+  animation: eo-box-idle 2.8s ease-in-out infinite;
+}
+.eo[data-stage="opening"]
+  :is(
+    .eo-scene,
+    .eo-env-seal,
+    .eo-env-flap,
+    .eo-env-letter,
+    .eo-book,
+    .eo-book-cover,
+    .eo-box,
+    .eo-box-lid,
+    .eo-box-glow,
+    .eo-box-confetti,
+    .eo-curtain-left,
+    .eo-curtain-right,
+    .eo-curtain-spark,
+    .eo-scroll-tie,
+    .eo-scroll-paper
+  ) {
+  animation-duration: var(--eo-ms, 2s);
+  animation-timing-function: cubic-bezier(0.55, 0, 0.3, 1);
+  animation-fill-mode: forwards;
+}
+.eo[data-stage="opening"] .eo-scene {
+  animation-name: eo-exit;
+}
+.eo[data-stage="opening"][data-kind="simple"] .eo-scene {
+  animation-name: eo-fade;
+}
+.eo[data-stage="opening"] .eo-env-seal {
+  animation-name: eo-env-seal;
+}
+.eo[data-stage="opening"] .eo-env-flap {
+  animation-name: eo-env-flap;
+}
+.eo[data-stage="opening"] .eo-env-letter {
+  animation-name: eo-env-letter;
+}
+.eo[data-stage="opening"] .eo-book {
+  animation-name: eo-book;
+}
+.eo[data-stage="opening"] .eo-book-cover {
+  animation-name: eo-book-cover;
+}
+.eo[data-stage="opening"] .eo-box {
+  animation-name: eo-box-shake;
+}
+.eo[data-stage="opening"] .eo-box-lid {
+  animation-name: eo-box-lid;
+}
+.eo[data-stage="opening"] .eo-box-glow {
+  animation-name: eo-box-glow;
+}
+.eo[data-stage="opening"] .eo-box-confetti {
+  animation-name: eo-box-confetti;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.eo[data-stage="opening"] .eo-curtain-left,
+.eo[data-stage="opening"] .eo-curtain-right {
+  animation-name: eo-curtain;
+}
+.eo[data-stage="opening"] .eo-curtain-spark {
+  animation-name: eo-curtain-spark;
+}
+.eo[data-stage="opening"] .eo-scroll-tie {
+  animation-name: eo-scroll-tie;
+}
+.eo[data-stage="opening"] .eo-scroll-paper {
+  animation-name: eo-scroll-paper;
+}
+
+@keyframes eo-exit {
+  0%,
+  80% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.15);
+  }
+}
+@keyframes eo-fade {
+  to {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes eo-env-seal {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  10%,
+  100% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+@keyframes eo-env-flap {
+  0%,
+  8% {
+    transform: perspective(700px) rotateX(0);
+    z-index: 4;
+  }
+  30% {
+    z-index: 4;
+  }
+  31%,
+  100% {
+    z-index: 0;
+  }
+  38%,
+  100% {
+    transform: perspective(700px) rotateX(180deg);
+  }
+}
+@keyframes eo-env-letter {
+  0%,
+  36% {
+    transform: translateY(0);
+  }
+  70%,
+  100% {
+    transform: translateY(-62%);
+  }
+}
+
+@keyframes eo-book {
+  0%,
+  8% {
+    transform: translateX(0);
+  }
+  52%,
+  100% {
+    transform: translateX(50%);
+  }
+}
+@keyframes eo-book-cover {
+  0%,
+  8% {
+    transform: perspective(1400px) rotateY(0);
+  }
+  56%,
+  100% {
+    transform: perspective(1400px) rotateY(-179deg);
+  }
+}
+
+@keyframes eo-box-idle {
+  0%,
+  70%,
+  100% {
+    rotate: 0deg;
+  }
+  76% {
+    rotate: -3deg;
+  }
+  82% {
+    rotate: 3deg;
+  }
+  88% {
+    rotate: -2deg;
+  }
+}
+@keyframes eo-box-shake {
+  0% {
+    rotate: 0deg;
+  }
+  4% {
+    rotate: -4deg;
+  }
+  8% {
+    rotate: 4deg;
+  }
+  12% {
+    rotate: -3deg;
+  }
+  16%,
+  100% {
+    rotate: 0deg;
+  }
+}
+@keyframes eo-box-lid {
+  0%,
+  16% {
+    opacity: 1;
+    transform: none;
+  }
+  40% {
+    opacity: 1;
+  }
+  56%,
+  100% {
+    opacity: 0;
+    transform: translate(70px, -150px) rotate(35deg);
+  }
+}
+@keyframes eo-box-glow {
+  0%,
+  18% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  40% {
+    opacity: 0.9;
+  }
+  80%,
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+@keyframes eo-box-confetti {
+  0%,
+  20% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0);
+  }
+  26%,
+  68% {
+    opacity: 1;
+  }
+  85%,
+  100% {
+    opacity: 0;
+    transform: translate(var(--x), var(--y)) rotate(var(--r));
+  }
+}
+
+@keyframes eo-curtain {
+  0%,
+  10% {
+    transform: scaleX(1);
+  }
+  62%,
+  100% {
+    transform: scaleX(0.12);
+  }
+}
+@keyframes eo-curtain-spark {
+  0%,
+  35% {
+    opacity: 0.4;
+    transform: scale(0.6);
+  }
+  70%,
+  100% {
+    opacity: 1;
+    transform: scale(1.25) rotate(20deg);
+  }
+}
+
+@keyframes eo-scroll-tie {
+  0%,
+  6% {
+    opacity: 1;
+    transform: none;
+  }
+  22%,
+  100% {
+    opacity: 0;
+    transform: translateY(-36px) scale(0.7);
+  }
+}
+@keyframes eo-scroll-paper {
+  0%,
+  20% {
+    height: 0;
+  }
+  66%,
+  100% {
+    height: 14rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

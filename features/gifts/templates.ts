@@ -1,4 +1,4 @@
-import type { GiftTheme, Section, ThemeVariant } from "./schemas";
+import type { GiftTheme, Opening, Section, ThemeVariant } from "./schemas";
 
 /**
  * Code-side template registry. The database holds template metadata (name,
@@ -32,6 +32,8 @@ export type TemplateStyle = {
   layout: Layout;
   design: Design;
   defaultVariant: ThemeVariant;
+  /** Opening animation a new gift starts with. Follows the design. */
+  defaultOpening: Opening;
   /** Composed scene for this template, from scripts/compose-illustrations.mjs. */
   illustration: string;
 };
@@ -40,7 +42,21 @@ const illustrationFor = (slug: string) => `/brand/illustrations/${slug}.webp`;
 
 type Locale = "en" | "my";
 
-export type TemplateDefinition = Omit<TemplateStyle, "illustration"> & {
+/** Each design opens the way its object would: a postcard in an envelope, a certificate as a scroll. */
+const designOpening: Record<Design, Opening> = {
+  postcard: "envelope",
+  party: "giftbox",
+  elegant: "curtain",
+  playful: "giftbox",
+  botanical: "book",
+  certificate: "scroll",
+  letter: "envelope",
+  minimal: "simple",
+  scrapbook: "book",
+  bold: "curtain",
+};
+
+export type TemplateDefinition = Omit<TemplateStyle, "illustration" | "defaultOpening"> & {
   defaultSections: (locale: Locale) => Section[];
 };
 
@@ -208,13 +224,21 @@ export const fallbackStyle: TemplateStyle = {
   layout: "card",
   design: "minimal",
   defaultVariant: "blossom",
+  defaultOpening: "simple",
   illustration: "/brand/lovebirds.webp",
 };
 
 export function getTemplateStyle(slug: string): TemplateStyle {
   const t = templates[slug];
   return t
-    ? { decoration: t.decoration, layout: t.layout, design: t.design, defaultVariant: t.defaultVariant, illustration: illustrationFor(slug) }
+    ? {
+        decoration: t.decoration,
+        layout: t.layout,
+        design: t.design,
+        defaultVariant: t.defaultVariant,
+        defaultOpening: designOpening[t.design],
+        illustration: illustrationFor(slug),
+      }
     : fallbackStyle;
 }
 
@@ -223,5 +247,6 @@ export function isAvailableTemplate(slug: string): boolean {
 }
 
 export function defaultTheme(slug: string): GiftTheme {
-  return { variant: getTemplateStyle(slug).defaultVariant };
+  const style = getTemplateStyle(slug);
+  return { variant: style.defaultVariant, opening: style.defaultOpening };
 }

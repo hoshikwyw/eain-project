@@ -197,6 +197,19 @@
     "theme": "Look",
     "lightLooks": "Light",
     "darkLooks": "Dark",
+    "opening": "Opening",
+    "openingHint": "What they see when they tap to open your gift.",
+    "playOpening": "Play",
+    "openingPreview": "Opening preview",
+    "closePreview": "Close preview",
+    "openings": {
+      "envelope": "Envelope",
+      "book": "Storybook",
+      "giftbox": "Gift box",
+      "curtain": "Curtain",
+      "scroll": "Scroll",
+      "simple": "Simple fade"
+    },
     "variants": {
       "blossom": "Blossom day",
       "night": "Lovely night",

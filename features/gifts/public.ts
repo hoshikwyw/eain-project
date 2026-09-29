@@ -4,14 +4,15 @@ import { cache } from "react";
 import { track } from "@/lib/analytics";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { signMedia } from "./media";
-import type { MediaItem, PublicQuestion, ResponseSubmission, Section, ThemeVariant } from "./schemas";
-import { referencedMediaIds, sectionsFromRows, variantFromTheme } from "./sections";
+import type { MediaItem, Opening, PublicQuestion, ResponseSubmission, Section, ThemeVariant } from "./schemas";
+import { openingFromTheme, referencedMediaIds, sectionsFromRows, variantFromTheme } from "./sections";
 import { getTemplateStyle, type TemplateStyle } from "./templates";
 
 export type PublicGift = {
   templateSlug: string;
   style: TemplateStyle;
   variant: ThemeVariant;
+  opening: Opening;
   sections: Section[];
   media: Record<string, MediaItem>;
   questions: PublicQuestion[];
@@ -70,10 +71,12 @@ export const getPublicGift = cache(async (token: string): Promise<PublicGift | n
   }));
 
   const slug = template?.slug ?? "";
+  const style = getTemplateStyle(slug);
   return {
     templateSlug: slug,
-    style: getTemplateStyle(slug),
+    style,
     variant: variantFromTheme(gift.theme),
+    opening: openingFromTheme(gift.theme, style.defaultOpening),
     sections,
     media: await signMedia(mediaRows ?? []),
     questions,

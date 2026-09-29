@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Gift, GiftEvent, GiftMedia, GiftRecipient, Template } from "@/types/database";
 import { signMedia } from "./media";
-import type { MediaItem, Section, ThemeVariant } from "./schemas";
-import { sectionsFromRows, variantFromTheme } from "./sections";
+import type { MediaItem, Opening, Section, ThemeVariant } from "./schemas";
+import { openingFromTheme, sectionsFromRows, variantFromTheme } from "./sections";
 import { getTemplateStyle, type TemplateStyle } from "./templates";
 
 export type GiftListItem = Gift & {
@@ -42,6 +42,7 @@ export type EditorGift = {
   template: Pick<Template, "id" | "slug" | "name_en" | "name_my">;
   style: TemplateStyle;
   variant: ThemeVariant;
+  opening: Opening;
   sections: Section[];
   recipient: GiftRecipient | null;
   mediaRows: GiftMedia[];
@@ -68,11 +69,13 @@ export async function getEditorGift(giftId: string): Promise<EditorGift | null> 
 
   if (!template) return null;
 
+  const style = getTemplateStyle(template.slug);
   return {
     gift,
     template,
-    style: getTemplateStyle(template.slug),
+    style,
     variant: variantFromTheme(gift.theme),
+    opening: openingFromTheme(gift.theme, style.defaultOpening),
     sections: sectionsFromRows(sections ?? []),
     recipient,
     mediaRows: mediaRows ?? [],

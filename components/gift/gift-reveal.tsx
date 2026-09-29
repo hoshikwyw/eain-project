@@ -4,11 +4,12 @@ import { Gift } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
-import { Lovebirds } from "@/components/brand/lovebirds";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
-import type { PublicQuestion } from "@/features/gifts/schemas";
+import type { Opening, PublicQuestion, ThemeVariant } from "@/features/gifts/schemas";
 import { cn } from "@/lib/utils";
+import { GiftOpening, openingDuration } from "./gift-opening";
+import { palettes } from "./palettes";
 import { ResponseForm } from "./response-form";
 
 type Stage = "closed" | "opening" | "open";
@@ -41,9 +42,16 @@ async function sendEvent(token: string, type: "opened" | "viewed" | "response_st
   }
 }
 
-type Props = { token: string; questions: PublicQuestion[]; children: React.ReactNode };
+type Props = {
+  token: string;
+  questions: PublicQuestion[];
+  opening: Opening;
+  variant: ThemeVariant;
+  recipientName: string;
+  children: React.ReactNode;
+};
 
-export function GiftReveal({ token, questions, children }: Props) {
+export function GiftReveal({ token, questions, opening, variant, recipientName, children }: Props) {
   const t = useTranslations("gift");
   const [stage, setStage] = useState<Stage>("closed");
   const endRef = useRef<HTMLDivElement>(null);
@@ -54,7 +62,7 @@ export function GiftReveal({ token, questions, children }: Props) {
     setStage("opening");
     // Recorded on the tap, not the page load, so link previews never count.
     void sendEvent(token, "opened");
-    window.setTimeout(() => setStage("open"), 900);
+    window.setTimeout(() => setStage("open"), openingDuration(opening));
   }
 
   useEffect(() => {
@@ -73,14 +81,37 @@ export function GiftReveal({ token, questions, children }: Props) {
   if (stage !== "open") {
     return (
       <div className="flex min-h-svh flex-col items-center justify-center gap-8 px-6 py-12 text-center">
-        <div className={cn("w-full max-w-xs transition-transform duration-700", stage === "opening" && "scale-110 opacity-0")}>
-          <Lovebirds />
-        </div>
-        <div className={cn("flex flex-col items-center gap-3", stage === "opening" && "animate-out fade-out")}>
+        <button
+          type="button"
+          onClick={open}
+          disabled={stage === "opening"}
+          tabIndex={-1}
+          className="relative flex min-h-80 w-full max-w-sm cursor-pointer items-center justify-center rounded-3xl outline-none disabled:cursor-default"
+        >
+          <span
+            aria-hidden="true"
+            className="absolute inset-6 rounded-full opacity-60 blur-3xl"
+            style={{ ...palettes[variant], background: "var(--t-accent-soft)" }}
+          />
+          <span className="relative">
+            <GiftOpening
+              kind={opening}
+              variant={variant}
+              stage={stage}
+              label={recipientName ? t("forName", { name: recipientName }) : t("forYou")}
+            />
+          </span>
+        </button>
+        <div className={cn("flex flex-col items-center gap-3 transition-opacity duration-500", stage === "opening" && "opacity-0")}>
           <p className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">{t("someone")}</p>
           <h1 className="font-display text-3xl font-semibold text-balance sm:text-4xl">{t("specialForYou")}</h1>
         </div>
-        <Button size="lg" onClick={open} disabled={stage === "opening"} className="min-w-52">
+        <Button
+          size="lg"
+          onClick={open}
+          disabled={stage === "opening"}
+          className={cn("min-w-52 transition-opacity duration-500", stage === "opening" && "opacity-0")}
+        >
           <Gift />
           {t("openYourGift")}
         </Button>

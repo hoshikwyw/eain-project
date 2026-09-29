@@ -44,6 +44,7 @@ export default async function EditGiftPage({ params, searchParams }: PageProps<"
           title={data.gift.title}
           recipientName={data.recipient?.name ?? ""}
           variant={data.variant}
+          opening={data.opening}
           sections={data.sections}
           media={Object.values(data.media)}
           style={data.style}

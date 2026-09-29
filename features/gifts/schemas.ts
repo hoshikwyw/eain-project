@@ -18,8 +18,15 @@ export const themeVariantSchema = z.enum([
 export type ThemeVariant = z.infer<typeof themeVariantSchema>;
 export const THEME_VARIANTS = themeVariantSchema.options;
 
+/** How the gift opens on the receiver page, before the content shows. */
+export const openingSchema = z.enum(["envelope", "book", "giftbox", "curtain", "scroll", "simple"]);
+export type Opening = z.infer<typeof openingSchema>;
+export const OPENINGS = openingSchema.options;
+
 export const giftThemeSchema = z.object({
   variant: themeVariantSchema.default("blossom"),
+  /** Missing on gifts made before openings existed; the template default applies. */
+  opening: openingSchema.optional(),
 });
 export type GiftTheme = z.infer<typeof giftThemeSchema>;
 
@@ -113,6 +120,7 @@ export const editorPayloadSchema = z.object({
   title: z.string().trim().min(1).max(120),
   recipientName: shortText(80).default(""),
   variant: themeVariantSchema,
+  opening: openingSchema,
   sections: z.array(sectionSchema).min(1).max(MAX_SECTIONS),
 });
 export type EditorPayload = z.infer<typeof editorPayloadSchema>;

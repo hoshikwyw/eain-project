@@ -26,7 +26,13 @@ export default async function PublicGiftPage({ params }: PageProps<"/g/[token]">
   if (!gift) return <GiftUnavailable />;
 
   return (
-    <GiftReveal token={token} questions={gift.questions}>
+    <GiftReveal
+      token={token}
+      questions={gift.questions}
+      opening={gift.opening}
+      variant={gift.variant}
+      recipientName={gift.recipientName}
+    >
       <GiftView
         sections={gift.sections}
         media={gift.media}

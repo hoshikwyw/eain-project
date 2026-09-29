@@ -85,7 +85,7 @@ export async function saveGift(giftId: string, _prev: SaveGiftState, formData: F
 
   const { data: gift, error: giftError } = await supabase
     .from("gifts")
-    .update({ title: v.title, theme: { variant: v.variant } })
+    .update({ title: v.title, theme: { variant: v.variant, opening: v.opening } })
     .eq("id", giftId)
     .neq("status", "deleted")
     .select("id")
