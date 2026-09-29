@@ -195,12 +195,21 @@
     "recipientName": "ဘယ်သူ့အတွက်လဲ?",
     "recipientPlaceholder": "သူ့နာမည်",
     "theme": "အပြင်အဆင်",
+    "lightLooks": "အလင်း",
+    "darkLooks": "အမှောင်",
     "variants": {
       "blossom": "ပန်းပွင့်နေ့",
       "night": "ချစ်ဖွယ်ည",
       "mint": "စိမ်းလန်းမင့်",
       "sunset": "နွေးထွေးနေဝင်ချိန်",
-      "celebrate": "မွေးနေ့ပွဲ"
+      "celebrate": "မွေးနေ့ပွဲ",
+      "ocean": "ပင်လယ်လေညင်း",
+      "lavender": "လာဗင်ဒါ အိပ်မက်",
+      "champagne": "ရွှေဖျော့",
+      "ivory": "ဆင်စွယ်ရောင် ရိုးရှင်း",
+      "forest": "သစ်တောည",
+      "noir": "နက်မှောင်နှင့် ရွှေ",
+      "berry": "ဘယ်ရီည"
     },
     "sections": "အပိုင်းများ",
     "sectionTypes": {

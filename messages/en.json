@@ -195,12 +195,21 @@
     "recipientName": "Who is it for?",
     "recipientPlaceholder": "Their name",
     "theme": "Look",
+    "lightLooks": "Light",
+    "darkLooks": "Dark",
     "variants": {
       "blossom": "Blossom day",
       "night": "Lovely night",
       "mint": "Fresh mint",
       "sunset": "Warm sunset",
-      "celebrate": "Birthday party"
+      "celebrate": "Birthday party",
+      "ocean": "Ocean breeze",
+      "lavender": "Lavender dream",
+      "champagne": "Champagne",
+      "ivory": "Ivory minimal",
+      "forest": "Forest night",
+      "noir": "Noir & gold",
+      "berry": "Berry night"
     },
     "sections": "Sections",
     "sectionTypes": {

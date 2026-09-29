@@ -209,9 +209,9 @@ function PartyDesign(ctx: Ctx) {
       <Decorations kind="confetti" />
       <div className={cn("relative flex flex-col items-center text-center", compact ? "gap-4 px-4 pt-4 pb-5" : "gap-6 px-5 pt-6 pb-8 sm:px-8")}>
         <Illustration src={style.illustration} className={compact ? "max-w-56" : "max-w-sm"} />
-        <div className={cn("w-full rounded-2xl bg-[color:var(--t-accent)] text-white shadow-lg", compact ? "px-5 py-4" : "px-7 py-6")}>
-          <Eyebrow text={eyebrow} className="text-white/80" />
-          <div className="mt-1 [&_h1]:text-white [&_h2]:text-white [&_p]:text-white/90 [&_span]:text-white">
+        <div className={cn("w-full rounded-2xl bg-[color:var(--t-accent)] text-[color:var(--t-on-accent,#fff)] shadow-lg", compact ? "px-5 py-4" : "px-7 py-6")}>
+          <Eyebrow text={eyebrow} className="text-[color:var(--t-on-accent,#fff)] opacity-80" />
+          <div className="mt-1 [&_h1]:text-[color:var(--t-on-accent,#fff)] [&_h2]:text-[color:var(--t-on-accent,#fff)] [&_p]:text-[color:var(--t-on-accent,#fff)] [&_span]:text-[color:var(--t-on-accent,#fff)]">
             <Sections ctx={coverCtx} />
           </div>
         </div>
@@ -255,7 +255,7 @@ function PlayfulDesign(ctx: Ctx) {
     <div className={cn("relative overflow-hidden rounded-[2rem] [background:var(--t-bg)]", compact ? "p-3" : "p-4 sm:p-5")}>
       <Decorations kind="sparkles" />
       <div className={cn("relative flex flex-col rounded-[1.6rem] border-[3px] border-dashed border-[color:var(--t-accent)]/60 bg-[color:var(--t-card)]/92", compact ? "gap-5 p-5" : "gap-7 p-7 sm:p-9")}>
-        <span className="inline-flex w-fit -rotate-2 rounded-full bg-[color:var(--t-accent)] px-3 py-1 text-xs font-bold tracking-wide text-white uppercase">{eyebrow}</span>
+        <span className="inline-flex w-fit -rotate-2 rounded-full bg-[color:var(--t-accent)] px-3 py-1 text-xs font-bold tracking-wide text-[color:var(--t-on-accent,#fff)] uppercase">{eyebrow}</span>
         <Illustration src={style.illustration} className={cn("mx-auto", compact ? "max-w-52" : "max-w-xs")} />
         <Sections
           ctx={ctx}

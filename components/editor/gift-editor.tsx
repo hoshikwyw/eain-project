@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
 import { GiftView } from "@/components/gift/gift-view";
-import { variantSwatch } from "@/components/gift/palettes";
+import { DARK_VARIANTS, variantSwatch } from "@/components/gift/palettes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -160,23 +160,28 @@ export function GiftEditor(props: Props) {
           </div>
         </div>
 
-        <fieldset className="flex flex-col gap-2">
-          <legend className="text-sm font-semibold">{t("theme")}</legend>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {THEME_VARIANTS.map((v) => (
-              <label
-                key={v}
-                className={cn(
-                  "flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold",
-                  variant === v ? "border-primary bg-accent text-accent-foreground" : "border-border",
-                )}
-              >
-                <input type="radio" name="variant" value={v} checked={variant === v} onChange={() => setVariant(v)} className="sr-only" />
-                <span aria-hidden="true" className="size-4 rounded-full" style={{ background: variantSwatch[v] }} />
-                {t(`variants.${v}`)}
-              </label>
-            ))}
-          </div>
+        <fieldset className="flex flex-col gap-3">
+          <legend className="mb-1 text-sm font-semibold">{t("theme")}</legend>
+          {([false, true] as const).map((dark) => (
+            <div key={String(dark)} className="flex flex-col gap-2">
+              <p className="text-xs text-muted-foreground">{dark ? t("darkLooks") : t("lightLooks")}</p>
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                {THEME_VARIANTS.filter((v) => DARK_VARIANTS.has(v) === dark).map((v) => (
+                  <label
+                    key={v}
+                    className={cn(
+                      "flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border p-2 text-center text-xs font-semibold transition-colors",
+                      variant === v ? "border-primary bg-accent text-accent-foreground ring-1 ring-primary" : "border-border hover:bg-secondary",
+                    )}
+                  >
+                    <input type="radio" name="variant" value={v} checked={variant === v} onChange={() => setVariant(v)} className="sr-only" />
+                    <span aria-hidden="true" className="h-8 w-full rounded-lg ring-1 ring-black/5" style={{ background: variantSwatch[v] }} />
+                    <span className="leading-tight">{t(`variants.${v}`)}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
         </fieldset>
 
         <div className="flex flex-col gap-3">
