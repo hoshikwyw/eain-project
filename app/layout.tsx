@@ -33,7 +33,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 
   return (
     <html lang={locale} className={`${fontVariables} h-full antialiased`} suppressHydrationWarning>
-      <body className="flex min-h-full flex-col">
+      {/* Browser extensions (ColorZilla, Grammarly) add attributes to body before React loads. */}
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
         <NextIntlClientProvider>
           <ThemeProvider>
             <SkipLink />
