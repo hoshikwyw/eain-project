@@ -155,6 +155,41 @@ function bunting(colors) {
   return out;
 }
 
+let hatSeq = 0;
+/** Striped party hat with a brim and pom-pom. (x, y) is the centre of the brim; h is the height. */
+function partyHat(x, y, h, rot, { body, stripe, brim, pom }) {
+  const id = `hat${++hatSeq}`;
+  const w = h * 0.72;
+  const tri = `M${x - w / 2} ${y} L${x} ${y - h} L${x + w / 2} ${y} Z`;
+  let bands = "";
+  for (let i = 1; i < 5; i += 2) {
+    bands += `<rect x="${x - w}" y="${y - h + (i * h) / 5}" width="${w * 2}" height="${h / 9}" fill="${stripe}"/>`;
+  }
+  let dots = "";
+  for (const [dx, dy] of [[-0.12, 0.3], [0.1, 0.52], [-0.18, 0.74], [0.2, 0.86]]) {
+    dots += `<circle cx="${x + dx * w}" cy="${y - h + dy * h}" r="${h * 0.035}" fill="#fff" opacity="0.85"/>`;
+  }
+  return `<g transform="rotate(${rot} ${x} ${y})">
+    <defs><clipPath id="${id}"><path d="${tri}"/></clipPath></defs>
+    <path d="${tri}" fill="${body}"/>
+    <g clip-path="url(#${id})">${bands}${dots}</g>
+    <ellipse cx="${x}" cy="${y}" rx="${w / 2 + 5}" ry="${h * 0.075}" fill="${brim}"/>
+    <circle cx="${x}" cy="${y - h}" r="${h * 0.1}" fill="${pom}"/>
+  </g>`;
+}
+
+/** A cluster of balloons whose strings meet at (tieX, tieY). */
+function balloonCluster(tieX, tieY, balloons) {
+  let strings = "";
+  let heads = "";
+  for (const [bx, by, s, c] of balloons) {
+    strings += `<path d="M${bx} ${by + s * 0.58} Q${(bx + tieX) / 2 + 18} ${(by + tieY) / 2} ${tieX} ${tieY}" stroke="#9a7b6a" stroke-width="2.5" fill="none" opacity="0.8"/>`;
+    heads += shapes.balloon(bx, by, s, c, 0.97);
+    heads += `<ellipse cx="${bx - s * 0.16}" cy="${by - s * 0.2}" rx="${s * 0.08}" ry="${s * 0.13}" fill="#fff" opacity="0.5"/>`;
+  }
+  return strings + heads;
+}
+
 function svg(inner) {
   return Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${inner}</svg>`);
 }
@@ -187,22 +222,40 @@ const C = {
 
 const scenes = {
   // Couple beside a birthday cake, gift boxes on the other side, confetti above.
+  // Birthday party: bunting, balloons both sides, cake, gifts, rainbow confetti, party hats on the couple.
   "birthday-postcard": async () => {
-    const couple = await bird("lovebirds", 540);
-    const x = Math.round((W - couple.w) / 2 - 20);
+    const couple = await bird("lovebirds", 520);
+    const x = Math.round((W - couple.w) / 2 - 10);
     const y = H - couple.h - 30;
+    const rainbow = ["#f0417f", "#ffac1c", "#1fb5c9", "#8a63f5", "#3ec27a"];
     const props =
-      cake(190, H - 40, 220, { base: "#f7c7d4", frosting: "#fff6f8", accent: C.pink, candles: 3 }) +
-      giftBox(1040, H - 40, 150, C.blue, C.gold) +
-      giftBox(1150, H - 40, 105, C.pinkSoft, C.pink);
+      bunting(rainbow) +
+      balloonCluster(170, 520, [
+        [95, 215, 118, "#f0417f"],
+        [200, 175, 108, "#1fb5c9"],
+        [150, 300, 100, "#ffac1c"],
+      ]) +
+      balloonCluster(1080, 540, [
+        [1010, 205, 110, "#8a63f5"],
+        [1120, 180, 118, "#3ec27a"],
+        [1070, 300, 100, "#f0417f"],
+      ]) +
+      cake(185, H - 40, 220, { base: "#ffd3e4", frosting: "#fffaf3", accent: "#f0417f", candles: 4 }) +
+      giftBox(1040, H - 40, 150, "#8a63f5", "#ffc53d") +
+      giftBox(1150, H - 40, 105, "#1fb5c9", "#f0417f");
+    // Head positions measured on lovebirds.webp as fractions of its size.
+    const hats =
+      partyHat(x + couple.w * 0.3, y + couple.h * 0.13, 82, -16, { body: "#1fb5c9", stripe: "#ffac1c", brim: "#f0417f", pom: "#ffd24d" }) +
+      partyHat(x + couple.w * 0.69, y + couple.h * 0.07, 86, 14, { body: "#f0417f", stripe: "#8a63f5", brim: "#ffac1c", pom: "#3ec27a" });
     return {
       under: svg(
         shadow(x + couple.w / 2, H - 30, couple.w) +
           props +
-          scatter("confetti", 34, [C.pink, C.gold, C.blue, C.mintSoft], 11, { band: [0, 420], size: [14, 28], opacity: [0.45, 0.9], keepOut: [x + 60, y + 40, x + couple.w - 60, H] }),
+          scatter("confetti", 46, rainbow, 11, { band: [150, 470], size: [14, 28], opacity: [0.6, 0.95], keepOut: [x + 40, y, x + couple.w - 40, H] }) +
+          scatter("sparkle", 10, ["#ffd24d", "#1fb5c9", "#f0417f"], 12, { band: [140, 420], size: [18, 34], opacity: [0.7, 1], keepOut: [x + 40, y, x + couple.w - 40, H] }),
       ),
       layers: [{ input: couple.buf, left: x, top: y }],
-      over: svg(""),
+      over: svg(hats),
     };
   },
   // Blue bird with balloons, a cake, a stack of gifts and confetti.

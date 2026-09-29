@@ -79,6 +79,30 @@ export const palettes: Record<ThemeVariant, CSSProperties> = {
     "--bird-b-wing": "#76a2c6",
     "--branch": "#8a5a3c",
   } as CSSProperties,
+  /** Birthday party: pastel rainbow ground with five bright confetti colours (--t-c1..5). */
+  celebrate: {
+    "--t-bg": "linear-gradient(135deg, #ffe6f0 0%, #fff3d6 32%, #e1f6ff 66%, #efe6ff 100%)",
+    "--t-card": "#fffdf8",
+    "--t-fg": "#2d1b3d",
+    "--t-muted": "#7a6a88",
+    "--t-accent": "#f0417f",
+    "--t-accent-soft": "#ffe0ec",
+    "--t-deco": "#ffc53d",
+    "--t-c1": "#f0417f",
+    "--t-c2": "#ffac1c",
+    "--t-c3": "#1fb5c9",
+    "--t-c4": "#8a63f5",
+    "--t-c5": "#3ec27a",
+    "--brand": "#f0417f",
+    "--brand-soft": "#ffe0ec",
+    "--glow": "#ffd24d",
+    "--foreground": "#2d1b3d",
+    "--bird-a": "#f58aa0",
+    "--bird-a-wing": "#ee6f8a",
+    "--bird-b": "#7fb2d0",
+    "--bird-b-wing": "#6a9dbd",
+    "--branch": "#8b5e4b",
+  } as CSSProperties,
 };
 
 /** Swatch colour for pickers, one per variant. */
@@ -87,4 +111,5 @@ export const variantSwatch: Record<ThemeVariant, string> = {
   night: "#3a2372",
   mint: "#6cc3a0",
   sunset: "#f59b7e",
+  celebrate: "conic-gradient(#f0417f, #ffac1c, #1fb5c9, #8a63f5, #3ec27a, #f0417f)",
 };

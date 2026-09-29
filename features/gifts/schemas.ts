@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /** Visual variants a template can render. Templates carry their own palette. */
-export const themeVariantSchema = z.enum(["blossom", "night", "mint", "sunset"]);
+export const themeVariantSchema = z.enum(["blossom", "night", "mint", "sunset", "celebrate"]);
 export type ThemeVariant = z.infer<typeof themeVariantSchema>;
 export const THEME_VARIANTS = themeVariantSchema.options;
 

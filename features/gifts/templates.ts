@@ -6,7 +6,7 @@ import type { GiftTheme, Section, ThemeVariant } from "./schemas";
  * section renderer and differ by decoration, layout, default look and the
  * sections they start with.
  */
-export type Decoration = "petals" | "stars" | "confetti" | "hearts" | "sparkles" | "leaves";
+export type Decoration = "petals" | "stars" | "confetti" | "hearts" | "sparkles" | "leaves" | "party";
 
 /** card: one framed card. scroll: each section is its own card, revealed as you scroll. */
 export type Layout = "card" | "scroll";
@@ -72,11 +72,14 @@ const timeline = (items: { date: string; title: string; text: string }[]): Secti
 export const templates: Record<string, TemplateDefinition> = {
   "birthday-postcard": {
     design: "postcard",
-    decoration: "petals",
+    decoration: "party",
     layout: "card",
-    defaultVariant: "blossom",
+    defaultVariant: "celebrate",
     defaultSections: (l) => [
-      cover(my(l, "Happy Birthday!", "မွေးနေ့ပျော်ရွှင်ပါစေ")),
+      cover(
+        my(l, "Happy Birthday!", "မွေးနေ့ပျော်ရွှင်ပါစေ"),
+        my(l, "Make a wish. Today is all yours.", "ဆုတောင်းလိုက်ပါ။ ဒီနေ့ဟာ သင့်အတွက်ပါ။"),
+      ),
       message(
         my(
           l,

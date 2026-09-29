@@ -113,27 +113,85 @@ function Eyebrow({ text, className }: { text: string; className?: string }) {
 
 // Designs ---------------------------------------------------------------------
 
-/** A real postcard: message on the left, stamp and address lines on the right. */
+/** Party colour n (1..5) with a fallback to the accent, so every palette works. */
+const partyColor = (n: number) => `var(--t-c${((n - 1) % 5) + 1}, var(--t-accent))`;
+
+/** Rainbow gradient on the cover heading, from the palette's party colours. */
+const rainbowHeading =
+  "[&_h1]:w-fit [&_h1]:bg-clip-text [&_h1]:text-transparent [&_h1]:[background-image:linear-gradient(100deg,var(--t-c1,var(--t-accent)),var(--t-c2,var(--t-accent))_35%,var(--t-c4,var(--t-accent))_70%,var(--t-c3,var(--t-accent)))]";
+
+/** A string of triangle flags across the top of a card. */
+function Bunting({ count }: { count: number }) {
+  return (
+    <div aria-hidden="true" className="relative px-2 pt-2">
+      <span className="absolute inset-x-0 top-2 h-px bg-[color:var(--t-fg)]/20" />
+      <div className="flex justify-between">
+        {Array.from({ length: count }, (_, i) => (
+          <span
+            key={i}
+            className="h-5 w-4 [clip-path:polygon(0_0,100%_0,50%_100%)] sm:h-6 sm:w-5"
+            style={{ background: partyColor(i + 1) }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Three balloons on strings. */
+function Balloons({ className }: { className?: string }) {
+  const balloons = [
+    { cx: 24, cy: 34, rx: 17, ry: 21, c: 1 },
+    { cx: 64, cy: 38, rx: 15, ry: 19, c: 2 },
+    { cx: 45, cy: 22, rx: 17, ry: 21, c: 3 },
+  ];
+  return (
+    <svg viewBox="0 0 90 124" aria-hidden="true" className={className}>
+      {balloons.map((b) => (
+        <path key={`s${b.c}`} d={`M${b.cx} ${b.cy + b.ry + 3} Q${b.cx + 6} ${(b.cy + 120) / 2} 45 120`} fill="none" strokeWidth="1.2" style={{ stroke: "var(--t-muted)" }} />
+      ))}
+      {balloons.map((b) => (
+        <g key={b.c}>
+          <ellipse cx={b.cx} cy={b.cy} rx={b.rx} ry={b.ry} style={{ fill: partyColor(b.c) }} />
+          <path d={`M${b.cx - 3} ${b.cy + b.ry + 3} L${b.cx} ${b.cy + b.ry - 1} L${b.cx + 3} ${b.cy + b.ry + 3} Z`} style={{ fill: partyColor(b.c) }} />
+          <ellipse cx={b.cx - b.rx * 0.38} cy={b.cy - b.ry * 0.4} rx={b.rx * 0.22} ry={b.ry * 0.3} fill="#fff" opacity="0.45" />
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+/** A postcard with an airmail frame: message on the left, balloons, stamp and address lines on the right. */
 function PostcardDesign(ctx: Ctx) {
   const { compact, style, eyebrow } = ctx;
   return (
-    <article className="relative overflow-hidden rounded-2xl border-[6px] border-[color:var(--t-card)] shadow-[0_1px_0_rgba(0,0,0,0.06)] [background:var(--t-bg)]">
-      <Pattern kind="dots" opacity={0.25} />
-      <Decorations kind="petals" />
-      <div className={cn("relative grid rounded-xl bg-[color:var(--t-card)]/92", compact ? "gap-5 p-5 sm:grid-cols-[3fr_2fr]" : "gap-7 p-6 sm:grid-cols-[3fr_2fr] sm:p-9")}>
-        <Sections ctx={ctx} className={compact ? "gap-4" : "gap-6"} />
-        <aside className="flex flex-col gap-5 border-t border-dashed border-[color:var(--t-accent-soft)] pt-5 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-6">
-          <div className="self-end rounded-md border-2 border-dashed border-[color:var(--t-deco)] bg-[color:var(--t-accent-soft)]/40 p-1.5">
-            <Illustration src={style.illustration} className={compact ? "w-24" : "w-32"} />
-            <p className="mt-1 text-center font-display text-[10px] font-semibold tracking-[0.3em] uppercase text-[color:var(--t-muted)]">Eain</p>
-          </div>
-          <div className="mt-auto flex flex-col gap-4">
-            <Eyebrow text={eyebrow} className="text-[color:var(--t-accent)]" />
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="h-px w-full bg-[color:var(--t-accent-soft)]" />
-            ))}
-          </div>
-        </aside>
+    <article className="relative overflow-hidden rounded-2xl p-2 shadow-[0_1px_0_rgba(0,0,0,0.06)] [background:repeating-linear-gradient(135deg,var(--t-c1,var(--t-accent))_0_14px,var(--t-card)_14px_28px,var(--t-c3,var(--t-deco))_28px_42px,var(--t-card)_42px_56px)]">
+      <div className="relative overflow-hidden rounded-xl [background:var(--t-bg)]">
+        <Decorations kind={style.decoration} />
+        <Bunting count={compact ? 11 : 15} />
+        <div
+          className={cn(
+            "relative m-3 grid rounded-xl bg-[color:var(--t-card)]/90 shadow-sm",
+            compact ? "gap-5 p-5 sm:grid-cols-[3fr_2fr]" : "gap-7 p-6 sm:m-4 sm:grid-cols-[3fr_2fr] sm:p-9",
+          )}
+        >
+          <Sections ctx={ctx} className={compact ? "gap-4" : "gap-6"} itemClassName={rainbowHeading} />
+          <aside className="flex flex-col gap-5 border-t border-dashed border-[color:var(--t-accent-soft)] pt-5 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-6">
+            <div className="flex items-start justify-end gap-2">
+              <Balloons className={cn("float-slow", compact ? "w-11" : "w-16")} />
+              <div className="rounded-md border-2 border-dashed border-[color:var(--t-deco)] bg-[color:var(--t-accent-soft)]/40 p-1.5">
+                <Illustration src={style.illustration} className={compact ? "w-24" : "w-32"} />
+                <p className="mt-1 text-center font-display text-[10px] font-semibold tracking-[0.3em] uppercase text-[color:var(--t-muted)]">Eain</p>
+              </div>
+            </div>
+            <div className="mt-auto flex flex-col gap-4">
+              <Eyebrow text={eyebrow} className="text-[color:var(--t-accent)]" />
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="h-px w-full" style={{ background: partyColor(i + 1), opacity: 0.45 }} />
+              ))}
+            </div>
+          </aside>
+        </div>
       </div>
     </article>
   );
@@ -468,8 +526,47 @@ function PhotoPlaceholder({ label, polaroid }: { label: string; polaroid?: boole
   );
 }
 
+/**
+ * Multicoloured confetti for birthday designs: strips, dots, rings and
+ * sparkles in the palette's five party colours. Fixed positions keep the
+ * server and client render identical.
+ */
+function PartyConfetti() {
+  // [left %, top %, shape, colour 1..5, rotation]
+  const pieces: [number, number, "strip" | "dot" | "ring" | "spark", number, number][] = [
+    [4, 14, "strip", 1, 20], [11, 38, "dot", 3, 0], [3, 62, "ring", 4, 0], [9, 86, "strip", 2, -30],
+    [18, 6, "spark", 2, 0], [27, 94, "dot", 5, 0], [36, 4, "strip", 4, 60], [47, 96, "ring", 1, 0],
+    [55, 5, "dot", 1, 0], [63, 93, "strip", 3, -15], [72, 7, "ring", 5, 0], [80, 95, "spark", 4, 0],
+    [88, 20, "strip", 5, 40], [95, 42, "dot", 2, 0], [91, 66, "strip", 1, -50], [97, 88, "ring", 3, 0],
+    [50, 50, "spark", 3, 0], [22, 70, "strip", 3, 75],
+  ];
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 select-none">
+      {pieces.map(([x, y, shape, c, rot], i) => {
+        const color = partyColor(c);
+        const base = { left: `${x}%`, top: `${y}%`, transform: `rotate(${rot}deg)` };
+        switch (shape) {
+          case "strip":
+            return <span key={i} className="absolute h-3.5 w-1.5 rounded-sm opacity-85" style={{ ...base, background: color }} />;
+          case "dot":
+            return <span key={i} className="absolute size-2 rounded-full opacity-85" style={{ ...base, background: color }} />;
+          case "ring":
+            return <span key={i} className="absolute size-2.5 rounded-full border-2 opacity-80" style={{ ...base, borderColor: color }} />;
+          case "spark":
+            return (
+              <span key={i} className="absolute text-sm leading-none" style={{ ...base, color }}>
+                ✦
+              </span>
+            );
+        }
+      })}
+    </div>
+  );
+}
+
 /** Purely visual scatter. Reads --t-deco and --glow from the palette. */
 function Decorations({ kind }: { kind: Decoration }) {
+  if (kind === "party") return <PartyConfetti />;
   const spots = [
     [6, 8],
     [88, 12],
