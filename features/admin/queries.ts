@@ -1,6 +1,7 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
 import { getCurrentProfile } from "@/features/profile/queries";
+import { appMode } from "@/lib/app-mode";
 import { signMedia } from "@/features/gifts/media";
 import { sectionsFromRows, variantFromTheme } from "@/features/gifts/sections";
 import { getTemplateStyle } from "@/features/gifts/templates";
@@ -8,12 +9,16 @@ import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/types/database";
 
 /**
- * Admin pages call this first. Non-admins get a 404, not a 403, so the
- * existence of the admin area is not confirmed to them.
+ * Admin pages call this first. On a combined site non-admins get a 404, so
+ * the admin area is not confirmed to them. On the separate admin site they
+ * get a page that explains and lets them sign out.
  */
 export const requireAdmin = cache(async (): Promise<Profile> => {
   const profile = await getCurrentProfile();
-  if (profile.role !== "admin") notFound();
+  if (profile.role !== "admin") {
+    if (appMode === "admin") redirect("/auth/not-admin");
+    notFound();
+  }
   return profile;
 });
 

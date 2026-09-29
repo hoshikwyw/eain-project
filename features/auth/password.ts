@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { adminSiteUrl, appMode } from "@/lib/app-mode";
 import { isSupabaseConfigured } from "@/lib/env";
 import { checkRateLimit, clientKeyFromHeaders } from "@/lib/rate-limit";
 import { getSiteOrigin } from "@/lib/site-url";
@@ -26,7 +27,8 @@ export async function requestPasswordReset(_prev: ForgotState, formData: FormDat
   if (!allowed) return { status: "rate-limited" };
 
   const supabase = await createClient();
-  const origin = await getSiteOrigin();
+  // Reset links return to the site the request came from, admin or user.
+  const origin = appMode === "admin" && adminSiteUrl ? adminSiteUrl : await getSiteOrigin();
   await supabase.auth.resetPasswordForEmail(parsed.data, {
     redirectTo: `${origin}/auth/callback?next=${encodeURIComponent("/auth/reset")}`,
   });

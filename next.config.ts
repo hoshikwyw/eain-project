@@ -19,6 +19,9 @@ const giftPageHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // The admin dev server (scripts/dev.mjs admin) builds into its own folder
+  // so it can run beside the user site without sharing a cache.
+  distDir: process.env.EAIN_DIST_DIR || ".next",
   async headers() {
     return [
       { source: "/:path*", headers: baseSecurityHeaders },

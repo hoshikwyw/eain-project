@@ -1,26 +1,42 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { adminSiteUrl, appMode, isAdminPath } from "@/lib/app-mode";
 import { safeNextPath } from "@/lib/auth/paths";
 import { updateSession } from "@/lib/supabase/proxy-session";
 
 const PROTECTED_PREFIXES = ["/dashboard", "/create", "/admin"];
 const AUTH_PAGES = ["/auth/login", "/auth/signup"];
+/** Only these paths need the Supabase session refreshed; gift pages never do. */
+const SESSION_PREFIXES = [...PROTECTED_PREFIXES, ...AUTH_PAGES, "/auth/reset"];
+
+const startsWithAny = (pathname: string, prefixes: string[]) =>
+  prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
 /**
- * Runs before protected and auth routes.
- * - Keeps the Supabase session fresh.
- * - Sends signed-out visitors to login, remembering where they were going.
- * - Sends signed-in visitors away from the login and signup pages.
- * - Sends visitors without a reset session from /auth/reset to /auth/forgot.
+ * Runs before every page request (static files are excluded by the matcher).
+ * 1. Splits the sites when EAIN_APP_MODE is set:
+ *    - admin site serves only /admin, /auth and /api; everything else goes to /admin.
+ *    - user site sends /admin to the admin site.
+ * 2. Keeps the Supabase session fresh on account pages.
+ * 3. Sends signed-out visitors to login, and signed-in visitors away from login.
  * Authorization itself is enforced by RLS and server code, not here.
  */
 export async function proxy(request: NextRequest) {
-  const { response, user } = await updateSession(request);
   const { pathname, search } = request.nextUrl;
 
-  const isProtected = PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
-  const isAuthPage = AUTH_PAGES.includes(pathname);
+  if (appMode === "admin") {
+    const allowed = isAdminPath(pathname) || pathname.startsWith("/auth/") || pathname.startsWith("/api/");
+    if (!allowed) return NextResponse.redirect(new URL("/admin", request.url));
+    if (pathname === "/auth/signup") return NextResponse.redirect(new URL("/auth/login", request.url));
+  } else if (appMode === "user" && adminSiteUrl && isAdminPath(pathname)) {
+    return NextResponse.redirect(new URL(pathname + search, adminSiteUrl));
+  }
 
-  if (isProtected && !user) {
+  if (!startsWithAny(pathname, SESSION_PREFIXES)) return NextResponse.next();
+
+  const { response, user } = await updateSession(request);
+  const home = appMode === "admin" ? "/admin" : "/dashboard";
+
+  if (startsWithAny(pathname, PROTECTED_PREFIXES) && !user) {
     const login = request.nextUrl.clone();
     login.pathname = "/auth/login";
     login.search = "";
@@ -28,8 +44,9 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(login);
   }
 
-  if (isAuthPage && user) {
-    const next = safeNextPath(request.nextUrl.searchParams.get("next"));
+  if (AUTH_PAGES.includes(pathname) && user) {
+    const requested = request.nextUrl.searchParams.get("next");
+    const next = requested ? safeNextPath(requested) : home;
     return NextResponse.redirect(new URL(next, request.url));
   }
 
@@ -42,5 +59,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/create/:path*", "/admin/:path*", "/auth/login", "/auth/signup", "/auth/reset"],
+  // Everything except Next internals and files with an extension (images, icons, robots.txt, sitemap.xml).
+  matcher: ["/((?!_next/|__nextjs|.*\\.[a-zA-Z0-9]+$).*)"],
 };

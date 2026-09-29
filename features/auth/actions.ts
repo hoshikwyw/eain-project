@@ -3,13 +3,16 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
+import { adminSiteUrl, appMode } from "@/lib/app-mode";
 import { isSupabaseConfigured, publicEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 import { safeNextPath } from "@/lib/auth/paths";
 import { signInSchema, signUpSchema, type AuthFormState } from "./schemas";
 
+/** Where Google sign-in returns to: the admin site when signing in there. */
 async function siteOrigin(): Promise<string> {
-  if (publicEnv.NEXT_PUBLIC_SITE_URL) return publicEnv.NEXT_PUBLIC_SITE_URL;
+  if (appMode === "admin" && adminSiteUrl) return adminSiteUrl;
+  if (appMode !== "admin" && publicEnv.NEXT_PUBLIC_SITE_URL) return publicEnv.NEXT_PUBLIC_SITE_URL;
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:5173";
   const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");

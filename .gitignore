@@ -49,3 +49,5 @@ next-env.d.ts
 # supabase cli scratch
 /supabase/.temp/
 
+# admin dev server build folder (scripts/dev.mjs admin)
+/.next-admin/

@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { Logo } from "@/components/brand/logo";
 import { Chip } from "@/components/ui/chip";
 import { LinkPending } from "@/components/ui/link-pending";
+import { adminHref } from "@/lib/app-mode";
 import { cn } from "@/lib/utils";
 import { isActivePath, navItems } from "./nav-items";
 
@@ -52,13 +53,14 @@ export function Sidebar({ displayName, email, pointsBalance, unreadCount, isAdmi
           );
         })}
         {isAdmin && (
-          <Link
-            href="/admin"
+          // Plain anchor: the admin console may run on its own origin.
+          <a
+            href={adminHref("/admin")}
             className="mt-2 flex items-center gap-3 rounded-xl border border-dashed border-border px-3 py-2.5 text-sm font-semibold text-muted-foreground hover:bg-secondary hover:text-foreground"
           >
             <ShieldCheck className="size-4.5" />
             {t("admin")}
-          </Link>
+          </a>
         )}
       </nav>
 

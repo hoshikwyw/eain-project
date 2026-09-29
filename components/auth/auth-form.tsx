@@ -16,6 +16,8 @@ type Props = {
   configured: boolean;
   /** Google provider is enabled in Supabase Auth. Hidden otherwise so no button is dead. */
   googleEnabled: boolean;
+  /** False on the admin site, which has no sign-up. */
+  allowSignup?: boolean;
 };
 
 const initialState: AuthFormState = {};
@@ -27,7 +29,7 @@ function asNotice(value: string | undefined): Notice | undefined {
   return NOTICES.find((n) => n === value);
 }
 
-export function AuthForm({ mode, next, notice, configured, googleEnabled }: Props) {
+export function AuthForm({ mode, next, notice, configured, googleEnabled, allowSignup = true }: Props) {
   const t = useTranslations("auth");
   const action = mode === "login" ? signIn : signUp;
   const [state, formAction, pending] = useActionState(action, initialState);
@@ -121,15 +123,17 @@ export function AuthForm({ mode, next, notice, configured, googleEnabled }: Prop
         </Button>
       </form>
 
-      <p className="text-center text-sm text-muted-foreground">
-        {mode === "login" ? t("noAccount") : t("haveAccount")}{" "}
-        <Link
-          href={{ pathname: mode === "login" ? "/auth/signup" : "/auth/login", query: { next } }}
-          className="font-semibold text-primary underline-offset-4 hover:underline"
-        >
-          {mode === "login" ? t("signUp") : t("logIn")}
-        </Link>
-      </p>
+      {allowSignup && (
+        <p className="text-center text-sm text-muted-foreground">
+          {mode === "login" ? t("noAccount") : t("haveAccount")}{" "}
+          <Link
+            href={{ pathname: mode === "login" ? "/auth/signup" : "/auth/login", query: { next } }}
+            className="font-semibold text-primary underline-offset-4 hover:underline"
+          >
+            {mode === "login" ? t("signUp") : t("logIn")}
+          </Link>
+        </p>
+      )}
     </div>
   );
 }

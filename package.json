@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 5173",
+    "dev": "node scripts/dev.mjs user",
+    "dev:admin": "node scripts/dev.mjs admin",
+    "dev:both": "node scripts/dev.mjs both",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
