@@ -19,6 +19,26 @@
     "secondaryCta": "Explore Templates",
     "note": "The person you send it to never needs an account."
   },
+  "home": {
+    "eyebrow": "Eain · အိမ် · Home",
+    "headline": "Digital gifts that feel like <em>home</em>.",
+    "subtitle": "Make something special. Give it to someone.",
+    "primaryCta": "Create a gift",
+    "secondaryCta": "Explore templates",
+    "meta": "Free to start · 100 welcome points · No account needed to receive",
+    "occasionsLabel": "For every occasion",
+    "howLabel": "How it works",
+    "howTitle": "Five quiet steps from a thought to a reply.",
+    "statement1": "Sometimes a person is home.",
+    "statement2": "Sometimes a memory is home.",
+    "statement3": "Sometimes a message becomes home.",
+    "statementEnd": "Eain is a place to create that feeling, and give it to someone.",
+    "showcaseLabel": "Templates",
+    "showcaseTitle": "Ten ways to begin.",
+    "forLabel": "For everyone",
+    "trustLabel": "Privacy",
+    "rights": "All rights reserved."
+  },
   "connections": {
     "title": "Made for every kind of connection",
     "subtitle": "Not only for couples. A home can be a friend, a family, a classroom or a team.",

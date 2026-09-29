@@ -48,7 +48,7 @@ function cornerColor({ data, width, height }) {
  * Flood fill from the border over pixels close to the background colour.
  * innerT: fully transparent below this distance. outerT: fully opaque above.
  */
-function removeBackground(img, { innerT = 18, outerT = 60, extraSeeds = [] } = {}) {
+function removeBackground(img, { innerT = 18, outerT = 60, extraSeeds = [], allow = () => true } = {}) {
   const { data, width, height } = img;
   const bg = cornerColor(img);
   const dist = new Float32Array(width * height);
@@ -64,7 +64,7 @@ function removeBackground(img, { innerT = 18, outerT = 60, extraSeeds = [] } = {
   let head = 0;
   let tail = 0;
   const push = (p) => {
-    if (!connected[p] && dist[p] < outerT) {
+    if (!connected[p] && dist[p] < outerT && allow(data[p * 4], data[p * 4 + 1], data[p * 4 + 2])) {
       connected[p] = 1;
       queue[tail++] = p;
     }
@@ -106,6 +106,170 @@ function removeBackground(img, { innerT = 18, outerT = 60, extraSeeds = [] } = {
   return { data: out, width, height };
 }
 
+/**
+ * Cutout for the mascot art, which sits on a pale green backdrop.
+ *
+ * Colour distance cannot separate white fur from a pale background (they
+ * differ by only ~35), which punched holes in the birds on dark pages.
+ * Green tint can: greenness = G - (R + B) / 2 measures 10..16 on the
+ * backdrop and its ground shadow, and -4..+2.5 on white fur (measured on
+ * all three source images). So:
+ *  1. Flood from the border through green-tinted pixels only (g >= gCut).
+ *     White, pink and blue fur stop the fill, so nothing inside is lost.
+ *     The ground shadow is green-tinted and connected, so it goes too.
+ *  2. Alpha ramps from opaque at g <= gFg to transparent at g >= gBg.
+ *  3. Edge colours are un-mixed from the backdrop.
+ *  4. The alpha is eroded by one pixel so no green fringe survives on
+ *     dark backgrounds.
+ */
+const TINTS = {
+  /** Pale green backdrop of the mascot art. Backdrop 10..16, white fur -4..+2.5. */
+  green: {
+    metric: (r, g, b) => g - (r + b) / 2,
+    cut: 6,
+    fg: 6,
+    bg: 9.5,
+    candidate: () => true,
+    /** Enclosed pale green-grey shadow patches (e.g. between feet). Green must lead red, so yellow never qualifies. */
+    enclosed: (r, g, b, m) => m >= 8 && g > r && Math.min(r, b) > 140,
+    /**
+     * Grey contact-shadow core under the feet: slightly green-tinted (3..5), darker than
+     * white fur. Only cleared in the bottom band and only where it touches the backdrop,
+     * so dark grey feet (not green-tinted) and white fur are kept.
+     */
+    groundBand: 0.14,
+    ground: (r, g, b, m) => m >= 2.5 && (r + g + b) / 3 < 228,
+  },
+  /** Warm cream backdrop of the logo lockup. Backdrop 12..17, white areas -1..+6. */
+  warm: {
+    metric: (r, g, b) => r - b,
+    cut: 10,
+    fg: 7,
+    bg: 12,
+    // Only light, low-saturation pixels can be backdrop, so the yellow and green parrot never are.
+    candidate: (r, g, b) => Math.max(r, g, b) - Math.min(r, g, b) <= 30 && (r + g + b) / 3 >= 200,
+    enclosed: () => false,
+  },
+};
+
+function removeGreenBackground(img, { tint = "green", ground = true } = {}) {
+  const T = TINTS[tint];
+  const { data, width, height } = img;
+  const bg = cornerColor(img);
+  const n = width * height;
+  const green = new Float32Array(n);
+  const candidate = new Uint8Array(n);
+  for (let p = 0, i = 0; p < n; p++, i += 4) {
+    green[p] = T.metric(data[i], data[i + 1], data[i + 2]);
+    candidate[p] = T.candidate(data[i], data[i + 1], data[i + 2]) ? 1 : 0;
+  }
+  const gFg = T.fg;
+  const gBg = T.bg;
+
+  const inRegion = new Uint8Array(n);
+  const queue = new Int32Array(n);
+  let head = 0;
+  let tail = 0;
+  const push = (p) => {
+    if (!inRegion[p] && candidate[p] && green[p] >= T.cut) {
+      inRegion[p] = 1;
+      queue[tail++] = p;
+    }
+  };
+  for (let x = 0; x < width; x++) {
+    push(x);
+    push((height - 1) * width + x);
+  }
+  for (let y = 0; y < height; y++) {
+    push(y * width);
+    push(y * width + width - 1);
+  }
+  while (head < tail) {
+    const p = queue[head++];
+    const x = p % width;
+    const y = (p - x) / width;
+    if (x > 0) push(p - 1);
+    if (x < width - 1) push(p + 1);
+    if (y > 0) push(p - width);
+    if (y < height - 1) push(p + width);
+  }
+
+  // Backdrop trapped inside the figure, such as shadow between the feet.
+  for (let p = 0, i = 0; p < n; p++, i += 4) {
+    if (!inRegion[p] && T.enclosed(data[i], data[i + 1], data[i + 2], green[p])) inRegion[p] = 1;
+  }
+
+  // Grey contact shadow in the ground band, grown outward from the backdrop.
+  const groundShadow = new Uint8Array(n);
+  if (T.ground && ground) {
+    const bandTop = Math.floor(height * (1 - T.groundBand));
+    head = 0;
+    tail = 0;
+    const isGround = (p) => {
+      const i = p * 4;
+      return !inRegion[p] && !groundShadow[p] && p >= bandTop * width && T.ground(data[i], data[i + 1], data[i + 2], green[p]);
+    };
+    for (let p = bandTop * width; p < n; p++) {
+      if (!inRegion[p]) continue;
+      const x = p % width;
+      for (const q of [p - 1, p + 1, p - width, p + width]) {
+        if (q >= 0 && q < n && Math.abs((q % width) - x) <= 1 && isGround(q)) {
+          groundShadow[q] = 1;
+          queue[tail++] = q;
+        }
+      }
+    }
+    while (head < tail) {
+      const p = queue[head++];
+      const x = p % width;
+      for (const q of [p - 1, p + 1, p - width, p + width]) {
+        if (q >= 0 && q < n && Math.abs((q % width) - x) <= 1 && isGround(q)) {
+          groundShadow[q] = 1;
+          queue[tail++] = q;
+        }
+      }
+    }
+  }
+
+  const alpha = new Uint8Array(n).fill(255);
+  for (let p = 0; p < n; p++) {
+    if (groundShadow[p]) {
+      alpha[p] = 0;
+      continue;
+    }
+    if (!inRegion[p]) continue;
+    const t = Math.min(1, Math.max(0, (gBg - green[p]) / (gBg - gFg)));
+    alpha[p] = Math.round(t * t * (3 - 2 * t) * 255);
+  }
+
+  // One-pixel erosion: each pixel takes the lowest alpha of itself and its 4 neighbours.
+  const eroded = new Uint8Array(alpha);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const p = y * width + x;
+      let a = alpha[p];
+      if (x > 0 && alpha[p - 1] < a) a = alpha[p - 1];
+      if (x < width - 1 && alpha[p + 1] < a) a = alpha[p + 1];
+      if (y > 0 && alpha[p - width] < a) a = alpha[p - width];
+      if (y < height - 1 && alpha[p + width] < a) a = alpha[p + width];
+      eroded[p] = a;
+    }
+  }
+
+  const out = Buffer.from(data);
+  for (let p = 0, i = 0; p < n; p++, i += 4) {
+    const a255 = eroded[p];
+    out[i + 3] = a255;
+    if (a255 > 0 && a255 < 255 && inRegion[p]) {
+      const a = a255 / 255;
+      for (let c = 0; c < 3; c++) {
+        out[i + c] = Math.max(0, Math.min(255, Math.round((data[i + c] - (1 - a) * bg[c]) / a)));
+      }
+    }
+  }
+  return { data: out, width, height };
+}
+
 function contentBounds({ data, width, height }, pad = 4) {
   let minX = width, minY = height, maxX = -1, maxY = -1;
   for (let y = 0; y < height; y++) {
@@ -139,7 +303,7 @@ async function writeWebp(img, outFile, targetWidth) {
 
 async function cutout(srcName, outName, width, options) {
   const img = await loadRaw(path.join(brand, srcName));
-  return writeWebp(removeBackground(img, options), path.join(brand, outName), width);
+  return writeWebp(removeGreenBackground(img, options), path.join(brand, outName), width);
 }
 
 await mkdir(brand, { recursive: true });
@@ -151,10 +315,15 @@ await mkdir(brand, { recursive: true });
   const cropH = Math.round(meta.height * 0.67);
   const { data, info } = await lockup.extract({ left: 0, top: 0, width: meta.width, height: cropH }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const img = { data, width: info.width, height: info.height };
-  await writeWebp(removeBackground(img, { innerT: 10, outerT: 40 }), path.join(brand, "logo-mark.webp"), 512);
+  // Colour distance gives clean edges on the green roof and leaves. The cream backdrop is warm
+  // (red minus blue 12..17) and the white parrot face is not (-1..6), so the fill may only pass
+  // through warm pixels and can no longer punch a hole in the face.
+  const logo = removeBackground(img, { innerT: 10, outerT: 40, allow: (r, g, b) => r - b >= 8 });
+  await writeWebp(logo, path.join(brand, "logo-mark.webp"), 512);
 }
 
-await cutout("couple.png", "lovebirds.webp", 1200);
+// The couple's white belly reaches the ground band, so the ground-shadow rule is off for it.
+await cutout("couple.png", "lovebirds.webp", 1200, { ground: false });
 await cutout("female.png", "bird-pink.webp", 600);
 await cutout("male.png", "bird-blue.webp", 600);
 

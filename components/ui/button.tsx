@@ -13,6 +13,8 @@ const buttonVariants = cva(
           "border border-border bg-card text-foreground hover:bg-secondary",
         soft: "bg-accent text-accent-foreground hover:brightness-95 dark:hover:brightness-110",
         ghost: "text-foreground hover:bg-secondary",
+        /** Quiet, high-contrast call to action for editorial pages. Inverts in dark mode. */
+        ink: "bg-foreground text-background hover:bg-foreground/85",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
