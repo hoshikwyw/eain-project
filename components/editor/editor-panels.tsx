@@ -7,8 +7,10 @@ import { DARK_VARIANTS, variantSwatch } from "@/components/gift/palettes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { StickerArt } from "@/components/gift/sticker-layer";
 import {
   MAX_SECTIONS,
+  MAX_STICKERS,
   OPENINGS,
   THEME_VARIANTS,
   type EditableSectionType,
@@ -17,6 +19,7 @@ import {
   type Section,
   type ThemeVariant,
 } from "@/features/gifts/schemas";
+import { STICKER_GROUPS, type StickerKind } from "@/features/gifts/stickers";
 import { cn } from "@/lib/utils";
 import { SectionFields } from "./section-fields";
 import { sectionSummary } from "./text-fields";
@@ -135,6 +138,37 @@ export function SectionsPanel(p: SectionsPanelProps) {
         </Button>
       )}
       <p className="text-xs text-muted-foreground">{t("sectionCount", { count: p.sections.length, max: MAX_SECTIONS })}</p>
+    </div>
+  );
+}
+
+/** The sticker library. Picking one puts it on the gift, ready to be dragged into place. */
+export function StickersPanel({ count, onAdd }: { count: number; onAdd: (kind: StickerKind) => void }) {
+  const t = useTranslations("editor");
+  const full = count >= MAX_STICKERS;
+  return (
+    <div className="flex flex-col gap-4">
+      <p className="text-xs text-muted-foreground">{full ? t("stickerLimit", { max: MAX_STICKERS }) : t("stickersHint")}</p>
+      {STICKER_GROUPS.map((group) => (
+        <div key={group.key} className="flex flex-col gap-2">
+          <h3 className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">{t(`stickerGroups.${group.key}`)}</h3>
+          <div className="grid grid-cols-6 gap-1.5">
+            {group.kinds.map((kind) => (
+              <button
+                key={kind}
+                type="button"
+                disabled={full}
+                aria-label={kind.replace(/-/g, " ")}
+                onClick={() => onAdd(kind)}
+                className="aspect-square cursor-pointer rounded-xl border border-border p-1.5 transition-colors outline-none hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring/60 active:scale-95 disabled:cursor-default disabled:opacity-40"
+              >
+                <StickerArt kind={kind} />
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+      <p className="text-xs text-muted-foreground">{t("stickerCount", { count, max: MAX_STICKERS })}</p>
     </div>
   );
 }

@@ -307,13 +307,29 @@
     "publishSaves": "Publishing saves your latest changes first.",
     "unsaved": "Unsaved changes",
     "manage": "Share and manage",
-    "canvasHint": "Click any text on your gift to change it. Click a section to move, edit or remove it.",
+    "canvasHint": "Click a text to edit it, and drag the dot at its corner to resize it. Click a section to move or remove it.",
     "tools": "Editing tools",
     "details": "Details",
     "editSection": "Edit section",
     "closePanel": "Close",
     "publishShort": "Publish",
-    "republishShort": "Update"
+    "republishShort": "Update",
+    "stickers": "Stickers",
+    "stickersHint": "Pick a sticker to put it on your gift. Then drag it into place, pull a corner to resize it, or turn the round handle.",
+    "stickerGroups": {
+      "love": "Love",
+      "party": "Party",
+      "nature": "Nature",
+      "cute": "Cute"
+    },
+    "stickerLimit": "This gift has the most stickers it can hold ({max}).",
+    "stickerCount": "{count} of {max} stickers",
+    "resizeSticker": "Resize",
+    "rotateSticker": "Rotate",
+    "duplicateSticker": "Duplicate sticker",
+    "bringToFront": "Bring to front",
+    "removeSticker": "Remove sticker",
+    "resizeText": "Drag to resize this text"
   },
   "gift": {
     "previewTitle": "A gift for you",

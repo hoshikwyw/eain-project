@@ -48,7 +48,8 @@ export const MAX_STICKERS = 30;
 /**
  * A sticker placed on the gift. Position is the sticker's centre in percent
  * of the box it sits on, and size is its width in percent of that box's
- * width, so it keeps its place on a phone and on a desktop.
+ * width, so it keeps its place on a phone and on a desktop. A section can be
+ * much narrower than the gift, hence sizes above 100.
  */
 export const stickerSchema = z.object({
   id: z.string().min(1).max(40),
@@ -57,7 +58,7 @@ export const stickerSchema = z.object({
   anchor: z.number().int().min(0).max(MAX_SECTIONS - 1).optional(),
   x: z.number().min(-20).max(120),
   y: z.number().min(-50).max(150),
-  size: z.number().min(4).max(80),
+  size: z.number().min(2).max(200),
   rotate: z.number().min(-180).max(180).default(0),
 });
 export type Sticker = z.infer<typeof stickerSchema>;

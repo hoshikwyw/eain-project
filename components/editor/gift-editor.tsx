@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, Layers, Loader2, Palette, Pencil, Play, Save, Send, Settings2, X } from "lucide-react";
+import { Eye, Layers, Loader2, Palette, Pencil, Play, Save, Send, Settings2, Sticker as StickerIcon, X } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useActionState, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { saveAndPublishGift, saveGift } from "@/features/gifts/actions";
 import {
   MAX_SECTIONS,
+  MAX_STICKERS,
   sectionSchema,
   type EditableSectionType,
   type EditorPayload,
@@ -23,12 +24,25 @@ import {
   type ThemeVariant,
 } from "@/features/gifts/schemas";
 import { dropStickerAnchor, swapStickerAnchors } from "@/features/gifts/sections";
+import type { StickerKind } from "@/features/gifts/stickers";
 import type { TemplateStyle } from "@/features/gifts/templates";
 import { cn } from "@/lib/utils";
+import {
+  sectionSelector,
+  stickerAt,
+  stickerContainer,
+  stickerContainerSelector,
+  stickerOnScreen,
+  textSelector,
+  trackPointer,
+  type TextTarget,
+} from "./canvas-geometry";
 import { EditableText } from "./editable-text";
-import { DetailsPanel, LookPanel, OpeningPanel, SectionsPanel } from "./editor-panels";
-import { SectionToolbar, sectionSelector } from "./section-toolbar";
-import { TEXT_FIELDS, withText } from "./text-fields";
+import { DetailsPanel, LookPanel, OpeningPanel, SectionsPanel, StickersPanel } from "./editor-panels";
+import { SectionToolbar } from "./section-toolbar";
+import { StickerControls } from "./sticker-controls";
+import { TEXT_FIELDS, textStyle, withText, withTextStyle } from "./text-fields";
+import { TextResizeHandle } from "./text-resize-handle";
 
 type Props = {
   giftId: string;
@@ -46,11 +60,12 @@ type Props = {
   publishError?: boolean;
 };
 
-const TABS = ["sections", "look", "opening", "details"] as const;
+const TABS = ["sections", "stickers", "look", "opening", "details"] as const;
 type Tab = (typeof TABS)[number];
 
 const TAB_ICONS: Record<Tab, React.ComponentType<{ className?: string }>> = {
   sections: Layers,
+  stickers: StickerIcon,
   look: Palette,
   opening: Play,
   details: Settings2,
@@ -111,6 +126,11 @@ export function GiftEditor(props: Props) {
   const [media, setMedia] = useState<MediaItem[]>(props.media);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedSticker, setSelectedSticker] = useState<string | null>(null);
+  /** The text being typed into, which is the one the resize dot belongs to. */
+  const [activeText, setActiveText] = useState<TextTarget | null>(null);
+  /** True for the instant after a sticker drag, so the click that ends it picks nothing. */
+  const justDragged = useRef(false);
   const [tab, setTab] = useState<Tab>("sections");
   /** Phones only: whether the tool sheet is up. Wide screens always show the panel. */
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -179,6 +199,34 @@ export function GiftEditor(props: Props) {
     canvasRef.current?.querySelector(sectionSelector(scrollTo.id))?.scrollIntoView({ block: scrollTo.block, behavior: "smooth" });
   }, [scrollTo]);
 
+  // Keys for the selected sticker: Delete removes it, arrows nudge it.
+  useEffect(() => {
+    if (!selectedSticker) return;
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target;
+      if (target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))) return;
+      if (e.key === "Delete" || e.key === "Backspace") {
+        e.preventDefault();
+        setStickers((all) => all.filter((s) => s.id !== selectedSticker));
+        setSelectedSticker(null);
+      } else if (e.key === "Escape") {
+        setSelectedSticker(null);
+      } else if (e.key.startsWith("Arrow")) {
+        e.preventDefault();
+        const step = e.shiftKey ? 5 : 1;
+        const dx = e.key === "ArrowRight" ? step : e.key === "ArrowLeft" ? -step : 0;
+        const dy = e.key === "ArrowDown" ? step : e.key === "ArrowUp" ? -step : 0;
+        setStickers((all) =>
+          all.map((s) =>
+            s.id === selectedSticker ? { ...s, x: Math.min(Math.max(s.x + dx, -20), 120), y: Math.min(Math.max(s.y + dy, -50), 150) } : s,
+          ),
+        );
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selectedSticker]);
+
   const mediaMap = useMemo(() => Object.fromEntries(media.map((m) => [m.id, m])), [media]);
 
   // Sections ------------------------------------------------------------------
@@ -223,16 +271,114 @@ export function GiftEditor(props: Props) {
     setSheetOpen(true);
   };
 
+  // Stickers ------------------------------------------------------------------
+
+  const patchSticker = (id: string, next: (s: Sticker) => Sticker) => setStickers((all) => all.map((s) => (s.id === id ? next(s) : s)));
+
+  const selectSticker = (id: string) => {
+    setSelectedSticker(id);
+    setSelectedId(null);
+    setActiveText(null);
+    const focused = document.activeElement;
+    if (focused instanceof HTMLElement && canvasRef.current?.contains(focused)) focused.blur();
+  };
+
+  /** Puts a new sticker in the middle of the part of the gift that is on screen. */
+  const addSticker = (kind: StickerKind) => {
+    const canvas = canvasRef.current;
+    if (!canvas || stickers.length >= MAX_STICKERS) return;
+    const frame = canvas.getBoundingClientRect();
+    const top = Math.max(frame.top, 72);
+    const bottom = Math.min(frame.bottom, window.innerHeight - 72);
+    // Each new one lands a little off the last, so they do not hide each other.
+    const offset = ((stickers.length % 5) - 2) * 18;
+    const sticker = stickerAt(
+      canvas,
+      sections,
+      { id: crypto.randomUUID(), kind, rotate: 0 },
+      {
+        cx: frame.left + frame.width / 2 + offset,
+        cy: (bottom > top ? (top + bottom) / 2 : frame.top + frame.height / 2) + offset,
+        size: frame.width * 0.16,
+      },
+    );
+    setStickers([...stickers, sticker]);
+    selectSticker(sticker.id);
+    setSheetOpen(false);
+  };
+
+  /** Drags a sticker with the pointer. On release it settles on the section under it. */
+  const dragSticker = (e: React.PointerEvent, id: string) => {
+    const canvas = canvasRef.current;
+    const sticker = stickers.find((s) => s.id === id);
+    if (!canvas || !sticker) return;
+    const start = stickerOnScreen(canvas, sections, sticker);
+    const box = stickerContainer(canvas, sections, sticker)?.getBoundingClientRect();
+    if (!start || !box) return;
+    e.preventDefault();
+    selectSticker(id);
+    const origin = { x: e.clientX, y: e.clientY };
+    let moved: { dx: number; dy: number } | null = null;
+    trackPointer(
+      (ev) => {
+        const dx = ev.clientX - origin.x;
+        const dy = ev.clientY - origin.y;
+        if (!moved && Math.hypot(dx, dy) < 4) return;
+        moved = { dx, dy };
+        patchSticker(id, (s) => ({ ...s, x: sticker.x + (dx / box.width) * 100, y: sticker.y + (dy / box.height) * 100 }));
+      },
+      () => {
+        if (!moved) return;
+        const { dx, dy } = moved;
+        patchSticker(id, (s) => stickerAt(canvas, sections, s, { cx: start.cx + dx, cy: start.cy + dy, size: start.size }));
+        justDragged.current = true;
+        window.setTimeout(() => {
+          justDragged.current = false;
+        }, 0);
+      },
+    );
+  };
+
+  const duplicateSticker = (sticker: Sticker) => {
+    if (stickers.length >= MAX_STICKERS) return;
+    const copy = { ...sticker, id: crypto.randomUUID(), x: Math.min(sticker.x + 5, 120), y: Math.min(sticker.y + 5, 150) };
+    setStickers([...stickers, copy]);
+    setSelectedSticker(copy.id);
+  };
+
   // Clicks and focus on the gift pick the section they land in.
   const pickOnCanvas = (target: EventTarget, deselect: boolean) => {
-    if (!(target instanceof Element) || target.closest("[data-canvas-ui]")) return;
+    if (justDragged.current || !(target instanceof Element)) return;
+    if (target.closest("[data-canvas-ui]") || target.closest("[data-sticker-id]")) return;
     const id = target.closest<HTMLElement>("[data-section-id]")?.dataset.sectionId ?? null;
     if (id) {
       setSelectedId(id);
+      setSelectedSticker(null);
       setTab("sections");
     } else if (deselect) {
       setSelectedId(null);
+      setSelectedSticker(null);
     }
+  };
+
+  const onCanvasPointerDown = (e: React.PointerEvent) => {
+    if (!(e.target instanceof Element) || e.target.closest("[data-canvas-ui]")) return;
+    const id = e.target.closest<HTMLElement>("[data-sticker-id]")?.dataset.stickerId;
+    if (id) dragSticker(e, id);
+  };
+
+  const onCanvasFocus = (e: React.FocusEvent) => {
+    pickOnCanvas(e.target, false);
+    const el = e.target instanceof HTMLElement && e.target.matches(".editable-text") ? e.target : null;
+    const sectionId = el?.closest<HTMLElement>("[data-section-id]")?.dataset.sectionId;
+    const field = el?.dataset.textField;
+    if (!el || !sectionId || !field) return;
+    setActiveText({ sectionId, field, index: el.dataset.textIndex === undefined ? undefined : Number(el.dataset.textIndex) });
+  };
+
+  // The resize dot stays while focus is on the canvas's own controls.
+  const onCanvasBlur = (e: React.FocusEvent) => {
+    if (!(e.relatedTarget instanceof Element && e.relatedTarget.closest("[data-canvas-ui]"))) setActiveText(null);
   };
 
   // Saving --------------------------------------------------------------------
@@ -298,7 +444,16 @@ export function GiftEditor(props: Props) {
   );
 
   const selectedIndex = sections.findIndex((s) => s.id === selectedId);
-  const tabLabel: Record<Tab, string> = { sections: t("sections"), look: t("theme"), opening: t("opening"), details: t("details") };
+  const sticker = stickers.find((s) => s.id === selectedSticker);
+  const stickerBox = sticker && stickerContainerSelector(sections, sticker);
+  const activeSection = activeText ? sections.find((s) => s.id === activeText.sectionId) : undefined;
+  const tabLabel: Record<Tab, string> = {
+    sections: t("sections"),
+    stickers: t("stickers"),
+    look: t("theme"),
+    opening: t("opening"),
+    details: t("details"),
+  };
   const published = props.status === "published";
 
   return (
@@ -339,7 +494,9 @@ export function GiftEditor(props: Props) {
               ref={canvasRef}
               className={cn("relative", !previewing && "gift-canvas")}
               onClick={previewing ? undefined : (e) => pickOnCanvas(e.target, true)}
-              onFocus={previewing ? undefined : (e) => pickOnCanvas(e.target, false)}
+              onPointerDown={previewing ? undefined : onCanvasPointerDown}
+              onFocus={previewing ? undefined : onCanvasFocus}
+              onBlur={previewing ? undefined : onCanvasBlur}
             >
               <GiftView
                 sections={sections}
@@ -371,6 +528,41 @@ export function GiftEditor(props: Props) {
                   labels={{ moveUp: t("moveUp"), moveDown: t("moveDown"), edit: t("editSection"), remove: t("removeSection") }}
                 />
               )}
+              {!previewing && activeText && activeSection && (
+                <TextResizeHandle
+                  canvas={canvasRef}
+                  selector={textSelector(activeText)}
+                  watch={sections}
+                  scale={textStyle(activeSection, activeText.field)?.scale ?? 1}
+                  onScale={(scale) =>
+                    setSections((all) => all.map((s) => (s.id === activeText.sectionId ? withTextStyle(s, activeText.field, { scale }) : s)))
+                  }
+                  label={t("resizeText")}
+                />
+              )}
+              {!previewing && sticker && stickerBox !== undefined && (
+                <StickerControls
+                  canvas={canvasRef}
+                  sticker={sticker}
+                  container={stickerBox}
+                  watch={sections}
+                  onChange={(change) => patchSticker(sticker.id, (s) => ({ ...s, ...change }))}
+                  canDuplicate={stickers.length < MAX_STICKERS}
+                  onDuplicate={() => duplicateSticker(sticker)}
+                  onFront={() => setStickers((all) => [...all.filter((s) => s.id !== sticker.id), sticker])}
+                  onRemove={() => {
+                    setStickers((all) => all.filter((s) => s.id !== sticker.id));
+                    setSelectedSticker(null);
+                  }}
+                  labels={{
+                    resize: t("resizeSticker"),
+                    rotate: t("rotateSticker"),
+                    duplicate: t("duplicateSticker"),
+                    front: t("bringToFront"),
+                    remove: t("removeSticker"),
+                  }}
+                />
+              )}
             </div>
 
             <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-4">
@@ -392,7 +584,7 @@ export function GiftEditor(props: Props) {
             "lg:sticky lg:top-16 lg:max-h-[calc(100svh-5rem)] lg:self-start lg:rounded-2xl lg:border",
           )}
         >
-          <div role="tablist" aria-label={t("tools")} className="grid grid-cols-4 gap-1 border-b border-border p-1.5 max-lg:hidden">
+          <div role="tablist" aria-label={t("tools")} className="grid grid-cols-5 gap-1 border-b border-border p-1.5 max-lg:hidden">
             {TABS.map((name) => (
               <TabButton key={name} name={name} label={tabLabel[name]} active={tab === name} onClick={() => setTab(name)} />
             ))}
@@ -419,6 +611,7 @@ export function GiftEditor(props: Props) {
                 onMediaChange={setMedia}
               />
             )}
+            {tab === "stickers" && <StickersPanel count={stickers.length} onAdd={addSticker} />}
             {tab === "look" && <LookPanel variant={variant} onChange={setVariant} />}
             {tab === "opening" && <OpeningPanel opening={opening} onChange={setOpening} onPlay={() => setOpeningPreview("closed")} />}
             {tab === "details" && (
@@ -437,7 +630,7 @@ export function GiftEditor(props: Props) {
       <div
         role="tablist"
         aria-label={t("tools")}
-        className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 gap-1 border-t border-border bg-card px-1.5 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 gap-1 border-t border-border bg-card px-1.5 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] lg:hidden"
       >
         {TABS.map((name) => (
           <TabButton

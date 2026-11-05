@@ -1,4 +1,4 @@
-import type { Section } from "@/features/gifts/schemas";
+import type { Section, TextStyle } from "@/features/gifts/schemas";
 
 type FieldLabel =
   | "heading"
@@ -42,6 +42,24 @@ export function withText(section: Section, field: string, value: string, index?:
     return { ...section, content: { ...section.content, items } };
   }
   return { ...section, content: { ...section.content, [field]: value } } as Section;
+}
+
+type Styles = Record<string, TextStyle | undefined>;
+
+/** The creator's style for one text field, if any. Timeline items share one style per field. */
+export function textStyle(section: Section, field: string): TextStyle | undefined {
+  return section.type === "question" ? undefined : (section.content.styles as Styles | undefined)?.[field];
+}
+
+/** The section with one text field's style changed. What matches the design's own is not stored. */
+export function withTextStyle(section: Section, field: string, patch: Partial<TextStyle>): Section {
+  if (section.type === "question" || !TEXT_FIELDS[`${section.type}.${field}`]) return section;
+  const styles: Styles = { ...(section.content.styles as Styles | undefined) };
+  const next: TextStyle = { ...styles[field], ...patch };
+  if (next.scale === 1) delete next.scale;
+  if (Object.keys(next).length > 0) styles[field] = next;
+  else delete styles[field];
+  return { ...section, content: { ...section.content, styles: Object.keys(styles).length > 0 ? styles : undefined } } as Section;
 }
 
 /** A short line that tells sections apart in the list. */

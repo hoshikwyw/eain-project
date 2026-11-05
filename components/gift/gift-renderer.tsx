@@ -72,7 +72,7 @@ export function GiftRenderer(props: Props) {
   const frame = (
     <div style={giftPalette(variant, colors)} className="relative text-[color:var(--t-fg)]">
       {renderDesign(ctx)}
-      <StickerLayer stickers={stickers.filter((s) => s.anchor === undefined)} clip />
+      <StickerLayer stickers={stickers.filter((s) => s.anchor === undefined)} clip editable={Boolean(props.edit)} />
     </div>
   );
   return frame;
@@ -123,7 +123,7 @@ function Sections({ ctx, className, itemClassName, animate }: { ctx: Ctx; classN
             className={cn(itemClassName, stickers && "relative", animate && "animate-in fade-in slide-in-from-bottom-4 fill-mode-both duration-700")}
           >
             <SectionView ctx={ctx} section={section} isFirst={i === 0} />
-            <StickerLayer stickers={stickers} />
+            <StickerLayer stickers={stickers} editable={Boolean(ctx.edit)} />
           </div>
         );
       })}
@@ -444,18 +444,30 @@ function alignStyle(style: TextStyle | undefined): CSSProperties | undefined {
   }
 }
 
+/** Burmese stacks marks above and below the line, so it needs taller lines than a design sets for Latin. */
+const isBurmese = (text: string) => /[\u1000-\u109f]/.test(text);
+
+type StyledProps = {
+  style: TextStyle | undefined;
+  /** The text itself, to give Burmese the line height it needs. */
+  text: string;
+  /** Always render the wrapper. The editor sets this so styling a text never rebuilds it mid-edit. */
+  wrap?: boolean;
+  children: ReactNode;
+};
+
 /**
  * Text with the creator's font, size, colour and weight. Size is relative to
- * what the design gives this text. Unstyled text renders with no wrapper.
+ * what the design gives this text. Plain Latin text renders with no wrapper.
  */
-function Styled({ style, children }: { style: TextStyle | undefined; children: ReactNode }) {
-  if (!style) return children;
-  const { font, scale, color, bold, italic } = style;
-  if (font === undefined && scale === undefined && color === undefined && bold === undefined && italic === undefined) {
-    return children;
-  }
+function Styled({ style, text, wrap, children }: StyledProps) {
+  const { font, scale, color, bold, italic } = style ?? {};
+  const burmese = isBurmese(text);
+  const styled = font !== undefined || scale !== undefined || color !== undefined || bold !== undefined || italic !== undefined;
+  if (!styled && !burmese && !wrap) return children;
   return (
     <span
+      data-burmese={burmese ? "" : undefined}
       className={font && FONT_CLASS[font]}
       style={{
         fontSize: scale === undefined ? undefined : `${scale}em`,
@@ -512,11 +524,11 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
       return (
         <header className="flex flex-col gap-2">
           <Heading style={alignStyle(st?.heading)} className={cn("font-display font-semibold text-balance leading-tight", compact ? (isFirst ? "text-3xl" : "text-2xl") : isFirst ? "text-4xl sm:text-5xl" : "text-3xl")}>
-            <Styled style={st?.heading}>{txt(ctx, section, "heading", section.content.heading)}</Styled>
+            <Styled style={st?.heading} text={section.content.heading} wrap={editing}>{txt(ctx, section, "heading", section.content.heading)}</Styled>
           </Heading>
           {(section.content.subheading || editing) && (
             <p style={alignStyle(st?.subheading)} className={cn("text-[color:var(--t-muted)]", compact ? "text-sm" : "text-lg")}>
-              <Styled style={st?.subheading}>{txt(ctx, section, "subheading", section.content.subheading)}</Styled>
+              <Styled style={st?.subheading} text={section.content.subheading} wrap={editing}>{txt(ctx, section, "subheading", section.content.subheading)}</Styled>
             </p>
           )}
         </header>
@@ -525,7 +537,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
     case "message":
       return (
         <p style={alignStyle(section.content.styles?.text)} className={cn("msg whitespace-pre-line text-[color:var(--t-fg)]/90", compact ? "text-base" : "text-lg")}>
-          <Styled style={section.content.styles?.text}>{txt(ctx, section, "text", section.content.text)}</Styled>
+          <Styled style={section.content.styles?.text} text={section.content.text} wrap={editing}>{txt(ctx, section, "text", section.content.text)}</Styled>
         </p>
       );
     case "image": {
@@ -542,7 +554,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
             {img}
             {(section.content.caption || editing) && (
               <figcaption style={alignStyle(captionStyle)} className="mt-3 text-center font-hand text-xl text-neutral-700">
-                <Styled style={captionStyle}>{txt(ctx, section, "caption", section.content.caption)}</Styled>
+                <Styled style={captionStyle} text={section.content.caption} wrap={editing}>{txt(ctx, section, "caption", section.content.caption)}</Styled>
               </figcaption>
             )}
           </figure>
@@ -553,7 +565,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
           {img}
           {(section.content.caption || editing) && (
             <figcaption style={alignStyle(captionStyle)} className="text-center text-sm text-[color:var(--t-muted)]">
-              <Styled style={captionStyle}>{txt(ctx, section, "caption", section.content.caption)}</Styled>
+              <Styled style={captionStyle} text={section.content.caption} wrap={editing}>{txt(ctx, section, "caption", section.content.caption)}</Styled>
             </figcaption>
           )}
         </figure>
@@ -576,7 +588,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
             </div>
             {(section.content.caption || editing) && (
               <figcaption style={alignStyle(captionStyle)} className="text-center font-hand text-xl">
-                <Styled style={captionStyle}>{txt(ctx, section, "caption", section.content.caption)}</Styled>
+                <Styled style={captionStyle} text={section.content.caption} wrap={editing}>{txt(ctx, section, "caption", section.content.caption)}</Styled>
               </figcaption>
             )}
           </figure>
@@ -592,7 +604,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
           </div>
           {(section.content.caption || editing) && (
             <figcaption style={alignStyle(captionStyle)} className="text-center text-sm text-[color:var(--t-muted)]">
-              <Styled style={captionStyle}>{txt(ctx, section, "caption", section.content.caption)}</Styled>
+              <Styled style={captionStyle} text={section.content.caption} wrap={editing}>{txt(ctx, section, "caption", section.content.caption)}</Styled>
             </figcaption>
           )}
         </figure>
@@ -607,15 +619,15 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
               <span aria-hidden="true" className="dot absolute top-1.5 -left-[1.6rem] size-3 rounded-full bg-[color:var(--t-accent)] ring-4 ring-[color:var(--t-card)]" />
               {(item.date || editing) && (
                 <p style={alignStyle(st?.date)} className="text-xs font-semibold tracking-wide uppercase text-[color:var(--t-muted)]">
-                  <Styled style={st?.date}>{txt(ctx, section, "date", item.date, i)}</Styled>
+                  <Styled style={st?.date} text={item.date} wrap={editing}>{txt(ctx, section, "date", item.date, i)}</Styled>
                 </p>
               )}
               <p style={alignStyle(st?.title)} className="font-semibold">
-                <Styled style={st?.title}>{txt(ctx, section, "title", item.title, i)}</Styled>
+                <Styled style={st?.title} text={item.title} wrap={editing}>{txt(ctx, section, "title", item.title, i)}</Styled>
               </p>
               {(item.text || editing) && (
                 <p style={alignStyle(st?.text)} className="mt-1 text-sm text-[color:var(--t-fg)]/85">
-                  <Styled style={st?.text}>{txt(ctx, section, "text", item.text, i)}</Styled>
+                  <Styled style={st?.text} text={item.text} wrap={editing}>{txt(ctx, section, "text", item.text, i)}</Styled>
                 </p>
               )}
             </li>
@@ -628,11 +640,11 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
       return (
         <blockquote className="flex flex-col gap-2 border-l-4 border-[color:var(--t-accent)] pl-4">
           <p style={alignStyle(st?.text)} className={cn("font-display text-balance italic", compact ? "text-lg" : "text-2xl")}>
-            <Styled style={st?.text}>“{txt(ctx, section, "text", section.content.text)}”</Styled>
+            <Styled style={st?.text} text={section.content.text} wrap={editing}>“{txt(ctx, section, "text", section.content.text)}”</Styled>
           </p>
           {(section.content.attribution || editing) && (
             <footer style={alignStyle(st?.attribution)} className="text-sm text-[color:var(--t-muted)]">
-              <Styled style={st?.attribution}>— {txt(ctx, section, "attribution", section.content.attribution)}</Styled>
+              <Styled style={st?.attribution} text={section.content.attribution} wrap={editing}>— {txt(ctx, section, "attribution", section.content.attribution)}</Styled>
             </footer>
           )}
         </blockquote>
@@ -646,13 +658,13 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
         <footer className="flex flex-col gap-1 border-t border-[color:var(--t-accent-soft)] pt-5">
           {(section.content.text || editing) && (
             <p style={alignStyle(st?.text)} className="text-[color:var(--t-fg)]/85">
-              <Styled style={st?.text}>{txt(ctx, section, "text", section.content.text)}</Styled>
+              <Styled style={st?.text} text={section.content.text} wrap={editing}>{txt(ctx, section, "text", section.content.text)}</Styled>
             </p>
           )}
           {(signature || editing) && (
             <p style={alignStyle(st?.signature)} className="sig font-display text-xl font-semibold">
               {/* The editor edits the stored signature; left empty, the sender's name shows as its placeholder. */}
-              <Styled style={st?.signature}>{editing ? txt(ctx, section, "signature", section.content.signature) : signature}</Styled>
+              <Styled style={st?.signature} text={signature} wrap={editing}>{editing ? txt(ctx, section, "signature", section.content.signature) : signature}</Styled>
             </p>
           )}
         </footer>

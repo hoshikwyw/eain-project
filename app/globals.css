@@ -211,6 +211,19 @@
 }
 
 /*
+ * Burmese text on a gift, see Styled in components/gift/gift-renderer.tsx.
+ * Designs set tight line heights for Latin headings, which makes stacked
+ * Burmese marks run into the next line. Unlayered, so it wins over them.
+ */
+[data-burmese] {
+  line-height: 1.75;
+}
+
+:is(h1, h2) [data-burmese] {
+  line-height: 1.5;
+}
+
+/*
  * Gift editor canvas, see components/editor/gift-editor.tsx.
  * Marks what can be clicked on the gift. The blue is fixed, not a theme
  * colour, so it reads on every gift look.
@@ -236,6 +249,13 @@
 
 .gift-canvas [data-section-id][data-invalid] {
   outline: 2px solid var(--destructive);
+}
+
+.gift-canvas [data-sticker-id] {
+  pointer-events: auto;
+  cursor: grab;
+  /* A drag on a sticker moves the sticker, not the page. */
+  touch-action: none;
 }
 
 .gift-canvas .editable-text {
