@@ -76,7 +76,7 @@ describe("core loop", () => {
     assert.ok(!html.includes("Happy Birthday, Su!"), "draft content must not leak");
   });
 
-  it("publishes, records the event and pays +20 once", async () => {
+  it("publishes, records the event and pays +5 once", async () => {
     const first = await user.rpc("publish_gift", { p_gift_id: giftId });
     assert.equal(first.error, null);
     assert.equal(first.data.status, "published");
@@ -84,7 +84,7 @@ describe("core loop", () => {
     assert.equal(second.error, null);
 
     const { data: profile } = await user.from("profiles").select("points_balance").single();
-    assert.equal(profile?.points_balance, 120, "100 welcome + 20 publish, paid once");
+    assert.equal(profile?.points_balance, 105, "100 welcome + 5 publish, paid once");
   });
 
   it("the public page serves the content but no private data", async () => {
@@ -117,7 +117,7 @@ describe("core loop", () => {
     assert.deepEqual(notifications, [{ type: "gift_opened", title_key: "giftOpened", read_at: null }]);
 
     const { data: profile } = await user.from("profiles").select("points_balance").single();
-    assert.equal(profile?.points_balance, 130);
+    assert.equal(profile?.points_balance, 115);
   });
 
   it("viewed is recorded once per session", async () => {

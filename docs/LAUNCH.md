@@ -41,7 +41,7 @@ Run through with two devices, or one browser plus a private window.
 - [ ] Sign in with Google on a second account.
 - [ ] Create a gift from Birthday Postcard, add a photo, add a question, save, publish.
 - [ ] Copy the link and open it in the private window. Tap "Open your gift". Answer the question.
-- [ ] Back on the dashboard: gift shows Opened, timeline has times, Responses shows the answer, Notifications has two entries, points went up by 20 + 10 + 20.
+- [ ] Back on the dashboard: gift shows Opened, timeline has times, Responses shows the answer, Notifications has two entries, points went up by 5 + 10 + 20.
 - [ ] Share the link into a Messenger or Viber chat to yourself. The preview shows the generic text and the Eain image, never the message. Opening from the chat still shows "Not opened" until the button is tapped.
 - [ ] Regenerate the link. Old link shows "not available". Delete the gift. New link shows "not available".
 - [ ] Report a gift from the public page. In /admin/reports it appears. Take it offline; owner gets a notification; audit log has the entry.

@@ -78,7 +78,7 @@ Implementation rule: components use semantic tokens only, never raw hex. Swappin
 - **Stat tiles:** Gifts Created, Opened, Responses, Points Balance. Dark theme adds a small icon per tile.
 - **Recent Gifts:** thumbnail, title, "For: name", created time, status chip, and Opened and Response counts. "View all" link.
 - **Points & Rewards panel:** balance, encouragement line, bird mascot, "How to earn points" list, "View All Rewards" button.
-- Earn rules shown: create a gift +20, someone opens +10, receive a response +20, invite a friend +30.
+- Earn rules shown: create a gift +5, someone opens +10, receive a response +20, invite a friend +30.
 
 ### Public gift view
 

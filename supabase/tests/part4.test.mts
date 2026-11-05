@@ -48,6 +48,18 @@ describe("earn cap and account deletion", () => {
   });
 
   it("earned points stop at 100 a day while publishing and opening keep working", async () => {
+    // Five gifts earn 25 by being published, so the day starts at 90 earned:
+    // the cap is then reached part-way through the publishes.
+    const seeded = await service.rpc("apply_point_transaction", {
+      p_user_id: member.id,
+      p_type: "earn",
+      p_amount: 90,
+      p_reference_type: "test_seed",
+      p_reference_id: `cap-${Date.now()}`,
+      p_description: "Earned earlier today",
+    } as never);
+    assert.equal(seeded.error, null);
+
     const { data: template } = await member.client.from("templates").select("id").eq("slug", "thank-you").single();
     const tokens: string[] = [];
     for (let i = 0; i < 5; i++) {
