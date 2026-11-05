@@ -593,7 +593,14 @@ export function GiftEditor(props: Props) {
           </form>
           <Button type="button" size="sm" onClick={publish} disabled={publishing || saving} aria-busy={publishing}>
             {publishing ? <Loader2 className="animate-spin" /> : <Send />}
-            {publishing ? t("publishing") : published ? t("republishShort") : t("publishShort")}
+            {publishing ? (
+              t("publishing")
+            ) : (
+              <>
+                <span className="sm:hidden">{published ? t("republishShort") : t("publishShort")}</span>
+                <span className="max-sm:hidden">{published ? t("republish") : t("publish")}</span>
+              </>
+            )}
           </Button>
         </div>
         {problem && (
@@ -631,7 +638,7 @@ export function GiftEditor(props: Props) {
                   }}
                 />
               ) : (
-                <p className="text-center text-sm text-muted-foreground">{t("canvasHint")}</p>
+                <p className="text-center text-sm leading-relaxed text-muted-foreground">{t("canvasHint")}</p>
               )}
             </div>
           </div>

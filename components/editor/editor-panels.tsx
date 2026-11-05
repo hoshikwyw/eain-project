@@ -149,7 +149,7 @@ export function StickersPanel({ count, onAdd }: { count: number; onAdd: (kind: S
   const full = count >= MAX_STICKERS;
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-xs text-muted-foreground">{full ? t("stickerLimit", { max: MAX_STICKERS }) : t("stickersHint")}</p>
+      <p className="text-xs leading-relaxed text-muted-foreground">{full ? t("stickerLimit", { max: MAX_STICKERS }) : t("stickersHint")}</p>
       {STICKER_GROUPS.map((group) => (
         <div key={group.key} className="flex flex-col gap-2">
           <h3 className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">{t(`stickerGroups.${group.key}`)}</h3>
@@ -159,7 +159,8 @@ export function StickersPanel({ count, onAdd }: { count: number; onAdd: (kind: S
                 key={kind}
                 type="button"
                 disabled={full}
-                aria-label={kind.replace(/-/g, " ")}
+                aria-label={t(`stickerNames.${kind}`)}
+                title={t(`stickerNames.${kind}`)}
                 onClick={() => onAdd(kind)}
                 className="aspect-square cursor-pointer rounded-xl border border-border p-1.5 transition-colors outline-none hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring/60 active:scale-95 disabled:cursor-default disabled:opacity-40"
               >
@@ -242,7 +243,7 @@ export function LookPanel({ variant, colors, templateVariant, onVariant, onColor
             {t("resetColors")}
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground">{t("colorsHint")}</p>
+        <p className="text-xs leading-relaxed text-muted-foreground">{t("colorsHint")}</p>
         <ul className="flex flex-col gap-1.5">
           <ColorRow label={t("colorBg")} value={colors.bg} shown={colors.bg ?? look.bg} start={look.bgHex} onChange={(hex) => set("bg", hex)} onClear={() => clear("bg", "bg2")} />
           <ColorRow
@@ -259,7 +260,7 @@ export function LookPanel({ variant, colors, templateVariant, onVariant, onColor
           <ColorRow label={t("colorAccent")} value={colors.accent} shown={colors.accent ?? look.accent} start={look.accent} onChange={(hex) => set("accent", hex)} onClear={() => clear("accent")} />
         </ul>
         {lowContrast && (
-          <p role="status" className="flex items-start gap-2 rounded-xl bg-secondary p-3 text-xs">
+          <p role="status" className="flex items-start gap-2 rounded-xl bg-secondary p-3 text-xs leading-relaxed">
             <TriangleAlert className="size-4 shrink-0 text-destructive" />
             {t("lowContrast")}
           </p>

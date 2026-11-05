@@ -2,17 +2,24 @@
 
 import { Check, Copy, Download, Share2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { markGiftShared } from "@/features/gifts/actions";
 
 type Props = { giftId: string; url: string; qrSvg: string; qrPngDataUrl: string; title: string };
 
+const neverChanges = () => () => {};
+
 export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title }: Props) {
   const t = useTranslations("share");
   const [copied, setCopied] = useState(false);
-  const canShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
+  // False on the server and for the first client render, so the two match; then the browser's answer.
+  const canShare = useSyncExternalStore(
+    neverChanges,
+    () => typeof navigator.share === "function",
+    () => false,
+  );
 
   // "Shared" in the timeline means the creator passed the link on. Recorded once per gift.
   const recordShared = () => void markGiftShared(giftId).catch(() => undefined);

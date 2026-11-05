@@ -82,17 +82,24 @@ export type TextFont = z.infer<typeof textFontSchema>;
 
 /**
  * How one piece of text departs from its design. Every field is optional;
- * a field left out keeps what the design gives that text.
+ * a field left out keeps what the design gives that text. A value that is not
+ * valid is dropped on its own, so one bad value never costs the others.
  */
-export const textStyleSchema = z.object({
-  font: textFontSchema.optional(),
-  /** Multiplier on the design's own size for this text. */
-  scale: z.number().min(0.5).max(2.5).optional(),
-  color: hexColorSchema.optional(),
-  align: z.enum(["left", "center", "right"]).optional(),
-  bold: z.boolean().optional(),
-  italic: z.boolean().optional(),
-});
+export const textStyleSchema = z
+  .object({
+    font: textFontSchema.optional().catch(undefined),
+    /** Multiplier on the design's own size for this text. */
+    scale: z.number().min(0.5).max(2.5).optional().catch(undefined),
+    color: hexColorSchema.optional().catch(undefined),
+    align: z.enum(["left", "center", "right"]).optional().catch(undefined),
+    bold: z.boolean().optional().catch(undefined),
+    italic: z.boolean().optional().catch(undefined),
+  })
+  .transform((style) => {
+    // Dropped values leave empty keys behind; clear them so "no style" stays empty.
+    for (const key of Object.keys(style) as (keyof typeof style)[]) if (style[key] === undefined) delete style[key];
+    return style;
+  });
 export type TextStyle = z.infer<typeof textStyleSchema>;
 
 /**

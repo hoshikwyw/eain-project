@@ -52,6 +52,8 @@ describe("custom styles", () => {
             { id: "b", kind: "crown", anchor: 0, x: 50, y: 0, size: 20 },
             { id: "c", kind: "no-such-sticker", x: 50, y: 50, size: 20 },
             { id: "d", kind: "cake", anchor: 1, x: 500, y: 50, size: 20 },
+            // A section can be much narrower than the gift, so sizes above 100 are valid.
+            { id: "e", kind: "teddy", anchor: 3, x: 50, y: 50, size: 150, rotate: -30 },
           ],
         },
       })
@@ -77,6 +79,12 @@ describe("custom styles", () => {
         content: { text: "Message with a broken style.", styles: { text: { color: "red;background:url(x)" } } },
       },
       { gift_id: gift.id, type: "final_message", position: 2, content: { text: "Bye,", signature: "Tester" } },
+      {
+        gift_id: gift.id,
+        type: "quote",
+        position: 3,
+        content: { text: "ကျေးဇူးတင်ပါတယ်", attribution: "", styles: { text: { font: "padauk", italic: false }, attribution: { font: "comic-sans" } } },
+      },
     ]);
     if (sectionsError) throw sectionsError;
 
@@ -107,6 +115,18 @@ describe("custom styles", () => {
   it("serves stickers on the gift and on a section", () => {
     assert.ok(html.includes("🎈"), "sticker on the gift");
     assert.ok(html.includes("👑"), "sticker on the cover section");
+    assert.ok(html.includes("🧸"), "a sticker wider than its narrow section");
+  });
+
+  it("serves a picked font, and gives Burmese text the line height it needs", () => {
+    assert.ok(html.includes("font-padauk"), "the picked font");
+    assert.ok(html.includes("data-burmese"), "Burmese text is marked for taller lines");
+    assert.ok(!html.includes("comic-sans"), "an unknown font is not served");
+  });
+
+  it("mixes the design's tints again from a custom accent", () => {
+    assert.ok(html.includes("color-mix(in srgb, var(--t-accent) 16%, var(--t-card))"), "soft accent");
+    assert.ok(html.includes("color-mix(in srgb, var(--t-accent) 80%, var(--t-fg))"), "highlight");
   });
 
   it("drops malformed style data but keeps the content", () => {

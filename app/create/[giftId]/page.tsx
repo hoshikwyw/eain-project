@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { GiftEditor } from "@/components/editor/gift-editor";
-import { Logo } from "@/components/brand/logo";
+import { LogoMark, Wordmark } from "@/components/brand/logo";
 import { GiftStatusChip } from "@/components/gift/gift-status-chip";
 import { LocaleToggle } from "@/components/settings/locale-toggle";
 import { ThemeToggle } from "@/components/settings/theme-toggle";
@@ -28,7 +28,11 @@ export default async function EditGiftPage({ params, searchParams }: PageProps<"
               <ArrowLeft />
             </Link>
           </Button>
-          <Logo />
+          {/* The mark alone on phones, so the status chip has room. */}
+          <span className="inline-flex items-center gap-2">
+            <LogoMark />
+            <Wordmark className="max-sm:hidden" />
+          </span>
           <GiftStatusChip status={data.gift.status} opened={Boolean(data.recipient?.first_opened_at)} />
         </div>
         <div className="flex items-center gap-1.5">
