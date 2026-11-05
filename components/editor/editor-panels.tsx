@@ -1,9 +1,9 @@
 "use client";
 
-import { BookOpen, ChevronDown, ChevronUp, Gift, Mail, Play, Plus, ScrollText, Sparkles, Theater, Trash2 } from "lucide-react";
+import { BookOpen, ChevronDown, ChevronUp, Gift, Mail, Play, Plus, RotateCcw, ScrollText, Sparkles, Theater, Trash2, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
-import { DARK_VARIANTS, variantSwatch } from "@/components/gift/palettes";
+import { contrastRatio, DARK_VARIANTS, lookColors, variantSwatch } from "@/components/gift/palettes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,7 @@ import {
   OPENINGS,
   THEME_VARIANTS,
   type EditableSectionType,
+  type GiftColors,
   type MediaItem,
   type Opening,
   type Section,
@@ -173,27 +174,131 @@ export function StickersPanel({ count, onAdd }: { count: number; onAdd: (kind: S
   );
 }
 
-/** The gift's look: one of the ready-made colour sets, light or dark. */
-export function LookPanel({ variant, onChange }: { variant: ThemeVariant; onChange: (variant: ThemeVariant) => void }) {
+type LookPanelProps = {
+  variant: ThemeVariant;
+  /** The creator's own colours over the look. */
+  colors: GiftColors;
+  /** Picks a look. It starts again from that look's colours. */
+  onVariant: (variant: ThemeVariant) => void;
+  onColors: (colors: GiftColors) => void;
+};
+
+/** Below this the main text is hard to read on the card. WCAG asks 4.5 for small text; 3 flags the clear misses. */
+const MIN_CONTRAST = 3;
+
+/** The gift's look: a ready-made colour set to start from, then any colour of it changed. */
+export function LookPanel({ variant, colors, onVariant, onColors }: LookPanelProps) {
+  const t = useTranslations("editor");
+  const look = lookColors(variant);
+
+  const set = (key: keyof GiftColors, hex: string) =>
+    // A blend needs a colour to blend from, so it brings the look's background along.
+    onColors({ ...(key === "bg2" && !colors.bg ? { bg: look.bgHex } : {}), ...colors, [key]: hex });
+  const clear = (...keys: (keyof GiftColors)[]) => {
+    const next = { ...colors };
+    for (const key of keys) delete next[key];
+    onColors(next);
+  };
+  const lowContrast = contrastRatio(colors.text ?? look.text, colors.card ?? look.card) < MIN_CONTRAST;
+
+  return (
+    <div className="flex flex-col gap-5">
+      <fieldset className="flex flex-col gap-3">
+        <legend className="sr-only">{t("theme")}</legend>
+        {([false, true] as const).map((dark) => (
+          <div key={String(dark)} className="flex flex-col gap-2">
+            <p className="text-xs text-muted-foreground">{dark ? t("darkLooks") : t("lightLooks")}</p>
+            <div className="grid grid-cols-3 gap-2">
+              {THEME_VARIANTS.filter((v) => DARK_VARIANTS.has(v) === dark).map((v) => (
+                <label key={v} className={cn(optionClass(variant === v), "p-2")}>
+                  <input type="radio" name="variant" value={v} checked={variant === v} onChange={() => onVariant(v)} className="sr-only" />
+                  <span aria-hidden="true" className="h-8 w-full rounded-lg ring-1 ring-black/5" style={{ background: variantSwatch[v] }} />
+                  <span className="leading-tight">{t(`variants.${v}`)}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        ))}
+      </fieldset>
+
+      <div className="flex flex-col gap-2 border-t border-border pt-4">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-sm font-semibold">{t("yourColors")}</h3>
+          <Button type="button" variant="ghost" size="sm" disabled={Object.keys(colors).length === 0} onClick={() => onColors({})}>
+            <RotateCcw />
+            {t("resetColors")}
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground">{t("colorsHint")}</p>
+        <ul className="flex flex-col gap-1.5">
+          <ColorRow label={t("colorBg")} value={colors.bg} shown={colors.bg ?? look.bg} start={look.bgHex} onChange={(hex) => set("bg", hex)} onClear={() => clear("bg", "bg2")} />
+          <ColorRow
+            label={t("colorBg2")}
+            value={colors.bg2}
+            shown={colors.bg2}
+            start={colors.bg ?? look.bgHex}
+            empty={colors.bg ? t("noBlend") : undefined}
+            onChange={(hex) => set("bg2", hex)}
+            onClear={() => clear("bg2")}
+          />
+          <ColorRow label={t("colorCard")} value={colors.card} shown={colors.card ?? look.card} start={look.card} onChange={(hex) => set("card", hex)} onClear={() => clear("card")} />
+          <ColorRow label={t("colorText")} value={colors.text} shown={colors.text ?? look.text} start={look.text} onChange={(hex) => set("text", hex)} onClear={() => clear("text")} />
+          <ColorRow label={t("colorAccent")} value={colors.accent} shown={colors.accent ?? look.accent} start={look.accent} onChange={(hex) => set("accent", hex)} onClear={() => clear("accent")} />
+        </ul>
+        {lowContrast && (
+          <p role="status" className="flex items-start gap-2 rounded-xl bg-secondary p-3 text-xs">
+            <TriangleAlert className="size-4 shrink-0 text-destructive" />
+            {t("lowContrast")}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+type ColorRowProps = {
+  label: string;
+  /** The creator's colour, if they set one. */
+  value: string | undefined;
+  /** What the swatch shows: the creator's colour or the look's own. Undefined: nothing set, shows a plus. */
+  shown: string | undefined;
+  /** Where the system colour picker opens when nothing is set yet. */
+  start: string;
+  /** Said in place of the colour while none is set. Default: that it comes from the look. */
+  empty?: string;
+  onChange: (hex: string) => void;
+  onClear: () => void;
+};
+
+/** One colour of the gift. The swatch opens the system colour picker; the arrow goes back to the look's own. */
+function ColorRow({ label, value, shown, start, empty, onChange, onClear }: ColorRowProps) {
   const t = useTranslations("editor");
   return (
-    <fieldset className="flex flex-col gap-3">
-      <legend className="sr-only">{t("theme")}</legend>
-      {([false, true] as const).map((dark) => (
-        <div key={String(dark)} className="flex flex-col gap-2">
-          <p className="text-xs text-muted-foreground">{dark ? t("darkLooks") : t("lightLooks")}</p>
-          <div className="grid grid-cols-3 gap-2">
-            {THEME_VARIANTS.filter((v) => DARK_VARIANTS.has(v) === dark).map((v) => (
-              <label key={v} className={cn(optionClass(variant === v), "p-2")}>
-                <input type="radio" name="variant" value={v} checked={variant === v} onChange={() => onChange(v)} className="sr-only" />
-                <span aria-hidden="true" className="h-8 w-full rounded-lg ring-1 ring-black/5" style={{ background: variantSwatch[v] }} />
-                <span className="leading-tight">{t(`variants.${v}`)}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      ))}
-    </fieldset>
+    <li className="flex items-center gap-1">
+      <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 rounded-xl p-1.5 hover:bg-secondary">
+        <span
+          aria-hidden="true"
+          className={cn("relative grid size-9 shrink-0 place-items-center rounded-full border border-black/15 ring-1 ring-white/30", !shown && "border-dashed border-border")}
+          style={{ background: shown }}
+        >
+          {!shown && <Plus className="size-4 text-muted-foreground" />}
+          <input
+            type="color"
+            aria-label={label}
+            value={value ?? start}
+            onChange={(e) => onChange(e.target.value)}
+            className="absolute inset-0 size-full cursor-pointer opacity-0"
+          />
+        </span>
+        <span className="flex min-w-0 flex-col">
+          <span className="text-sm font-semibold">{label}</span>
+          <span className="truncate text-xs text-muted-foreground uppercase tabular-nums">{value ?? empty ?? t("lookColor")}</span>
+        </span>
+      </label>
+      <Button type="button" variant="ghost" size="icon" className="size-8" aria-label={t("resetColor", { name: label })} disabled={!value} onClick={onClear}>
+        <RotateCcw />
+      </Button>
+    </li>
   );
 }
 

@@ -343,7 +343,19 @@
     "textColor": "Text colour",
     "designColor": "Design colour",
     "customColor": "Custom",
-    "resetText": "Reset this text's style"
+    "resetText": "Reset this text's style",
+    "yourColors": "Your colours",
+    "colorsHint": "Change any colour of the look. Picking another look starts again from that look's colours.",
+    "colorBg": "Background",
+    "colorBg2": "Blend into",
+    "colorCard": "Card",
+    "colorText": "Text",
+    "colorAccent": "Accent",
+    "lookColor": "From the look",
+    "noBlend": "One colour",
+    "resetColor": "Use the look's colour for {name}",
+    "resetColors": "Reset",
+    "lowContrast": "The text may be hard to read on this card colour. Try a darker or lighter text."
   },
   "gift": {
     "previewTitle": "A gift for you",

@@ -121,7 +121,7 @@ export function GiftEditor(props: Props) {
   const [variant, setVariant] = useState<ThemeVariant>(props.variant);
   const [opening, setOpening] = useState<Opening>(props.opening);
   const [openingPreview, setOpeningPreview] = useState<OpeningStage | null>(null);
-  const [colors] = useState<GiftColors>(props.colors);
+  const [colors, setColors] = useState<GiftColors>(props.colors);
   const [stickers, setStickers] = useState<Sticker[]>(props.stickers);
   const [sections, setSections] = useState<Section[]>(props.sections);
   const [media, setMedia] = useState<MediaItem[]>(props.media);
@@ -657,7 +657,17 @@ export function GiftEditor(props: Props) {
               />
             )}
             {tab === "stickers" && <StickersPanel count={stickers.length} onAdd={addSticker} />}
-            {tab === "look" && <LookPanel variant={variant} onChange={setVariant} />}
+            {tab === "look" && (
+              <LookPanel
+                variant={variant}
+                colors={colors}
+                onVariant={(next) => {
+                  setVariant(next);
+                  setColors({});
+                }}
+                onColors={setColors}
+              />
+            )}
             {tab === "opening" && <OpeningPanel opening={opening} onChange={setOpening} onPlay={() => setOpeningPreview("closed")} />}
             {tab === "details" && (
               <DetailsPanel

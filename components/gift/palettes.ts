@@ -273,11 +273,43 @@ const morePalettes = {
 /** Every look. Typed as a full record so adding a look without a palette fails to compile. */
 export const palettes: Record<ThemeVariant, CSSProperties> = { ...basePalettes, ...morePalettes };
 
+const channels = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)) as [number, number, number];
+
 /** Black or white, whichever reads better on the colour. */
 function readableOn(hex: string): string {
-  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  const [r, g, b] = channels(hex);
   // Perceived brightness, 0 to 255.
-  return (r! * 299 + g! * 587 + b! * 114) / 1000 > 150 ? "#1a1a1a" : "#ffffff";
+  return (r * 299 + g * 587 + b * 114) / 1000 > 150 ? "#1a1a1a" : "#ffffff";
+}
+
+/** WCAG contrast ratio of two #rrggbb colours, from 1 (same) to 21 (black on white). */
+export function contrastRatio(a: string, b: string): number {
+  const luminance = (hex: string) => {
+    const [r, g, bl] = channels(hex).map((c) => {
+      const v = c / 255;
+      return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+    }) as [number, number, number];
+    return 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+  };
+  const [light, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x) as [number, number];
+  return (light + 0.05) / (dark + 0.05);
+}
+
+/**
+ * The colours a look starts from, for the editor's colour controls. `bg` is
+ * CSS and may be a gradient; the rest are #rrggbb, with `bgHex` the
+ * background's first colour.
+ */
+export function lookColors(variant: ThemeVariant): { bg: string; bgHex: string; card: string; text: string; accent: string } {
+  const base = palettes[variant] as Record<string, string>;
+  const bg = base["--t-bg"] ?? "#ffffff";
+  return {
+    bg,
+    bgHex: bg.match(/#[0-9a-fA-F]{6}/)?.[0] ?? "#ffffff",
+    card: base["--t-card"] ?? "#ffffff",
+    text: base["--t-fg"] ?? "#1a1a1a",
+    accent: base["--t-accent"] ?? "#e8476c",
+  };
 }
 
 /**
@@ -298,13 +330,18 @@ export function giftPalette(variant: ThemeVariant, colors?: GiftColors): CSSProp
     over["--t-muted"] = `color-mix(in srgb, ${text} 65%, var(--t-card))`;
   }
   if (accent) {
-    const soft = `color-mix(in srgb, ${accent} 16%, var(--t-card))`;
     over["--t-accent"] = accent;
     over["--brand"] = accent;
+    over["--t-on-accent"] = readableOn(accent);
+  }
+  if (accent || card) {
+    // Tints and highlights are made for the look's own card and accent, so
+    // they are mixed again from whichever of the two the creator changed.
+    const soft = "color-mix(in srgb, var(--t-accent) 16%, var(--t-card))";
     over["--t-accent-soft"] = soft;
     over["--brand-soft"] = soft;
-    over["--t-deco"] = `color-mix(in srgb, ${accent} 55%, var(--t-card))`;
-    over["--t-on-accent"] = readableOn(accent);
+    over["--t-deco"] = "color-mix(in srgb, var(--t-accent) 55%, var(--t-card))";
+    over["--glow"] = "color-mix(in srgb, var(--t-accent) 80%, var(--t-fg))";
   }
   return { ...base, ...over } as CSSProperties;
 }
