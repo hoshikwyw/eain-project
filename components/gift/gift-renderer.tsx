@@ -8,6 +8,19 @@ import { StickerLayer } from "./sticker-layer";
 
 type Labels = { forName: string; forYou: string; addPhoto: string; questionNote: string };
 
+/**
+ * What the editor plugs in to make the gift editable in place. The renderer
+ * stays free of editor code: it asks for each text's editable element and
+ * marks sections so the editor can find them.
+ */
+export type GiftEdit = {
+  /** The editable element for one text field. `index` is the item, for timelines. */
+  text: (args: { section: Section; field: string; index?: number; value: string }) => ReactNode;
+  selectedId?: string | null;
+  /** Sections to flag as incomplete. */
+  invalidIds?: ReadonlySet<string>;
+};
+
 type Props = {
   sections: Section[];
   media: Record<string, MediaItem>;
@@ -32,6 +45,8 @@ type Props = {
   questionMode?: "preview" | "hidden";
   /** Labels the renderer needs; passed in so this stays a server-safe component. */
   labels: Labels;
+  /** Set by the editor only. Empty optional texts then show, so they can be filled in. */
+  edit?: GiftEdit;
 };
 
 /**
@@ -101,6 +116,9 @@ function Sections({ ctx, className, itemClassName, animate }: { ctx: Ctx; classN
         return (
           <div
             key={section.id}
+            data-section-id={ctx.edit ? section.id : undefined}
+            data-selected={ctx.edit?.selectedId === section.id ? "" : undefined}
+            data-invalid={ctx.edit?.invalidIds?.has(section.id) ? "" : undefined}
             style={animate ? { animationDelay: `${Math.min(i, 6) * 120}ms` } : undefined}
             className={cn(itemClassName, stickers && "relative", animate && "animate-in fade-in slide-in-from-bottom-4 fill-mode-both duration-700")}
           >
@@ -451,8 +469,14 @@ function Styled({ style, children }: { style: TextStyle | undefined; children: R
   );
 }
 
+/** A text value, or its editable element when the gift is open in the editor. */
+function txt(ctx: Ctx, section: Section, field: string, value: string, index?: number): ReactNode {
+  return ctx.edit ? ctx.edit.text({ section, field, index, value }) : value;
+}
+
 function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; isFirst: boolean }) {
   const { media, senderName, compact, placeholders, labels, design } = ctx;
+  const editing = Boolean(ctx.edit);
   switch (section.type) {
     case "question":
       return (
@@ -488,11 +512,11 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
       return (
         <header className="flex flex-col gap-2">
           <Heading style={alignStyle(st?.heading)} className={cn("font-display font-semibold text-balance leading-tight", compact ? (isFirst ? "text-3xl" : "text-2xl") : isFirst ? "text-4xl sm:text-5xl" : "text-3xl")}>
-            <Styled style={st?.heading}>{section.content.heading}</Styled>
+            <Styled style={st?.heading}>{txt(ctx, section, "heading", section.content.heading)}</Styled>
           </Heading>
-          {section.content.subheading && (
+          {(section.content.subheading || editing) && (
             <p style={alignStyle(st?.subheading)} className={cn("text-[color:var(--t-muted)]", compact ? "text-sm" : "text-lg")}>
-              <Styled style={st?.subheading}>{section.content.subheading}</Styled>
+              <Styled style={st?.subheading}>{txt(ctx, section, "subheading", section.content.subheading)}</Styled>
             </p>
           )}
         </header>
@@ -501,7 +525,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
     case "message":
       return (
         <p style={alignStyle(section.content.styles?.text)} className={cn("msg whitespace-pre-line text-[color:var(--t-fg)]/90", compact ? "text-base" : "text-lg")}>
-          <Styled style={section.content.styles?.text}>{section.content.text}</Styled>
+          <Styled style={section.content.styles?.text}>{txt(ctx, section, "text", section.content.text)}</Styled>
         </p>
       );
     case "image": {
@@ -516,9 +540,9 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
         return (
           <figure className="mx-auto w-fit max-w-full -rotate-1 rounded-sm bg-white p-3 pb-10 shadow-lg">
             {img}
-            {section.content.caption && (
+            {(section.content.caption || editing) && (
               <figcaption style={alignStyle(captionStyle)} className="mt-3 text-center font-hand text-xl text-neutral-700">
-                <Styled style={captionStyle}>{section.content.caption}</Styled>
+                <Styled style={captionStyle}>{txt(ctx, section, "caption", section.content.caption)}</Styled>
               </figcaption>
             )}
           </figure>
@@ -527,9 +551,9 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
       return (
         <figure className="flex flex-col gap-2">
           {img}
-          {section.content.caption && (
+          {(section.content.caption || editing) && (
             <figcaption style={alignStyle(captionStyle)} className="text-center text-sm text-[color:var(--t-muted)]">
-              <Styled style={captionStyle}>{section.content.caption}</Styled>
+              <Styled style={captionStyle}>{txt(ctx, section, "caption", section.content.caption)}</Styled>
             </figcaption>
           )}
         </figure>
@@ -550,9 +574,9 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
                 </div>
               ))}
             </div>
-            {section.content.caption && (
+            {(section.content.caption || editing) && (
               <figcaption style={alignStyle(captionStyle)} className="text-center font-hand text-xl">
-                <Styled style={captionStyle}>{section.content.caption}</Styled>
+                <Styled style={captionStyle}>{txt(ctx, section, "caption", section.content.caption)}</Styled>
               </figcaption>
             )}
           </figure>
@@ -566,9 +590,9 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
               <img key={item.id} src={item.thumbUrl} alt="" loading="lazy" decoding="async" className="aspect-square w-full rounded-xl object-cover" />
             ))}
           </div>
-          {section.content.caption && (
+          {(section.content.caption || editing) && (
             <figcaption style={alignStyle(captionStyle)} className="text-center text-sm text-[color:var(--t-muted)]">
-              <Styled style={captionStyle}>{section.content.caption}</Styled>
+              <Styled style={captionStyle}>{txt(ctx, section, "caption", section.content.caption)}</Styled>
             </figcaption>
           )}
         </figure>
@@ -581,17 +605,17 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
           {section.content.items.map((item, i) => (
             <li key={i} className="relative">
               <span aria-hidden="true" className="dot absolute top-1.5 -left-[1.6rem] size-3 rounded-full bg-[color:var(--t-accent)] ring-4 ring-[color:var(--t-card)]" />
-              {item.date && (
+              {(item.date || editing) && (
                 <p style={alignStyle(st?.date)} className="text-xs font-semibold tracking-wide uppercase text-[color:var(--t-muted)]">
-                  <Styled style={st?.date}>{item.date}</Styled>
+                  <Styled style={st?.date}>{txt(ctx, section, "date", item.date, i)}</Styled>
                 </p>
               )}
               <p style={alignStyle(st?.title)} className="font-semibold">
-                <Styled style={st?.title}>{item.title}</Styled>
+                <Styled style={st?.title}>{txt(ctx, section, "title", item.title, i)}</Styled>
               </p>
-              {item.text && (
+              {(item.text || editing) && (
                 <p style={alignStyle(st?.text)} className="mt-1 text-sm text-[color:var(--t-fg)]/85">
-                  <Styled style={st?.text}>{item.text}</Styled>
+                  <Styled style={st?.text}>{txt(ctx, section, "text", item.text, i)}</Styled>
                 </p>
               )}
             </li>
@@ -604,11 +628,11 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
       return (
         <blockquote className="flex flex-col gap-2 border-l-4 border-[color:var(--t-accent)] pl-4">
           <p style={alignStyle(st?.text)} className={cn("font-display text-balance italic", compact ? "text-lg" : "text-2xl")}>
-            <Styled style={st?.text}>“{section.content.text}”</Styled>
+            <Styled style={st?.text}>“{txt(ctx, section, "text", section.content.text)}”</Styled>
           </p>
-          {section.content.attribution && (
+          {(section.content.attribution || editing) && (
             <footer style={alignStyle(st?.attribution)} className="text-sm text-[color:var(--t-muted)]">
-              <Styled style={st?.attribution}>— {section.content.attribution}</Styled>
+              <Styled style={st?.attribution}>— {txt(ctx, section, "attribution", section.content.attribution)}</Styled>
             </footer>
           )}
         </blockquote>
@@ -617,17 +641,18 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
     case "final_message": {
       const signature = section.content.signature.trim() || senderName;
       const st = section.content.styles;
-      if (!section.content.text && !signature) return null;
+      if (!section.content.text && !signature && !editing) return null;
       return (
         <footer className="flex flex-col gap-1 border-t border-[color:var(--t-accent-soft)] pt-5">
-          {section.content.text && (
+          {(section.content.text || editing) && (
             <p style={alignStyle(st?.text)} className="text-[color:var(--t-fg)]/85">
-              <Styled style={st?.text}>{section.content.text}</Styled>
+              <Styled style={st?.text}>{txt(ctx, section, "text", section.content.text)}</Styled>
             </p>
           )}
-          {signature && (
+          {(signature || editing) && (
             <p style={alignStyle(st?.signature)} className="sig font-display text-xl font-semibold">
-              <Styled style={st?.signature}>{signature}</Styled>
+              {/* The editor edits the stored signature; left empty, the sender's name shows as its placeholder. */}
+              <Styled style={st?.signature}>{editing ? txt(ctx, section, "signature", section.content.signature) : signature}</Styled>
             </p>
           )}
         </footer>

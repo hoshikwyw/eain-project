@@ -1,20 +1,17 @@
 "use client";
 
-import { BookOpen, ChevronDown, ChevronUp, Eye, Gift, Loader2, Mail, Play, Plus, Save, ScrollText, Send, Sparkles, Theater, Trash2, X } from "lucide-react";
+import { Eye, Layers, Loader2, Palette, Pencil, Play, Save, Send, Settings2, X } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
+import { useActionState, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { GiftOpening, openingDuration, type OpeningStage } from "@/components/gift/gift-opening";
+import type { GiftEdit } from "@/components/gift/gift-renderer";
 import { GiftView } from "@/components/gift/gift-view";
-import { DARK_VARIANTS, variantSwatch } from "@/components/gift/palettes";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { saveAndPublishGift, saveGift } from "@/features/gifts/actions";
 import {
   MAX_SECTIONS,
-  OPENINGS,
-  THEME_VARIANTS,
+  sectionSchema,
   type EditableSectionType,
   type EditorPayload,
   type GiftColors,
@@ -25,9 +22,13 @@ import {
   type Sticker,
   type ThemeVariant,
 } from "@/features/gifts/schemas";
+import { dropStickerAnchor, swapStickerAnchors } from "@/features/gifts/sections";
 import type { TemplateStyle } from "@/features/gifts/templates";
 import { cn } from "@/lib/utils";
-import { SectionFields } from "./section-fields";
+import { EditableText } from "./editable-text";
+import { DetailsPanel, LookPanel, OpeningPanel, SectionsPanel } from "./editor-panels";
+import { SectionToolbar, sectionSelector } from "./section-toolbar";
+import { TEXT_FIELDS, withText } from "./text-fields";
 
 type Props = {
   giftId: string;
@@ -45,16 +46,15 @@ type Props = {
   publishError?: boolean;
 };
 
-const OPENING_ICONS: Record<Opening, React.ComponentType<{ className?: string }>> = {
-  envelope: Mail,
-  book: BookOpen,
-  giftbox: Gift,
-  curtain: Theater,
-  scroll: ScrollText,
-  simple: Sparkles,
-};
+const TABS = ["sections", "look", "opening", "details"] as const;
+type Tab = (typeof TABS)[number];
 
-const SECTION_TYPES: EditableSectionType[] = ["text", "message", "image", "photo_grid", "timeline", "quote", "question", "final_message"];
+const TAB_ICONS: Record<Tab, React.ComponentType<{ className?: string }>> = {
+  sections: Layers,
+  look: Palette,
+  opening: Play,
+  details: Settings2,
+};
 
 function emptySection(type: EditableSectionType): Section {
   const id = crypto.randomUUID();
@@ -91,8 +91,14 @@ function emptySection(type: EditableSectionType): Section {
   }
 }
 
+/**
+ * The gift editor. The gift itself is the workspace: texts are typed in
+ * place and sections are picked by clicking them. Tools live in a side panel
+ * on wide screens and in a bottom sheet on phones.
+ */
 export function GiftEditor(props: Props) {
   const t = useTranslations("editor");
+  const tFields = useTranslations("editor.fields");
   const tGift = useTranslations("gift");
   const [title, setTitle] = useState(props.title);
   const [recipientName, setRecipientName] = useState(props.recipientName);
@@ -100,11 +106,19 @@ export function GiftEditor(props: Props) {
   const [opening, setOpening] = useState<Opening>(props.opening);
   const [openingPreview, setOpeningPreview] = useState<OpeningStage | null>(null);
   const [colors] = useState<GiftColors>(props.colors);
-  const [stickers] = useState<Sticker[]>(props.stickers);
+  const [stickers, setStickers] = useState<Sticker[]>(props.stickers);
   const [sections, setSections] = useState<Section[]>(props.sections);
   const [media, setMedia] = useState<MediaItem[]>(props.media);
-  const [showPreview, setShowPreview] = useState(false);
-  const [adding, setAdding] = useState(false);
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [tab, setTab] = useState<Tab>("sections");
+  /** Phones only: whether the tool sheet is up. Wide screens always show the panel. */
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
+  /** Turned on by a save that was stopped, so nothing is flagged while the user is still writing. */
+  const [showInvalid, setShowInvalid] = useState(false);
+  const [scrollTo, setScrollTo] = useState<{ id: string; block: ScrollLogicalPosition } | null>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   const payload = useMemo<EditorPayload>(
     () => ({ title, recipientName, variant, opening, colors, stickers, sections }),
@@ -126,6 +140,13 @@ export function GiftEditor(props: Props) {
   );
   const dirty = payloadJson !== lastSaved;
 
+  const invalidIds = useMemo(
+    () => new Set(sections.filter((s) => !sectionSchema.safeParse(s).success).map((s) => s.id)),
+    [sections],
+  );
+  const titleInvalid = title.trim() === "";
+  const valid = invalidIds.size === 0 && !titleInvalid;
+
   const [state, formAction, saving] = useActionState<SaveGiftState, FormData>(async (prev, fd) => {
     const result = await saveGift(props.giftId, prev, fd);
     if (result.status === "saved") setLastSaved(String(fd.get("payload")));
@@ -135,14 +156,6 @@ export function GiftEditor(props: Props) {
   // Publish always saves the current editor content first, so nothing typed is lost.
   const [publishing, startPublish] = useTransition();
   const [publishState, setPublishState] = useState<SaveGiftState["status"]>();
-  const publish = () =>
-    startPublish(async () => {
-      setPublishState(undefined);
-      const fd = new FormData();
-      fd.set("payload", payloadJson);
-      const result = await saveAndPublishGift(props.giftId, fd);
-      if (result) setPublishState(result.status);
-    });
 
   useEffect(() => {
     if (!dirty) return;
@@ -150,6 +163,7 @@ export function GiftEditor(props: Props) {
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty]);
+
   // Opening preview: show the closed gift for a moment, play it, then close.
   useEffect(() => {
     if (!openingPreview) return;
@@ -160,218 +174,280 @@ export function GiftEditor(props: Props) {
     return () => window.clearTimeout(timer);
   }, [openingPreview, opening]);
 
+  useEffect(() => {
+    if (!scrollTo) return;
+    canvasRef.current?.querySelector(sectionSelector(scrollTo.id))?.scrollIntoView({ block: scrollTo.block, behavior: "smooth" });
+  }, [scrollTo]);
+
   const mediaMap = useMemo(() => Object.fromEntries(media.map((m) => [m.id, m])), [media]);
 
+  // Sections ------------------------------------------------------------------
+
   const updateSection = (next: Section) => setSections((s) => s.map((sec) => (sec.id === next.id ? next : sec)));
-  const removeSection = (id: string) => setSections((s) => s.filter((sec) => sec.id !== id));
-  const move = (index: number, dir: -1 | 1) =>
-    setSections((s) => {
-      const target = index + dir;
-      if (target < 0 || target >= s.length) return s;
-      const copy = [...s];
-      [copy[index], copy[target]] = [copy[target]!, copy[index]!];
-      return copy;
-    });
+  const setText = useCallback(
+    (id: string, field: string, value: string, index?: number) =>
+      setSections((all) => all.map((s) => (s.id === id ? withText(s, field, value, index) : s))),
+    [],
+  );
+  const removeSection = (id: string) => {
+    const index = sections.findIndex((s) => s.id === id);
+    if (index < 0 || sections.length <= 1) return;
+    setSections(sections.filter((s) => s.id !== id));
+    setStickers((all) => dropStickerAnchor(all, index));
+    if (selectedId === id) setSelectedId(null);
+  };
+  const move = (index: number, dir: -1 | 1) => {
+    const target = index + dir;
+    if (target < 0 || target >= sections.length) return;
+    const copy = [...sections];
+    [copy[index], copy[target]] = [copy[target]!, copy[index]!];
+    setSections(copy);
+    setStickers((all) => swapStickerAnchors(all, index, target));
+    setScrollTo({ id: copy[target]!.id, block: "nearest" });
+  };
   const addSection = (type: EditableSectionType) => {
-    setSections((s) => (s.length >= MAX_SECTIONS ? s : [...s, emptySection(type)]));
-    setAdding(false);
+    if (sections.length >= MAX_SECTIONS) return;
+    const section = emptySection(type);
+    setSections([...sections, section]);
+    setSelectedId(section.id);
+    setScrollTo({ id: section.id, block: "center" });
   };
 
+  /** Picks a section from the panel and brings it into view on the gift. */
+  const selectFromPanel = (id: string | null) => {
+    setSelectedId(id);
+    if (id) setScrollTo({ id, block: "center" });
+  };
+  const openTab = (next: Tab) => {
+    setTab(next);
+    setSheetOpen(true);
+  };
+
+  // Clicks and focus on the gift pick the section they land in.
+  const pickOnCanvas = (target: EventTarget, deselect: boolean) => {
+    if (!(target instanceof Element) || target.closest("[data-canvas-ui]")) return;
+    const id = target.closest<HTMLElement>("[data-section-id]")?.dataset.sectionId ?? null;
+    if (id) {
+      setSelectedId(id);
+      setTab("sections");
+    } else if (deselect) {
+      setSelectedId(null);
+    }
+  };
+
+  // Saving --------------------------------------------------------------------
+
+  /** Points at what stops a save: the title, or the first incomplete section. */
+  const revealInvalid = () => {
+    setShowInvalid(true);
+    setPreviewing(false);
+    if (titleInvalid) return openTab("details");
+    const first = sections.find((s) => invalidIds.has(s.id));
+    if (first) {
+      setTab("sections");
+      selectFromPanel(first.id);
+    }
+  };
+
+  const publish = () => {
+    if (!valid) return revealInvalid();
+    startPublish(async () => {
+      setPublishState(undefined);
+      const fd = new FormData();
+      fd.set("payload", payloadJson);
+      const result = await saveAndPublishGift(props.giftId, fd);
+      if (result) setPublishState(result.status);
+    });
+  };
+
+  const status = (() => {
+    if (showInvalid && !valid) return { text: t("invalid"), tone: "text-destructive" };
+    if (props.publishError || publishState === "error") return { text: t("publishError"), tone: "text-destructive" };
+    if (state.status === "error" && dirty) return { text: t("error"), tone: "text-destructive" };
+    if (saving) return { text: t("saving"), tone: "text-muted-foreground" };
+    if (dirty) return { text: t("unsaved"), tone: "text-muted-foreground" };
+    if (state.status === "saved") return { text: t("saved"), tone: "text-success" };
+    return null;
+  })();
+
+  // Canvas --------------------------------------------------------------------
+
+  const senderName = props.senderName;
+  const edit = useMemo<GiftEdit>(
+    () => ({
+      selectedId,
+      invalidIds: showInvalid ? invalidIds : undefined,
+      text: ({ section, field, index, value }) => {
+        const meta = TEXT_FIELDS[`${section.type}.${field}`];
+        if (!meta) return value;
+        return (
+          <EditableText
+            value={value}
+            max={meta.max}
+            multiline={meta.multiline}
+            // An empty signature falls back to the sender's name, so that is what shows.
+            placeholder={(field === "signature" && senderName) || tFields(meta.label)}
+            field={field}
+            index={index}
+            onChange={(next) => setText(section.id, field, next, index)}
+          />
+        );
+      },
+    }),
+    [selectedId, showInvalid, invalidIds, senderName, tFields, setText],
+  );
+
+  const selectedIndex = sections.findIndex((s) => s.id === selectedId);
+  const tabLabel: Record<Tab, string> = { sections: t("sections"), look: t("theme"), opening: t("opening"), details: t("details") };
+  const published = props.status === "published";
+
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,460px)_1fr]">
-      <form action={formAction} className={cn("flex flex-col gap-6", showPreview && "hidden lg:flex")}>
-        <input type="hidden" name="payload" value={JSON.stringify(payload)} />
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="title">{t("title")}</Label>
-            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} required />
-            <p className="text-xs text-muted-foreground">{t("titleHint")}</p>
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="recipientName">{t("recipientName")}</Label>
-            <Input
-              id="recipientName"
-              value={recipientName}
-              onChange={(e) => setRecipientName(e.target.value)}
-              maxLength={80}
-              placeholder={t("recipientPlaceholder")}
-            />
-          </div>
-        </div>
-
-        <fieldset className="flex flex-col gap-3">
-          <legend className="mb-1 text-sm font-semibold">{t("theme")}</legend>
-          {([false, true] as const).map((dark) => (
-            <div key={String(dark)} className="flex flex-col gap-2">
-              <p className="text-xs text-muted-foreground">{dark ? t("darkLooks") : t("lightLooks")}</p>
-              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-                {THEME_VARIANTS.filter((v) => DARK_VARIANTS.has(v) === dark).map((v) => (
-                  <label
-                    key={v}
-                    className={cn(
-                      "flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border p-2 text-center text-xs font-semibold transition-colors",
-                      variant === v ? "border-primary bg-accent text-accent-foreground ring-1 ring-primary" : "border-border hover:bg-secondary",
-                    )}
-                  >
-                    <input type="radio" name="variant" value={v} checked={variant === v} onChange={() => setVariant(v)} className="sr-only" />
-                    <span aria-hidden="true" className="h-8 w-full rounded-lg ring-1 ring-black/5" style={{ background: variantSwatch[v] }} />
-                    <span className="leading-tight">{t(`variants.${v}`)}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          ))}
-        </fieldset>
-
-        <div role="radiogroup" aria-labelledby="opening-label" className="flex flex-col gap-3">
-          <div className="flex items-end justify-between gap-3">
-            <div>
-              <h2 id="opening-label" className="text-sm font-semibold">
-                {t("opening")}
-              </h2>
-              <p className="text-xs text-muted-foreground">{t("openingHint")}</p>
-            </div>
-            <Button type="button" variant="soft" size="sm" onClick={() => setOpeningPreview("closed")}>
-              <Play />
-              {t("playOpening")}
-            </Button>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            {OPENINGS.map((o) => {
-              const Icon = OPENING_ICONS[o];
-              return (
-                <label
-                  key={o}
-                  className={cn(
-                    "flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border p-3 text-center text-xs font-semibold transition-colors",
-                    opening === o ? "border-primary bg-accent text-accent-foreground ring-1 ring-primary" : "border-border hover:bg-secondary",
-                  )}
-                >
-                  <input
-                    type="radio"
-                    name="opening"
-                    value={o}
-                    checked={opening === o}
-                    onChange={() => {
-                      setOpening(o);
-                      setOpeningPreview("closed");
-                    }}
-                    className="sr-only"
-                  />
-                  <Icon className="size-5" />
-                  <span className="leading-tight">{t(`openings.${o}`)}</span>
-                </label>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-3">
-          <h2 className="text-sm font-semibold">{t("sections")}</h2>
-          <ol className="flex flex-col gap-3">
-            {sections.map((section, index) => (
-              <li key={section.id} className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
-                    {t(`sectionTypes.${section.type}`)}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <Button type="button" variant="ghost" size="icon" className="size-8" aria-label={t("moveUp")} disabled={index === 0} onClick={() => move(index, -1)}>
-                      <ChevronUp />
-                    </Button>
-                    <Button type="button" variant="ghost" size="icon" className="size-8" aria-label={t("moveDown")} disabled={index === sections.length - 1} onClick={() => move(index, 1)}>
-                      <ChevronDown />
-                    </Button>
-                    <Button type="button" variant="ghost" size="icon" className="size-8 text-destructive" aria-label={t("removeSection")} disabled={sections.length <= 1} onClick={() => removeSection(section.id)}>
-                      <Trash2 />
-                    </Button>
-                  </div>
-                </div>
-                <SectionFields section={section} onChange={updateSection} giftId={props.giftId} media={media} onMediaChange={setMedia} />
-              </li>
-            ))}
-          </ol>
-
-          {adding ? (
-            <div className="grid grid-cols-2 gap-2 rounded-2xl border border-dashed border-border p-3 sm:grid-cols-3">
-              {SECTION_TYPES.map((type) => (
-                <Button key={type} type="button" variant="secondary" size="sm" onClick={() => addSection(type)}>
-                  {t(`sectionTypes.${type}`)}
-                </Button>
-              ))}
-              <Button type="button" variant="ghost" size="sm" onClick={() => setAdding(false)}>
-                {t("cancel")}
-              </Button>
-            </div>
-          ) : (
-            <Button type="button" variant="secondary" className="self-start" disabled={sections.length >= MAX_SECTIONS} onClick={() => setAdding(true)}>
-              <Plus />
-              {t("addSection")}
-            </Button>
-          )}
-          <p className="text-xs text-muted-foreground">{t("sectionCount", { count: sections.length, max: MAX_SECTIONS })}</p>
-        </div>
-
-        <div className="sticky bottom-20 flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card/95 p-3 backdrop-blur md:bottom-4">
-          <Button type="submit" disabled={saving} aria-busy={saving}>
+    <div className="flex flex-col gap-4">
+      <div className="sticky top-0 z-30 -mx-4 flex items-center gap-2 border-b border-border bg-background/90 px-4 py-2.5 backdrop-blur">
+        <p role="status" className={cn("min-w-0 flex-1 truncate text-sm", status?.tone)}>
+          {status?.text}
+        </p>
+        <Button type="button" variant="ghost" size="sm" aria-pressed={previewing} onClick={() => setPreviewing((v) => !v)}>
+          {previewing ? <Pencil /> : <Eye />}
+          <span className="max-sm:sr-only">{previewing ? t("backToEdit") : t("preview")}</span>
+        </Button>
+        <form
+          action={formAction}
+          onSubmit={(e) => {
+            if (valid) return;
+            e.preventDefault();
+            revealInvalid();
+          }}
+        >
+          <input type="hidden" name="payload" value={payloadJson} />
+          <Button type="submit" variant="secondary" size="sm" disabled={saving || publishing} aria-busy={saving}>
             {saving ? <Loader2 className="animate-spin" /> : <Save />}
             {saving ? t("saving") : t("save")}
           </Button>
-          <Button type="button" variant="secondary" className="lg:hidden" onClick={() => setShowPreview(true)}>
-            <Eye />
-            {t("preview")}
-          </Button>
-          {dirty && !saving && <span className="text-sm text-muted-foreground">{t("unsaved")}</span>}
-          {!dirty && state.status === "saved" && <span className="text-sm text-success">{t("saved")}</span>}
-          {state.status === "invalid" && <span className="text-sm text-destructive">{t("invalid")}</span>}
-          {state.status === "error" && <span className="text-sm text-destructive">{t("error")}</span>}
-        </div>
-      </form>
+        </form>
+        <Button type="button" size="sm" onClick={publish} disabled={publishing || saving} aria-busy={publishing}>
+          {publishing ? <Loader2 className="animate-spin" /> : <Send />}
+          {publishing ? t("publishing") : published ? t("republishShort") : t("publishShort")}
+        </Button>
+      </div>
 
-      <div className={cn("flex flex-col gap-4", !showPreview && "hidden lg:flex")}>
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-muted-foreground">{t("livePreview")}</h2>
-          <Button type="button" variant="ghost" size="sm" className="lg:hidden" onClick={() => setShowPreview(false)}>
-            {t("backToEdit")}
-          </Button>
-        </div>
-        <div className="lg:sticky lg:top-20">
-          <GiftView
-            sections={sections}
-            media={mediaMap}
-            variant={variant}
-            colors={colors}
-            stickers={stickers}
-            style={props.style}
-            recipientName={recipientName}
-            senderName={props.senderName}
-            compact
-            placeholders
-          />
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
+        <div className={cn("flex min-w-0 flex-col gap-4", sheetOpen && "max-lg:pb-[62svh]")}>
+          {!previewing && <p className="text-center text-sm text-muted-foreground">{t("canvasHint")}</p>}
+          <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
+            <div
+              ref={canvasRef}
+              className={cn("relative", !previewing && "gift-canvas")}
+              onClick={previewing ? undefined : (e) => pickOnCanvas(e.target, true)}
+              onFocus={previewing ? undefined : (e) => pickOnCanvas(e.target, false)}
+            >
+              <GiftView
+                sections={sections}
+                media={mediaMap}
+                variant={variant}
+                colors={colors}
+                stickers={stickers}
+                style={props.style}
+                recipientName={recipientName}
+                senderName={senderName}
+                placeholders={!previewing}
+                edit={previewing ? undefined : edit}
+              />
+              {!previewing && selectedId && selectedIndex >= 0 && (
+                <SectionToolbar
+                  canvas={canvasRef}
+                  sectionId={selectedId}
+                  watch={sections}
+                  canMoveUp={selectedIndex > 0}
+                  canMoveDown={selectedIndex < sections.length - 1}
+                  canRemove={sections.length > 1}
+                  onMoveUp={() => move(selectedIndex, -1)}
+                  onMoveDown={() => move(selectedIndex, 1)}
+                  onEdit={() => {
+                    openTab("sections");
+                    setScrollTo({ id: selectedId, block: "start" });
+                  }}
+                  onRemove={() => removeSection(selectedId)}
+                  labels={{ moveUp: t("moveUp"), moveDown: t("moveDown"), edit: t("editSection"), remove: t("removeSection") }}
+                />
+              )}
+            </div>
 
-          <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-border bg-card p-4">
-            <p className="text-sm text-muted-foreground">{props.status === "published" ? t("publishedHint") : t("publishHint")}</p>
-            {(props.publishError || publishState === "error") && <p className="text-sm text-destructive">{t("publishError")}</p>}
-            {publishState === "invalid" && <p className="text-sm text-destructive">{t("invalid")}</p>}
-            <div className="flex flex-wrap gap-2">
-              <Button
-                type="button"
-                variant={props.status === "published" ? "secondary" : "primary"}
-                onClick={publish}
-                disabled={publishing || saving}
-                aria-busy={publishing}
-              >
-                {publishing ? <Loader2 className="animate-spin" /> : <Send />}
-                {publishing ? t("publishing") : props.status === "published" ? t("republish") : t("publish")}
-              </Button>
-              <Button asChild variant="ghost">
+            <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-4">
+              <p className="text-sm text-muted-foreground">{published ? t("publishedHint") : t("publishHint")}</p>
+              <p className="text-xs text-muted-foreground">{t("publishSaves")}</p>
+              <Button asChild variant="ghost" size="sm" className="self-start">
                 <Link href={`/dashboard/gifts/${props.giftId}`}>{t("manage")}</Link>
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground">{t("publishSaves")}</p>
           </div>
         </div>
+
+        <aside
+          aria-label={t("tools")}
+          className={cn(
+            "z-40 flex flex-col overflow-hidden border-border bg-card",
+            "max-lg:fixed max-lg:inset-x-0 max-lg:bottom-[calc(3.75rem+env(safe-area-inset-bottom))] max-lg:max-h-[60svh] max-lg:rounded-t-3xl max-lg:border-t max-lg:shadow-[0_-12px_32px_rgba(0,0,0,0.16)]",
+            !sheetOpen && "max-lg:hidden",
+            "lg:sticky lg:top-16 lg:max-h-[calc(100svh-5rem)] lg:self-start lg:rounded-2xl lg:border",
+          )}
+        >
+          <div role="tablist" aria-label={t("tools")} className="grid grid-cols-4 gap-1 border-b border-border p-1.5 max-lg:hidden">
+            {TABS.map((name) => (
+              <TabButton key={name} name={name} label={tabLabel[name]} active={tab === name} onClick={() => setTab(name)} />
+            ))}
+          </div>
+          <div className="flex items-center justify-between border-b border-border py-2 pr-2 pl-4 lg:hidden">
+            <h2 className="text-sm font-semibold">{tabLabel[tab]}</h2>
+            <Button type="button" variant="ghost" size="icon" className="size-9" aria-label={t("closePanel")} onClick={() => setSheetOpen(false)}>
+              <X />
+            </Button>
+          </div>
+          <div role="tabpanel" aria-label={tabLabel[tab]} className="overflow-y-auto overscroll-contain p-4">
+            {tab === "sections" && (
+              <SectionsPanel
+                sections={sections}
+                selectedId={selectedId}
+                invalidIds={showInvalid ? invalidIds : new Set()}
+                onSelect={selectFromPanel}
+                onChange={updateSection}
+                onMove={move}
+                onRemove={removeSection}
+                onAdd={addSection}
+                giftId={props.giftId}
+                media={media}
+                onMediaChange={setMedia}
+              />
+            )}
+            {tab === "look" && <LookPanel variant={variant} onChange={setVariant} />}
+            {tab === "opening" && <OpeningPanel opening={opening} onChange={setOpening} onPlay={() => setOpeningPreview("closed")} />}
+            {tab === "details" && (
+              <DetailsPanel
+                title={title}
+                onTitle={setTitle}
+                titleInvalid={showInvalid && titleInvalid}
+                recipientName={recipientName}
+                onRecipientName={setRecipientName}
+              />
+            )}
+          </div>
+        </aside>
+      </div>
+
+      <div
+        role="tablist"
+        aria-label={t("tools")}
+        className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 gap-1 border-t border-border bg-card px-1.5 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] lg:hidden"
+      >
+        {TABS.map((name) => (
+          <TabButton
+            key={name}
+            name={name}
+            label={tabLabel[name]}
+            active={sheetOpen && tab === name}
+            onClick={() => (sheetOpen && tab === name ? setSheetOpen(false) : openTab(name))}
+          />
+        ))}
       </div>
 
       {openingPreview && (
@@ -403,5 +479,24 @@ export function GiftEditor(props: Props) {
         </div>
       )}
     </div>
+  );
+}
+
+function TabButton({ name, label, active, onClick }: { name: Tab; label: string; active: boolean; onClick: () => void }) {
+  const Icon = TAB_ICONS[name];
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={active}
+      onClick={onClick}
+      className={cn(
+        "flex cursor-pointer flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[11px] leading-tight font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+        active ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+      )}
+    >
+      <Icon className="size-5" />
+      <span className="max-w-full truncate">{label}</span>
+    </button>
   );
 }

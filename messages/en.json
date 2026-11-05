@@ -306,7 +306,14 @@
     "saveFirst": "Save your changes before publishing.",
     "publishSaves": "Publishing saves your latest changes first.",
     "unsaved": "Unsaved changes",
-    "manage": "Share and manage"
+    "manage": "Share and manage",
+    "canvasHint": "Click any text on your gift to change it. Click a section to move, edit or remove it.",
+    "tools": "Editing tools",
+    "details": "Details",
+    "editSection": "Edit section",
+    "closePanel": "Close",
+    "publishShort": "Publish",
+    "republishShort": "Update"
   },
   "gift": {
     "previewTitle": "A gift for you",

@@ -80,6 +80,18 @@ export function themeFromPayload(v: Pick<EditorPayload, "variant" | "opening" | 
   };
 }
 
+/** Stickers after the sections at positions `a` and `b` swap places. Each sticker stays on its section. */
+export function swapStickerAnchors(stickers: Sticker[], a: number, b: number): Sticker[] {
+  return stickers.map((s) => (s.anchor === a ? { ...s, anchor: b } : s.anchor === b ? { ...s, anchor: a } : s));
+}
+
+/** Stickers after the section at `position` is removed. Its own stickers go with it. */
+export function dropStickerAnchor(stickers: Sticker[], position: number): Sticker[] {
+  return stickers
+    .filter((s) => s.anchor !== position)
+    .map((s) => (s.anchor !== undefined && s.anchor > position ? { ...s, anchor: s.anchor - 1 } : s));
+}
+
 /** Rows to insert for a section list. Client ids are not stored. */
 export function rowsFromSections(giftId: string, sections: Section[]) {
   return sections.map((s, position) => ({ gift_id: giftId, type: s.type, position, content: s.content }));

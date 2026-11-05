@@ -211,6 +211,62 @@
 }
 
 /*
+ * Gift editor canvas, see components/editor/gift-editor.tsx.
+ * Marks what can be clicked on the gift. The blue is fixed, not a theme
+ * colour, so it reads on every gift look.
+ */
+.gift-canvas {
+  --canvas-mark: rgb(14 165 233);
+}
+
+.gift-canvas [data-section-id] {
+  cursor: pointer;
+  outline: 2px solid transparent;
+  outline-offset: 5px;
+  scroll-margin: 6rem 0;
+}
+
+.gift-canvas [data-section-id]:hover {
+  outline: 1.5px dashed color-mix(in srgb, var(--canvas-mark) 60%, transparent);
+}
+
+.gift-canvas [data-section-id][data-selected] {
+  outline: 2px solid var(--canvas-mark);
+}
+
+.gift-canvas [data-section-id][data-invalid] {
+  outline: 2px solid var(--destructive);
+}
+
+.gift-canvas .editable-text {
+  cursor: text;
+  border-radius: 3px;
+  outline: 1.5px solid transparent;
+  outline-offset: 3px;
+  /* Keeps typed spaces as they are, and a caret that shows on gradient headings. */
+  white-space: pre-wrap;
+  caret-color: var(--t-fg);
+}
+
+.gift-canvas .editable-text:hover {
+  outline-color: color-mix(in srgb, var(--canvas-mark) 55%, transparent);
+}
+
+.gift-canvas .editable-text:focus {
+  outline: 2px solid var(--canvas-mark);
+}
+
+.gift-canvas .editable-text:empty {
+  display: inline-block;
+  min-width: 3ch;
+}
+
+.gift-canvas .editable-text:empty::before {
+  content: attr(data-placeholder);
+  opacity: 0.45;
+}
+
+/*
  * Gift openings, see components/gift/gift-opening.tsx.
  * Every part runs for the whole --eo-ms and times itself with keyframe
  * percentages, so one duration keeps the parts in step.
