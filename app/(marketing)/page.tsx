@@ -1,4 +1,5 @@
 import { ArrowRight, Link2, Lock, ShieldCheck } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Fragment } from "react";
@@ -6,7 +7,7 @@ import { Bird, Lovebirds } from "@/components/brand/lovebirds";
 import { TemplatePreview } from "@/components/templates/template-preview";
 import { Button } from "@/components/ui/button";
 import { loadTemplateCards } from "@/features/gifts/template-cards";
-import { isSupabaseConfigured } from "@/lib/env";
+import { isSupabaseConfigured, publicEnv } from "@/lib/env";
 import { cn } from "@/lib/utils";
 
 const occasions = ["birthday", "love", "friendship", "memories", "thankYou", "celebration"] as const;
@@ -36,8 +37,48 @@ function Label({ children, center }: { children: React.ReactNode; center?: boole
 
 const sectionTitle = "mt-5 font-display text-3xl font-light leading-tight tracking-[-0.01em] text-balance md:text-[2.6rem] my:leading-[1.55]";
 
+export const metadata: Metadata = { alternates: { canonical: "/" } };
+
+/**
+ * What the site is, in the form search engines read (schema.org): the
+ * organisation, the website and the app. Left out when the site's own
+ * address is not configured, since every entry needs it.
+ */
+function structuredData(description: string): string | null {
+  const origin = publicEnv.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+  if (!origin) return null;
+  const data = {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "Organization", "@id": `${origin}/#organization`, name: "Eain", url: origin, logo: `${origin}/icon.png` },
+      {
+        "@type": "WebSite",
+        "@id": `${origin}/#website`,
+        name: "Eain",
+        url: origin,
+        description,
+        inLanguage: ["en", "my"],
+        publisher: { "@id": `${origin}/#organization` },
+      },
+      {
+        "@type": "WebApplication",
+        name: "Eain",
+        url: origin,
+        description,
+        applicationCategory: "LifestyleApplication",
+        operatingSystem: "Any",
+        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        publisher: { "@id": `${origin}/#organization` },
+      },
+    ],
+  };
+  // "<" is escaped so the text can never close the script tag it sits in.
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
 export default async function HomePage() {
   const t = await getTranslations();
+  const jsonLd = structuredData(t("brand.seoDescription"));
   const locale = (await getLocale()) === "my" ? "my" : "en";
   const showcase = isSupabaseConfigured()
     ? (await loadTemplateCards(locale)).templates.filter((x) => x.available).slice(0, 4)
@@ -45,6 +86,7 @@ export default async function HomePage() {
 
   return (
     <>
+      {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />}
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div

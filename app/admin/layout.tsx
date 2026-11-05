@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ExternalLink, LogOut } from "lucide-react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
@@ -11,6 +12,9 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { requireAdmin } from "@/features/admin/queries";
 import { signOut } from "@/features/auth/actions";
 import { userHref } from "@/lib/app-mode";
+
+/** Signed-in pages are private: nothing here belongs in a search result. */
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const me = await requireAdmin();

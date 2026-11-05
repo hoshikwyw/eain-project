@@ -6,7 +6,7 @@ import { isSupabaseConfigured } from "@/lib/env";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("templatesPage");
-  return { title: t("title") };
+  return { title: t("title"), description: t("seoDescription"), alternates: { canonical: "/templates" } };
 }
 
 /** Public template library. Browsing needs no account; creating does. */

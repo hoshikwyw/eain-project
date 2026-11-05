@@ -1,9 +1,13 @@
+import type { Metadata } from "next";
 import { BottomNav } from "@/components/dashboard/bottom-nav";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { LocaleToggle } from "@/components/settings/locale-toggle";
 import { ThemeToggle } from "@/components/settings/theme-toggle";
 import { getCurrentProfile } from "@/features/profile/queries";
 import { createClient } from "@/lib/supabase/server";
+
+/** Signed-in pages are private: nothing here belongs in a search result. */
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function DashboardLayout({ children }: LayoutProps<"/dashboard">) {
   const profile = await getCurrentProfile();

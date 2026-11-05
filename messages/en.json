@@ -2,6 +2,8 @@
   "brand": {
     "name": "Eain",
     "tagline": "Digital gifts that feel like home.",
+    "seoTitle": "Eain · Digital gifts and greeting cards that feel like home",
+    "seoDescription": "Make a digital gift in minutes: birthday cards, thank-you notes, love letters and animated surprises with your own words, photos and stickers. Share one private link. The person who receives it needs no account.",
     "splashTagline": "A little gift, made with love."
   },
   "nav": {
@@ -421,6 +423,9 @@
   },
   "gift": {
     "previewTitle": "A gift for you",
+    "previewShare": "🎁 A gift is waiting for you",
+    "previewDescription": "Someone made something special, just for you. Tap to open it.",
+    "previewImageAlt": "A wrapped present with the words: A gift for you",
     "sceneTitle": "An animated garden with a message for you",
     "tapToBloom": "tap anywhere to bloom more flowers 🌸",
     "someone": "Someone made something special for you.",
@@ -714,6 +719,7 @@
   },
   "templatesPage": {
     "title": "Templates",
+    "seoDescription": "Browse Eain's gift templates: birthday postcards, thank-you cards, anniversary pages, memory timelines, an animated night garden and a blank card to design yourself.",
     "subtitle": "Start from one of these. Every word and colour is yours to change."
   },
   "auth": {

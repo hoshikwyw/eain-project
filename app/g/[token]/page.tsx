@@ -7,17 +7,30 @@ import { getPublicGift } from "@/features/gifts/public";
 import { sceneConfig } from "@/features/gifts/scene";
 import { GiftUnavailable } from "./unavailable";
 
+/** The same picture for every gift: a wrapped present, made by scripts/compose-gift-preview.mjs. */
+const PREVIEW_IMAGE = "/brand/gift-preview.png";
+
 /**
  * Generic metadata on purpose: chat apps fetch this for link previews, and
- * the preview must never reveal the message, names or photos.
+ * the preview must never reveal the message, names or photos. Every gift
+ * link shows the same title, line and picture of a present.
  */
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("gift");
+  const title = t("previewShare");
+  const description = t("previewDescription");
   return {
     title: t("previewTitle"),
-    description: t("someone"),
+    description,
     robots: { index: false, follow: false },
-    openGraph: { title: t("previewTitle"), description: t("someone"), siteName: "Eain" },
+    openGraph: {
+      title,
+      description,
+      siteName: "Eain",
+      type: "website",
+      images: [{ url: PREVIEW_IMAGE, width: 1200, height: 630, type: "image/png", alt: t("previewImageAlt") }],
+    },
+    twitter: { card: "summary_large_image", title, description, images: [PREVIEW_IMAGE] },
   };
 }
 
