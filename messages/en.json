@@ -643,7 +643,8 @@
         "letter": "Letter",
         "minimal": "Minimal",
         "scrapbook": "Scrapbook",
-        "bold": "Bold"
+        "bold": "Bold",
+        "blank": "Blank"
       }
     },
     "reports": {

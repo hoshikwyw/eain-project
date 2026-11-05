@@ -108,6 +108,8 @@ function renderDesign(ctx: Ctx) {
       return <ScrapbookDesign {...ctx} />;
     case "bold":
       return <BoldDesign {...ctx} />;
+    case "blank":
+      return <BlankDesign {...ctx} />;
     case "minimal":
     default:
       return <MinimalDesign {...ctx} />;
@@ -384,6 +386,22 @@ function MinimalDesign(ctx: Ctx) {
       <Eyebrow text={eyebrow} />
       <Sections ctx={ctx} className={compact ? "gap-5" : "gap-7"} />
       <Illustration src={style.illustration} className={cn("ml-auto", compact ? "max-w-36" : "max-w-52")} />
+    </article>
+  );
+}
+
+/**
+ * An empty card: the look's background as a thin frame, the card, and the
+ * creator's sections. No label, illustration or decoration, so everything on
+ * it is theirs. Tall enough when nearly empty to leave room for stickers.
+ */
+function BlankDesign(ctx: Ctx) {
+  const { compact } = ctx;
+  return (
+    <article className={cn("relative overflow-hidden rounded-3xl [background:var(--t-bg)]", compact ? "p-2" : "p-3")}>
+      <div className={cn("relative flex min-h-[26rem] flex-col rounded-[1.25rem] bg-[color:var(--t-card)]", compact ? "gap-5 p-6" : "gap-7 p-8")}>
+        <Sections ctx={ctx} className={compact ? "gap-5" : "gap-7"} />
+      </div>
     </article>
   );
 }

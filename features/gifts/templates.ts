@@ -25,7 +25,8 @@ export type Design =
   | "letter"
   | "minimal"
   | "scrapbook"
-  | "bold";
+  | "bold"
+  | "blank";
 
 export type TemplateStyle = {
   decoration: Decoration;
@@ -54,6 +55,7 @@ const designOpening: Record<Design, Opening> = {
   minimal: "simple",
   scrapbook: "book",
   bold: "curtain",
+  blank: "simple",
 };
 
 export type TemplateDefinition = Omit<TemplateStyle, "illustration" | "defaultOpening"> & {
@@ -86,6 +88,20 @@ const timeline = (items: { date: string; title: string; text: string }[]): Secti
 });
 
 export const templates: Record<string, TemplateDefinition> = {
+  // An empty card for creators who want to build everything themselves. It
+  // starts with the least a gift needs, in a neutral look, with nothing drawn
+  // on it. The starter text is there only because a heading and a message
+  // may not be empty; both are meant to be typed over.
+  blank: {
+    design: "blank",
+    decoration: "petals",
+    layout: "card",
+    defaultVariant: "ivory",
+    defaultSections: (l) => [
+      cover(my(l, "Your title", "သင့်ခေါင်းစဉ်")),
+      message(my(l, "Write your message here.", "သင့်စာကို ဒီမှာ ရေးပါ။")),
+    ],
+  },
   "birthday-postcard": {
     design: "postcard",
     decoration: "party",
