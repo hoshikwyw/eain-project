@@ -21,7 +21,7 @@ export function DeleteAccountForm({ email }: { email: string }) {
           {t(`deleteErrors.${state.status}`)}
         </p>
       )}
-      <ConfirmButton variant="ghost" className="self-start text-destructive" confirmText={t("deleteConfirm")}>
+      <ConfirmButton variant="ghost" className="self-start text-destructive" confirmText={t("deleteConfirm")} danger>
         {t("deleteAccount")}
       </ConfirmButton>
     </form>

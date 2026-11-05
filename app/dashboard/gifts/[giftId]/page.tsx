@@ -209,7 +209,7 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
               </form>
               <p className="text-xs text-muted-foreground">{t("regenerateHint")}</p>
               <form action={deleteGift.bind(null, gift.id)} className="pt-2">
-                <ConfirmButton variant="ghost" className="w-full text-destructive" confirmText={t("deleteConfirm")}>
+                <ConfirmButton variant="ghost" className="w-full text-destructive" confirmText={t("deleteConfirm")} danger>
                   {t("delete")}
                 </ConfirmButton>
               </form>

@@ -94,6 +94,8 @@ export default async function GiftsPage({ searchParams }: PageProps<"/dashboard/
                         className="text-destructive max-sm:px-2.5"
                         aria-label={t("gifts.delete")}
                         confirmText={t("gifts.deleteConfirm")}
+                        confirmLabel={t("gifts.delete")}
+                        danger
                       >
                         <Trash2 />
                         <span className="max-sm:hidden">{t("gifts.delete")}</span>

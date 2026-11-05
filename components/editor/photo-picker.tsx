@@ -3,6 +3,7 @@
 import { Check, ImagePlus, Loader2, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { MAX_PHOTOS_PER_GIFT, type MediaItem } from "@/features/gifts/schemas";
 import { processImage } from "@/lib/image-client";
@@ -23,6 +24,9 @@ type Props = {
  */
 export function PhotoPicker({ giftId, media, onMediaChange, selected, onSelectedChange, max }: Props) {
   const t = useTranslations("editor.photos");
+  const tCommon = useTranslations("common");
+  /** The photo a delete was asked for, while the popup is up. */
+  const [removing, setRemoving] = useState<{ id: string; busy: boolean } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,16 +71,23 @@ export function PhotoPicker({ giftId, media, onMediaChange, selected, onSelected
     }
   }
 
-  async function remove(id: string) {
-    if (!window.confirm(t("deleteConfirm"))) return;
-    const res = await fetch(`/api/gifts/${giftId}/media`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mediaId: id }),
-    });
-    if (res.ok) {
-      onMediaChange(media.filter((m) => m.id !== id));
-      onSelectedChange(selected.filter((s) => s !== id));
+  /** Deletes the photo the popup asked about, once the creator has said yes. */
+  async function remove() {
+    if (!removing || removing.busy) return;
+    const { id } = removing;
+    setRemoving({ id, busy: true });
+    try {
+      const res = await fetch(`/api/gifts/${giftId}/media`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mediaId: id }),
+      });
+      if (res.ok) {
+        onMediaChange(media.filter((m) => m.id !== id));
+        onSelectedChange(selected.filter((s) => s !== id));
+      }
+    } finally {
+      setRemoving(null);
     }
   }
 
@@ -106,7 +117,7 @@ export function PhotoPicker({ giftId, media, onMediaChange, selected, onSelected
               </button>
               <button
                 type="button"
-                onClick={() => remove(item.id)}
+                onClick={() => setRemoving({ id: item.id, busy: false })}
                 aria-label={t("delete")}
                 className="absolute top-1 right-1 grid size-6 place-items-center rounded-full bg-card/90 text-destructive opacity-0 shadow-sm transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
               >
@@ -154,6 +165,16 @@ export function PhotoPicker({ giftId, media, onMediaChange, selected, onSelected
           {t("limitReached")}
         </Button>
       )}
+      <ConfirmDialog
+        open={removing !== null}
+        text={t("deleteConfirm")}
+        confirmLabel={t("delete")}
+        cancelLabel={tCommon("cancel")}
+        danger
+        pending={removing?.busy}
+        onConfirm={remove}
+        onCancel={() => setRemoving(null)}
+      />
     </div>
   );
 }

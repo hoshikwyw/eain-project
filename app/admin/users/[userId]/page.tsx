@@ -246,7 +246,7 @@ export default async function AdminUserDetailPage({ params, searchParams }: Page
                     {t("users.detail.typeEmail", { email: u.email })}
                   </label>
                   <Input id="confirmEmail" name="confirmEmail" type="email" autoComplete="off" required placeholder={u.email} />
-                  <ConfirmButton variant="ghost" className="w-full text-destructive" confirmText={t("users.detail.deleteConfirm")}>
+                  <ConfirmButton variant="ghost" className="w-full text-destructive" confirmText={t("users.detail.deleteConfirm")} danger>
                     {t("users.detail.delete")}
                   </ConfirmButton>
                 </form>
