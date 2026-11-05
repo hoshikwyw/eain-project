@@ -1,11 +1,13 @@
-import { Plus } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Lovebirds } from "@/components/brand/lovebirds";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { ConfirmButton } from "@/components/gift/confirm-button";
 import { GiftStatusChip } from "@/components/gift/gift-status-chip";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { deleteGift } from "@/features/gifts/actions";
 import { listMyGifts } from "@/features/gifts/queries";
 
 export default async function GiftsPage({ searchParams }: PageProps<"/dashboard/gifts">) {
@@ -54,28 +56,54 @@ export default async function GiftsPage({ searchParams }: PageProps<"/dashboard/
         </Card>
       ) : (
         <ul className="flex flex-col gap-3">
-          {gifts.map((gift) => (
-            <li key={gift.id}>
-              <Link href={`/dashboard/gifts/${gift.id}`} className="block rounded-2xl focus-visible:outline-2">
+          {gifts.map((gift) => {
+            const chip = <GiftStatusChip status={gift.status} opened={Boolean(gift.recipient?.first_opened_at)} />;
+            return (
+              <li key={gift.id}>
                 <Card className="transition-colors hover:bg-secondary/60">
-                  <CardContent className="flex items-center gap-4 p-4">
-                    <span className="bg-hero grid size-14 shrink-0 place-items-center rounded-xl font-display text-lg font-semibold">
-                      {gift.title.trim().charAt(0).toUpperCase() || "♥"}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate font-semibold">{gift.title}</p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {gift.recipient?.name ? t("gifts.for", { name: gift.recipient.name }) : t("gifts.noRecipient")}
-                        {" · "}
-                        {format.relativeTime(new Date(gift.created_at))}
-                      </p>
-                    </div>
-                    <GiftStatusChip status={gift.status} opened={Boolean(gift.recipient?.first_opened_at)} />
+                  <CardContent className="flex items-center gap-1 p-2 sm:gap-2">
+                    {/* The row opens the gift's page; edit and delete sit beside it, never inside the link. */}
+                    <Link
+                      href={`/dashboard/gifts/${gift.id}`}
+                      className="flex min-w-0 flex-1 items-center gap-3 rounded-xl p-2 focus-visible:outline-2 sm:gap-4"
+                    >
+                      <span className="bg-hero grid size-12 shrink-0 place-items-center rounded-xl font-display text-lg font-semibold sm:size-14">
+                        {gift.title.trim().charAt(0).toUpperCase() || "♥"}
+                      </span>
+                      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                        <p className="truncate font-semibold">{gift.title}</p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {gift.recipient?.name ? t("gifts.for", { name: gift.recipient.name }) : t("gifts.noRecipient")}
+                          {" · "}
+                          {format.relativeTime(new Date(gift.created_at))}
+                        </p>
+                        <span className="mt-1 sm:hidden">{chip}</span>
+                      </div>
+                      <span className="max-sm:hidden">{chip}</span>
+                    </Link>
+                    <Button asChild variant="secondary" size="sm" className="max-sm:px-2.5">
+                      <Link href={`/create/${gift.id}`} aria-label={t("gifts.edit")}>
+                        <Pencil />
+                        <span className="max-sm:hidden">{t("gifts.edit")}</span>
+                      </Link>
+                    </Button>
+                    <form action={deleteGift.bind(null, gift.id)}>
+                      <ConfirmButton
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive max-sm:px-2.5"
+                        aria-label={t("gifts.delete")}
+                        confirmText={t("gifts.deleteConfirm")}
+                      >
+                        <Trash2 />
+                        <span className="max-sm:hidden">{t("gifts.delete")}</span>
+                      </ConfirmButton>
+                    </form>
                   </CardContent>
                 </Card>
-              </Link>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
