@@ -49,7 +49,6 @@ export default async function AdminGiftPage({ params, searchParams }: PageProps<
           style={data.style}
           recipientName={data.recipientName}
           senderName={data.senderName}
-          compact
         />
 
         <div className="flex flex-col gap-6">

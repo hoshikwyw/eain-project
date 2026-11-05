@@ -135,7 +135,6 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
                 style={data.style}
                 recipientName={recipient?.name ?? ""}
                 senderName={profile.display_name}
-                compact
               />
             </CardContent>
           </Card>

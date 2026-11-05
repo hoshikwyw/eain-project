@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 import type { GiftColors, MediaItem, Section, Sticker, TextStyle, ThemeVariant } from "@/features/gifts/schemas";
 import type { Decoration, Design, TemplateStyle } from "@/features/gifts/templates";
 import { cn } from "@/lib/utils";
+import { GiftStage } from "./gift-stage";
 import { giftPalette } from "./palettes";
 import { StickerLayer } from "./sticker-layer";
 import { TEXT_FONTS } from "./text-fonts";
@@ -33,7 +34,7 @@ type Props = {
   style: TemplateStyle;
   recipientName: string;
   senderName: string;
-  /** Smaller type and spacing for editor and dashboard previews. */
+  /** Smaller type and spacing, for template thumbnails. */
   compact?: boolean;
   /** Show dashed boxes where photos are missing. Editor only. */
   placeholders?: boolean;
@@ -54,6 +55,11 @@ type Props = {
  * Renders any gift from its sections. Each template has a design that sets
  * the frame, heading treatment, background pattern and how sections dress,
  * so a postcard looks like a postcard and a memory page like a scrapbook.
+ *
+ * A gift is one card of a fixed width, scaled to the screen by GiftStage.
+ * Nothing in here may depend on the screen size (no sm: or md: classes), or
+ * the card would lay out differently from one screen to the next and stickers
+ * would drift away from the text they were placed beside.
  */
 export function GiftRenderer(props: Props) {
   const { sections, style, variant, colors, stickers = [], recipientName, questionMode = "preview", labels } = props;
@@ -70,13 +76,14 @@ export function GiftRenderer(props: Props) {
   }
   const ctx: Ctx = { ...props, design: style.design, eyebrow, visible, sectionStickers };
 
-  const frame = (
-    <div style={giftPalette(variant, colors)} className="relative text-[color:var(--t-fg)]">
-      {renderDesign(ctx)}
-      <StickerLayer stickers={stickers.filter((s) => s.anchor === undefined)} clip editable={Boolean(props.edit)} />
-    </div>
+  return (
+    <GiftStage>
+      <div style={giftPalette(variant, colors)} className="relative text-[color:var(--t-fg)]">
+        {renderDesign(ctx)}
+        <StickerLayer stickers={stickers.filter((s) => s.anchor === undefined)} clip editable={Boolean(props.edit)} />
+      </div>
+    </GiftStage>
   );
-  return frame;
 }
 
 type Ctx = Props & { design: Design; eyebrow: string; visible: Section[]; sectionStickers: Map<string, Sticker[]> };
@@ -167,7 +174,7 @@ function Bunting({ count }: { count: number }) {
         {Array.from({ length: count }, (_, i) => (
           <span
             key={i}
-            className="h-5 w-4 [clip-path:polygon(0_0,100%_0,50%_100%)] sm:h-6 sm:w-5"
+            className="h-5 w-4 [clip-path:polygon(0_0,100%_0,50%_100%)]"
             style={{ background: partyColor(i + 1) }}
           />
         ))}
@@ -210,11 +217,11 @@ function PostcardDesign(ctx: Ctx) {
         <div
           className={cn(
             "relative m-3 grid rounded-xl bg-[color:var(--t-card)]/90 shadow-sm",
-            compact ? "gap-5 p-5 sm:grid-cols-[3fr_2fr]" : "gap-7 p-6 sm:m-4 sm:grid-cols-[3fr_2fr] sm:p-9",
+            compact ? "gap-5 p-5" : "gap-7 p-6",
           )}
         >
           <Sections ctx={ctx} className={compact ? "gap-4" : "gap-6"} itemClassName={rainbowHeading} />
-          <aside className="flex flex-col gap-5 border-t border-dashed border-[color:var(--t-accent-soft)] pt-5 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-6">
+          <aside className="flex flex-col gap-5 border-t border-dashed border-[color:var(--t-accent-soft)] pt-5">
             <div className="flex items-start justify-end gap-2">
               <Balloons className={cn("float-slow", compact ? "w-11" : "w-16")} />
               <div className="rounded-md border-2 border-dashed border-[color:var(--t-deco)] bg-[color:var(--t-accent-soft)]/40 p-1.5">
@@ -245,7 +252,7 @@ function PartyDesign(ctx: Ctx) {
     <div className="relative overflow-hidden rounded-3xl [background:var(--t-bg)]">
       <div aria-hidden="true" className="pattern-stripes h-4 w-full opacity-70" />
       <Decorations kind="confetti" />
-      <div className={cn("relative flex flex-col items-center text-center", compact ? "gap-4 px-4 pt-4 pb-5" : "gap-6 px-5 pt-6 pb-8 sm:px-8")}>
+      <div className={cn("relative flex flex-col items-center text-center", compact ? "gap-4 px-4 pt-4 pb-5" : "gap-6 px-5 pt-6 pb-8")}>
         <Illustration src={style.illustration} className={compact ? "max-w-56" : "max-w-sm"} />
         <div className={cn("w-full rounded-2xl bg-[color:var(--t-accent)] text-[color:var(--t-on-accent,#fff)] shadow-lg", compact ? "px-5 py-4" : "px-7 py-6")}>
           <Eyebrow text={eyebrow} className="text-[color:var(--t-on-accent,#fff)] opacity-80" />
@@ -257,7 +264,7 @@ function PartyDesign(ctx: Ctx) {
           ctx={restCtx}
           animate={animate}
           className={cn("w-full text-left", compact ? "gap-3" : "gap-4")}
-          itemClassName={cn("rounded-2xl border-l-[6px] border-[color:var(--t-accent)] bg-[color:var(--t-card)] shadow-sm", compact ? "p-4" : "p-5 sm:p-6")}
+          itemClassName={cn("rounded-2xl border-l-[6px] border-[color:var(--t-accent)] bg-[color:var(--t-card)] shadow-sm", compact ? "p-4" : "p-5")}
         />
       </div>
     </div>
@@ -268,9 +275,9 @@ function PartyDesign(ctx: Ctx) {
 function ElegantDesign(ctx: Ctx) {
   const { compact, style, eyebrow, animate } = ctx;
   return (
-    <div className={cn("relative overflow-hidden rounded-3xl [background:var(--t-bg)]", compact ? "p-3" : "p-4 sm:p-6")}>
+    <div className={cn("relative overflow-hidden rounded-3xl [background:var(--t-bg)]", compact ? "p-3" : "p-4")}>
       <Decorations kind="hearts" />
-      <div className={cn("relative flex flex-col items-center rounded-2xl bg-[color:var(--t-card)]/92 text-center ring-1 ring-[color:var(--glow)]/70 ring-offset-4 ring-offset-[color:var(--t-card)]", compact ? "gap-5 p-6" : "gap-7 p-8 sm:p-12")}>
+      <div className={cn("relative flex flex-col items-center rounded-2xl bg-[color:var(--t-card)]/92 text-center ring-1 ring-[color:var(--glow)]/70 ring-offset-4 ring-offset-[color:var(--t-card)]", compact ? "gap-5 p-6" : "gap-7 p-8")}>
         <Eyebrow text={eyebrow} className="tracking-[0.35em] text-[color:var(--glow)]" />
         <span aria-hidden="true" className="h-px w-16 bg-[color:var(--glow)]" />
         <Sections
@@ -290,9 +297,9 @@ function ElegantDesign(ctx: Ctx) {
 function PlayfulDesign(ctx: Ctx) {
   const { compact, style, eyebrow } = ctx;
   return (
-    <div className={cn("relative overflow-hidden rounded-[2rem] [background:var(--t-bg)]", compact ? "p-3" : "p-4 sm:p-5")}>
+    <div className={cn("relative overflow-hidden rounded-[2rem] [background:var(--t-bg)]", compact ? "p-3" : "p-4")}>
       <Decorations kind="sparkles" />
-      <div className={cn("relative flex flex-col rounded-[1.6rem] border-[3px] border-dashed border-[color:var(--t-accent)]/60 bg-[color:var(--t-card)]/92", compact ? "gap-5 p-5" : "gap-7 p-7 sm:p-9")}>
+      <div className={cn("relative flex flex-col rounded-[1.6rem] border-[3px] border-dashed border-[color:var(--t-accent)]/60 bg-[color:var(--t-card)]/92", compact ? "gap-5 p-5" : "gap-7 p-7")}>
         <span className="inline-flex w-fit -rotate-2 rounded-full bg-[color:var(--t-accent)] px-3 py-1 text-xs font-bold tracking-wide text-[color:var(--t-on-accent,#fff)] uppercase">{eyebrow}</span>
         <Illustration src={style.illustration} className={cn("mx-auto", compact ? "max-w-52" : "max-w-xs")} />
         <Sections
@@ -311,7 +318,7 @@ function BotanicalDesign(ctx: Ctx) {
   return (
     <article className="relative overflow-hidden rounded-3xl [background:var(--t-bg)]">
       <Decorations kind="leaves" />
-      <div className={cn("relative m-2 flex flex-col rounded-[1.25rem] border-t-8 border-[color:var(--t-deco)] bg-[color:var(--t-card)]/94 sm:m-3", compact ? "gap-5 p-6" : "gap-7 p-8 sm:p-10")}>
+      <div className={cn("relative m-2 flex flex-col rounded-[1.25rem] border-t-8 border-[color:var(--t-deco)] bg-[color:var(--t-card)]/94", compact ? "gap-5 p-6" : "gap-7 p-8")}>
         <Eyebrow text={eyebrow} />
         <Sections
           ctx={ctx}
@@ -330,8 +337,8 @@ function CertificateDesign(ctx: Ctx) {
   return (
     <article className={cn("relative overflow-hidden rounded-xl border-4 border-double border-[color:var(--glow)] [background:var(--t-bg)]", compact ? "p-2" : "p-3")}>
       <Decorations kind="sparkles" />
-      <div className={cn("relative flex flex-col items-center rounded-lg border border-[color:var(--glow)]/60 bg-[color:var(--t-card)]/94 text-center", compact ? "gap-5 p-6" : "gap-7 p-8 sm:p-12")}>
-        <span aria-hidden="true" className="absolute top-4 right-4 grid size-14 place-items-center rounded-full bg-[color:var(--glow)] font-display text-[9px] font-bold tracking-[0.2em] text-[color:var(--t-fg)] shadow-md sm:size-16">
+      <div className={cn("relative flex flex-col items-center rounded-lg border border-[color:var(--glow)]/60 bg-[color:var(--t-card)]/94 text-center", compact ? "gap-5 p-6" : "gap-7 p-8")}>
+        <span aria-hidden="true" className="absolute top-4 right-4 grid size-14 place-items-center rounded-full bg-[color:var(--glow)] font-display text-[9px] font-bold tracking-[0.2em] text-[color:var(--t-fg)] shadow-md">
           ✦ EAIN
         </span>
         <Eyebrow text={eyebrow} className="tracking-[0.3em]" />
@@ -353,7 +360,7 @@ function LetterDesign(ctx: Ctx) {
     <div className="relative overflow-hidden rounded-3xl [background:var(--t-bg)]">
       <Decorations kind="stars" />
       <div aria-hidden="true" className="relative h-14 bg-[color:var(--t-accent-soft)] [clip-path:polygon(0_0,100%_0,50%_100%)]" />
-      <div className={cn("relative -mt-6 mx-2 mb-2 rounded-xl bg-[color:var(--t-card)]/95 shadow-md sm:mx-3 sm:mb-3", compact ? "p-6" : "p-8 sm:p-10")}>
+      <div className={cn("relative -mt-6 mx-2 mb-2 rounded-xl bg-[color:var(--t-card)]/95 shadow-md", compact ? "p-6" : "p-8")}>
         <Pattern kind="lines" opacity={0.6} />
         <div className={cn("relative flex flex-col", compact ? "gap-5" : "gap-7")}>
           <Eyebrow text={eyebrow} className="font-hand text-lg normal-case tracking-normal" />
@@ -373,7 +380,7 @@ function LetterDesign(ctx: Ctx) {
 function MinimalDesign(ctx: Ctx) {
   const { compact, style, eyebrow } = ctx;
   return (
-    <article className={cn("relative flex flex-col overflow-hidden rounded-3xl border border-[color:var(--t-accent-soft)] bg-[color:var(--t-card)]", compact ? "gap-5 p-6" : "gap-7 p-8 sm:p-12")}>
+    <article className={cn("relative flex flex-col overflow-hidden rounded-3xl border border-[color:var(--t-accent-soft)] bg-[color:var(--t-card)]", compact ? "gap-5 p-6" : "gap-7 p-8")}>
       <Eyebrow text={eyebrow} />
       <Sections ctx={ctx} className={compact ? "gap-5" : "gap-7"} />
       <Illustration src={style.illustration} className={cn("ml-auto", compact ? "max-w-36" : "max-w-52")} />
@@ -385,7 +392,7 @@ function MinimalDesign(ctx: Ctx) {
 function ScrapbookDesign(ctx: Ctx) {
   const { compact, style, eyebrow, animate } = ctx;
   return (
-    <div className={cn("relative overflow-hidden rounded-3xl [background:var(--t-bg)]", compact ? "p-3" : "p-4 sm:p-6")}>
+    <div className={cn("relative overflow-hidden rounded-3xl [background:var(--t-bg)]", compact ? "p-3" : "p-4")}>
       <Pattern kind="grid" opacity={0.5} />
       <Decorations kind="stars" />
       <div className="relative flex flex-col gap-4">
@@ -394,7 +401,7 @@ function ScrapbookDesign(ctx: Ctx) {
           ctx={ctx}
           animate={animate}
           className={compact ? "gap-4" : "gap-5"}
-          itemClassName={cn("relative rounded-lg bg-[color:var(--t-card)]/95 shadow-md before:absolute before:-top-2 before:left-1/2 before:h-5 before:w-20 before:-translate-x-1/2 before:rotate-[-3deg] before:rounded-sm before:bg-[color:var(--glow)]/70 before:content-[''] [&_ol]:border-[color:var(--glow)]/60 [&_ol_.dot]:bg-[color:var(--glow)]", compact ? "p-5" : "p-6 sm:p-8")}
+          itemClassName={cn("relative rounded-lg bg-[color:var(--t-card)]/95 shadow-md before:absolute before:-top-2 before:left-1/2 before:h-5 before:w-20 before:-translate-x-1/2 before:rotate-[-3deg] before:rounded-sm before:bg-[color:var(--glow)]/70 before:content-[''] [&_ol]:border-[color:var(--glow)]/60 [&_ol_.dot]:bg-[color:var(--glow)]", compact ? "p-5" : "p-6")}
         />
         <Illustration src={style.illustration} className={cn("mx-auto pt-2", compact ? "max-w-56" : "max-w-sm")} />
       </div>
@@ -411,13 +418,13 @@ function BoldDesign(ctx: Ctx) {
         <Pattern kind="rays" opacity={0.5} />
         <Decorations kind="confetti" />
       </div>
-      <div className={cn("relative flex flex-col", compact ? "-mt-10 gap-5 p-6" : "-mt-12 gap-7 p-8 sm:p-10")}>
+      <div className={cn("relative flex flex-col", compact ? "-mt-10 gap-5 p-6" : "-mt-12 gap-7 p-8")}>
         <Illustration src={style.illustration} className={cn("mx-auto", compact ? "max-w-52" : "max-w-xs")} />
         <span className="inline-flex w-fit border-2 border-[color:var(--t-fg)] px-3 py-1 text-xs font-black tracking-widest uppercase">{eyebrow}</span>
         <Sections
           ctx={ctx}
           className={compact ? "gap-5" : "gap-7"}
-          itemClassName="[&_h1]:font-sans [&_h1]:text-5xl [&_h1]:font-black [&_h1]:uppercase [&_h1]:leading-[0.95] [&_h1]:tracking-tight [&_h1]:text-[color:var(--t-accent)] sm:[&_h1]:text-6xl [&_h2]:font-sans [&_h2]:font-black [&_h2]:uppercase [&_footer]:border-t-[3px] [&_footer]:border-[color:var(--t-fg)] [&_.sig]:font-sans [&_.sig]:font-black [&_.sig]:uppercase"
+          itemClassName="[&_h1]:font-sans [&_h1]:text-5xl [&_h1]:font-black [&_h1]:uppercase [&_h1]:leading-[0.95] [&_h1]:tracking-tight [&_h1]:text-[color:var(--t-accent)] [&_h2]:font-sans [&_h2]:font-black [&_h2]:uppercase [&_footer]:border-t-[3px] [&_footer]:border-[color:var(--t-fg)] [&_.sig]:font-sans [&_.sig]:font-black [&_.sig]:uppercase"
         />
       </div>
     </article>
@@ -522,7 +529,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
       const st = section.content.styles;
       return (
         <header className="flex flex-col gap-2">
-          <Heading style={alignStyle(st?.heading)} className={cn("font-display font-semibold text-balance leading-tight", compact ? (isFirst ? "text-3xl" : "text-2xl") : isFirst ? "text-4xl sm:text-5xl" : "text-3xl")}>
+          <Heading style={alignStyle(st?.heading)} className={cn("font-display font-semibold text-balance leading-tight", compact ? (isFirst ? "text-3xl" : "text-2xl") : isFirst ? "text-4xl" : "text-3xl")}>
             <Styled style={st?.heading} text={section.content.heading} wrap={editing}>{txt(ctx, section, "heading", section.content.heading)}</Styled>
           </Heading>
           {(section.content.subheading || editing) && (

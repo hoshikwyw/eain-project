@@ -10,8 +10,8 @@ type Props = { slug: string; variant: ThemeVariant; locale: "en" | "my"; name: s
 
 /**
  * Miniature of a template: the real renderer with the template's starting
- * sections, drawn at full size and scaled down, cropped to a 4:3 window.
- * Templates without a layout in code fall back to a palette swatch.
+ * sections, scaled to the card's width like any gift and cropped to a 4:3
+ * window. Templates without a layout in code fall back to a palette swatch.
  */
 export function TemplatePreview({ slug, variant, locale, name }: Props) {
   const definition = templates[slug];
@@ -27,7 +27,7 @@ export function TemplatePreview({ slug, variant, locale, name }: Props) {
 
   return (
     <div aria-hidden="true" className="relative aspect-[4/3] overflow-hidden rounded-xl bg-muted">
-      <div className="pointer-events-none absolute inset-0 origin-top-left select-none" style={{ width: "250%", transform: "scale(0.4)" }}>
+      <div className="pointer-events-none select-none">
         <GiftView
           sections={sections}
           media={{}}

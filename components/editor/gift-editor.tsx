@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { startTransition, useActionState, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { GiftOpening, openingDuration, type OpeningStage } from "@/components/gift/gift-opening";
 import type { GiftEdit } from "@/components/gift/gift-renderer";
+import { STAGE_MAX_WIDTH } from "@/components/gift/gift-stage";
 import { GiftView } from "@/components/gift/gift-view";
 import { Button } from "@/components/ui/button";
 import { saveAndPublishGift, saveGift } from "@/features/gifts/actions";
@@ -647,7 +648,8 @@ export function GiftEditor(props: Props) {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
         <div className={cn("flex min-w-0 flex-col gap-4", sheetOpen && "max-lg:pb-[62svh]")}>
-          <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
+          {/* As wide as a gift is ever shown, so the canvas and the gift's frame are one box. */}
+          <div className="mx-auto flex w-full flex-col gap-4" style={{ maxWidth: STAGE_MAX_WIDTH }}>
             <div
               ref={canvasRef}
               className={cn("relative", !previewing && "gift-canvas")}
