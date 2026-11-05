@@ -10,12 +10,21 @@ export type GiftListItem = Gift & {
   templateSlug: string;
 };
 
-/** All of the signed-in creator's gifts that are not deleted. RLS scopes the rows. */
+/**
+ * All of the signed-in creator's gifts that are not deleted. Filtered by
+ * owner here and not left to RLS alone: an admin may read every gift, and
+ * "my gifts" must still mean their own.
+ */
 export async function listMyGifts(): Promise<GiftListItem[]> {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
   const { data: gifts } = await supabase
     .from("gifts")
     .select("*")
+    .eq("sender_id", user.id)
     .neq("status", "deleted")
     .order("created_at", { ascending: false });
 
@@ -51,13 +60,22 @@ export type EditorGift = {
   media: Record<string, MediaItem>;
 };
 
-/** One gift with everything the editor needs, or null when not found or not owned. */
+/**
+ * One gift with everything the editor needs, or null when not found or not
+ * owned. An admin gets null for someone else's gift too: they can read it,
+ * but could not save or delete it here. Moderation has its own page.
+ */
 export async function getEditorGift(giftId: string): Promise<EditorGift | null> {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
   const { data: gift } = await supabase
     .from("gifts")
     .select("*")
     .eq("id", giftId)
+    .eq("sender_id", user.id)
     .neq("status", "deleted")
     .maybeSingle();
   if (!gift) return null;

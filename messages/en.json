@@ -788,6 +788,7 @@
       "noRecipient": "No recipient name yet",
       "limitReached": "You have reached the limit of 5 gifts. Delete one to make room.",
       "deleted": "The gift was deleted. Its link no longer works.",
+      "deleteFailed": "Could not delete the gift. Please try again.",
       "edit": "Edit",
       "share": "Share",
       "shareDescription": "Send the link or QR code to the person this is for.",

@@ -174,7 +174,7 @@ export async function duplicateGift(giftId: string): Promise<void> {
   if (!user) redirect("/auth/login");
 
   const [{ data: source }, { data: sections }, { data: recipient }, { data: media }] = await Promise.all([
-    supabase.from("gifts").select("*").eq("id", giftId).neq("status", "deleted").maybeSingle(),
+    supabase.from("gifts").select("*").eq("id", giftId).eq("sender_id", user.id).neq("status", "deleted").maybeSingle(),
     supabase.from("gift_sections").select("*").eq("gift_id", giftId).order("position"),
     supabase.from("gift_recipients").select("name").eq("gift_id", giftId).order("created_at").limit(1).maybeSingle(),
     supabase.from("gift_media").select("*").eq("gift_id", giftId),
@@ -293,6 +293,6 @@ export async function regenerateGiftLink(giftId: string): Promise<void> {
 }
 
 export async function deleteGift(giftId: string): Promise<void> {
-  await rpcOnGift("delete_gift", giftId);
-  redirect("/dashboard/gifts?deleted=1");
+  const error = await rpcOnGift("delete_gift", giftId);
+  redirect(error ? "/dashboard/gifts?error=delete" : "/dashboard/gifts?deleted=1");
 }

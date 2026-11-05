@@ -36,6 +36,11 @@ export default async function GiftsPage({ searchParams }: PageProps<"/dashboard/
           {t("gifts.limitReached")}
         </p>
       )}
+      {params.error === "delete" && (
+        <p role="alert" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
+          {t("gifts.deleteFailed")}
+        </p>
+      )}
       {params.deleted === "1" && (
         <p role="status" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
           {t("gifts.deleted")}

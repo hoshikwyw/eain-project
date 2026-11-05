@@ -33,6 +33,11 @@ export type DashboardStats = {
 export async function getDashboardStats(userId: string): Promise<DashboardStats> {
   const supabase = await createClient();
 
+  // Opens and replies are counted over this user's gifts by id, not left to
+  // RLS alone: an admin may read everyone's, and these are personal numbers.
+  const { data: mine } = await supabase.from("gifts").select("id").eq("sender_id", userId);
+  const giftIds = (mine ?? []).map((g) => g.id);
+
   const [gifts, published, openedEvents, responses] = await Promise.all([
     supabase
       .from("gifts")
@@ -44,8 +49,8 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats>
       .select("id", { count: "exact", head: true })
       .eq("sender_id", userId)
       .eq("status", "published"),
-    supabase.from("gift_events").select("gift_id").eq("event_type", "opened"),
-    supabase.from("gift_responses").select("id", { count: "exact", head: true }),
+    supabase.from("gift_events").select("gift_id").eq("event_type", "opened").in("gift_id", giftIds),
+    supabase.from("gift_responses").select("id", { count: "exact", head: true }).in("gift_id", giftIds),
   ]);
 
   const openedGiftIds = new Set((openedEvents.data ?? []).map((e) => e.gift_id));
