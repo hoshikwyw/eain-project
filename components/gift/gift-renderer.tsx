@@ -1,10 +1,11 @@
 import { ImagePlus, MessageCircleQuestion } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
-import type { GiftColors, MediaItem, Section, Sticker, TextFont, TextStyle, ThemeVariant } from "@/features/gifts/schemas";
+import type { GiftColors, MediaItem, Section, Sticker, TextStyle, ThemeVariant } from "@/features/gifts/schemas";
 import type { Decoration, Design, TemplateStyle } from "@/features/gifts/templates";
 import { cn } from "@/lib/utils";
 import { giftPalette } from "./palettes";
 import { StickerLayer } from "./sticker-layer";
+import { TEXT_FONTS } from "./text-fonts";
 
 type Labels = { forName: string; forYou: string; addPhoto: string; questionNote: string };
 
@@ -425,8 +426,6 @@ function BoldDesign(ctx: Ctx) {
 
 // Sections --------------------------------------------------------------------
 
-const FONT_CLASS: Record<TextFont, string> = { serif: "font-display", sans: "font-sans", hand: "font-hand" };
-
 /**
  * Alignment for a text block. Auto margins move blocks a design shrinks to
  * their text or centres in a column, where text-align alone does nothing.
@@ -468,7 +467,7 @@ function Styled({ style, text, wrap, children }: StyledProps) {
   return (
     <span
       data-burmese={burmese ? "" : undefined}
-      className={font && FONT_CLASS[font]}
+      className={font && TEXT_FONTS[font].className}
       style={{
         fontSize: scale === undefined ? undefined : `${scale}em`,
         color,

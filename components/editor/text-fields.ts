@@ -55,10 +55,20 @@ export function textStyle(section: Section, field: string): TextStyle | undefine
 export function withTextStyle(section: Section, field: string, patch: Partial<TextStyle>): Section {
   if (section.type === "question" || !TEXT_FIELDS[`${section.type}.${field}`]) return section;
   const styles: Styles = { ...(section.content.styles as Styles | undefined) };
-  const next: TextStyle = { ...styles[field], ...patch };
+  const next: Record<string, unknown> = { ...styles[field], ...patch };
+  // A value set to undefined goes back to the design's own.
+  for (const key of Object.keys(next)) if (next[key] === undefined) delete next[key];
   if (next.scale === 1) delete next.scale;
-  if (Object.keys(next).length > 0) styles[field] = next;
+  if (Object.keys(next).length > 0) styles[field] = next as TextStyle;
   else delete styles[field];
+  return { ...section, content: { ...section.content, styles: Object.keys(styles).length > 0 ? styles : undefined } } as Section;
+}
+
+/** The section with one text field back to the design's own style. */
+export function withoutTextStyle(section: Section, field: string): Section {
+  if (section.type === "question" || !section.content.styles) return section;
+  const styles: Styles = { ...(section.content.styles as Styles) };
+  delete styles[field];
   return { ...section, content: { ...section.content, styles: Object.keys(styles).length > 0 ? styles : undefined } } as Section;
 }
 

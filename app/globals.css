@@ -133,6 +133,12 @@
     var(--font-fraunces), var(--font-myanmar-serif), var(--font-myanmar), ui-serif, Georgia,
     serif;
   --font-hand: var(--font-caveat), var(--font-myanmar), cursive;
+  /* Faces a creator can pick for a text, see components/gift/text-fonts.ts. */
+  --font-script: var(--font-pacifico), var(--font-myanmar), cursive;
+  --font-elegant: var(--font-playfair), var(--font-myanmar-serif), var(--font-myanmar), ui-serif, Georgia, serif;
+  --font-poster: var(--font-bebas), var(--font-myanmar), ui-sans-serif, system-ui, sans-serif;
+  --font-typewriter: var(--font-special-elite), var(--font-myanmar), ui-monospace, monospace;
+  --font-padauk: var(--font-padauk-face), var(--font-myanmar), ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {

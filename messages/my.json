@@ -329,7 +329,21 @@
     "duplicateSticker": "စတစ်ကာ ပွားရန်",
     "bringToFront": "ရှေ့ဆုံးသို့ ပို့ရန်",
     "removeSticker": "စတစ်ကာ ဖယ်ရှား",
-    "resizeText": "ဆွဲပြီး စာအရွယ်အစား ပြောင်းပါ"
+    "resizeText": "ဆွဲပြီး စာအရွယ်အစား ပြောင်းပါ",
+    "textTools": "စာ ကိရိယာများ",
+    "font": "ဖောင့်",
+    "designFont": "မူလ ဖောင့်ကို သုံးရန်",
+    "smallerText": "စာ သေးရန်",
+    "largerText": "စာ ကြီးရန်",
+    "bold": "စာလုံးထူ",
+    "italic": "စာလုံးစောင်း",
+    "alignLeft": "ဘယ်ကပ်",
+    "alignCenter": "အလယ်",
+    "alignRight": "ညာကပ်",
+    "textColor": "စာအရောင်",
+    "designColor": "မူလ အရောင်",
+    "customColor": "စိတ်ကြိုက်",
+    "resetText": "ဒီစာရဲ့ ပုံစံကို မူလအတိုင်း ပြန်ထားရန်"
   },
   "gift": {
     "previewTitle": "သင့်အတွက် လက်ဆောင်",

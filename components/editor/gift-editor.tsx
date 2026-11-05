@@ -41,8 +41,9 @@ import { EditableText } from "./editable-text";
 import { DetailsPanel, LookPanel, OpeningPanel, SectionsPanel, StickersPanel } from "./editor-panels";
 import { SectionToolbar } from "./section-toolbar";
 import { StickerControls } from "./sticker-controls";
-import { TEXT_FIELDS, textStyle, withText, withTextStyle } from "./text-fields";
+import { TEXT_FIELDS, textStyle, withText, withoutTextStyle, withTextStyle } from "./text-fields";
 import { TextResizeHandle } from "./text-resize-handle";
+import { TextToolbar } from "./text-toolbar";
 
 type Props = {
   giftId: string;
@@ -358,6 +359,7 @@ export function GiftEditor(props: Props) {
     } else if (deselect) {
       setSelectedId(null);
       setSelectedSticker(null);
+      setActiveText(null);
     }
   };
 
@@ -376,9 +378,19 @@ export function GiftEditor(props: Props) {
     setActiveText({ sectionId, field, index: el.dataset.textIndex === undefined ? undefined : Number(el.dataset.textIndex) });
   };
 
-  // The resize dot stays while focus is on the canvas's own controls.
+  // The text's tools stay while focus is on them, and go when it leaves for somewhere else.
   const onCanvasBlur = (e: React.FocusEvent) => {
     if (!(e.relatedTarget instanceof Element && e.relatedTarget.closest("[data-canvas-ui]"))) setActiveText(null);
+  };
+  const onTextToolsBlur = (e: React.FocusEvent) => {
+    const next = e.relatedTarget;
+    if (!(next instanceof Element && (next.closest("[data-canvas-ui]") || canvasRef.current?.contains(next)))) setActiveText(null);
+  };
+
+  /** Changes the style of the text being edited. A value of undefined goes back to the design's own. */
+  const styleActiveText = (change: (section: Section, field: string) => Section) => {
+    if (!activeText) return;
+    setSections((all) => all.map((s) => (s.id === activeText.sectionId ? change(s, activeText.field) : s)));
   };
 
   // Saving --------------------------------------------------------------------
@@ -488,7 +500,42 @@ export function GiftEditor(props: Props) {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
         <div className={cn("flex min-w-0 flex-col gap-4", sheetOpen && "max-lg:pb-[62svh]")}>
-          {!previewing && <p className="text-center text-sm text-muted-foreground">{t("canvasHint")}</p>}
+          {!previewing && (
+            // One slot under the action bar: the tools for the text being edited, or the hint.
+            <div
+              className="sticky top-[57px] z-30 -mx-4 flex min-h-12 items-center justify-center bg-background/90 px-4 py-1.5 backdrop-blur"
+              onBlur={onTextToolsBlur}
+            >
+              {activeText && activeSection ? (
+                <TextToolbar
+                  canvas={canvasRef}
+                  selector={textSelector(activeText)}
+                  watch={sections}
+                  style={textStyle(activeSection, activeText.field)}
+                  onChange={(change) => styleActiveText((s, field) => withTextStyle(s, field, change))}
+                  onReset={() => styleActiveText(withoutTextStyle)}
+                  labels={{
+                    tools: t("textTools"),
+                    font: t("font"),
+                    designFont: t("designFont"),
+                    smaller: t("smallerText"),
+                    larger: t("largerText"),
+                    bold: t("bold"),
+                    italic: t("italic"),
+                    alignLeft: t("alignLeft"),
+                    alignCenter: t("alignCenter"),
+                    alignRight: t("alignRight"),
+                    color: t("textColor"),
+                    designColor: t("designColor"),
+                    customColor: t("customColor"),
+                    reset: t("resetText"),
+                  }}
+                />
+              ) : (
+                <p className="text-center text-sm text-muted-foreground">{t("canvasHint")}</p>
+              )}
+            </div>
+          )}
           <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
             <div
               ref={canvasRef}
@@ -534,9 +581,7 @@ export function GiftEditor(props: Props) {
                   selector={textSelector(activeText)}
                   watch={sections}
                   scale={textStyle(activeSection, activeText.field)?.scale ?? 1}
-                  onScale={(scale) =>
-                    setSections((all) => all.map((s) => (s.id === activeText.sectionId ? withTextStyle(s, activeText.field, { scale }) : s)))
-                  }
+                  onScale={(scale) => styleActiveText((s, field) => withTextStyle(s, field, { scale }))}
                   label={t("resizeText")}
                 />
               )}

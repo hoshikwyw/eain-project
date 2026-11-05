@@ -329,7 +329,21 @@
     "duplicateSticker": "Duplicate sticker",
     "bringToFront": "Bring to front",
     "removeSticker": "Remove sticker",
-    "resizeText": "Drag to resize this text"
+    "resizeText": "Drag to resize this text",
+    "textTools": "Text tools",
+    "font": "Font",
+    "designFont": "Use the design's font",
+    "smallerText": "Smaller text",
+    "largerText": "Larger text",
+    "bold": "Bold",
+    "italic": "Italic",
+    "alignLeft": "Align left",
+    "alignCenter": "Align centre",
+    "alignRight": "Align right",
+    "textColor": "Text colour",
+    "designColor": "Design colour",
+    "customColor": "Custom",
+    "resetText": "Reset this text's style"
   },
   "gift": {
     "previewTitle": "A gift for you",

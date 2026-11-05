@@ -75,7 +75,9 @@ export type GiftTheme = z.infer<typeof giftThemeSchema>;
 
 // Text styles ----------------------------------------------------------------
 
-export const textFontSchema = z.enum(["serif", "sans", "hand"]);
+/** Stored on gifts, so never rename or remove a key. Faces live in components/gift/text-fonts.ts. */
+export const textFontSchema = z.enum(["serif", "sans", "hand", "script", "elegant", "poster", "typewriter", "padauk"]);
+export const TEXT_FONT_KEYS = textFontSchema.options;
 export type TextFont = z.infer<typeof textFontSchema>;
 
 /**
