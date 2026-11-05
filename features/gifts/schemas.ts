@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { STICKER_KINDS } from "./stickers";
 
 /** Visual variants a template can render. Templates carry their own palette. */
 export const themeVariantSchema = z.enum([
@@ -23,12 +24,80 @@ export const openingSchema = z.enum(["envelope", "book", "giftbox", "curtain", "
 export type Opening = z.infer<typeof openingSchema>;
 export const OPENINGS = openingSchema.options;
 
+/** #rrggbb only, so a stored colour can never carry other CSS. */
+export const hexColorSchema = z.string().regex(/^#[0-9a-fA-F]{6}$/);
+
+/**
+ * Colours the creator picked over the look. Each one is optional; anything
+ * left out keeps the look's own colour. `bg2` turns the background into a
+ * gradient from `bg`.
+ */
+export const giftColorsSchema = z.object({
+  bg: hexColorSchema.optional(),
+  bg2: hexColorSchema.optional(),
+  card: hexColorSchema.optional(),
+  text: hexColorSchema.optional(),
+  accent: hexColorSchema.optional(),
+});
+export type GiftColors = z.infer<typeof giftColorsSchema>;
+
+export const MAX_SECTIONS = 12;
+export const MAX_PHOTOS_PER_GIFT = 5;
+export const MAX_STICKERS = 30;
+
+/**
+ * A sticker placed on the gift. Position is the sticker's centre in percent
+ * of the box it sits on, and size is its width in percent of that box's
+ * width, so it keeps its place on a phone and on a desktop.
+ */
+export const stickerSchema = z.object({
+  id: z.string().min(1).max(40),
+  kind: z.enum(STICKER_KINDS),
+  /** Position of the section the sticker sits on. Left out: the whole gift. */
+  anchor: z.number().int().min(0).max(MAX_SECTIONS - 1).optional(),
+  x: z.number().min(-20).max(120),
+  y: z.number().min(-50).max(150),
+  size: z.number().min(4).max(80),
+  rotate: z.number().min(-180).max(180).default(0),
+});
+export type Sticker = z.infer<typeof stickerSchema>;
+
 export const giftThemeSchema = z.object({
   variant: themeVariantSchema.default("blossom"),
   /** Missing on gifts made before openings existed; the template default applies. */
   opening: openingSchema.optional(),
+  /** Read through colorsFromTheme and stickersFromTheme, which drop bad values. */
+  colors: giftColorsSchema.optional().catch(undefined),
+  stickers: z.array(stickerSchema).max(MAX_STICKERS).optional().catch(undefined),
 });
 export type GiftTheme = z.infer<typeof giftThemeSchema>;
+
+// Text styles ----------------------------------------------------------------
+
+export const textFontSchema = z.enum(["serif", "sans", "hand"]);
+export type TextFont = z.infer<typeof textFontSchema>;
+
+/**
+ * How one piece of text departs from its design. Every field is optional;
+ * a field left out keeps what the design gives that text.
+ */
+export const textStyleSchema = z.object({
+  font: textFontSchema.optional(),
+  /** Multiplier on the design's own size for this text. */
+  scale: z.number().min(0.5).max(2.5).optional(),
+  color: hexColorSchema.optional(),
+  align: z.enum(["left", "center", "right"]).optional(),
+  bold: z.boolean().optional(),
+  italic: z.boolean().optional(),
+});
+export type TextStyle = z.infer<typeof textStyleSchema>;
+
+/**
+ * Styles for a section's text fields, keyed by field name. A malformed value
+ * is dropped instead of failing the section, so a bad style never hides text.
+ */
+const stylesFor = <K extends string>(fields: readonly [K, ...K[]]) =>
+  z.partialRecord(z.enum(fields), textStyleSchema).optional().catch(undefined);
 
 // Section bodies ------------------------------------------------------------
 
@@ -37,20 +106,24 @@ const shortText = (max: number) => z.string().trim().max(max);
 export const coverContentSchema = z.object({
   heading: z.string().trim().min(1).max(80),
   subheading: shortText(160).default(""),
+  styles: stylesFor(["heading", "subheading"]),
 });
 
 export const messageContentSchema = z.object({
   text: z.string().trim().min(1).max(1000),
+  styles: stylesFor(["text"]),
 });
 
 export const imageContentSchema = z.object({
   mediaId: z.uuid().nullable().default(null),
   caption: shortText(160).default(""),
+  styles: stylesFor(["caption"]),
 });
 
 export const photoGridContentSchema = z.object({
   mediaIds: z.array(z.uuid()).max(5).default([]),
   caption: shortText(160).default(""),
+  styles: stylesFor(["caption"]),
 });
 
 export const timelineItemSchema = z.object({
@@ -61,16 +134,20 @@ export const timelineItemSchema = z.object({
 
 export const timelineContentSchema = z.object({
   items: z.array(timelineItemSchema).min(1).max(8),
+  /** One style per field, shared by every item so the timeline stays even. */
+  styles: stylesFor(["date", "title", "text"]),
 });
 
 export const quoteContentSchema = z.object({
   text: z.string().trim().min(1).max(300),
   attribution: shortText(80).default(""),
+  styles: stylesFor(["text", "attribution"]),
 });
 
 export const finalMessageContentSchema = z.object({
   text: shortText(300).default(""),
   signature: shortText(80).default(""),
+  styles: stylesFor(["text", "signature"]),
 });
 
 export const questionKindSchema = z.enum(["choice", "yes_no", "short_text", "reaction", "rating"]);
@@ -112,15 +189,14 @@ export type Section = z.infer<typeof sectionSchema>;
 export type SectionOf<T extends Section["type"]> = Extract<Section, { type: T }>;
 export type EditableSectionType = Section["type"];
 
-export const MAX_SECTIONS = 12;
-export const MAX_PHOTOS_PER_GIFT = 5;
-
 /** What the editor submits as one JSON payload. */
 export const editorPayloadSchema = z.object({
   title: z.string().trim().min(1).max(120),
   recipientName: shortText(80).default(""),
   variant: themeVariantSchema,
   opening: openingSchema,
+  colors: giftColorsSchema.default({}),
+  stickers: z.array(stickerSchema).max(MAX_STICKERS).default([]),
   sections: z.array(sectionSchema).min(1).max(MAX_SECTIONS),
 });
 export type EditorPayload = z.infer<typeof editorPayloadSchema>;

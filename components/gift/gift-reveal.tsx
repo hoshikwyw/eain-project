@@ -6,10 +6,10 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
-import type { Opening, PublicQuestion, ThemeVariant } from "@/features/gifts/schemas";
+import type { GiftColors, Opening, PublicQuestion, ThemeVariant } from "@/features/gifts/schemas";
 import { cn } from "@/lib/utils";
 import { GiftOpening, openingDuration } from "./gift-opening";
-import { palettes } from "./palettes";
+import { giftPalette } from "./palettes";
 import { ResponseForm } from "./response-form";
 
 type Stage = "closed" | "opening" | "open";
@@ -47,11 +47,12 @@ type Props = {
   questions: PublicQuestion[];
   opening: Opening;
   variant: ThemeVariant;
+  colors?: GiftColors;
   recipientName: string;
   children: React.ReactNode;
 };
 
-export function GiftReveal({ token, questions, opening, variant, recipientName, children }: Props) {
+export function GiftReveal({ token, questions, opening, variant, colors, recipientName, children }: Props) {
   const t = useTranslations("gift");
   const [stage, setStage] = useState<Stage>("closed");
   const endRef = useRef<HTMLDivElement>(null);
@@ -91,12 +92,13 @@ export function GiftReveal({ token, questions, opening, variant, recipientName, 
           <span
             aria-hidden="true"
             className="absolute inset-6 rounded-full opacity-60 blur-3xl"
-            style={{ ...palettes[variant], background: "var(--t-accent-soft)" }}
+            style={{ ...giftPalette(variant, colors), background: "var(--t-accent-soft)" }}
           />
           <span className="relative">
             <GiftOpening
               kind={opening}
               variant={variant}
+              colors={colors}
               stage={stage}
               label={recipientName ? t("forName", { name: recipientName }) : t("forYou")}
             />

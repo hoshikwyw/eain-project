@@ -3,7 +3,7 @@ import { cache } from "react";
 import { getCurrentProfile } from "@/features/profile/queries";
 import { appMode } from "@/lib/app-mode";
 import { signMedia } from "@/features/gifts/media";
-import { sectionsFromRows, variantFromTheme } from "@/features/gifts/sections";
+import { colorsFromTheme, sectionsFromRows, stickersFromTheme, variantFromTheme } from "@/features/gifts/sections";
 import { getTemplateStyle } from "@/features/gifts/templates";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/types/database";
@@ -146,6 +146,8 @@ export async function getGiftForModeration(giftId: string) {
     gift,
     style: getTemplateStyle(template?.slug ?? ""),
     variant: variantFromTheme(gift.theme),
+    colors: colorsFromTheme(gift.theme),
+    stickers: stickersFromTheme(gift.theme),
     sections: sectionsFromRows(sections ?? []),
     media: await signMedia(media ?? []),
     recipientName: recipient?.name ?? "",

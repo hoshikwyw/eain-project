@@ -1,5 +1,19 @@
 import type { GiftSection } from "@/types/database";
-import { giftThemeSchema, sectionSchema, type Opening, type Section, type ThemeVariant } from "./schemas";
+import {
+  giftColorsSchema,
+  giftThemeSchema,
+  hexColorSchema,
+  MAX_STICKERS,
+  sectionSchema,
+  stickerSchema,
+  type EditorPayload,
+  type GiftColors,
+  type GiftTheme,
+  type Opening,
+  type Section,
+  type Sticker,
+  type ThemeVariant,
+} from "./schemas";
 
 /**
  * Turns stored rows into typed sections. Malformed rows are dropped so one bad
@@ -22,6 +36,48 @@ export function variantFromTheme(theme: unknown): ThemeVariant {
 export function openingFromTheme(theme: unknown, fallback: Opening): Opening {
   const parsed = giftThemeSchema.safeParse(theme ?? {});
   return (parsed.success && parsed.data.opening) || fallback;
+}
+
+const themeField = (theme: unknown, key: string): unknown =>
+  theme && typeof theme === "object" ? (theme as Record<string, unknown>)[key] : undefined;
+
+/** Colours the creator set over the look. A bad value is dropped on its own. */
+export function colorsFromTheme(theme: unknown): GiftColors {
+  const raw = themeField(theme, "colors");
+  if (!raw || typeof raw !== "object") return {};
+  const colors: GiftColors = {};
+  for (const key of giftColorsSchema.keyof().options) {
+    const parsed = hexColorSchema.safeParse((raw as Record<string, unknown>)[key]);
+    if (parsed.success) colors[key] = parsed.data;
+  }
+  return colors;
+}
+
+/** Stickers on the gift. A bad sticker is dropped on its own. */
+export function stickersFromTheme(theme: unknown): Sticker[] {
+  const raw = themeField(theme, "stickers");
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .slice(0, MAX_STICKERS)
+    .map((s) => stickerSchema.safeParse(s))
+    .filter((r) => r.success)
+    .map((r) => r.data);
+}
+
+/**
+ * The theme to store for an editor payload. Empty colours and stickers are
+ * left out, and a sticker anchored past the last section moves to the gift.
+ */
+export function themeFromPayload(v: Pick<EditorPayload, "variant" | "opening" | "colors" | "stickers" | "sections">): GiftTheme {
+  const stickers = v.stickers.map(({ anchor, ...s }) =>
+    anchor !== undefined && anchor < v.sections.length ? { ...s, anchor } : s,
+  );
+  return {
+    variant: v.variant,
+    opening: v.opening,
+    ...(Object.keys(v.colors).length > 0 && { colors: v.colors }),
+    ...(stickers.length > 0 && { stickers }),
+  };
 }
 
 /** Rows to insert for a section list. Client ids are not stored. */

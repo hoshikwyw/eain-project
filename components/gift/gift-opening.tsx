@@ -1,7 +1,7 @@
 import { Heart, Sparkles } from "lucide-react";
 import { Lovebirds } from "@/components/brand/lovebirds";
-import type { Opening, ThemeVariant } from "@/features/gifts/schemas";
-import { palettes } from "./palettes";
+import type { GiftColors, Opening, ThemeVariant } from "@/features/gifts/schemas";
+import { giftPalette } from "./palettes";
 
 /** How long each opening plays before the gift content shows. */
 export const OPENING_MS: Record<Opening, number> = {
@@ -24,6 +24,7 @@ export type OpeningStage = "closed" | "opening";
 type Props = {
   kind: Opening;
   variant: ThemeVariant;
+  colors?: GiftColors;
   stage: OpeningStage;
   /** Shown on the closed object, for example "For Su". */
   label: string;
@@ -34,13 +35,13 @@ type Props = {
  * look. Motion lives in globals.css under "Gift openings" and starts when
  * `stage` turns to "opening".
  */
-export function GiftOpening({ kind, variant, stage, label }: Props) {
+export function GiftOpening({ kind, variant, colors, stage, label }: Props) {
   return (
     <div
       className="eo"
       data-stage={stage}
       data-kind={kind}
-      style={{ ...palettes[variant], "--eo-ms": `${OPENING_MS[kind]}ms` } as React.CSSProperties}
+      style={{ ...giftPalette(variant, colors), "--eo-ms": `${OPENING_MS[kind]}ms` } as React.CSSProperties}
       aria-hidden="true"
     >
       <div className="eo-scene">

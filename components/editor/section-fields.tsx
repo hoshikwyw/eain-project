@@ -60,7 +60,7 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
             rows={5}
             required
             className={textareaClass}
-            onChange={(e) => onChange({ ...section, content: { text: e.target.value } })}
+            onChange={(e) => onChange({ ...section, content: { ...section.content, text: e.target.value } })}
           />
         </Field>
       );
@@ -108,7 +108,7 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
       );
     case "timeline": {
       const items = section.content.items;
-      const setItems = (next: typeof items) => onChange({ ...section, content: { items: next } });
+      const setItems = (next: typeof items) => onChange({ ...section, content: { ...section.content, items: next } });
       return (
         <div className="flex flex-col gap-3">
           {items.map((item, i) => (

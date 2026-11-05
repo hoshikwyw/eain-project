@@ -130,6 +130,8 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
                 sections={data.sections}
                 media={data.media}
                 variant={data.variant}
+                colors={data.colors}
+                stickers={data.stickers}
                 style={data.style}
                 recipientName={recipient?.name ?? ""}
                 senderName={profile.display_name}

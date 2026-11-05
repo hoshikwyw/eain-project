@@ -31,12 +31,15 @@ export default async function PublicGiftPage({ params }: PageProps<"/g/[token]">
       questions={gift.questions}
       opening={gift.opening}
       variant={gift.variant}
+      colors={gift.colors}
       recipientName={gift.recipientName}
     >
       <GiftView
         sections={gift.sections}
         media={gift.media}
         variant={gift.variant}
+        colors={gift.colors}
+        stickers={gift.stickers}
         style={gift.style}
         recipientName={gift.recipientName}
         senderName={gift.senderName}

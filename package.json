@@ -19,6 +19,7 @@
     "test:admin-users": "node --test --env-file=.env.local supabase/tests/admin-users.test.mts",
     "test:part3": "node --test --env-file=.env.local supabase/tests/part3.test.mts",
     "test:part4": "node --test --env-file=.env.local supabase/tests/part4.test.mts",
+    "test:styles": "node --test --env-file=.env.local supabase/tests/styles.test.mts",
     "cleanup:test-users": "node --env-file=.env.local scripts/cleanup-test-users.mjs"
   },
   "dependencies": {

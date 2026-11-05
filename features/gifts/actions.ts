@@ -8,7 +8,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { MEDIA_BUCKET } from "./media";
 import { editorPayloadSchema, type SaveGiftState, type Section } from "./schemas";
-import { pruneMediaReferences, questionsFromSections, rowsFromSections, sectionsFromRows } from "./sections";
+import { pruneMediaReferences, questionsFromSections, rowsFromSections, sectionsFromRows, themeFromPayload } from "./sections";
 import { defaultTheme, isAvailableTemplate, templates } from "./templates";
 
 /** Creates a draft from a template and opens the editor. */
@@ -85,7 +85,7 @@ export async function saveGift(giftId: string, _prev: SaveGiftState, formData: F
 
   const { data: gift, error: giftError } = await supabase
     .from("gifts")
-    .update({ title: v.title, theme: { variant: v.variant, opening: v.opening } })
+    .update({ title: v.title, theme: themeFromPayload(v) })
     .eq("id", giftId)
     .neq("status", "deleted")
     .select("id")

@@ -1,8 +1,10 @@
 import { ImagePlus, MessageCircleQuestion } from "lucide-react";
-import type { MediaItem, Section, ThemeVariant } from "@/features/gifts/schemas";
+import type { CSSProperties, ReactNode } from "react";
+import type { GiftColors, MediaItem, Section, Sticker, TextFont, TextStyle, ThemeVariant } from "@/features/gifts/schemas";
 import type { Decoration, Design, TemplateStyle } from "@/features/gifts/templates";
 import { cn } from "@/lib/utils";
-import { palettes } from "./palettes";
+import { giftPalette } from "./palettes";
+import { StickerLayer } from "./sticker-layer";
 
 type Labels = { forName: string; forYou: string; addPhoto: string; questionNote: string };
 
@@ -10,6 +12,10 @@ type Props = {
   sections: Section[];
   media: Record<string, MediaItem>;
   variant: ThemeVariant;
+  /** The creator's own colours over the look. */
+  colors?: GiftColors;
+  /** Stickers on the gift, each on the whole gift or on one section. */
+  stickers?: Sticker[];
   style: TemplateStyle;
   recipientName: string;
   senderName: string;
@@ -34,21 +40,30 @@ type Props = {
  * so a postcard looks like a postcard and a memory page like a scrapbook.
  */
 export function GiftRenderer(props: Props) {
-  const { sections, style, variant, recipientName, questionMode = "preview", labels } = props;
+  const { sections, style, variant, colors, stickers = [], recipientName, questionMode = "preview", labels } = props;
   const name = recipientName.trim();
   const eyebrow = name ? labels.forName.replace("{name}", name) : labels.forYou;
   const visible = questionMode === "hidden" ? sections.filter((s) => s.type !== "question") : sections;
-  const ctx: Ctx = { ...props, design: style.design, eyebrow, visible };
+
+  // Stickers follow the section they sit on. A sticker on a section that is
+  // not shown (a question on the receiver page) is not shown either.
+  const sectionStickers = new Map<string, Sticker[]>();
+  for (const s of stickers) {
+    const id = s.anchor === undefined ? undefined : sections[s.anchor]?.id;
+    if (id !== undefined) sectionStickers.set(id, [...(sectionStickers.get(id) ?? []), s]);
+  }
+  const ctx: Ctx = { ...props, design: style.design, eyebrow, visible, sectionStickers };
 
   const frame = (
-    <div style={palettes[variant]} className="relative text-[color:var(--t-fg)]">
+    <div style={giftPalette(variant, colors)} className="relative text-[color:var(--t-fg)]">
       {renderDesign(ctx)}
+      <StickerLayer stickers={stickers.filter((s) => s.anchor === undefined)} clip />
     </div>
   );
   return frame;
 }
 
-type Ctx = Props & { design: Design; eyebrow: string; visible: Section[] };
+type Ctx = Props & { design: Design; eyebrow: string; visible: Section[]; sectionStickers: Map<string, Sticker[]> };
 
 function renderDesign(ctx: Ctx) {
   switch (ctx.design) {
@@ -81,15 +96,19 @@ function renderDesign(ctx: Ctx) {
 function Sections({ ctx, className, itemClassName, animate }: { ctx: Ctx; className?: string; itemClassName?: string; animate?: boolean }) {
   return (
     <div className={cn("flex flex-col", className)}>
-      {ctx.visible.map((section, i) => (
-        <div
-          key={section.id}
-          style={animate ? { animationDelay: `${Math.min(i, 6) * 120}ms` } : undefined}
-          className={cn(itemClassName, animate && "animate-in fade-in slide-in-from-bottom-4 fill-mode-both duration-700")}
-        >
-          <SectionView ctx={ctx} section={section} isFirst={i === 0} />
-        </div>
-      ))}
+      {ctx.visible.map((section, i) => {
+        const stickers = ctx.sectionStickers.get(section.id);
+        return (
+          <div
+            key={section.id}
+            style={animate ? { animationDelay: `${Math.min(i, 6) * 120}ms` } : undefined}
+            className={cn(itemClassName, stickers && "relative", animate && "animate-in fade-in slide-in-from-bottom-4 fill-mode-both duration-700")}
+          >
+            <SectionView ctx={ctx} section={section} isFirst={i === 0} />
+            <StickerLayer stickers={stickers} />
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -356,7 +375,7 @@ function ScrapbookDesign(ctx: Ctx) {
           ctx={ctx}
           animate={animate}
           className={compact ? "gap-4" : "gap-5"}
-          itemClassName={cn("relative rounded-lg bg-[color:var(--t-card)]/95 shadow-md before:absolute before:-top-2 before:left-1/2 before:h-5 before:w-20 before:-translate-x-1/2 before:rotate-[-3deg] before:rounded-sm before:bg-[color:var(--glow)]/70 before:content-[''] [&_ol]:border-[color:var(--glow)]/60 [&_ol_span]:bg-[color:var(--glow)]", compact ? "p-5" : "p-6 sm:p-8")}
+          itemClassName={cn("relative rounded-lg bg-[color:var(--t-card)]/95 shadow-md before:absolute before:-top-2 before:left-1/2 before:h-5 before:w-20 before:-translate-x-1/2 before:rotate-[-3deg] before:rounded-sm before:bg-[color:var(--glow)]/70 before:content-[''] [&_ol]:border-[color:var(--glow)]/60 [&_ol_.dot]:bg-[color:var(--glow)]", compact ? "p-5" : "p-6 sm:p-8")}
         />
         <Illustration src={style.illustration} className={cn("mx-auto pt-2", compact ? "max-w-56" : "max-w-sm")} />
       </div>
@@ -387,6 +406,50 @@ function BoldDesign(ctx: Ctx) {
 }
 
 // Sections --------------------------------------------------------------------
+
+const FONT_CLASS: Record<TextFont, string> = { serif: "font-display", sans: "font-sans", hand: "font-hand" };
+
+/**
+ * Alignment for a text block. Auto margins move blocks a design shrinks to
+ * their text or centres in a column, where text-align alone does nothing.
+ */
+function alignStyle(style: TextStyle | undefined): CSSProperties | undefined {
+  switch (style?.align) {
+    case "left":
+      return { textAlign: "left", marginRight: "auto" };
+    case "center":
+      return { textAlign: "center", marginInline: "auto" };
+    case "right":
+      return { textAlign: "right", marginLeft: "auto" };
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Text with the creator's font, size, colour and weight. Size is relative to
+ * what the design gives this text. Unstyled text renders with no wrapper.
+ */
+function Styled({ style, children }: { style: TextStyle | undefined; children: ReactNode }) {
+  if (!style) return children;
+  const { font, scale, color, bold, italic } = style;
+  if (font === undefined && scale === undefined && color === undefined && bold === undefined && italic === undefined) {
+    return children;
+  }
+  return (
+    <span
+      className={font && FONT_CLASS[font]}
+      style={{
+        fontSize: scale === undefined ? undefined : `${scale}em`,
+        color,
+        fontWeight: bold === undefined ? undefined : bold ? 700 : 400,
+        fontStyle: italic === undefined ? undefined : italic ? "italic" : "normal",
+      }}
+    >
+      {children}
+    </span>
+  );
+}
 
 function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; isFirst: boolean }) {
   const { media, senderName, compact, placeholders, labels, design } = ctx;
@@ -421,19 +484,29 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
       );
     case "text": {
       const Heading = isFirst ? "h1" : "h2";
+      const st = section.content.styles;
       return (
         <header className="flex flex-col gap-2">
-          <Heading className={cn("font-display font-semibold text-balance leading-tight", compact ? (isFirst ? "text-3xl" : "text-2xl") : isFirst ? "text-4xl sm:text-5xl" : "text-3xl")}>
-            {section.content.heading}
+          <Heading style={alignStyle(st?.heading)} className={cn("font-display font-semibold text-balance leading-tight", compact ? (isFirst ? "text-3xl" : "text-2xl") : isFirst ? "text-4xl sm:text-5xl" : "text-3xl")}>
+            <Styled style={st?.heading}>{section.content.heading}</Styled>
           </Heading>
-          {section.content.subheading && <p className={cn("text-[color:var(--t-muted)]", compact ? "text-sm" : "text-lg")}>{section.content.subheading}</p>}
+          {section.content.subheading && (
+            <p style={alignStyle(st?.subheading)} className={cn("text-[color:var(--t-muted)]", compact ? "text-sm" : "text-lg")}>
+              <Styled style={st?.subheading}>{section.content.subheading}</Styled>
+            </p>
+          )}
         </header>
       );
     }
     case "message":
-      return <p className={cn("msg whitespace-pre-line text-[color:var(--t-fg)]/90", compact ? "text-base" : "text-lg")}>{section.content.text}</p>;
+      return (
+        <p style={alignStyle(section.content.styles?.text)} className={cn("msg whitespace-pre-line text-[color:var(--t-fg)]/90", compact ? "text-base" : "text-lg")}>
+          <Styled style={section.content.styles?.text}>{section.content.text}</Styled>
+        </p>
+      );
     case "image": {
       const item = section.content.mediaId ? media[section.content.mediaId] : undefined;
+      const captionStyle = section.content.styles?.caption;
       if (!item) return placeholders ? <PhotoPlaceholder label={labels.addPhoto} polaroid={design === "scrapbook"} /> : null;
       const img = (
         // eslint-disable-next-line @next/next/no-img-element -- private signed URL, optimiser bypassed on purpose
@@ -443,19 +516,28 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
         return (
           <figure className="mx-auto w-fit max-w-full -rotate-1 rounded-sm bg-white p-3 pb-10 shadow-lg">
             {img}
-            {section.content.caption && <figcaption className="mt-3 text-center font-hand text-xl text-neutral-700">{section.content.caption}</figcaption>}
+            {section.content.caption && (
+              <figcaption style={alignStyle(captionStyle)} className="mt-3 text-center font-hand text-xl text-neutral-700">
+                <Styled style={captionStyle}>{section.content.caption}</Styled>
+              </figcaption>
+            )}
           </figure>
         );
       }
       return (
         <figure className="flex flex-col gap-2">
           {img}
-          {section.content.caption && <figcaption className="text-center text-sm text-[color:var(--t-muted)]">{section.content.caption}</figcaption>}
+          {section.content.caption && (
+            <figcaption style={alignStyle(captionStyle)} className="text-center text-sm text-[color:var(--t-muted)]">
+              <Styled style={captionStyle}>{section.content.caption}</Styled>
+            </figcaption>
+          )}
         </figure>
       );
     }
     case "photo_grid": {
       const items = section.content.mediaIds.map((id) => media[id]).filter((m): m is MediaItem => Boolean(m));
+      const captionStyle = section.content.styles?.caption;
       if (items.length === 0) return placeholders ? <PhotoPlaceholder label={labels.addPhoto} polaroid={design === "scrapbook"} /> : null;
       if (design === "scrapbook") {
         return (
@@ -468,7 +550,11 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
                 </div>
               ))}
             </div>
-            {section.content.caption && <figcaption className="text-center font-hand text-xl">{section.content.caption}</figcaption>}
+            {section.content.caption && (
+              <figcaption style={alignStyle(captionStyle)} className="text-center font-hand text-xl">
+                <Styled style={captionStyle}>{section.content.caption}</Styled>
+              </figcaption>
+            )}
           </figure>
         );
       }
@@ -480,37 +566,70 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
               <img key={item.id} src={item.thumbUrl} alt="" loading="lazy" decoding="async" className="aspect-square w-full rounded-xl object-cover" />
             ))}
           </div>
-          {section.content.caption && <figcaption className="text-center text-sm text-[color:var(--t-muted)]">{section.content.caption}</figcaption>}
+          {section.content.caption && (
+            <figcaption style={alignStyle(captionStyle)} className="text-center text-sm text-[color:var(--t-muted)]">
+              <Styled style={captionStyle}>{section.content.caption}</Styled>
+            </figcaption>
+          )}
         </figure>
       );
     }
-    case "timeline":
+    case "timeline": {
+      const st = section.content.styles;
       return (
         <ol className="relative flex flex-col gap-5 border-l-2 border-[color:var(--t-accent-soft)] pl-5 text-left">
           {section.content.items.map((item, i) => (
             <li key={i} className="relative">
-              <span aria-hidden="true" className="absolute top-1.5 -left-[1.6rem] size-3 rounded-full bg-[color:var(--t-accent)] ring-4 ring-[color:var(--t-card)]" />
-              {item.date && <p className="text-xs font-semibold tracking-wide uppercase text-[color:var(--t-muted)]">{item.date}</p>}
-              <p className="font-semibold">{item.title}</p>
-              {item.text && <p className="mt-1 text-sm text-[color:var(--t-fg)]/85">{item.text}</p>}
+              <span aria-hidden="true" className="dot absolute top-1.5 -left-[1.6rem] size-3 rounded-full bg-[color:var(--t-accent)] ring-4 ring-[color:var(--t-card)]" />
+              {item.date && (
+                <p style={alignStyle(st?.date)} className="text-xs font-semibold tracking-wide uppercase text-[color:var(--t-muted)]">
+                  <Styled style={st?.date}>{item.date}</Styled>
+                </p>
+              )}
+              <p style={alignStyle(st?.title)} className="font-semibold">
+                <Styled style={st?.title}>{item.title}</Styled>
+              </p>
+              {item.text && (
+                <p style={alignStyle(st?.text)} className="mt-1 text-sm text-[color:var(--t-fg)]/85">
+                  <Styled style={st?.text}>{item.text}</Styled>
+                </p>
+              )}
             </li>
           ))}
         </ol>
       );
-    case "quote":
+    }
+    case "quote": {
+      const st = section.content.styles;
       return (
         <blockquote className="flex flex-col gap-2 border-l-4 border-[color:var(--t-accent)] pl-4">
-          <p className={cn("font-display text-balance italic", compact ? "text-lg" : "text-2xl")}>“{section.content.text}”</p>
-          {section.content.attribution && <footer className="text-sm text-[color:var(--t-muted)]">— {section.content.attribution}</footer>}
+          <p style={alignStyle(st?.text)} className={cn("font-display text-balance italic", compact ? "text-lg" : "text-2xl")}>
+            <Styled style={st?.text}>“{section.content.text}”</Styled>
+          </p>
+          {section.content.attribution && (
+            <footer style={alignStyle(st?.attribution)} className="text-sm text-[color:var(--t-muted)]">
+              <Styled style={st?.attribution}>— {section.content.attribution}</Styled>
+            </footer>
+          )}
         </blockquote>
       );
+    }
     case "final_message": {
       const signature = section.content.signature.trim() || senderName;
+      const st = section.content.styles;
       if (!section.content.text && !signature) return null;
       return (
         <footer className="flex flex-col gap-1 border-t border-[color:var(--t-accent-soft)] pt-5">
-          {section.content.text && <p className="text-[color:var(--t-fg)]/85">{section.content.text}</p>}
-          {signature && <p className="sig font-display text-xl font-semibold">{signature}</p>}
+          {section.content.text && (
+            <p style={alignStyle(st?.text)} className="text-[color:var(--t-fg)]/85">
+              <Styled style={st?.text}>{section.content.text}</Styled>
+            </p>
+          )}
+          {signature && (
+            <p style={alignStyle(st?.signature)} className="sig font-display text-xl font-semibold">
+              <Styled style={st?.signature}>{signature}</Styled>
+            </p>
+          )}
         </footer>
       );
     }

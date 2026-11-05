@@ -17,10 +17,12 @@ import {
   THEME_VARIANTS,
   type EditableSectionType,
   type EditorPayload,
+  type GiftColors,
   type MediaItem,
   type Opening,
   type SaveGiftState,
   type Section,
+  type Sticker,
   type ThemeVariant,
 } from "@/features/gifts/schemas";
 import type { TemplateStyle } from "@/features/gifts/templates";
@@ -34,6 +36,8 @@ type Props = {
   recipientName: string;
   variant: ThemeVariant;
   opening: Opening;
+  colors: GiftColors;
+  stickers: Sticker[];
   sections: Section[];
   media: MediaItem[];
   style: TemplateStyle;
@@ -95,14 +99,16 @@ export function GiftEditor(props: Props) {
   const [variant, setVariant] = useState<ThemeVariant>(props.variant);
   const [opening, setOpening] = useState<Opening>(props.opening);
   const [openingPreview, setOpeningPreview] = useState<OpeningStage | null>(null);
+  const [colors] = useState<GiftColors>(props.colors);
+  const [stickers] = useState<Sticker[]>(props.stickers);
   const [sections, setSections] = useState<Section[]>(props.sections);
   const [media, setMedia] = useState<MediaItem[]>(props.media);
   const [showPreview, setShowPreview] = useState(false);
   const [adding, setAdding] = useState(false);
 
   const payload = useMemo<EditorPayload>(
-    () => ({ title, recipientName, variant, opening, sections }),
-    [title, recipientName, variant, opening, sections],
+    () => ({ title, recipientName, variant, opening, colors, stickers, sections }),
+    [title, recipientName, variant, opening, colors, stickers, sections],
   );
   const payloadJson = JSON.stringify(payload);
 
@@ -113,6 +119,8 @@ export function GiftEditor(props: Props) {
       recipientName: props.recipientName,
       variant: props.variant,
       opening: props.opening,
+      colors: props.colors,
+      stickers: props.stickers,
       sections: props.sections,
     }),
   );
@@ -333,6 +341,8 @@ export function GiftEditor(props: Props) {
             sections={sections}
             media={mediaMap}
             variant={variant}
+            colors={colors}
+            stickers={stickers}
             style={props.style}
             recipientName={recipientName}
             senderName={props.senderName}
@@ -386,6 +396,7 @@ export function GiftEditor(props: Props) {
             key={opening}
             kind={opening}
             variant={variant}
+            colors={colors}
             stage={openingPreview}
             label={recipientName ? tGift("forName", { name: recipientName }) : tGift("forYou")}
           />

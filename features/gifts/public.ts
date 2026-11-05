@@ -4,8 +4,8 @@ import { cache } from "react";
 import { track } from "@/lib/analytics";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { signMedia } from "./media";
-import type { MediaItem, Opening, PublicQuestion, ResponseSubmission, Section, ThemeVariant } from "./schemas";
-import { openingFromTheme, referencedMediaIds, sectionsFromRows, variantFromTheme } from "./sections";
+import type { GiftColors, MediaItem, Opening, PublicQuestion, ResponseSubmission, Section, Sticker, ThemeVariant } from "./schemas";
+import { colorsFromTheme, openingFromTheme, referencedMediaIds, sectionsFromRows, stickersFromTheme, variantFromTheme } from "./sections";
 import { getTemplateStyle, type TemplateStyle } from "./templates";
 
 export type PublicGift = {
@@ -13,6 +13,8 @@ export type PublicGift = {
   style: TemplateStyle;
   variant: ThemeVariant;
   opening: Opening;
+  colors: GiftColors;
+  stickers: Sticker[];
   sections: Section[];
   media: Record<string, MediaItem>;
   questions: PublicQuestion[];
@@ -77,6 +79,8 @@ export const getPublicGift = cache(async (token: string): Promise<PublicGift | n
     style,
     variant: variantFromTheme(gift.theme),
     opening: openingFromTheme(gift.theme, style.defaultOpening),
+    colors: colorsFromTheme(gift.theme),
+    stickers: stickersFromTheme(gift.theme),
     sections,
     media: await signMedia(mediaRows ?? []),
     questions,

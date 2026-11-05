@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { ThemeVariant } from "@/features/gifts/schemas";
+import type { GiftColors, ThemeVariant } from "@/features/gifts/schemas";
 
 /**
  * Template palettes. A gift looks the same for the receiver regardless of
@@ -272,6 +272,42 @@ const morePalettes = {
 
 /** Every look. Typed as a full record so adding a look without a palette fails to compile. */
 export const palettes: Record<ThemeVariant, CSSProperties> = { ...basePalettes, ...morePalettes };
+
+/** Black or white, whichever reads better on the colour. */
+function readableOn(hex: string): string {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  // Perceived brightness, 0 to 255.
+  return (r! * 299 + g! * 587 + b! * 114) / 1000 > 150 ? "#1a1a1a" : "#ffffff";
+}
+
+/**
+ * The look's palette with the creator's own colours laid over it. Shades the
+ * creator does not pick (muted text, soft accent, decoration) are mixed from
+ * the colours they did pick, so a custom colour carries through the design.
+ */
+export function giftPalette(variant: ThemeVariant, colors?: GiftColors): CSSProperties {
+  const base = palettes[variant];
+  if (!colors) return base;
+  const { bg, bg2, card, text, accent } = colors;
+  const over: Record<string, string> = {};
+  if (bg) over["--t-bg"] = bg2 ? `linear-gradient(160deg, ${bg} 0%, ${bg2} 100%)` : bg;
+  if (card) over["--t-card"] = card;
+  if (text) {
+    over["--t-fg"] = text;
+    over["--foreground"] = text;
+    over["--t-muted"] = `color-mix(in srgb, ${text} 65%, var(--t-card))`;
+  }
+  if (accent) {
+    const soft = `color-mix(in srgb, ${accent} 16%, var(--t-card))`;
+    over["--t-accent"] = accent;
+    over["--brand"] = accent;
+    over["--t-accent-soft"] = soft;
+    over["--brand-soft"] = soft;
+    over["--t-deco"] = `color-mix(in srgb, ${accent} 55%, var(--t-card))`;
+    over["--t-on-accent"] = readableOn(accent);
+  }
+  return { ...base, ...over } as CSSProperties;
+}
 
 /** Swatch for pickers: the look's background into its accent. */
 export const variantSwatch: Record<ThemeVariant, string> = {
