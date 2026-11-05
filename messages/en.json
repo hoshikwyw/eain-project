@@ -404,10 +404,25 @@
     "redo": "Redo",
     "duplicateSection": "Duplicate section",
     "templateLook": "Back to the template's look",
-    "draftAutosave": "Your draft saves on its own while you work."
+    "draftAutosave": "Your draft saves on its own while you work.",
+    "flowers": "Flowers",
+    "flowersHint": "Pick the colour of the flowers in the garden.",
+    "flowerColors": {
+      "white": "White",
+      "pink": "Pink",
+      "yellow": "Yellow",
+      "lavender": "Lavender",
+      "red": "Red",
+      "blue": "Blue"
+    },
+    "sceneHint": "This card is a summary of your garden. Edit the name and the message here, then press Play to watch it bloom.",
+    "playScene": "Play",
+    "scenePreview": "Animation preview"
   },
   "gift": {
     "previewTitle": "A gift for you",
+    "sceneTitle": "An animated garden with a message for you",
+    "tapToBloom": "tap anywhere to bloom more flowers 🌸",
     "someone": "Someone made something special for you.",
     "specialForYou": "A special gift, just for you",
     "openYourGift": "Open Your Gift",
@@ -645,7 +660,8 @@
         "minimal": "Minimal",
         "scrapbook": "Scrapbook",
         "bold": "Bold",
-        "blank": "Blank"
+        "blank": "Blank",
+        "garden": "Night garden"
       }
     },
     "reports": {

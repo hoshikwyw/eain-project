@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { giftSceneSchema } from "./scene";
 import { STICKER_KINDS } from "./stickers";
 
 /** Visual variants a template can render. Templates carry their own palette. */
@@ -70,6 +71,8 @@ export const giftThemeSchema = z.object({
   /** Read through colorsFromTheme and stickersFromTheme, which drop bad values. */
   colors: giftColorsSchema.optional().catch(undefined),
   stickers: z.array(stickerSchema).max(MAX_STICKERS).optional().catch(undefined),
+  /** Only on gifts made from a scene template: what the creator chose for the animation. */
+  scene: giftSceneSchema.optional().catch(undefined),
 });
 export type GiftTheme = z.infer<typeof giftThemeSchema>;
 
@@ -207,6 +210,7 @@ export const editorPayloadSchema = z.object({
   opening: openingSchema,
   colors: giftColorsSchema.default({}),
   stickers: z.array(stickerSchema).max(MAX_STICKERS).default([]),
+  scene: giftSceneSchema.optional(),
   sections: z.array(sectionSchema).min(1).max(MAX_SECTIONS),
 });
 export type EditorPayload = z.infer<typeof editorPayloadSchema>;

@@ -1,4 +1,5 @@
 import type { GiftTheme, Opening, Section, ThemeVariant } from "./schemas";
+import { defaultScene, type SceneKind } from "./scene";
 
 /**
  * Code-side template registry. The database holds template metadata (name,
@@ -26,7 +27,8 @@ export type Design =
   | "minimal"
   | "scrapbook"
   | "bold"
-  | "blank";
+  | "blank"
+  | "garden";
 
 export type TemplateStyle = {
   decoration: Decoration;
@@ -37,6 +39,12 @@ export type TemplateStyle = {
   defaultOpening: Opening;
   /** Composed scene for this template, from scripts/compose-illustrations.mjs. */
   illustration: string;
+  /**
+   * Set on templates whose gift is an animation. The receiver sees the
+   * animation; the design above is only its summary card, used wherever a
+   * still picture of the gift is needed (editor, dashboard, thumbnails).
+   */
+  scene?: SceneKind;
 };
 
 const illustrationFor = (slug: string) => `/brand/illustrations/${slug}.webp`;
@@ -56,6 +64,7 @@ const designOpening: Record<Design, Opening> = {
   scrapbook: "book",
   bold: "curtain",
   blank: "simple",
+  garden: "simple",
 };
 
 export type TemplateDefinition = Omit<TemplateStyle, "illustration" | "defaultOpening"> & {
@@ -100,6 +109,24 @@ export const templates: Record<string, TemplateDefinition> = {
     defaultSections: (l) => [
       cover(my(l, "Your title", "သင့်ခေါင်းစဉ်")),
       message(my(l, "Write your message here.", "သင့်စာကို ဒီမှာ ရေးပါ။")),
+    ],
+  },
+  // An animated twilight garden: flowers grow and bloom, then the name and
+  // the message appear, typed a line at a time. The first heading is the
+  // name; every message is one page of the text, so two short lines each.
+  "night-garden": {
+    design: "garden",
+    decoration: "stars",
+    layout: "card",
+    defaultVariant: "night",
+    scene: "night-garden",
+    defaultSections: (l) => [
+      cover(my(l, "My Dear", "ချစ်ရသူ")),
+      message(my(l, "You've been working so hard lately…\nI know you're tired", "ဒီရက်ပိုင်း အရမ်း ကြိုးစားနေတာ သိတယ်…\nပင်ပန်းနေမှန်းလည်း သိတယ်")),
+      message(my(l, "So take a little break with me\nand watch these flowers bloom 🌸", "ခဏလောက် အနားယူပြီး\nဒီပန်းလေးတွေ ပွင့်တာ ကြည့်ရအောင် 🌸")),
+      message(my(l, "Every single one of them\nbloomed just for you", "ပန်းတစ်ပွင့်ချင်းစီတိုင်းက\nမင်းအတွက်ပဲ ပွင့်တာပါ")),
+      message(my(l, "You're stronger than you know\nand you're never alone 💛", "မင်းက ထင်တာထက် ပိုသန်မာတယ်\nဘယ်တော့မှ တစ်ယောက်တည်း မဟုတ်ဘူး 💛")),
+      message(my(l, "Rest well, and smile a little\nI love you so much ❤️", "ကောင်းကောင်း အနားယူပြီး နည်းနည်းလေး ပြုံးပါ\nအရမ်း ချစ်တယ် ❤️")),
     ],
   },
   "birthday-postcard": {
@@ -254,6 +281,7 @@ export function getTemplateStyle(slug: string): TemplateStyle {
         defaultVariant: t.defaultVariant,
         defaultOpening: designOpening[t.design],
         illustration: illustrationFor(slug),
+        scene: t.scene,
       }
     : fallbackStyle;
 }
@@ -264,5 +292,5 @@ export function isAvailableTemplate(slug: string): boolean {
 
 export function defaultTheme(slug: string): GiftTheme {
   const style = getTemplateStyle(slug);
-  return { variant: style.defaultVariant, opening: style.defaultOpening };
+  return { variant: style.defaultVariant, opening: style.defaultOpening, ...(style.scene && { scene: defaultScene }) };
 }

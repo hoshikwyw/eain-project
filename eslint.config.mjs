@@ -13,6 +13,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Animated scenes: static browser scripts served as they are, with a vendored library.
+    "public/scenes/**",
   ]),
 ]);
 

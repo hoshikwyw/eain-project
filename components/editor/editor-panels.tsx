@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { StickerArt } from "@/components/gift/sticker-layer";
+import { FLOWER_COLORS, flowerSwatch, type FlowerColor } from "@/features/gifts/scene";
 import {
   MAX_SECTIONS,
   MAX_STICKERS,
@@ -52,6 +53,8 @@ type SectionsPanelProps = {
   onMove: (index: number, dir: -1 | 1) => void;
   onRemove: (id: string) => void;
   onAdd: (type: EditableSectionType) => void;
+  /** The kinds of section that can be added. Default: all of them. */
+  addTypes?: EditableSectionType[];
   giftId: string;
   media: MediaItem[];
   onMediaChange: (media: MediaItem[]) => void;
@@ -114,7 +117,7 @@ export function SectionsPanel(p: SectionsPanelProps) {
 
       {adding ? (
         <div className="grid grid-cols-2 gap-2 rounded-2xl border border-dashed border-border p-3">
-          {SECTION_TYPES.map((type) => (
+          {(p.addTypes ?? SECTION_TYPES).map((type) => (
             <Button
               key={type}
               type="button"
@@ -188,6 +191,34 @@ type LookPanelProps = {
 
 /** Below this the main text is hard to read on the card. WCAG asks 4.5 for small text; 3 flags the clear misses. */
 const MIN_CONTRAST = 3;
+
+/** The colour of the flowers in an animated garden. */
+export function FlowersPanel({ flower, onChange }: { flower: FlowerColor; onChange: (flower: FlowerColor) => void }) {
+  const t = useTranslations("editor");
+  return (
+    <fieldset className="flex flex-col gap-3">
+      <legend className="sr-only">{t("flowers")}</legend>
+      <p className="text-xs leading-relaxed text-muted-foreground">{t("flowersHint")}</p>
+      <div className="grid grid-cols-3 gap-2">
+        {FLOWER_COLORS.map((key) => {
+          const { petal, edge } = flowerSwatch[key];
+          return (
+            <label key={key} className={cn(optionClass(flower === key), "p-3")}>
+              <input type="radio" name="flower" value={key} checked={flower === key} onChange={() => onChange(key)} className="sr-only" />
+              <svg aria-hidden="true" viewBox="-24 -24 48 48" className="size-11">
+                {[0, 90, 180, 270].map((angle) => (
+                  <ellipse key={angle} cx="0" cy="-11" rx="8.5" ry="11" fill={petal} stroke={edge} strokeWidth="1.2" transform={`rotate(${angle})`} />
+                ))}
+                <circle r="5.5" fill="#ffd75a" stroke="#e9a21f" strokeWidth="0.8" />
+              </svg>
+              <span className="leading-tight">{t(`flowerColors.${key}`)}</span>
+            </label>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
+}
 
 /** The gift's look: a ready-made colour set to start from, then any colour of it changed. */
 export function LookPanel({ variant, colors, templateVariant, onVariant, onColors }: LookPanelProps) {

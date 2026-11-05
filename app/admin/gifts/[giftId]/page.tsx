@@ -46,6 +46,7 @@ export default async function AdminGiftPage({ params, searchParams }: PageProps<
           variant={data.variant}
           colors={data.colors}
           stickers={data.stickers}
+          scene={data.scene}
           style={data.style}
           recipientName={data.recipientName}
           senderName={data.senderName}

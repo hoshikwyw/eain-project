@@ -1,5 +1,6 @@
 import { ImagePlus, MessageCircleQuestion } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
+import { flowerSwatch, type GiftScene } from "@/features/gifts/scene";
 import type { GiftColors, MediaItem, Section, Sticker, TextStyle, ThemeVariant } from "@/features/gifts/schemas";
 import type { Decoration, Design, TemplateStyle } from "@/features/gifts/templates";
 import { cn } from "@/lib/utils";
@@ -31,6 +32,8 @@ type Props = {
   colors?: GiftColors;
   /** Stickers on the gift, each on the whole gift or on one section. */
   stickers?: Sticker[];
+  /** For scene templates: what the creator chose for the animation, shown on its summary card. */
+  scene?: GiftScene;
   style: TemplateStyle;
   recipientName: string;
   senderName: string;
@@ -110,6 +113,8 @@ function renderDesign(ctx: Ctx) {
       return <BoldDesign {...ctx} />;
     case "blank":
       return <BlankDesign {...ctx} />;
+    case "garden":
+      return <GardenDesign {...ctx} />;
     case "minimal":
     default:
       return <MinimalDesign {...ctx} />;
@@ -402,6 +407,50 @@ function BlankDesign(ctx: Ctx) {
       <div className={cn("relative flex min-h-[26rem] flex-col rounded-[1.25rem] bg-[color:var(--t-card)]", compact ? "gap-5 p-6" : "gap-7 p-8")}>
         <Sections ctx={ctx} className={compact ? "gap-5" : "gap-7"} />
       </div>
+    </article>
+  );
+}
+
+/**
+ * Summary card of the Night Garden animation: the same twilight sky, the name
+ * in script, the message pages one under the other, and a row of flowers in
+ * the colour the creator picked. The receiver sees the animation itself
+ * (public/scenes/night-garden); this is its still picture.
+ */
+function GardenDesign(ctx: Ctx) {
+  const { compact } = ctx;
+  const { petal, edge } = flowerSwatch[ctx.scene?.flower ?? "white"];
+  // [x, height of the stem, size of the bloom]
+  const flowers: [number, number, number][] = [
+    [48, 46, 15], [118, 70, 19], [200, 88, 22], [282, 66, 19], [352, 44, 15],
+  ];
+  return (
+    <article className="relative overflow-hidden rounded-3xl [background:linear-gradient(to_bottom,#2f2560_0%,#4b3b8a_30%,#7d63b8_56%,#e59ac4_82%,#ffc9b5_100%)]">
+      <Decorations kind="stars" />
+      <span aria-hidden="true" className="absolute top-5 left-6 size-11 rounded-full bg-[#fff1d6] shadow-[0_0_30px_rgba(255,214,230,0.75)]" />
+      <div className={cn("relative flex flex-col items-center text-center", compact ? "px-6 pt-14" : "px-7 pt-16")}>
+        <Sections
+          ctx={ctx}
+          className={cn("w-full items-center", compact ? "gap-3" : "gap-4")}
+          itemClassName="w-full [&_h1]:font-hand [&_h1]:text-6xl [&_h1]:font-bold [&_h1]:leading-none [&_h1]:[text-shadow:0_0_22px_rgba(255,143,177,0.75)] [&_h2]:font-hand [&_h2]:text-4xl [&_footer]:items-center [&_footer]:border-t-0"
+        />
+      </div>
+      <svg aria-hidden="true" viewBox="0 0 400 150" className="relative mt-4 block w-full">
+        <path d="M0 62 C 50 40, 110 44, 160 56 S 290 28, 400 52 L 400 150 L 0 150 Z" fill="#c98bc0" opacity="0.85" />
+        <path d="M0 84 C 60 56, 120 62, 180 78 S 300 48, 400 72 L 400 150 L 0 150 Z" fill="#8f72bd" />
+        <path d="M0 116 C 70 98, 140 108, 210 112 S 330 96, 400 110 L 400 150 L 0 150 Z" fill="#4a3a80" />
+        {flowers.map(([x, stem, r]) => (
+          <g key={x} transform={`translate(${x} ${120 - stem})`}>
+            <path d={`M0 0 L0 ${stem}`} stroke="#3d5a2a" strokeWidth="2.5" strokeLinecap="round" />
+            <ellipse cx={-r * 0.9} cy={stem * 0.55} rx={r * 0.7} ry={r * 0.26} fill="#2f6b3a" transform={`rotate(-24 ${-r * 0.9} ${stem * 0.55})`} />
+            <ellipse cx={r * 0.9} cy={stem * 0.4} rx={r * 0.7} ry={r * 0.26} fill="#2f6b3a" transform={`rotate(24 ${r * 0.9} ${stem * 0.4})`} />
+            {[0, 90, 180, 270].map((angle) => (
+              <ellipse key={angle} cx="0" cy={-r * 0.62} rx={r * 0.5} ry={r * 0.66} fill={petal} stroke={edge} strokeWidth="1" transform={`rotate(${angle})`} />
+            ))}
+            <circle r={r * 0.32} fill="#ffd75a" stroke="#e9a21f" strokeWidth="0.8" />
+          </g>
+        ))}
+      </svg>
     </article>
   );
 }

@@ -14,6 +14,7 @@ import {
   type Sticker,
   type ThemeVariant,
 } from "./schemas";
+import { giftSceneSchema, type GiftScene } from "./scene";
 
 /**
  * Turns stored rows into typed sections. Malformed rows are dropped so one bad
@@ -64,11 +65,19 @@ export function stickersFromTheme(theme: unknown): Sticker[] {
     .map((r) => r.data);
 }
 
+/** What the creator chose for a scene template's animation, if this gift has any. */
+export function sceneFromTheme(theme: unknown): GiftScene | undefined {
+  const raw = themeField(theme, "scene");
+  if (raw === undefined || raw === null) return undefined;
+  const parsed = giftSceneSchema.safeParse(raw);
+  return parsed.success ? parsed.data : undefined;
+}
+
 /**
  * The theme to store for an editor payload. Empty colours and stickers are
  * left out, and a sticker anchored past the last section moves to the gift.
  */
-export function themeFromPayload(v: Pick<EditorPayload, "variant" | "opening" | "colors" | "stickers" | "sections">): GiftTheme {
+export function themeFromPayload(v: Pick<EditorPayload, "variant" | "opening" | "colors" | "stickers" | "scene" | "sections">): GiftTheme {
   const stickers = v.stickers.map(({ anchor, ...s }) =>
     anchor !== undefined && anchor < v.sections.length ? { ...s, anchor } : s,
   );
@@ -77,6 +86,7 @@ export function themeFromPayload(v: Pick<EditorPayload, "variant" | "opening" | 
     opening: v.opening,
     ...(Object.keys(v.colors).length > 0 && { colors: v.colors }),
     ...(stickers.length > 0 && { stickers }),
+    ...(v.scene && { scene: v.scene }),
   };
 }
 

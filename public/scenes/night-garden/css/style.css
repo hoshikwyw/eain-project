@@ -1,0 +1,540 @@
+/* =========================================================
+   Night Garden — base styles
+   Mobile-first, tuned for iPhone 12 mini (375 × 812 CSS px)
+   ========================================================= */
+
+/* ---------- Design tokens ---------- */
+:root {
+  /* Pastel twilight sky — deeper lavender up top keeps white text readable,
+     pink & peach only near the horizon */
+  --sky-top: #2f2560;
+  --sky-upper: #4b3b8a;
+  --sky-mid: #7d63b8;
+  --sky-pink: #e59ac4;
+  --sky-low: #ffc9b5;
+  --moon-glow: rgba(255, 214, 230, 0.45);
+  --star: #fff8e7;
+  --cloud: #fff2f8;
+  --cloud-shade: #f2a9cc;
+
+  /* Mesua ferrea flower */
+  --petal: #fffdf7;
+  --petal-shadow: #ece6d6;
+  --stamen: #f7c531;
+  --stamen-deep: #e09a12;
+  --stamen-tip: #fff1a8;
+
+  /* Foliage (young leaves are pink-red, mature are glossy green) */
+  --leaf-young: #d9466a;
+  --leaf: #2f6b3a;
+  --leaf-dark: #1d4527;
+  --stem: #3d5a2a;
+  --ground: #120e24;
+
+  /* Warmth & text */
+  --firefly: #ffe27a;
+  --love: #ff8fb1;
+  --text: #fff6ec;
+  --text-soft: rgba(255, 246, 236, 0.75);
+
+  /* Typography */
+  /* The host page sends the app's own fonts (see js/config.js); these are the fallbacks. */
+  --font-body: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-script: "Segoe Script", "Snell Roundhand", cursive;
+
+  /* Fluid type — readable on 375px, grows on larger screens */
+  --fs-sm: clamp(0.85rem, 3.4vw, 1rem);
+  --fs-md: clamp(1rem, 4.2vw, 1.25rem);
+  --fs-lg: clamp(1.4rem, 6vw, 2rem);
+  --fs-xl: clamp(2.6rem, 13vw, 4.5rem);
+
+  /* iPhone safe areas (notch + home indicator) */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  --gutter: 16px;
+}
+
+/* ---------- Reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;               /* full-screen experience, no scroll */
+  overscroll-behavior: none;      /* stop iOS rubber-band bounce */
+}
+
+body {
+  background: var(--sky-top);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;     /* no double-tap zoom delay */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;    /* no iOS long-press popup when holding a flower */
+}
+
+/* ---------- Scene & layers ---------- */
+.scene {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;                  /* fallback */
+  height: 100dvh;                 /* real visible height on iOS Safari */
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+}
+
+.layer--sky       { z-index: 1; }
+.layer--garden    { z-index: 2; }
+.layer--particles { z-index: 3; pointer-events: none; width: 100%; height: 100%; }
+.layer--message   { z-index: 4; pointer-events: none; }
+
+/* ---------- Sky (Part 2) ---------- */
+.layer--sky {
+  overflow: hidden;
+  background: linear-gradient(
+    to bottom,
+    var(--sky-top) 0%,
+    var(--sky-upper) 28%,
+    var(--sky-mid) 52%,
+    var(--sky-pink) 74%,
+    var(--sky-low) 92%
+  );
+}
+
+/* Warm pink-peach glow rising from the horizon, slowly breathing */
+.sky__glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 40% at 50% 85%, rgba(255, 170, 200, 0.45), transparent 70%),
+    radial-gradient(70% 28% at 18% 80%, rgba(255, 214, 150, 0.35), transparent 70%),
+    radial-gradient(60% 25% at 85% 78%, rgba(255, 190, 220, 0.3), transparent 70%);
+  animation: glow-breathe 9s ease-in-out infinite alternate;
+}
+
+/* ---------- Moon face (Part 13) ---------- */
+.moon__face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.moon__face path {
+  fill: none;
+  stroke: #9a6a5a;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.moon__face .moon__mouth { fill: #e7798f; stroke: #9a6a5a; stroke-width: 2.4; }
+.moon__cheek {
+  fill: #ff9fbf;
+  opacity: 0.55;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  animation: cheek-glow 3s ease-in-out infinite alternate;
+}
+@keyframes cheek-glow {
+  from { opacity: 0.4; }
+  to   { opacity: 0.7; }
+}
+.moon__sleep, .moon__happy { transition: opacity 0.3s ease; }
+.moon__happy { opacity: 0; }
+
+/* Tapped: wakes up happy, cheeks flush, little wiggle */
+.moon.is-blushing .moon__sleep { opacity: 0; }
+.moon.is-blushing .moon__happy { opacity: 1; }
+.moon.is-blushing .moon__cheek {
+  animation: none;
+  opacity: 1;
+  transform: scale(1.35);
+}
+.moon.is-blushing .moon__body,
+.moon.is-blushing .moon__face {
+  animation: moon-wiggle 0.6s ease-in-out;
+}
+@keyframes moon-wiggle {
+  0%, 100% { transform: rotate(0); }
+  25%      { transform: rotate(-8deg) scale(1.06); }
+  60%      { transform: rotate(6deg); }
+}
+
+/* ---------- Clouds (Part 11) ---------- */
+.sky__clouds {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Each cloud drifts across the whole sky, forever; --dur/--delay set in JS */
+.cloud {
+  position: absolute;
+  left: 0;
+  width: var(--w, 140px);
+  opacity: var(--o, 0.7);
+  filter: drop-shadow(0 0 10px rgba(255, 200, 225, 0.45));
+  animation: cloud-drift var(--dur, 90s) linear var(--delay, 0s) infinite;
+  will-change: transform;
+}
+.cloud svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  animation: cloud-bob var(--bob, 6s) ease-in-out infinite alternate;
+}
+@keyframes cloud-drift {
+  from { transform: translateX(calc(-1 * var(--w, 140px) - 10px)); }
+  to   { transform: translateX(calc(100vw + 10px)); }
+}
+@keyframes cloud-bob {
+  from { transform: translateY(-4px) scaleX(1); }
+  to   { transform: translateY(4px) scaleX(1.03); }
+}
+
+@keyframes glow-breathe {
+  from { opacity: 0.65; }
+  to   { opacity: 1; }
+}
+
+/* Stars — generated in JS, each with its own timing via CSS vars */
+.sky__stars,
+.sky__shooting {
+  position: absolute;
+  inset: 0;
+}
+
+.star {
+  position: absolute;
+  width: var(--size, 2px);
+  height: var(--size, 2px);
+  border-radius: 50%;
+  background: var(--star);
+  opacity: var(--min-o, 0.3);
+  animation: twinkle var(--dur, 3s) ease-in-out var(--delay, 0s) infinite alternate;
+  will-change: opacity, transform;
+}
+
+/* Bright stars get a soft glow + cross glint */
+.star--bright {
+  box-shadow: 0 0 6px 1px rgba(255, 248, 231, 0.8);
+}
+.star--bright::before,
+.star--bright::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: linear-gradient(90deg, transparent, rgba(255, 248, 231, 0.9), transparent);
+  transform: translate(-50%, -50%);
+}
+.star--bright::before { width: calc(var(--size) * 6); height: 1px; }
+.star--bright::after  { width: 1px; height: calc(var(--size) * 6);
+  background: linear-gradient(180deg, transparent, rgba(255, 248, 231, 0.9), transparent); }
+
+@keyframes twinkle {
+  0%   { opacity: var(--min-o, 0.3); transform: scale(0.8); }
+  100% { opacity: 1;                 transform: scale(1.15); }
+}
+
+/* Shooting star: a short glowing streak flying down-left */
+.shooting-star {
+  position: absolute;
+  width: clamp(80px, 28vw, 160px);
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(255, 248, 231, 0.95), transparent);
+  transform: rotate(var(--angle, 20deg));
+  transform-origin: left center;
+  opacity: 0;
+  animation: shoot var(--dur, 1.2s) ease-out forwards;
+}
+
+@keyframes shoot {
+  0%   { opacity: 0; translate: 0 0; }
+  15%  { opacity: 1; }
+  100% { opacity: 0; translate: calc(var(--dx) * 1px) calc(var(--dy) * 1px); }
+}
+
+/* Moon — top-left so it never collides with the controls (top-right) */
+.moon {
+  position: absolute;
+  top: calc(var(--safe-top) + 7vh);
+  left: calc(var(--safe-left) + 12vw);
+  width: clamp(54px, 16vw, 110px);
+  aspect-ratio: 1;
+}
+
+.moon__body {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 35%, #fffdf6 0%, #fff0d9 55%, #f6d2c6 100%);
+  box-shadow:
+    inset -6px -4px 12px rgba(214, 140, 160, 0.35),
+    0 0 24px 6px var(--moon-glow);
+}
+
+.moon__halo {
+  position: absolute;
+  inset: -90%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--moon-glow) 0%, transparent 65%);
+  animation: halo-pulse 6s ease-in-out infinite alternate;
+}
+
+@keyframes halo-pulse {
+  from { transform: scale(0.92); opacity: 0.7; }
+  to   { transform: scale(1.06); opacity: 1; }
+}
+
+/* Ground — bottom ~24% of the screen; flowers grow from here */
+.ground {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 26%;
+  min-height: 150px;
+  display: block;
+}
+
+/* ---------- Garden (Part 3) ---------- */
+.garden {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+/* Back row sits further away: a little dimmer */
+.plant--back {
+  opacity: 0.78;
+}
+
+/* ---------- Cute flowers (Part 12) ---------- */
+
+/* Awake faces blink every few seconds */
+.face__eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: blink var(--blink, 4.5s) ease-in-out var(--blink-delay, 0s) infinite;
+}
+@keyframes blink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  94%           { transform: scaleY(0.1); }
+}
+
+/* Grass & baby flowers: spring up when the garden grows, then sway */
+.fore-item {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transform: scale(0.6, 0);
+  transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) var(--d, 0s);
+}
+.garden__fore.is-grown .fore-item { transform: none; }
+
+.fore-sway {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: grass-sway var(--sd, 3s) ease-in-out var(--sdelay, 0s) infinite alternate;
+}
+@keyframes grass-sway {
+  from { transform: rotate(-5deg); }
+  to   { transform: rotate(5deg); }
+}
+
+/* ---------- Love message (Part 7) ---------- */
+.layer--message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding:
+    calc(var(--safe-top) + 11vh)
+    calc(var(--safe-right) + var(--gutter))
+    0
+    calc(var(--safe-left) + var(--gutter));
+  text-align: center;
+  visibility: hidden;
+}
+.layer--message.is-active { visibility: visible; }
+
+.message__name {
+  font-family: var(--font-script);
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+  text-shadow: 0 0 22px rgba(255, 143, 177, 0.75), 0 0 4px rgba(255, 246, 236, 0.5);
+}
+
+.message__char {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(6px);
+  transform: translateY(14px) scale(0.8);
+  transition: opacity 0.8s ease, filter 0.8s ease, transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.message__name.is-visible .message__char {
+  opacity: 1;
+  filter: blur(0);
+  transform: none;
+}
+.message__heart {
+  color: var(--love);
+  font-family: var(--font-body);
+  font-size: 0.6em;
+  vertical-align: middle;
+}
+.message__name.is-visible .message__heart {
+  animation: heartbeat 1.6s ease-in-out 2s infinite;
+}
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  15%      { transform: scale(1.25); }
+  30%      { transform: scale(1); }
+  45%      { transform: scale(1.18); }
+}
+
+/* Two lines per page; fixed min-height so the layout never jumps */
+.message__page {
+  width: 100%;
+  max-width: 34rem;
+  min-height: calc(2 * 1.65em + 1rem);
+  margin-top: 2.2vh;
+  font-size: clamp(1rem, 4.5vw, 1.45rem);
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
+}
+.message__page.is-visible { opacity: 1; transform: none; }
+.message__page.is-leaving { opacity: 0; transform: translateY(-10px); filter: blur(4px); }
+
+.message__line {
+  line-height: 1.65;
+  color: var(--text);
+  text-shadow: 0 0 12px rgba(11, 10, 31, 0.9), 0 0 18px rgba(255, 143, 177, 0.35);
+}
+.message__rest {
+  color: transparent;
+  text-shadow: none;
+}
+
+/* Blinking caret while typing */
+.message__caret {
+  display: none;
+  width: 2px;
+  height: 1.05em;
+  margin-right: -2px;
+  vertical-align: -0.15em;
+  background: var(--stamen);
+  border-radius: 1px;
+  animation: caret 0.9s steps(1) infinite;
+}
+.message__line.is-typing .message__caret { display: inline-block; }
+@keyframes caret { 50% { opacity: 0; } }
+
+/* Final page glows softly forever */
+.message__page.is-final .message__line:last-child {
+  animation: love-glow 2.4s ease-in-out infinite alternate;
+}
+@keyframes love-glow {
+  from { text-shadow: 0 0 12px rgba(11, 10, 31, 0.9), 0 0 10px rgba(255, 143, 177, 0.3); }
+  to   { text-shadow: 0 0 12px rgba(11, 10, 31, 0.9), 0 0 26px rgba(255, 143, 177, 0.9); }
+}
+
+/* ---------- Phone in landscape (Part 9) ---------- */
+@media (orientation: landscape) and (max-height: 520px) {
+  .layer--message { padding-top: calc(var(--safe-top) + 4vh); }
+  .message__name  { font-size: 12vh; }
+  .message__page  { font-size: 4.6vh; margin-top: 1vh; }
+  .moon           { top: calc(var(--safe-top) + 6vh); width: 14vh; }
+  .tap-hint       { bottom: calc(var(--safe-bottom) + 8px); }
+}
+
+/* Gentle fade-in of the whole sky on load */
+.sky-enter {
+  animation: sky-fade 2.2s ease-out both;
+}
+@keyframes sky-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* "Tap to bloom" hint above the home indicator */
+.tap-hint {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  bottom: calc(var(--safe-bottom) + 18px);
+  translate: -50% 0;
+  width: max-content;
+  max-width: calc(100% - 2 * var(--gutter));
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(47, 37, 96, 0.72);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  font-size: var(--fs-sm);
+  color: var(--text-soft);
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.tap-hint.is-visible {
+  opacity: 1;
+  transform: none;
+  animation: hint-pulse 2.2s ease-in-out 1s infinite;
+}
+
+@keyframes hint-pulse {
+  0%, 100% { opacity: 0.45; }
+  50%      { opacity: 1; }
+}
+
+/* ---------- Utilities ---------- */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Respect users who turn off motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

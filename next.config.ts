@@ -10,6 +10,14 @@ const baseSecurityHeaders = [
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
 ];
 
+// Animated scenes (public/scenes) are static pages shown inside a frame on
+// the gift page and in the editor, so this site, and only this site, may
+// frame them. They hold no gift content of their own and are not for search.
+const scenePageHeaders = [
+  { key: "X-Frame-Options", value: "SAMEORIGIN" },
+  { key: "X-Robots-Tag", value: "noindex, nofollow" },
+];
+
 // Gift links carry a secret token in the URL. Never leak it through the
 // Referer header and never let search engines index it.
 const giftPageHeaders = [
@@ -27,6 +35,7 @@ const nextConfig: NextConfig = {
       { source: "/:path*", headers: baseSecurityHeaders },
       { source: "/g/:path*", headers: giftPageHeaders },
       { source: "/r/:path*", headers: giftPageHeaders },
+      { source: "/scenes/:path*", headers: scenePageHeaders },
     ];
   },
 };

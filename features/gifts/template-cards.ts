@@ -16,7 +16,8 @@ export async function loadTemplateCards(locale: "en" | "my"): Promise<{
       .from("templates")
       .select("id, slug, category_id, name_en, name_my, description_en, description_my, is_premium, point_price")
       .eq("is_active", true)
-      .order("sort_order"),
+      .order("sort_order")
+      .order("created_at"),
     supabase.from("categories").select("id, name_en, name_my, sort_order").eq("is_active", true).order("sort_order"),
     supabase.from("template_unlocks").select("template_id"),
   ]);

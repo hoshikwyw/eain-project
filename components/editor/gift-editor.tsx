@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, Layers, Loader2, Palette, Pencil, Play, Redo2, Save, Send, Settings2, Sticker as StickerIcon, Undo2, X } from "lucide-react";
+import { Eye, Flower2, Layers, Loader2, Palette, Pencil, Play, Redo2, Save, Send, Settings2, Sticker as StickerIcon, Undo2, X } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { startTransition, useActionState, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
@@ -8,8 +8,10 @@ import { GiftOpening, openingDuration, type OpeningStage } from "@/components/gi
 import type { GiftEdit } from "@/components/gift/gift-renderer";
 import { STAGE_MAX_WIDTH } from "@/components/gift/gift-stage";
 import { GiftView } from "@/components/gift/gift-view";
+import { SceneFrame } from "@/components/scene/scene-frame";
 import { Button } from "@/components/ui/button";
 import { saveAndPublishGift, saveGift } from "@/features/gifts/actions";
+import { defaultScene, sceneConfig, type GiftScene } from "@/features/gifts/scene";
 import {
   MAX_SECTIONS,
   MAX_STICKERS,
@@ -39,7 +41,7 @@ import {
   type TextTarget,
 } from "./canvas-geometry";
 import { EditableText } from "./editable-text";
-import { DetailsPanel, LookPanel, OpeningPanel, SectionsPanel, StickersPanel } from "./editor-panels";
+import { DetailsPanel, FlowersPanel, LookPanel, OpeningPanel, SectionsPanel, StickersPanel } from "./editor-panels";
 import { SectionToolbar } from "./section-toolbar";
 import { StickerControls } from "./sticker-controls";
 import { TEXT_FIELDS, textStyle, withText, withoutTextStyle, withTextStyle } from "./text-fields";
@@ -56,6 +58,8 @@ type Props = {
   opening: Opening;
   colors: GiftColors;
   stickers: Sticker[];
+  /** Only for scene templates: what was chosen for the animation. */
+  scene?: GiftScene;
   sections: Section[];
   media: MediaItem[];
   style: TemplateStyle;
@@ -63,8 +67,13 @@ type Props = {
   publishError?: boolean;
 };
 
-const TABS = ["sections", "stickers", "look", "opening", "details"] as const;
-type Tab = (typeof TABS)[number];
+type Tab = "sections" | "stickers" | "flowers" | "look" | "opening" | "details";
+const CARD_TABS: Tab[] = ["sections", "stickers", "look", "opening", "details"];
+// A scene template is an animation: it has its text and its flowers, and no
+// stickers, looks or opening of its own.
+const SCENE_TABS: Tab[] = ["sections", "flowers", "details"];
+/** A scene's text is its name and message pages, so only pages can be added. */
+const SCENE_SECTION_TYPES: EditableSectionType[] = ["message"];
 
 /** A draft saves itself this long after the last change. */
 const AUTOSAVE_MS = 3000;
@@ -72,6 +81,7 @@ const AUTOSAVE_MS = 3000;
 const TAB_ICONS: Record<Tab, React.ComponentType<{ className?: string }>> = {
   sections: Layers,
   stickers: StickerIcon,
+  flowers: Flower2,
   look: Palette,
   opening: Play,
   details: Settings2,
@@ -128,6 +138,10 @@ export function GiftEditor(props: Props) {
   const [openingPreview, setOpeningPreview] = useState<OpeningStage | null>(null);
   const [colors, setColors] = useState<GiftColors>(props.colors);
   const [stickers, setStickers] = useState<Sticker[]>(props.stickers);
+  /** Set for scene templates. The gift shown here is then the animation's summary card. */
+  const sceneKind = props.style.scene;
+  const [scene, setScene] = useState<GiftScene>(props.scene ?? defaultScene);
+  const [playing, setPlaying] = useState(false);
   const [sections, setSections] = useState<Section[]>(props.sections);
   const [media, setMedia] = useState<MediaItem[]>(props.media);
 
@@ -147,8 +161,8 @@ export function GiftEditor(props: Props) {
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const payload = useMemo<EditorPayload>(
-    () => ({ title, recipientName, variant, opening, colors, stickers, sections }),
-    [title, recipientName, variant, opening, colors, stickers, sections],
+    () => ({ title, recipientName, variant, opening, colors, stickers, ...(sceneKind && { scene }), sections }),
+    [title, recipientName, variant, opening, colors, stickers, sceneKind, scene, sections],
   );
   const payloadJson = JSON.stringify(payload);
 
@@ -161,6 +175,7 @@ export function GiftEditor(props: Props) {
       opening: props.opening,
       colors: props.colors,
       stickers: props.stickers,
+      ...(props.style.scene && { scene: props.scene ?? defaultScene }),
       sections: props.sections,
     }),
   );
@@ -181,6 +196,7 @@ export function GiftEditor(props: Props) {
     setOpening(snapshot.opening);
     setColors(snapshot.colors);
     setStickers(snapshot.stickers);
+    if (snapshot.scene) setScene(snapshot.scene);
     setSections(snapshot.sections);
   });
 
@@ -552,9 +568,12 @@ export function GiftEditor(props: Props) {
   const sticker = stickers.find((s) => s.id === selectedSticker);
   const stickerBox = sticker && stickerContainerSelector(sections, sticker);
   const activeSection = activeText ? sections.find((s) => s.id === activeText.sectionId) : undefined;
+  const tabs = sceneKind ? SCENE_TABS : CARD_TABS;
+  const tabColumns = { gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` };
   const tabLabel: Record<Tab, string> = {
     sections: t("sections"),
     stickers: t("stickers"),
+    flowers: t("flowers"),
     look: t("theme"),
     opening: t("opening"),
     details: t("details"),
@@ -574,10 +593,18 @@ export function GiftEditor(props: Props) {
           <p role="status" className={cn("min-w-0 flex-1 truncate text-sm", status?.tone)}>
             {status?.text}
           </p>
-          <Button type="button" variant="ghost" size="sm" aria-pressed={previewing} onClick={() => setPreviewing((v) => !v)}>
-            {previewing ? <Pencil /> : <Eye />}
-            <span className="max-sm:sr-only">{previewing ? t("backToEdit") : t("preview")}</span>
-          </Button>
+          {sceneKind ? (
+            // The card is only a summary, so "preview" plays the animation itself.
+            <Button type="button" variant="ghost" size="sm" onClick={() => setPlaying(true)}>
+              <Play />
+              <span className="max-sm:sr-only">{t("playScene")}</span>
+            </Button>
+          ) : (
+            <Button type="button" variant="ghost" size="sm" aria-pressed={previewing} onClick={() => setPreviewing((v) => !v)}>
+              {previewing ? <Pencil /> : <Eye />}
+              <span className="max-sm:sr-only">{previewing ? t("backToEdit") : t("preview")}</span>
+            </Button>
+          )}
           <form
             action={formAction}
             onSubmit={(e) => {
@@ -613,7 +640,7 @@ export function GiftEditor(props: Props) {
           // Lined up with the gift below: the tools for the text being edited, or the hint.
           <div className="grid lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-6">
             <div className="flex min-h-12 items-center justify-center py-1.5" onBlur={onTextToolsBlur}>
-              {activeText && activeSection ? (
+              {!sceneKind && activeText && activeSection ? (
                 <TextToolbar
                   canvas={canvasRef}
                   selector={textSelector(activeText)}
@@ -639,7 +666,7 @@ export function GiftEditor(props: Props) {
                   }}
                 />
               ) : (
-                <p className="text-center text-sm leading-relaxed text-muted-foreground">{t("canvasHint")}</p>
+                <p className="text-center text-sm leading-relaxed text-muted-foreground">{sceneKind ? t("sceneHint") : t("canvasHint")}</p>
               )}
             </div>
           </div>
@@ -664,6 +691,7 @@ export function GiftEditor(props: Props) {
                 variant={variant}
                 colors={colors}
                 stickers={stickers}
+                scene={sceneKind ? scene : undefined}
                 style={props.style}
                 recipientName={recipientName}
                 senderName={senderName}
@@ -696,7 +724,7 @@ export function GiftEditor(props: Props) {
                   }}
                 />
               )}
-              {!previewing && activeText && activeSection && (
+              {!previewing && !sceneKind && activeText && activeSection && (
                 <TextResizeHandle
                   canvas={canvasRef}
                   selector={textSelector(activeText)}
@@ -750,8 +778,8 @@ export function GiftEditor(props: Props) {
             "lg:sticky lg:top-28 lg:max-h-[calc(100svh-8rem)] lg:self-start lg:rounded-2xl lg:border",
           )}
         >
-          <div role="tablist" aria-label={t("tools")} className="grid grid-cols-5 gap-1 border-b border-border p-1.5 max-lg:hidden">
-            {TABS.map((name) => (
+          <div role="tablist" aria-label={t("tools")} style={tabColumns} className="grid gap-1 border-b border-border p-1.5 max-lg:hidden">
+            {tabs.map((name) => (
               <TabButton key={name} name={name} label={tabLabel[name]} active={tab === name} onClick={() => setTab(name)} />
             ))}
           </div>
@@ -772,12 +800,14 @@ export function GiftEditor(props: Props) {
                 onMove={move}
                 onRemove={removeSection}
                 onAdd={addSection}
+                addTypes={sceneKind ? SCENE_SECTION_TYPES : undefined}
                 giftId={props.giftId}
                 media={media}
                 onMediaChange={setMedia}
               />
             )}
             {tab === "stickers" && <StickersPanel count={stickers.length} onAdd={addSticker} />}
+            {tab === "flowers" && <FlowersPanel flower={scene.flower} onChange={(flower) => setScene({ ...scene, flower })} />}
             {tab === "look" && (
               <LookPanel
                 variant={variant}
@@ -807,9 +837,10 @@ export function GiftEditor(props: Props) {
       <div
         role="tablist"
         aria-label={t("tools")}
-        className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 gap-1 border-t border-border bg-card px-1.5 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] lg:hidden"
+        style={tabColumns}
+        className="fixed inset-x-0 bottom-0 z-40 grid gap-1 border-t border-border bg-card px-1.5 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] lg:hidden"
       >
-        {TABS.map((name) => (
+        {tabs.map((name) => (
           <TabButton
             key={name}
             name={name}
@@ -819,6 +850,28 @@ export function GiftEditor(props: Props) {
           />
         ))}
       </div>
+
+      {playing && sceneKind && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={t("scenePreview")}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/85 p-4 backdrop-blur-sm"
+          onClick={() => setPlaying(false)}
+        >
+          <Button type="button" variant="ghost" size="icon" className="absolute top-4 right-4" aria-label={t("closePreview")} onClick={() => setPlaying(false)}>
+            <X />
+          </Button>
+          {/* The same phone-shaped frame the receiver sees, with what is in the editor right now. */}
+          <div className="h-[min(88svh,46rem)] w-full max-w-md overflow-hidden rounded-3xl shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <SceneFrame
+              kind={sceneKind}
+              title={tGift("sceneTitle")}
+              config={sceneConfig(sections, scene, { recipient: recipientName, sender: senderName }, tGift("tapToBloom"))}
+            />
+          </div>
+        </div>
+      )}
 
       {openingPreview && (
         <div
