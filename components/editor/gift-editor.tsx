@@ -1,9 +1,9 @@
 "use client";
 
-import { Eye, Layers, Loader2, Palette, Pencil, Play, Save, Send, Settings2, Sticker as StickerIcon, X } from "lucide-react";
+import { Eye, Layers, Loader2, Palette, Pencil, Play, Redo2, Save, Send, Settings2, Sticker as StickerIcon, Undo2, X } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useActionState, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { startTransition, useActionState, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { GiftOpening, openingDuration, type OpeningStage } from "@/components/gift/gift-opening";
 import type { GiftEdit } from "@/components/gift/gift-renderer";
 import { GiftView } from "@/components/gift/gift-view";
@@ -23,7 +23,7 @@ import {
   type Sticker,
   type ThemeVariant,
 } from "@/features/gifts/schemas";
-import { dropStickerAnchor, swapStickerAnchors } from "@/features/gifts/sections";
+import { dropStickerAnchor, insertStickerAnchor, swapStickerAnchors } from "@/features/gifts/sections";
 import type { StickerKind } from "@/features/gifts/stickers";
 import type { TemplateStyle } from "@/features/gifts/templates";
 import { cn } from "@/lib/utils";
@@ -44,6 +44,7 @@ import { StickerControls } from "./sticker-controls";
 import { TEXT_FIELDS, textStyle, withText, withoutTextStyle, withTextStyle } from "./text-fields";
 import { TextResizeHandle } from "./text-resize-handle";
 import { TextToolbar } from "./text-toolbar";
+import { useHistory } from "./use-history";
 
 type Props = {
   giftId: string;
@@ -63,6 +64,9 @@ type Props = {
 
 const TABS = ["sections", "stickers", "look", "opening", "details"] as const;
 type Tab = (typeof TABS)[number];
+
+/** A draft saves itself this long after the last change. */
+const AUTOSAVE_MS = 3000;
 
 const TAB_ICONS: Record<Tab, React.ComponentType<{ className?: string }>> = {
   sections: Layers,
@@ -168,15 +172,43 @@ export function GiftEditor(props: Props) {
   const titleInvalid = title.trim() === "";
   const valid = invalidIds.size === 0 && !titleInvalid;
 
+  // Undo and redo cover everything that is saved: texts, styles, colours, stickers and details.
+  const history = useHistory(payload, (snapshot) => {
+    setTitle(snapshot.title);
+    setRecipientName(snapshot.recipientName);
+    setVariant(snapshot.variant);
+    setOpening(snapshot.opening);
+    setColors(snapshot.colors);
+    setStickers(snapshot.stickers);
+    setSections(snapshot.sections);
+  });
+
+  /** The content of the last save that failed, so autosave does not keep retrying the same thing. */
+  const [failedSave, setFailedSave] = useState<string | null>(null);
   const [state, formAction, saving] = useActionState<SaveGiftState, FormData>(async (prev, fd) => {
+    const sent = String(fd.get("payload"));
     const result = await saveGift(props.giftId, prev, fd);
-    if (result.status === "saved") setLastSaved(String(fd.get("payload")));
+    if (result.status === "saved") setLastSaved(sent);
+    setFailedSave(result.status === "saved" ? null : sent);
     return result;
   }, {});
 
   // Publish always saves the current editor content first, so nothing typed is lost.
   const [publishing, startPublish] = useTransition();
   const [publishState, setPublishState] = useState<SaveGiftState["status"]>();
+
+  // A draft saves itself once the creator pauses. A published gift does not:
+  // a save there is live for the receiver at once, so it stays a deliberate step.
+  const autosave = props.status !== "published";
+  useEffect(() => {
+    if (!autosave || !dirty || !valid || saving || publishing || payloadJson === failedSave) return;
+    const timer = window.setTimeout(() => {
+      const fd = new FormData();
+      fd.set("payload", payloadJson);
+      startTransition(() => formAction(fd));
+    }, AUTOSAVE_MS);
+    return () => window.clearTimeout(timer);
+  }, [autosave, dirty, valid, saving, publishing, payloadJson, failedSave, formAction]);
 
   useEffect(() => {
     if (!dirty) return;
@@ -260,6 +292,29 @@ export function GiftEditor(props: Props) {
     setSections([...sections, section]);
     setSelectedId(section.id);
     setScrollTo({ id: section.id, block: "center" });
+  };
+
+  /** Copies a section to just below itself. A question gets ids of its own, so answers never mix. */
+  const duplicateSection = (id: string) => {
+    const index = sections.findIndex((s) => s.id === id);
+    const source = sections[index];
+    if (!source || sections.length >= MAX_SECTIONS) return;
+    const copy: Section =
+      source.type === "question"
+        ? {
+            ...source,
+            id: crypto.randomUUID(),
+            content: {
+              ...source.content,
+              questionId: crypto.randomUUID(),
+              options: source.content.options.map((o) => ({ ...o, id: crypto.randomUUID() })),
+            },
+          }
+        : { ...source, id: crypto.randomUUID() };
+    setSections([...sections.slice(0, index + 1), copy, ...sections.slice(index + 1)]);
+    setStickers((all) => insertStickerAnchor(all, index + 1));
+    setSelectedId(copy.id);
+    setScrollTo({ id: copy.id, block: "center" });
   };
 
   /** Picks a section from the panel and brings it into view on the gift. */
@@ -418,15 +473,52 @@ export function GiftEditor(props: Props) {
     });
   };
 
-  const status = (() => {
-    if (showInvalid && !valid) return { text: t("invalid"), tone: "text-destructive" };
-    if (props.publishError || publishState === "error") return { text: t("publishError"), tone: "text-destructive" };
-    if (state.status === "error" && dirty) return { text: t("error"), tone: "text-destructive" };
-    if (saving) return { text: t("saving"), tone: "text-muted-foreground" };
-    if (dirty) return { text: t("unsaved"), tone: "text-muted-foreground" };
-    if (state.status === "saved") return { text: t("saved"), tone: "text-success" };
-    return null;
-  })();
+  /** Saves now, for the keyboard. The Save button submits its form to the same action. */
+  const saveNow = () => {
+    if (!valid) return revealInvalid();
+    if (saving || publishing) return;
+    const fd = new FormData();
+    fd.set("payload", payloadJson);
+    startTransition(() => formAction(fd));
+  };
+
+  // Ctrl or Cmd with Z, Shift+Z, Y and S. Undo is the editor's own everywhere,
+  // texts included, so one history covers typing, styling and moving.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+      const key = e.key.toLowerCase();
+      if (key === "z" || key === "y") {
+        e.preventDefault();
+        if (key === "y" || e.shiftKey) history.redo();
+        else history.undo();
+      } else if (key === "s") {
+        e.preventDefault();
+        saveNow();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  // What stops a save is spelled out in full; the rest is a short status.
+  const problem =
+    showInvalid && !valid
+      ? t("invalid")
+      : props.publishError || publishState === "error"
+        ? t("publishError")
+        : state.status === "error" && dirty
+          ? t("error")
+          : null;
+  const status = problem
+    ? null
+    : saving
+      ? { text: t("saving"), tone: "text-muted-foreground" }
+      : dirty
+        ? { text: t("unsaved"), tone: "text-muted-foreground" }
+        : state.status === "saved"
+          ? { text: t("saved"), tone: "text-success" }
+          : null;
 
   // Canvas --------------------------------------------------------------------
 
@@ -470,42 +562,49 @@ export function GiftEditor(props: Props) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="sticky top-0 z-30 -mx-4 flex items-center gap-2 border-b border-border bg-background/90 px-4 py-2.5 backdrop-blur">
-        <p role="status" className={cn("min-w-0 flex-1 truncate text-sm", status?.tone)}>
-          {status?.text}
-        </p>
-        <Button type="button" variant="ghost" size="sm" aria-pressed={previewing} onClick={() => setPreviewing((v) => !v)}>
-          {previewing ? <Pencil /> : <Eye />}
-          <span className="max-sm:sr-only">{previewing ? t("backToEdit") : t("preview")}</span>
-        </Button>
-        <form
-          action={formAction}
-          onSubmit={(e) => {
-            if (valid) return;
-            e.preventDefault();
-            revealInvalid();
-          }}
-        >
-          <input type="hidden" name="payload" value={payloadJson} />
-          <Button type="submit" variant="secondary" size="sm" disabled={saving || publishing} aria-busy={saving}>
-            {saving ? <Loader2 className="animate-spin" /> : <Save />}
-            {saving ? t("saving") : t("save")}
+      <div className="sticky top-0 z-30 -mx-4 flex flex-col bg-background/90 px-4 backdrop-blur">
+        <div className="flex items-center gap-1.5 border-b border-border py-2.5 sm:gap-2">
+          <Button type="button" variant="ghost" size="icon" className="size-9" aria-label={t("undo")} disabled={!history.canUndo} onClick={history.undo}>
+            <Undo2 />
           </Button>
-        </form>
-        <Button type="button" size="sm" onClick={publish} disabled={publishing || saving} aria-busy={publishing}>
-          {publishing ? <Loader2 className="animate-spin" /> : <Send />}
-          {publishing ? t("publishing") : published ? t("republishShort") : t("publishShort")}
-        </Button>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
-        <div className={cn("flex min-w-0 flex-col gap-4", sheetOpen && "max-lg:pb-[62svh]")}>
-          {!previewing && (
-            // One slot under the action bar: the tools for the text being edited, or the hint.
-            <div
-              className="sticky top-[57px] z-30 -mx-4 flex min-h-12 items-center justify-center bg-background/90 px-4 py-1.5 backdrop-blur"
-              onBlur={onTextToolsBlur}
-            >
+          <Button type="button" variant="ghost" size="icon" className="size-9" aria-label={t("redo")} disabled={!history.canRedo} onClick={history.redo}>
+            <Redo2 />
+          </Button>
+          <p role="status" className={cn("min-w-0 flex-1 truncate text-sm", status?.tone)}>
+            {status?.text}
+          </p>
+          <Button type="button" variant="ghost" size="sm" aria-pressed={previewing} onClick={() => setPreviewing((v) => !v)}>
+            {previewing ? <Pencil /> : <Eye />}
+            <span className="max-sm:sr-only">{previewing ? t("backToEdit") : t("preview")}</span>
+          </Button>
+          <form
+            action={formAction}
+            onSubmit={(e) => {
+              if (valid) return;
+              e.preventDefault();
+              revealInvalid();
+            }}
+          >
+            <input type="hidden" name="payload" value={payloadJson} />
+            <Button type="submit" variant="secondary" size="sm" disabled={saving || publishing} aria-busy={saving}>
+              {saving ? <Loader2 className="animate-spin" /> : <Save />}
+              <span className="max-sm:sr-only">{saving ? t("saving") : t("save")}</span>
+            </Button>
+          </form>
+          <Button type="button" size="sm" onClick={publish} disabled={publishing || saving} aria-busy={publishing}>
+            {publishing ? <Loader2 className="animate-spin" /> : <Send />}
+            {publishing ? t("publishing") : published ? t("republishShort") : t("publishShort")}
+          </Button>
+        </div>
+        {problem && (
+          <p role="alert" className="py-1.5 text-sm text-destructive">
+            {problem}
+          </p>
+        )}
+        {!previewing && (
+          // Lined up with the gift below: the tools for the text being edited, or the hint.
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-6">
+            <div className="flex min-h-12 items-center justify-center py-1.5" onBlur={onTextToolsBlur}>
               {activeText && activeSection ? (
                 <TextToolbar
                   canvas={canvasRef}
@@ -535,7 +634,12 @@ export function GiftEditor(props: Props) {
                 <p className="text-center text-sm text-muted-foreground">{t("canvasHint")}</p>
               )}
             </div>
-          )}
+          </div>
+        )}
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
+        <div className={cn("flex min-w-0 flex-col gap-4", sheetOpen && "max-lg:pb-[62svh]")}>
           <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
             <div
               ref={canvasRef}
@@ -565,14 +669,22 @@ export function GiftEditor(props: Props) {
                   canMoveUp={selectedIndex > 0}
                   canMoveDown={selectedIndex < sections.length - 1}
                   canRemove={sections.length > 1}
+                  canDuplicate={sections.length < MAX_SECTIONS}
                   onMoveUp={() => move(selectedIndex, -1)}
                   onMoveDown={() => move(selectedIndex, 1)}
                   onEdit={() => {
                     openTab("sections");
                     setScrollTo({ id: selectedId, block: "start" });
                   }}
+                  onDuplicate={() => duplicateSection(selectedId)}
                   onRemove={() => removeSection(selectedId)}
-                  labels={{ moveUp: t("moveUp"), moveDown: t("moveDown"), edit: t("editSection"), remove: t("removeSection") }}
+                  labels={{
+                    moveUp: t("moveUp"),
+                    moveDown: t("moveDown"),
+                    edit: t("editSection"),
+                    duplicate: t("duplicateSection"),
+                    remove: t("removeSection"),
+                  }}
                 />
               )}
               {!previewing && activeText && activeSection && (
@@ -612,7 +724,7 @@ export function GiftEditor(props: Props) {
 
             <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-4">
               <p className="text-sm text-muted-foreground">{published ? t("publishedHint") : t("publishHint")}</p>
-              <p className="text-xs text-muted-foreground">{t("publishSaves")}</p>
+              <p className="text-xs text-muted-foreground">{autosave ? t("draftAutosave") : t("publishSaves")}</p>
               <Button asChild variant="ghost" size="sm" className="self-start">
                 <Link href={`/dashboard/gifts/${props.giftId}`}>{t("manage")}</Link>
               </Button>
@@ -626,7 +738,7 @@ export function GiftEditor(props: Props) {
             "z-40 flex flex-col overflow-hidden border-border bg-card",
             "max-lg:fixed max-lg:inset-x-0 max-lg:bottom-[calc(3.75rem+env(safe-area-inset-bottom))] max-lg:max-h-[60svh] max-lg:rounded-t-3xl max-lg:border-t max-lg:shadow-[0_-12px_32px_rgba(0,0,0,0.16)]",
             !sheetOpen && "max-lg:hidden",
-            "lg:sticky lg:top-16 lg:max-h-[calc(100svh-5rem)] lg:self-start lg:rounded-2xl lg:border",
+            "lg:sticky lg:top-28 lg:max-h-[calc(100svh-8rem)] lg:self-start lg:rounded-2xl lg:border",
           )}
         >
           <div role="tablist" aria-label={t("tools")} className="grid grid-cols-5 gap-1 border-b border-border p-1.5 max-lg:hidden">
@@ -661,6 +773,7 @@ export function GiftEditor(props: Props) {
               <LookPanel
                 variant={variant}
                 colors={colors}
+                templateVariant={props.style.defaultVariant}
                 onVariant={(next) => {
                   setVariant(next);
                   setColors({});

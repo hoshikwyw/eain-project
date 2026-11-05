@@ -85,6 +85,11 @@ export function swapStickerAnchors(stickers: Sticker[], a: number, b: number): S
   return stickers.map((s) => (s.anchor === a ? { ...s, anchor: b } : s.anchor === b ? { ...s, anchor: a } : s));
 }
 
+/** Stickers after a section is inserted at `position`. Those on later sections move down with them. */
+export function insertStickerAnchor(stickers: Sticker[], position: number): Sticker[] {
+  return stickers.map((s) => (s.anchor !== undefined && s.anchor >= position ? { ...s, anchor: s.anchor + 1 } : s));
+}
+
 /** Stickers after the section at `position` is removed. Its own stickers go with it. */
 export function dropStickerAnchor(stickers: Sticker[], position: number): Sticker[] {
   return stickers

@@ -178,6 +178,8 @@ type LookPanelProps = {
   variant: ThemeVariant;
   /** The creator's own colours over the look. */
   colors: GiftColors;
+  /** The look the gift's template starts with. */
+  templateVariant: ThemeVariant;
   /** Picks a look. It starts again from that look's colours. */
   onVariant: (variant: ThemeVariant) => void;
   onColors: (colors: GiftColors) => void;
@@ -187,7 +189,7 @@ type LookPanelProps = {
 const MIN_CONTRAST = 3;
 
 /** The gift's look: a ready-made colour set to start from, then any colour of it changed. */
-export function LookPanel({ variant, colors, onVariant, onColors }: LookPanelProps) {
+export function LookPanel({ variant, colors, templateVariant, onVariant, onColors }: LookPanelProps) {
   const t = useTranslations("editor");
   const look = lookColors(variant);
 
@@ -219,6 +221,17 @@ export function LookPanel({ variant, colors, onVariant, onColors }: LookPanelPro
             </div>
           </div>
         ))}
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="self-start"
+          disabled={variant === templateVariant && Object.keys(colors).length === 0}
+          onClick={() => onVariant(templateVariant)}
+        >
+          <RotateCcw />
+          {t("templateLook")}
+        </Button>
       </fieldset>
 
       <div className="flex flex-col gap-2 border-t border-border pt-4">

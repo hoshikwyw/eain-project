@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, ChevronUp, SlidersHorizontal, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Copy, SlidersHorizontal, Trash2 } from "lucide-react";
 import type { RefObject } from "react";
 import { Button } from "@/components/ui/button";
 import { sectionSelector, useCanvasBox } from "./canvas-geometry";
@@ -13,11 +13,13 @@ type Props = {
   canMoveUp: boolean;
   canMoveDown: boolean;
   canRemove: boolean;
+  canDuplicate: boolean;
   onMoveUp: () => void;
   onMoveDown: () => void;
   onEdit: () => void;
+  onDuplicate: () => void;
   onRemove: () => void;
-  labels: { moveUp: string; moveDown: string; edit: string; remove: string };
+  labels: { moveUp: string; moveDown: string; edit: string; duplicate: string; remove: string };
 };
 
 /**
@@ -41,6 +43,9 @@ export function SectionToolbar({ canvas, sectionId, watch, labels, ...p }: Props
       </Button>
       <Button type="button" variant="ghost" size="icon" className="size-8" aria-label={labels.edit} onClick={p.onEdit}>
         <SlidersHorizontal />
+      </Button>
+      <Button type="button" variant="ghost" size="icon" className="size-8" aria-label={labels.duplicate} disabled={!p.canDuplicate} onClick={p.onDuplicate}>
+        <Copy />
       </Button>
       <Button type="button" variant="ghost" size="icon" className="size-8 text-destructive" aria-label={labels.remove} disabled={!p.canRemove} onClick={p.onRemove}>
         <Trash2 />

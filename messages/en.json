@@ -355,7 +355,12 @@
     "noBlend": "One colour",
     "resetColor": "Use the look's colour for {name}",
     "resetColors": "Reset",
-    "lowContrast": "The text may be hard to read on this card colour. Try a darker or lighter text."
+    "lowContrast": "The text may be hard to read on this card colour. Try a darker or lighter text.",
+    "undo": "Undo",
+    "redo": "Redo",
+    "duplicateSection": "Duplicate section",
+    "templateLook": "Back to the template's look",
+    "draftAutosave": "Your draft saves on its own while you work."
   },
   "gift": {
     "previewTitle": "A gift for you",
