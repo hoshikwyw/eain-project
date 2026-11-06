@@ -124,7 +124,7 @@ export function TextToolbar({ canvas, selector, watch, style, onChange, onReset,
       data-canvas-ui=""
       role="toolbar"
       aria-label={labels.tools}
-      className="relative mx-auto flex w-fit max-w-full flex-wrap items-center justify-center gap-1 rounded-2xl border border-border bg-card p-1 text-foreground shadow-lg"
+      className="relative mx-auto flex w-fit max-w-full flex-wrap items-center justify-center glass-strong gap-1 rounded-2xl border p-1 text-foreground shadow-lg"
       // Keeps the caret in the text while a tool is pressed.
       onMouseDown={(e) => {
         if (!(e.target instanceof HTMLInputElement)) e.preventDefault();
@@ -278,4 +278,4 @@ const choiceClass = (active: boolean) =>
 
 /** Lists open centred under the toolbar, so they stay on screen on a phone. */
 const popoverClass =
-  "absolute top-full left-1/2 z-10 mt-2 w-[min(19rem,calc(100vw-2rem))] -translate-x-1/2 rounded-2xl border border-border bg-card p-2 shadow-xl";
+  "absolute top-full left-1/2 z-10 mt-2 w-[min(19rem,calc(100vw-2rem))] glass-strong -translate-x-1/2 rounded-2xl border p-2 shadow-xl";

@@ -41,7 +41,7 @@ export function ConfirmDialog({ open, text, confirmLabel, cancelLabel, danger, p
     <dialog
       ref={ref}
       aria-labelledby={textId}
-      className="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-3xl border border-border bg-card p-0 text-left text-foreground shadow-2xl backdrop:bg-black/60 backdrop:backdrop-blur-sm"
+      className="m-auto w-[min(26rem,calc(100vw-2rem))] glass-strong rounded-3xl border p-0 text-left text-foreground shadow-2xl backdrop:bg-scrim backdrop:backdrop-blur-md"
       // Escape asks to close; while the action runs the popup stays.
       onCancel={(e) => {
         e.preventDefault();

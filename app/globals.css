@@ -58,6 +58,26 @@
   /* Scrollbar thumb: the primary colour, mostly see-through, so it sits quietly on any surface. */
   --scrollbar-thumb: color-mix(in srgb, var(--primary) 30%, transparent);
   --scrollbar-thumb-hover: color-mix(in srgb, var(--primary) 55%, transparent);
+
+  /*
+   * Glass. Soft pools of the brand's colours sit behind every page (the
+   * auras: the pink bird, the blue bird, a warm light), and surfaces are
+   * see-through panes that blur them. Three strengths:
+   *   glass         cards and panels, which only ever have the page behind them
+   *   glass-bar     bars that content scrolls under, so they must stay readable
+   *   glass-strong  menus, popups and floating tools, which sit on top of anything
+   */
+  --aura-rose: rgb(244 80 110 / 0.17);
+  --aura-sky: rgb(127 178 208 / 0.24);
+  --aura-warm: rgb(255 196 132 / 0.24);
+  --glass: rgb(255 255 255 / 0.55);
+  --glass-bar: rgb(255 248 244 / 0.72);
+  --glass-strong: rgb(255 255 255 / 0.88);
+  --glass-border: rgb(255 255 255 / 0.8);
+  --glass-sheen: rgb(255 255 255 / 0.55);
+  --glass-blur: 20px;
+  /* The veil over the page while a popup is open. */
+  --scrim: rgb(43 31 33 / 0.3);
 }
 
 .dark {
@@ -102,6 +122,49 @@
 
   --scrollbar-thumb: color-mix(in srgb, var(--primary) 50%, transparent);
   --scrollbar-thumb-hover: color-mix(in srgb, var(--primary) 80%, transparent);
+
+  --aura-rose: rgb(219 51 88 / 0.28);
+  --aura-sky: rgb(96 150 200 / 0.22);
+  --aura-warm: rgb(170 80 170 / 0.2);
+  --glass: rgb(255 255 255 / 0.06);
+  --glass-bar: rgb(23 13 27 / 0.78);
+  --glass-strong: rgb(43 26 54 / 0.9);
+  --glass-border: rgb(255 255 255 / 0.1);
+  --glass-sheen: rgb(255 255 255 / 0.05);
+  --scrim: rgb(8 4 10 / 0.55);
+}
+
+/* Blur is the costly part on small phones: a lighter one there looks the same at that size. */
+@media (max-width: 640px) {
+  :root {
+    --glass-blur: 12px;
+  }
+}
+
+/*
+ * Where glass cannot be drawn (no backdrop blur) or is not wanted (the
+ * reader asked the system for less transparency), surfaces are solid.
+ */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root,
+  .dark {
+    --glass: var(--card);
+    --glass-bar: var(--background);
+    --glass-strong: var(--popover);
+    --glass-border: var(--border);
+    --glass-sheen: transparent;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root,
+  .dark {
+    --glass: var(--card);
+    --glass-bar: var(--background);
+    --glass-strong: var(--popover);
+    --glass-border: var(--border);
+    --glass-sheen: transparent;
+  }
 }
 
 @theme inline {
@@ -131,6 +194,7 @@
   --color-neutral-chip: var(--neutral-chip);
   --color-neutral-chip-soft: var(--neutral-chip-soft);
   --color-glow: var(--glow);
+  --color-scrim: var(--scrim);
 
   --radius-sm: calc(var(--radius) - 6px);
   --radius-md: calc(var(--radius) - 4px);
@@ -213,6 +277,22 @@
   }
 
   /*
+   * The colour behind the glass. Plain gradients on one fixed layer: no
+   * blur filter and nothing that moves, so it costs next to nothing.
+   */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(58rem 38rem at 8% -8%, var(--aura-rose), transparent 62%),
+      radial-gradient(52rem 36rem at 102% 12%, var(--aura-sky), transparent 62%),
+      radial-gradient(56rem 40rem at 45% 112%, var(--aura-warm), transparent 62%);
+  }
+
+  /*
    * Burmese script stacks marks above and below the base line.
    * Tight line heights clip it, so Burmese pages get more room.
    */
@@ -274,6 +354,30 @@
   .pattern-rays {
     background-image: repeating-conic-gradient(from 0deg at 50% -20%, var(--t-deco) 0 4deg, transparent 4deg 12deg);
   }
+}
+
+/* Glass surfaces. See the tokens at the top for which strength goes where. */
+@utility glass {
+  border-color: var(--glass-border);
+  background-color: var(--glass);
+  background-image: linear-gradient(to bottom, var(--glass-sheen), transparent 3.5rem);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+}
+
+@utility glass-bar {
+  border-color: var(--glass-border);
+  background-color: var(--glass-bar);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
+}
+
+@utility glass-strong {
+  border-color: var(--glass-border);
+  background-color: var(--glass-strong);
+  background-image: linear-gradient(to bottom, var(--glass-sheen), transparent 3.5rem);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
 }
 
 @keyframes eain-float {

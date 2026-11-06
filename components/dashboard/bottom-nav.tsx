@@ -40,7 +40,7 @@ export function BottomNav({ unreadCount }: { unreadCount: number }) {
   return (
     <nav
       aria-label={t("main")}
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 glass-bar border-t pb-[env(safe-area-inset-bottom)] md:hidden"
     >
       <div className="mx-auto flex max-w-lg items-stretch">
         {left.map(renderItem)}

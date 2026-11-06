@@ -33,7 +33,9 @@ export function AppHeader({ displayName, email, pointsBalance, unreadCount, isAd
   const onNotifications = isActivePath(pathname, "/dashboard/notifications");
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/50 bg-background/75 backdrop-blur-md">
+    <header className="sticky top-0 z-40">
+      {/* The glass is a layer of its own, so the account menu can blur the page behind it too. */}
+      <div aria-hidden="true" className="glass-bar absolute inset-0 -z-10 border-b" />
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4 md:h-[4.5rem]">
         <Link href="/dashboard" aria-label="Eain" className="rounded-lg">
           <Logo />

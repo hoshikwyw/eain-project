@@ -32,7 +32,7 @@ export function SectionToolbar({ canvas, sectionId, watch, labels, ...p }: Props
   return (
     <div
       data-canvas-ui=""
-      className="absolute z-20 flex items-center gap-0.5 rounded-full border border-border bg-card p-1 text-foreground shadow-lg"
+      className="absolute z-20 flex items-center gap-0.5 glass-strong rounded-full border p-1 text-foreground shadow-lg"
       style={{ top: box.top - 50, right: Math.max(box.canvasWidth - box.left - box.width - 4, 0) }}
     >
       <Button type="button" variant="ghost" size="icon" className="size-8" aria-label={labels.moveUp} disabled={!p.canMoveUp} onClick={p.onMoveUp}>

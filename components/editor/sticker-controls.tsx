@@ -101,7 +101,7 @@ export function StickerControls({ canvas, sticker, container, watch, onChange, l
 
       <div
         data-canvas-ui=""
-        className="absolute z-20 flex -translate-x-1/2 items-center gap-0.5 rounded-full border border-border bg-card p-1 text-foreground shadow-lg"
+        className="absolute z-20 flex -translate-x-1/2 items-center gap-0.5 glass-strong rounded-full border p-1 text-foreground shadow-lg"
         style={{ left: Math.min(Math.max(cx, 64), box.canvasWidth - 64), top: toolbarTop }}
       >
         <Button type="button" variant="ghost" size="icon" className="size-8" aria-label={labels.duplicate} disabled={!p.canDuplicate} onClick={p.onDuplicate}>

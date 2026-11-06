@@ -589,7 +589,9 @@ export function GiftEditor(props: Props) {
   return (
     <div className="flex flex-1 flex-col">
       {/* The editor's own bar, across the whole screen; its content lines up with the page below. */}
-      <div className="sticky top-0 z-30 flex flex-col border-b border-border/50 bg-background/80 px-[max(1rem,calc(50%-35rem))] backdrop-blur-md">
+      <div className="sticky top-0 z-30 flex flex-col px-[max(1rem,calc(50%-35rem))]">
+        {/* The glass is a layer of its own, so the text tools' popups can blur the gift behind them. */}
+        <div aria-hidden="true" className="glass-bar absolute inset-0 -z-10 border-b" />
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 py-2 lg:h-16 lg:flex-nowrap lg:gap-x-4 lg:py-0">
           {/* Which gift this is. Its own row on phones, the left end of the bar on wide screens. */}
           <div className="flex min-w-0 basis-full items-center gap-2 lg:max-w-xs lg:basis-auto xl:max-w-sm">
@@ -809,7 +811,7 @@ export function GiftEditor(props: Props) {
         <aside
           aria-label={t("tools")}
           className={cn(
-            "z-40 flex flex-col overflow-hidden border-border bg-card",
+            "z-40 flex flex-col overflow-hidden border-border max-lg:glass-strong lg:bg-card",
             "max-lg:fixed max-lg:inset-x-0 max-lg:bottom-[calc(3.75rem+env(safe-area-inset-bottom))] max-lg:max-h-[60svh] max-lg:rounded-t-3xl max-lg:border-t max-lg:shadow-[0_-12px_32px_rgba(0,0,0,0.16)]",
             !sheetOpen && "max-lg:hidden",
             "lg:sticky lg:top-32 lg:max-h-[calc(100svh-9rem)] lg:self-start lg:rounded-3xl lg:border lg:shadow-soft",
@@ -875,7 +877,7 @@ export function GiftEditor(props: Props) {
         role="tablist"
         aria-label={t("tools")}
         style={tabColumns}
-        className="fixed inset-x-0 bottom-0 z-40 grid gap-1 border-t border-border bg-card px-1.5 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] lg:hidden"
+        className="glass-bar fixed inset-x-0 bottom-0 z-40 grid gap-1 border-t px-1.5 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] lg:hidden"
       >
         {tabs.map((name) => (
           <TabButton
@@ -893,7 +895,7 @@ export function GiftEditor(props: Props) {
           role="dialog"
           aria-modal="true"
           aria-label={t("scenePreview")}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-background/85 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-scrim p-4 backdrop-blur-md"
           onClick={() => setPlaying(false)}
         >
           <Button type="button" variant="ghost" size="icon" className="absolute top-4 right-4" aria-label={t("closePreview")} onClick={() => setPlaying(false)}>
@@ -915,7 +917,7 @@ export function GiftEditor(props: Props) {
           role="dialog"
           aria-modal="true"
           aria-label={t("openingPreview")}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-background/85 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-scrim p-4 backdrop-blur-md"
           onClick={() => setOpeningPreview(null)}
         >
           <Button
