@@ -861,7 +861,9 @@
       }
     },
     "nav": {
-      "dashboard": "Dashboard",
+      "dashboard": "Home",
+      "main": "Main menu",
+      "account": "Account menu",
       "gifts": "My Gifts",
       "templates": "Templates",
       "points": "Points",
