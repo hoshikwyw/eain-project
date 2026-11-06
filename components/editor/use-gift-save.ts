@@ -1,5 +1,5 @@
-import { startTransition, useActionState, useEffect, useState, useTransition } from "react";
-import { saveAndPublishGift, saveGift } from "@/features/gifts/actions";
+import { startTransition, useActionState, useEffect, useRef, useState, useTransition } from "react";
+import { refreshGiftPages, saveAndPublishGift, saveGift } from "@/features/gifts/actions";
 import type { SaveGiftState } from "@/features/gifts/schemas";
 
 /** A draft saves itself this long after the last change. */
@@ -30,13 +30,37 @@ export function useGiftSave({ giftId, autosave, initialJson, payloadJson, valid,
   const [lastSaved, setLastSaved] = useState(initialJson);
   const dirty = payloadJson !== lastSaved;
 
+  // Saving does not redraw any page (see saveGift). So when the creator leaves after a save,
+  // the pages that show this gift are told to read it again.
+  const savedHere = useRef(false);
+  useEffect(
+    () => () => {
+      if (savedHere.current) void refreshGiftPages(giftId).catch(() => undefined);
+    },
+    [giftId],
+  );
+
+  /** Publish was pressed while a save was still running. It goes ahead as soon as that save ends. */
+  const [publishQueued, setPublishQueued] = useState(false);
+  const publishWaiting = useRef(false);
+  const latest = useRef({ publishNow: () => {} });
+
   /** The content of the last save that failed, so autosave does not keep retrying the same thing. */
   const [failedSave, setFailedSave] = useState<string | null>(null);
   const [state, formAction, saving] = useActionState<SaveGiftState, FormData>(async (prev, fd) => {
     const sent = String(fd.get("payload"));
     const result = await saveGift(giftId, prev, fd);
-    if (result.status === "saved") setLastSaved(sent);
+    if (result.status === "saved") {
+      setLastSaved(sent);
+      savedHere.current = true;
+    }
     setFailedSave(result.status === "saved" ? null : sent);
+    // Publish was pressed while this save was running: it goes ahead now, with what is in the editor now.
+    if (publishWaiting.current) {
+      publishWaiting.current = false;
+      setPublishQueued(false);
+      latest.current.publishNow();
+    }
     return result;
   }, {});
 
@@ -62,8 +86,7 @@ export function useGiftSave({ giftId, autosave, initialJson, payloadJson, valid,
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty]);
 
-  const publish = () => {
-    if (!valid) return onInvalid();
+  const runPublish = () =>
     startPublish(async () => {
       setPublishState(undefined);
       const fd = new FormData();
@@ -71,7 +94,19 @@ export function useGiftSave({ giftId, autosave, initialJson, payloadJson, valid,
       const result = await saveAndPublishGift(giftId, fd);
       if (result) setPublishState(result.status);
     });
+  const publish = () => {
+    if (!valid) return onInvalid();
+    // A save is running: wait for it, so the two never write at the same time.
+    if (saving) {
+      publishWaiting.current = true;
+      return setPublishQueued(true);
+    }
+    runPublish();
   };
+  // The save that is running when Publish is pressed needs the editor's content as it is when the save ends.
+  useEffect(() => {
+    latest.current = { publishNow: () => (valid ? runPublish() : onInvalid()) };
+  });
 
   /** Saves now, for the keyboard. The Save button submits its form to the same action. */
   const saveNow = () => {
@@ -82,5 +117,5 @@ export function useGiftSave({ giftId, autosave, initialJson, payloadJson, valid,
     startTransition(() => formAction(fd));
   };
 
-  return { dirty, state, formAction, saving, publishing, publishState, publish, saveNow };
+  return { dirty, state, formAction, saving, publishing: publishing || publishQueued, publishState, publish, saveNow };
 }

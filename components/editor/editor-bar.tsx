@@ -107,12 +107,12 @@ export function EditorBar(p: Props) {
           }}
         >
           <input type="hidden" name="payload" value={p.payloadJson} />
-          <Button type="submit" variant="secondary" size="sm" disabled={p.saving || p.publishing} aria-busy={p.saving}>
+          <Button type="submit" variant="secondary" size="sm" disabled={p.saving || p.publishing} aria-busy={p.saving} className={cn(!p.publishing && "disabled:opacity-100")}>
             {p.saving ? <Loader2 className="animate-spin" /> : <Save />}
             <span className="max-sm:sr-only">{p.saving ? t("saving") : t("save")}</span>
           </Button>
         </form>
-        <Button type="button" size="sm" className="px-4" onClick={p.onPublish} disabled={p.publishing || p.saving} aria-busy={p.publishing}>
+        <Button type="button" size="sm" className="px-4" onClick={p.onPublish} disabled={p.publishing} aria-busy={p.publishing}>
           {p.publishing ? <Loader2 className="animate-spin" /> : <Send />}
           {p.publishing ? (
             t("publishing")

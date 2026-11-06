@@ -69,7 +69,26 @@ export async function createGift(formData: FormData): Promise<void> {
   await createGiftFromTemplate(String(formData.get("template") ?? ""));
 }
 
-/** Saves the editor payload. RLS limits every statement to the owner. */
+/**
+ * Marks every page that shows this gift as out of date. The editor calls it
+ * once, when the creator leaves after saving, so My Gifts, the home screen
+ * and the editor itself are read again the next time they are shown, the
+ * browser's Back button included.
+ */
+export async function refreshGiftPages(giftId: string): Promise<void> {
+  revalidatePath(`/create/${giftId}`);
+  revalidatePath("/dashboard", "layout");
+}
+
+/**
+ * Saves the editor payload. RLS limits every statement to the owner.
+ *
+ * It does not ask for any page to be redrawn. The editor already shows what
+ * was saved, and a redraw here made the whole page repaint on every
+ * autosave: the tab's title and icon flickered and the save took twice as
+ * long. The pages that show this gift are refreshed when the editor is
+ * left, by refreshGiftPages.
+ */
 export async function saveGift(giftId: string, _prev: SaveGiftState, formData: FormData): Promise<SaveGiftState> {
   let raw: unknown;
   try {
@@ -115,8 +134,6 @@ export async function saveGift(giftId: string, _prev: SaveGiftState, formData: F
     : await supabase.from("gift_recipients").insert({ gift_id: giftId, name: v.recipientName });
   if (recipientResult.error) return { status: "error" };
 
-  revalidatePath(`/create/${giftId}`);
-  revalidatePath("/dashboard", "layout");
   return { status: "saved" };
 }
 
