@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/brand/logo";
+import { Lovebirds } from "@/components/brand/lovebirds";
 import { Button } from "@/components/ui/button";
 import type { GiftColors, Opening, PublicQuestion, ThemeVariant } from "@/features/gifts/schemas";
 import { cn } from "@/lib/utils";
@@ -112,7 +113,7 @@ export function GiftReveal({ token, questions, opening, variant, colors, recipie
           size="lg"
           onClick={open}
           disabled={stage === "opening"}
-          className={cn("min-w-52 transition-opacity duration-500", stage === "opening" && "opacity-0")}
+          className={cn("min-w-52 rounded-full transition-opacity duration-500", stage === "opening" && "opacity-0")}
         >
           <Gift />
           {t("openYourGift")}
@@ -131,15 +132,23 @@ export function GiftReveal({ token, questions, opening, variant, colors, recipie
         sessionId={getSessionId}
         onStarted={() => void sendEvent(token, "response_started")}
       />
-      <div ref={endRef} className="flex flex-col items-center gap-3 pt-4 text-center">
-        <p className="text-sm text-muted-foreground">{t("madeWith")}</p>
-        <Link href="/" className="inline-flex" aria-label="Eain">
-          <Logo />
-        </Link>
-        <Button asChild variant="soft" size="sm">
-          <Link href="/create">{t("makeYourOwn")}</Link>
-        </Button>
-        <Link href={`/g/${token}/report`} className="mt-2 text-xs text-muted-foreground underline-offset-4 hover:underline">
+      <div ref={endRef} className="flex flex-col items-center gap-4 text-center">
+        <div className="bg-hero flex w-full flex-col items-center gap-3 rounded-3xl px-6 py-8">
+          <div className="w-24">
+            <Lovebirds />
+          </div>
+          <p className="text-sm text-muted-foreground">{t("madeWith")}</p>
+          <Link href="/" className="inline-flex rounded-lg" aria-label="Eain">
+            <Logo />
+          </Link>
+          <Button asChild className="mt-1 rounded-full">
+            <Link href="/create">
+              <Gift />
+              {t("makeYourOwn")}
+            </Link>
+          </Button>
+        </div>
+        <Link href={`/g/${token}/report`} className="text-xs text-muted-foreground underline-offset-4 hover:underline">
           {t("reportThis")}
         </Link>
       </div>

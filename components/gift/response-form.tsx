@@ -1,8 +1,9 @@
 "use client";
 
-import { Check, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
+import { Bird } from "@/components/brand/lovebirds";
 import { Button } from "@/components/ui/button";
 import type { PublicQuestion } from "@/features/gifts/schemas";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,7 @@ type Props = {
 };
 
 const textareaClass =
-  "w-full rounded-xl border border-input bg-card px-3.5 py-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40";
+  "w-full rounded-2xl border border-input bg-card px-4 py-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40";
 
 /** The receiver's reply. No account, one submission per browser session. */
 export function ResponseForm({ token, questions, sessionId, onStarted }: Props) {
@@ -91,10 +92,8 @@ export function ResponseForm({ token, questions, sessionId, onStarted }: Props) 
 
   if (state === "sent" || state === "duplicate") {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-8 text-center">
-        <span className="grid size-12 place-items-center rounded-full bg-success-soft text-success">
-          <Check className="size-6" />
-        </span>
+      <div role="status" className="flex flex-col items-center gap-3 rounded-3xl border border-border bg-card p-8 text-center shadow-soft">
+        <Bird variant="pink" className="w-20" />
         <p className="font-display text-xl font-semibold">{t("sentTitle")}</p>
         <p className="text-sm text-muted-foreground">{state === "sent" ? t("sentText") : t("alreadyText")}</p>
       </div>
@@ -102,10 +101,10 @@ export function ResponseForm({ token, questions, sessionId, onStarted }: Props) 
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-6 rounded-2xl border border-border bg-card p-6 sm:p-8">
+    <form onSubmit={submit} className="flex flex-col gap-6 rounded-3xl border border-border bg-card p-6 shadow-soft sm:p-8">
       <div>
         <h2 className="font-display text-2xl font-semibold">{t("title")}</h2>
-        <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
 
       {questions.map((q, index) => (
@@ -119,17 +118,17 @@ export function ResponseForm({ token, questions, sessionId, onStarted }: Props) 
       ))}
 
       {state === "invalid" && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
           {t("invalid")}
         </p>
       )}
       {state === "error" && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
           {t("error")}
         </p>
       )}
 
-      <Button type="submit" size="lg" disabled={state === "sending"} className="self-start">
+      <Button type="submit" size="lg" disabled={state === "sending"} className="self-start rounded-full">
         <Send />
         {state === "sending" ? t("sending") : t("send")}
       </Button>
@@ -222,7 +221,7 @@ function QuestionInput({
             <label
               key={o.id}
               className={cn(
-                "flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm",
+                "flex cursor-pointer items-center gap-3 rounded-2xl border px-4 py-3 text-sm transition-colors",
                 value?.optionId === o.id ? "border-primary bg-accent text-accent-foreground" : "border-border hover:bg-secondary",
               )}
             >
@@ -231,7 +230,7 @@ function QuestionInput({
                 name={`q-${index}`}
                 checked={value?.optionId === o.id}
                 onChange={() => onChange({ optionId: o.id })}
-                className="accent-primary"
+                className="size-4 accent-primary"
               />
               {o.label}
             </label>
