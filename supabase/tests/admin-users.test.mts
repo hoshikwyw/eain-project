@@ -1,6 +1,9 @@
 /**
  * Admin user management, against the live project and a running dev server.
  * Run:  pnpm test:admin-users
+ * Needs the admin site: `pnpm dev:both`, or `pnpm dev:admin` next to `pnpm dev`.
+ * The pages are read from NEXT_PUBLIC_ADMIN_SITE_URL, or from the user site
+ * when that is not set (one site serving everything).
  * Creates a throwaway admin and a throwaway member; removes both at the end.
  */
 import assert from "node:assert/strict";
@@ -11,6 +14,7 @@ const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const site = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:5173";
+const adminSite = (process.env.NEXT_PUBLIC_ADMIN_SITE_URL ?? site).replace(/\/$/, "");
 const ref = new URL(url).hostname.split(".")[0]!;
 
 const service = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
@@ -60,17 +64,17 @@ describe("admin user management", () => {
   });
 
   it("the users list shows emails to admins only", async () => {
-    const asAdmin = await fetch(`${site}/admin/users?q=admin-users-member`, { headers: { cookie: cookieFor(admin.session) } });
+    const asAdmin = await fetch(`${adminSite}/admin/users?q=admin-users-member`, { headers: { cookie: cookieFor(admin.session) } });
     assert.equal(asAdmin.status, 200);
     assert.ok((await asAdmin.text()).includes(member.email));
 
-    const asMember = await fetch(`${site}/admin/users`, { headers: { cookie: cookieFor(member.session) } });
+    const asMember = await fetch(`${adminSite}/admin/users`, { headers: { cookie: cookieFor(member.session) } });
     const html = await asMember.text();
     assert.ok(!html.includes(admin.email), "a member must not see other accounts");
   });
 
   it("the detail page shows the member's gifts and account data", async () => {
-    const res = await fetch(`${site}/admin/users/${member.id}`, { headers: { cookie: cookieFor(admin.session) } });
+    const res = await fetch(`${adminSite}/admin/users/${member.id}`, { headers: { cookie: cookieFor(admin.session) } });
     assert.equal(res.status, 200);
     const html = await res.text();
     assert.ok(html.includes(member.email));
@@ -80,7 +84,7 @@ describe("admin user management", () => {
   });
 
   it("on their own page an admin gets no suspend or delete controls", async () => {
-    const res = await fetch(`${site}/admin/users/${admin.id}`, { headers: { cookie: cookieFor(admin.session) } });
+    const res = await fetch(`${adminSite}/admin/users/${admin.id}`, { headers: { cookie: cookieFor(admin.session) } });
     const html = await res.text();
     assert.ok(/>This is your account\./.test(html), "self note rendered");
     assert.ok(!html.includes('name="confirmEmail"'), "no delete form on own account");

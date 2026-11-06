@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { AdminFlash } from "@/components/admin/flash";
-import { PageHeader } from "@/components/dashboard/page-header";
+import { PageHeader } from "@/components/admin/page-header";
 import { ConfirmButton } from "@/components/gift/confirm-button";
 import { GiftStatusChip } from "@/components/gift/gift-status-chip";
 import { GiftView } from "@/components/gift/gift-view";

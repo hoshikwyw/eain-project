@@ -2,7 +2,7 @@ import { ChevronRight, Search } from "lucide-react";
 import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { AdminFlash } from "@/components/admin/flash";
-import { PageHeader } from "@/components/dashboard/page-header";
+import { PageHeader } from "@/components/admin/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";

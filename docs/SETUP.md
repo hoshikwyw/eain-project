@@ -50,14 +50,24 @@ pnpm dlx supabase db push
 
 7. Restart `pnpm dev` so the new `.env.local` is read. Sign up at http://localhost:5173/auth/signup. The new profile receives 100 welcome points.
 
-8. Run the security tests, which create two throwaway users and check that neither can reach the other's data, and the core loop test, which needs the dev server running:
+8. Run the tests. They work against this Supabase project and the running dev server, create throwaway users (emails ending in `@example.com`) and delete them at the end. The env values are read from `.env.local`, or from `.env` if that is the file you use.
 
 ```
-pnpm test:rls
-pnpm test:core
-pnpm test:media
-pnpm test:responses
+pnpm test              # every test file, one after the other
+pnpm test:rls          # no user can reach another user's data
+pnpm test:core         # create, publish, open, reply
+pnpm test:media        # photo uploads
+pnpm test:responses    # replies and questions
+pnpm test:styles       # custom colours, text styles and stickers
+pnpm test:prelaunch    # password reset pages, the shared step, the daily purge
+pnpm test:account      # daily earn cap, deleting an account
+pnpm test:admin        # reports and moderation
+pnpm test:admin-users  # admin user pages; needs the admin site (pnpm dev:both)
 ```
+
+If a run is interrupted, `pnpm cleanup:test-users` lists the throwaway users left behind and `pnpm cleanup:test-users --yes` removes them.
+
+The purge check in `test:prelaunch` runs only when `CRON_SECRET` is set, and then it runs the real purge: any gift in this database deleted more than 30 days ago is removed for good. If this database is also your production database, that is what the daily job does anyway, a few hours early.
 
 9. To make yourself an admin later, run in the Supabase SQL editor:
 

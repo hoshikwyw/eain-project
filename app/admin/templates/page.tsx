@@ -2,7 +2,7 @@ import { Pencil } from "lucide-react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { AdminFlash } from "@/components/admin/flash";
-import { PageHeader } from "@/components/dashboard/page-header";
+import { PageHeader } from "@/components/admin/page-header";
 import { TemplatePreview } from "@/components/templates/template-preview";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

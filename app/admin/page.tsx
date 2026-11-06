@@ -1,8 +1,8 @@
 import { Flag, Gift, Image as ImageIcon, MessageCircleHeart, Send, Star, Users } from "lucide-react";
 import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
-import { PageHeader } from "@/components/dashboard/page-header";
-import { StatTile } from "@/components/dashboard/stat-tile";
+import { PageHeader } from "@/components/admin/page-header";
+import { StatTile } from "@/components/admin/stat-tile";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAdminStats } from "@/features/admin/queries";

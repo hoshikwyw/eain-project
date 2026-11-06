@@ -1,7 +1,7 @@
 /**
  * Daily earn cap and self-service account deletion UI.
  * Needs the dev server. The cap check needs migration 0013.
- * Run:  pnpm test:part4
+ * Run:  pnpm test:account
  */
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";

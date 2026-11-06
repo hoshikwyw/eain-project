@@ -1,10 +1,13 @@
 // Creates a temporary admin, fetches every admin page with its session cookie, deletes the admin.
+// Usage: pnpm check:admin-pages   (needs the admin site running: pnpm dev:both)
+// The admin pages are read from NEXT_PUBLIC_ADMIN_SITE_URL, and from the user site when that is not set.
 import { createClient } from "@supabase/supabase-js";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const site = "http://localhost:5173";
+const site = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:5173").replace(/\/$/, "");
+const adminSite = (process.env.NEXT_PUBLIC_ADMIN_SITE_URL ?? site).replace(/\/$/, "");
 const ref = new URL(url).hostname.split(".")[0];
 
 const service = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
@@ -25,9 +28,10 @@ try {
   const { data: firstTemplate } = await service.from("templates").select("id").order("sort_order").limit(1).single();
   const paths = ["/admin", "/admin/users", "/admin/templates", `/admin/templates/${firstTemplate.id}`, "/admin/reports", "/admin/reports?scope=all", "/admin/points", "/admin/payments", "/admin/audit", "/dashboard"];
   for (const path of paths) {
-    const res = await fetch(`${site}${path}`, { headers: { cookie }, redirect: "manual" });
+    const res = await fetch(`${path.startsWith("/admin") ? adminSite : site}${path}`, { headers: { cookie }, redirect: "manual" });
     const html = await res.text();
-    const marker = path === "/dashboard" ? html.includes('href="/admin"') : html.includes("Admin</span>") || html.includes('aria-label="Admin"');
+    // An admin page shows the admin bar. Other pages are only checked for their status.
+    const marker = path.startsWith("/admin") && (html.includes("Admin</span>") || html.includes('aria-label="Admin"'));
     console.log(`${path} -> ${res.status} ${marker ? "(admin chrome present)" : ""}`);
   }
 } finally {

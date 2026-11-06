@@ -1,7 +1,12 @@
 /**
  * Pre-launch fixes: forgot-password pages, the "shared" timeline step, and
- * the daily purge of deleted gifts. Needs the dev server and CRON_SECRET.
- * Run:  pnpm test:part3
+ * the daily purge of deleted gifts. Needs the dev server.
+ * Run:  pnpm test:prelaunch
+ *
+ * The purge check runs only when CRON_SECRET is set, and it calls the real
+ * purge: besides its own throwaway gift, any gift in this database that was
+ * deleted more than 30 days ago is removed for good, exactly as the daily
+ * job would do. Leave CRON_SECRET unset to skip it.
  */
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";

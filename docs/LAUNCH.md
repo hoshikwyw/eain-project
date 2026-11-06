@@ -53,7 +53,7 @@ Run through with two devices, or one browser plus a private window.
 Point the tests at production once, then reset the values to local:
 
 ```
-# in .env.local temporarily
+# in .env.local (or .env) temporarily
 NEXT_PUBLIC_SITE_URL=https://<your-domain>
 pnpm test:rls
 pnpm test:core
