@@ -48,7 +48,7 @@ export async function AuthShell({ title, subtitle, reward, children }: Props) {
         </aside>
       )}
 
-      <div className={cn("flex flex-1 flex-col", branded && "lg:rounded-l-[2.5rem] lg:bg-background")}>
+      <div className={cn("flex flex-1 flex-col", branded && "lg:rounded-l-[2.5rem] lg:bg-background/80")}>
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 lg:px-8">
           <Link href="/" aria-label="Eain" className={cn("rounded-lg", branded && "lg:invisible")}>
             <Logo />
@@ -68,7 +68,7 @@ export async function AuthShell({ title, subtitle, reward, children }: Props) {
             )}
             <div
               className={cn(
-                "flex flex-col gap-6 rounded-3xl border border-border bg-card p-6 shadow-soft sm:p-8",
+                "flex flex-col gap-6 rounded-3xl glass border p-6 shadow-soft sm:p-8",
                 branded && "lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none",
               )}
             >

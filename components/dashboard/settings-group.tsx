@@ -10,7 +10,7 @@ export function SettingsGroup({ title, children, className }: Props) {
   return (
     <section className="flex flex-col gap-2">
       <h2 className="px-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase my:tracking-normal my:normal-case">{title}</h2>
-      <div className={cn("rounded-3xl border border-border bg-card shadow-soft", className)}>{children}</div>
+      <div className={cn("rounded-3xl glass border shadow-soft", className)}>{children}</div>
     </section>
   );
 }

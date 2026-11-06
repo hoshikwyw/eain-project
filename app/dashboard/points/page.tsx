@@ -98,7 +98,7 @@ export default async function PointsPage() {
         </div>
         <ul className="grid grid-cols-3 gap-2.5 sm:gap-4">
           {WAYS_TO_EARN.map(({ key, amount, icon: Icon }) => (
-            <li key={key} className="flex flex-col items-center gap-2 rounded-3xl border border-border bg-card px-2 py-5 text-center shadow-soft sm:flex-row sm:gap-4 sm:px-5 sm:text-left">
+            <li key={key} className="flex flex-col items-center gap-2 rounded-3xl glass border px-2 py-5 text-center shadow-soft sm:flex-row sm:gap-4 sm:px-5 sm:text-left">
               <span className="grid size-11 shrink-0 place-items-center rounded-full bg-brand-soft text-accent-foreground sm:size-12 dark:text-brand">
                 <Icon className="size-5 sm:size-6" />
               </span>
@@ -117,7 +117,7 @@ export default async function PointsPage() {
         {transactions.length === 0 ? (
           <EmptyState bird="pink" compact text={t("points.empty")} />
         ) : (
-          <ul className="flex flex-col divide-y divide-border rounded-3xl border border-border bg-card px-2 shadow-soft sm:px-3">
+          <ul className="flex flex-col divide-y divide-border rounded-3xl glass border px-2 shadow-soft sm:px-3">
             {transactions.map((tx) => {
               const Icon = TYPE_ICON[tx.type] ?? Star;
               const gained = tx.amount > 0;

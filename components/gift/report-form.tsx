@@ -15,7 +15,7 @@ export function ReportForm({ token }: { token: string }) {
 
   if (state.status === "sent") {
     return (
-      <div role="status" className="flex flex-col items-center gap-3 rounded-3xl border border-border bg-card p-8 text-center shadow-soft">
+      <div role="status" className="flex flex-col items-center gap-3 rounded-3xl glass border p-8 text-center shadow-soft">
         <span className="grid size-14 place-items-center rounded-full bg-success-soft text-success">
           <Check className="size-7" />
         </span>
@@ -26,7 +26,7 @@ export function ReportForm({ token }: { token: string }) {
   }
 
   return (
-    <form action={formAction} className="flex flex-col gap-6 rounded-3xl border border-border bg-card p-5 shadow-soft sm:p-7">
+    <form action={formAction} className="flex flex-col gap-6 rounded-3xl glass border p-5 shadow-soft sm:p-7">
       <fieldset className="flex flex-col gap-2">
         <legend className="mb-2 font-semibold">{t("reason")}</legend>
         {REPORT_REASONS.map((reason) => (

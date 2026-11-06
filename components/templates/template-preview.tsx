@@ -11,7 +11,7 @@ type Props = { slug: string; variant: ThemeVariant; locale: "en" | "my"; name: s
 /**
  * Miniature of a template: the real renderer with the template's starting
  * sections, scaled to the card's width like any gift and cropped to a 4:3
- * window. Templates without a layout in code fall back to a palette swatch.
+ * window, fading out where it is cut off. Templates without a layout in code fall back to a palette swatch.
  */
 export function TemplatePreview({ slug, variant, locale, name }: Props) {
   const definition = templates[slug];
@@ -26,20 +26,22 @@ export function TemplatePreview({ slug, variant, locale, name }: Props) {
   }
 
   return (
-    <div aria-hidden="true" className="relative aspect-[4/3] overflow-hidden rounded-xl bg-muted">
-      <div className="pointer-events-none select-none">
-        <GiftView
-          sections={sections}
-          media={{}}
-          variant={variant}
-          style={getTemplateStyle(slug)}
-          recipientName=""
-          senderName=""
-          compact
-          placeholders
-        />
+    // The thin frame keeps a pale template visible on a pale page; the picture inside fades out at its cut-off edge.
+    <div aria-hidden="true" className="rounded-xl ring-1 ring-border/70">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-muted [mask-image:linear-gradient(to_bottom,black_calc(100%-3rem),transparent)]">
+        <div className="pointer-events-none select-none">
+          <GiftView
+            sections={sections}
+            media={{}}
+            variant={variant}
+            style={getTemplateStyle(slug)}
+            recipientName=""
+            senderName=""
+            compact
+            placeholders
+          />
+        </div>
       </div>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-card to-transparent" />
     </div>
   );
 }

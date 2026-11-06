@@ -100,7 +100,7 @@ export function TemplateGrid({ templates, categories, mode, pointsBalance = null
               key={template.id}
               id={`template-${template.slug}`}
               className={cn(
-                "flex scroll-mt-24 flex-col gap-3 rounded-3xl border border-border bg-card p-3 shadow-soft",
+                "flex scroll-mt-24 flex-col gap-3 rounded-3xl glass border p-3 shadow-soft",
                 template.slug === highlightSlug && "ring-2 ring-primary",
                 !template.available && !(template.isPremium && !template.unlocked) && "opacity-80",
               )}

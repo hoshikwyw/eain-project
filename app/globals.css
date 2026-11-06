@@ -52,7 +52,7 @@
   --bird-b-wing: #6a9dbd;
   --branch: #8b5e4b;
 
-  --eain-shadow-soft: 0 10px 30px -12px rgb(219 51 88 / 0.18);
+  --eain-shadow-soft: 0 0 0 1px rgb(219 51 88 / 0.07), 0 10px 30px -12px rgb(219 51 88 / 0.18);
   --hero-gradient: linear-gradient(160deg, #fff3ee 0%, #ffe3e3 55%, #ffd4da 100%);
 
   /* Scrollbar thumb: the primary colour, mostly see-through, so it sits quietly on any surface. */
@@ -357,12 +357,16 @@
 }
 
 /* Glass surfaces. See the tokens at the top for which strength goes where. */
+/*
+ * Card glass has no blur on purpose. A card only ever has the page's soft
+ * colour behind it, and blurring a soft colour changes nothing, while a
+ * blur on every card of a long page is slow on small phones. Bars and
+ * popups, which do have content behind them, blur.
+ */
 @utility glass {
   border-color: var(--glass-border);
   background-color: var(--glass);
   background-image: linear-gradient(to bottom, var(--glass-sheen), transparent 3.5rem);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
 }
 
 @utility glass-bar {

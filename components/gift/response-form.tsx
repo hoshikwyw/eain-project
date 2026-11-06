@@ -92,7 +92,7 @@ export function ResponseForm({ token, questions, sessionId, onStarted }: Props) 
 
   if (state === "sent" || state === "duplicate") {
     return (
-      <div role="status" className="flex flex-col items-center gap-3 rounded-3xl border border-border bg-card p-8 text-center shadow-soft">
+      <div role="status" className="flex flex-col items-center gap-3 rounded-3xl glass border p-8 text-center shadow-soft">
         <Bird variant="pink" className="w-20" />
         <p className="font-display text-xl font-semibold">{t("sentTitle")}</p>
         <p className="text-sm text-muted-foreground">{state === "sent" ? t("sentText") : t("alreadyText")}</p>
@@ -101,7 +101,7 @@ export function ResponseForm({ token, questions, sessionId, onStarted }: Props) 
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-6 rounded-3xl border border-border bg-card p-6 shadow-soft sm:p-8">
+    <form onSubmit={submit} className="flex flex-col gap-6 rounded-3xl glass border p-6 shadow-soft sm:p-8">
       <div>
         <h2 className="font-display text-2xl font-semibold">{t("title")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">{t("subtitle")}</p>

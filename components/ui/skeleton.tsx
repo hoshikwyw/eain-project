@@ -34,7 +34,7 @@ export function ListSkeleton({ rows = 4 }: { rows?: number }) {
   return (
     <ul className="flex flex-col gap-3" aria-busy="true">
       {Array.from({ length: rows }, (_, i) => (
-        <li key={i} className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
+        <li key={i} className="flex items-center gap-4 rounded-2xl glass border p-4">
           <Skeleton className="size-14 shrink-0" />
           <div className="flex min-w-0 flex-1 flex-col gap-2">
             <Skeleton className="h-4 w-1/2" />
@@ -52,7 +52,7 @@ export function CardGridSkeleton({ count = 6 }: { count?: number }) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3" aria-busy="true">
       {Array.from({ length: count }, (_, i) => (
-        <div key={i} className="flex flex-col gap-3 rounded-3xl border border-border bg-card p-3">
+        <div key={i} className="flex flex-col gap-3 rounded-3xl glass border p-3">
           <Skeleton className="aspect-[4/3]" />
           <Skeleton className="mx-1.5 h-5 w-2/3" />
           <Skeleton className="mx-1.5 h-4 w-11/12" />
@@ -66,7 +66,7 @@ export function CardGridSkeleton({ count = 6 }: { count?: number }) {
 /** A gift preview card shape. */
 export function GiftSkeleton({ compact }: { compact?: boolean }) {
   return (
-    <div className={cn("flex flex-col gap-5 rounded-3xl border border-border bg-card", compact ? "p-6" : "p-8 sm:p-12")} aria-busy="true">
+    <div className={cn("flex flex-col gap-5 rounded-3xl glass border", compact ? "p-6" : "p-8 sm:p-12")} aria-busy="true">
       <Skeleton className="h-3 w-24" />
       <Skeleton className={compact ? "h-9 w-3/4" : "h-12 w-3/4"} />
       <Skeleton className="h-4 w-full" />

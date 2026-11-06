@@ -19,7 +19,7 @@ import type { GiftEventType } from "@/types/database";
 const TIMELINE = ["created", "published", "shared", "opened", "viewed", "responded"] as const satisfies readonly GiftEventType[];
 
 /** A white panel in the side column. */
-const PANEL = "rounded-3xl border border-border bg-card p-5 shadow-soft sm:p-6";
+const PANEL = "rounded-3xl glass border p-5 shadow-soft sm:p-6";
 /** One action in the manage list: icon and label, full width, left aligned. */
 const ROW = "h-12 w-full justify-start gap-3 rounded-2xl px-3";
 
@@ -113,7 +113,7 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
         </section>
 
         {/* The gift itself, as the person it is for will see it */}
-        <section aria-labelledby="gift-preview" className="rounded-[2rem] bg-secondary/60 p-3 sm:p-8 lg:col-start-1 lg:row-span-2 lg:row-start-1">
+        <section aria-labelledby="gift-preview" className="glass rounded-[2rem] border p-3 sm:p-8 lg:col-start-1 lg:row-span-2 lg:row-start-1">
           <h2 id="gift-preview" className="pt-1 pb-3 text-center text-xs font-semibold tracking-wide text-muted-foreground uppercase sm:pt-0 sm:pb-5 my:tracking-normal my:normal-case">
             {t("preview")}
           </h2>

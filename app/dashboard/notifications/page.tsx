@@ -13,7 +13,7 @@ function Group({ title, items }: { title: string; items: Notification[] }) {
   return (
     <section className="flex flex-col gap-2">
       <h2 className="px-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase my:tracking-normal my:normal-case">{title}</h2>
-      <ul className="flex flex-col divide-y divide-border rounded-3xl border border-border bg-card p-1.5 shadow-soft">
+      <ul className="flex flex-col divide-y divide-border rounded-3xl glass border p-1.5 shadow-soft">
         {items.map((n) => (
           <li key={n.id}>
             <NotificationItem notification={n} />

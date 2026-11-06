@@ -798,7 +798,7 @@ export function GiftEditor(props: Props) {
               )}
             </div>
 
-            <div className="flex flex-col gap-2 rounded-3xl bg-secondary/60 p-5">
+            <div className="glass flex flex-col gap-2 rounded-3xl border p-5">
               <p className="text-sm text-muted-foreground">{published ? t("publishedHint") : t("publishHint")}</p>
               <p className="text-xs text-muted-foreground">{autosave ? t("draftAutosave") : t("publishSaves")}</p>
               <Button asChild variant="secondary" size="sm" className="mt-1 self-start rounded-full">
@@ -811,7 +811,7 @@ export function GiftEditor(props: Props) {
         <aside
           aria-label={t("tools")}
           className={cn(
-            "z-40 flex flex-col overflow-hidden border-border max-lg:glass-strong lg:bg-card",
+            "z-40 flex flex-col overflow-hidden max-lg:glass-strong lg:glass",
             "max-lg:fixed max-lg:inset-x-0 max-lg:bottom-[calc(3.75rem+env(safe-area-inset-bottom))] max-lg:max-h-[60svh] max-lg:rounded-t-3xl max-lg:border-t max-lg:shadow-[0_-12px_32px_rgba(0,0,0,0.16)]",
             !sheetOpen && "max-lg:hidden",
             "lg:sticky lg:top-32 lg:max-h-[calc(100svh-9rem)] lg:self-start lg:rounded-3xl lg:border lg:shadow-soft",

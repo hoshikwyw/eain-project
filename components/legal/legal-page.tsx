@@ -26,7 +26,7 @@ export async function LegalPage({ doc, current }: { doc: LegalDoc; current: (typ
         <p className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">{t("draftNotice")}</p>
       </header>
 
-      <section className="rounded-2xl border border-border bg-card p-6 shadow-soft">
+      <section className="rounded-2xl glass border p-6 shadow-soft">
         <h2 className="mb-4 font-display text-xl font-semibold">{t("summary")}</h2>
         <ul className="flex flex-col gap-3">
           {doc.summary.map((line, i) => (
