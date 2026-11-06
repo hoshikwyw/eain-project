@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { QUESTION_KINDS, REACTIONS, type MediaItem, type QuestionKind, type Section } from "@/features/gifts/schemas";
+import { PHOTO_SIZE_MAX, PHOTO_SIZE_MIN, QUESTION_KINDS, REACTIONS, type MediaItem, type QuestionKind, type Section } from "@/features/gifts/schemas";
 import { PhotoPicker } from "./photo-picker";
 
 const selectClass =
@@ -75,6 +75,9 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
             onSelectedChange={(ids) => onChange({ ...section, content: { ...section.content, mediaId: ids[0] ?? null } })}
             max={1}
           />
+          {section.content.mediaId && (
+            <PhotoSizeField id={`${id}-size`} label={t("photoSize")} value={section.content.size} onChange={(size) => onChange({ ...section, content: { ...section.content, size } })} />
+          )}
           <Field label={t("caption")} htmlFor={`${id}-caption`}>
             <Input
               id={`${id}-caption`}
@@ -96,6 +99,9 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
             onSelectedChange={(ids) => onChange({ ...section, content: { ...section.content, mediaIds: ids } })}
             max={5}
           />
+          {section.content.mediaIds.length > 0 && (
+            <PhotoSizeField id={`${id}-size`} label={t("photoSize")} value={section.content.size} onChange={(size) => onChange({ ...section, content: { ...section.content, size } })} />
+          )}
           <Field label={t("caption")} htmlFor={`${id}-caption`}>
             <Input
               id={`${id}-caption`}
@@ -292,6 +298,29 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
         </div>
       );
   }
+}
+
+/** How wide the photo is on the card, from narrow to the full width. */
+function PhotoSizeField({ id, label, value, onChange }: { id: string; label: string; value: number | undefined; onChange: (size: number) => void }) {
+  const size = value ?? PHOTO_SIZE_MAX;
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between gap-3">
+        <Label htmlFor={id}>{label}</Label>
+        <span className="text-xs font-semibold text-muted-foreground tabular-nums">{size}%</span>
+      </div>
+      <input
+        id={id}
+        type="range"
+        min={PHOTO_SIZE_MIN}
+        max={PHOTO_SIZE_MAX}
+        step={5}
+        value={size}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="h-6 w-full cursor-pointer accent-primary"
+      />
+    </div>
+  );
 }
 
 function Field({

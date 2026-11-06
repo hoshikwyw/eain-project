@@ -623,7 +623,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
       );
       if (design === "scrapbook") {
         return (
-          <figure className="mx-auto w-fit max-w-full -rotate-1 rounded-sm bg-white p-3 pb-10 shadow-lg">
+          <figure data-photo="" style={photoWidth(section.content.size)} className="mx-auto w-fit max-w-full -rotate-1 rounded-sm bg-white p-3 pb-10 shadow-lg">
             {img}
             {(section.content.caption || editing) && (
               <figcaption style={alignStyle(captionStyle)} className="mt-3 text-center font-hand text-xl text-neutral-700">
@@ -635,7 +635,9 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
       }
       return (
         <figure className="flex flex-col gap-2">
-          {img}
+          <div data-photo="" style={photoWidth(section.content.size)}>
+            {img}
+          </div>
           {(section.content.caption || editing) && (
             <figcaption style={alignStyle(captionStyle)} className="text-center text-sm text-[color:var(--t-muted)]">
               <Styled style={captionStyle} text={section.content.caption} wrap={editing}>{txt(ctx, section, "caption", section.content.caption)}</Styled>
@@ -651,7 +653,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
       if (design === "scrapbook") {
         return (
           <figure className="flex flex-col gap-3">
-            <div className="flex flex-wrap justify-center gap-4">
+            <div data-photo="" style={photoWidth(section.content.size)} className="flex flex-wrap justify-center gap-4">
               {items.map((item, i) => (
                 <div key={item.id} className={cn("w-[44%] rounded-sm bg-white p-2 pb-6 shadow-md", i % 2 ? "rotate-2" : "-rotate-2")}>
                   {/* eslint-disable-next-line @next/next/no-img-element -- private signed URL */}
@@ -669,7 +671,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
       }
       return (
         <figure className="flex flex-col gap-2">
-          <div className={cn("grid gap-2", items.length === 1 ? "grid-cols-1" : "grid-cols-2")}>
+          <div data-photo="" style={photoWidth(section.content.size)} className={cn("grid gap-2", items.length === 1 ? "grid-cols-1" : "grid-cols-2")}>
             {items.map((item) => (
               // eslint-disable-next-line @next/next/no-img-element -- private signed URL, optimiser bypassed on purpose
               <img key={item.id} src={item.thumbUrl} alt="" loading="lazy" decoding="async" className="aspect-square w-full rounded-xl object-cover" />
@@ -744,6 +746,15 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
       );
     }
   }
+}
+
+/**
+ * The width a creator chose for a photo, as a style. A percentage of the
+ * section, so it is the same share of the card on every screen. Nothing
+ * when no size was chosen: the photo then fills the width as it always did.
+ */
+function photoWidth(size: number | undefined): React.CSSProperties | undefined {
+  return size === undefined || size >= 100 ? undefined : { width: `${size}%`, marginInline: "auto" };
 }
 
 function PhotoPlaceholder({ label, polaroid }: { label: string; polaroid?: boolean }) {

@@ -127,15 +127,28 @@ export const messageContentSchema = z.object({
   styles: stylesFor(["text"]),
 });
 
+/** How narrow and how wide a photo can be made, in percent of the card's width. */
+export const PHOTO_SIZE_MIN = 30;
+export const PHOTO_SIZE_MAX = 100;
+
+/**
+ * A photo's width in percent of the card's width. Absent means full width,
+ * which is how every photo was drawn before sizes existed. A malformed
+ * value is dropped instead of failing the section, so it never hides a photo.
+ */
+const photoSizeSchema = z.number().int().min(PHOTO_SIZE_MIN).max(PHOTO_SIZE_MAX).optional().catch(undefined);
+
 export const imageContentSchema = z.object({
   mediaId: z.uuid().nullable().default(null),
   caption: shortText(160).default(""),
+  size: photoSizeSchema,
   styles: stylesFor(["caption"]),
 });
 
 export const photoGridContentSchema = z.object({
   mediaIds: z.array(z.uuid()).max(5).default([]),
   caption: shortText(160).default(""),
+  size: photoSizeSchema,
   styles: stylesFor(["caption"]),
 });
 

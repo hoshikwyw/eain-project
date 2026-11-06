@@ -18,6 +18,7 @@ import { defaultScene, sceneConfig, type GiftScene } from "@/features/gifts/scen
 import {
   MAX_SECTIONS,
   MAX_STICKERS,
+  PHOTO_SIZE_MAX,
   sectionSchema,
   type EditableSectionType,
   type EditorPayload,
@@ -46,6 +47,7 @@ import {
 } from "./canvas-geometry";
 import { EditableText } from "./editable-text";
 import { DetailsPanel, FlowersPanel, LookPanel, OpeningPanel, SectionsPanel, StickersPanel } from "./editor-panels";
+import { PhotoResizeHandle } from "./photo-resize-handle";
 import { SectionToolbar } from "./section-toolbar";
 import { StickerControls } from "./sticker-controls";
 import { TEXT_FIELDS, textStyle, withText, withoutTextStyle, withTextStyle } from "./text-fields";
@@ -155,7 +157,7 @@ export function GiftEditor(props: Props) {
   const [selectedSticker, setSelectedSticker] = useState<string | null>(null);
   /** The text being typed into, which is the one the resize dot belongs to. */
   const [activeText, setActiveText] = useState<TextTarget | null>(null);
-  /** True for the instant after a sticker drag, so the click that ends it picks nothing. */
+  /** True for the instant after a sticker or photo drag, so the click that ends it picks nothing. */
   const justDragged = useRef(false);
   const [tab, setTab] = useState<Tab>("sections");
   /** Phones only: whether the tool sheet is up. Wide screens always show the panel. */
@@ -571,6 +573,9 @@ export function GiftEditor(props: Props) {
   );
 
   const selectedIndex = sections.findIndex((s) => s.id === selectedId);
+  const selectedSection = selectedIndex >= 0 ? sections[selectedIndex] : undefined;
+  /** The selected section when it holds a photo or photos, which can then be resized on the gift. */
+  const selectedPhoto = selectedSection && (selectedSection.type === "image" || selectedSection.type === "photo_grid") ? selectedSection : undefined;
   const sticker = stickers.find((s) => s.id === selectedSticker);
   const stickerBox = sticker && stickerContainerSelector(sections, sticker);
   const activeSection = activeText ? sections.find((s) => s.id === activeText.sectionId) : undefined;
@@ -761,6 +766,26 @@ export function GiftEditor(props: Props) {
                     duplicate: t("duplicateSection"),
                     remove: t("removeSection"),
                   }}
+                />
+              )}
+              {!previewing && !sceneKind && selectedPhoto && (
+                <PhotoResizeHandle
+                  canvas={canvasRef}
+                  sectionId={selectedPhoto.id}
+                  watch={sections}
+                  size={selectedPhoto.content.size ?? PHOTO_SIZE_MAX}
+                  onSize={(size) =>
+                    // Two branches so each keeps its own content type.
+                    updateSection(selectedPhoto.type === "image" ? { ...selectedPhoto, content: { ...selectedPhoto.content, size } } : { ...selectedPhoto, content: { ...selectedPhoto.content, size } })
+                  }
+                  // The release is followed by a click, which would land beside the photo and clear the selection.
+                  onDone={() => {
+                    justDragged.current = true;
+                    window.setTimeout(() => {
+                      justDragged.current = false;
+                    }, 0);
+                  }}
+                  label={t("resizePhoto")}
                 />
               )}
               {!previewing && !sceneKind && activeText && activeSection && (
