@@ -19,7 +19,12 @@ const LANGUAGES = [
 function Switch({ name, defaultChecked }: { name: string; defaultChecked: boolean }) {
   return (
     <span className="relative inline-flex h-7 w-12 shrink-0">
-      <input type="checkbox" name={name} defaultChecked={defaultChecked} className="peer absolute inset-0 z-10 cursor-pointer opacity-0" />
+      <input
+        type="checkbox"
+        name={name}
+        defaultChecked={defaultChecked}
+        className="peer absolute inset-0 z-10 cursor-pointer opacity-0"
+      />
       <span className="absolute inset-0 rounded-full border border-border bg-muted ring-offset-2 ring-offset-card transition-colors peer-checked:border-primary peer-checked:bg-primary peer-focus-visible:ring-2 peer-focus-visible:ring-ring/60" />
       <span className="absolute top-1 left-1 size-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5" />
     </span>
@@ -35,27 +40,46 @@ function Switch({ name, defaultChecked }: { name: string; defaultChecked: boolea
 export function ProfileForm({ profile }: { profile: Profile }) {
   const t = useTranslations("dashboard.settings");
   const tSettings = useTranslations("settings");
-  const [state, formAction, pending] = useActionState<ProfileFormState, FormData>(updateProfile, {});
+  const [state, formAction, pending] = useActionState<ProfileFormState, FormData>(
+    updateProfile,
+    {},
+  );
 
   return (
     <form action={formAction} className="flex flex-col gap-6">
       <SettingsGroup title={t("profile")} className="flex flex-col gap-1.5 p-4 sm:p-5">
         <Label htmlFor="displayName">{t("displayName")}</Label>
-        <Input id="displayName" name="displayName" defaultValue={profile.display_name} maxLength={80} required />
+        <Input
+          id="displayName"
+          name="displayName"
+          defaultValue={profile.display_name}
+          maxLength={80}
+          required
+        />
         <p className="text-xs text-muted-foreground">{t("profileDescription")}</p>
       </SettingsGroup>
 
       <SettingsGroup title={t("preferences")} className="divide-y divide-border">
         <div className={settingsRow}>
           <span id="locale-label">{t("language")}</span>
-          <div role="radiogroup" aria-labelledby="locale-label" className="inline-flex gap-1 rounded-full bg-secondary p-1">
+          <div
+            role="radiogroup"
+            aria-labelledby="locale-label"
+            className="inline-flex gap-1 rounded-full bg-secondary p-1"
+          >
             {LANGUAGES.map(([value, label]) => (
               <label
                 key={value}
                 lang={value}
                 className="cursor-pointer rounded-full px-3.5 py-1.5 text-sm font-semibold text-muted-foreground transition-colors has-checked:bg-card has-checked:text-foreground has-checked:shadow-soft has-focus-visible:ring-2 has-focus-visible:ring-ring/60"
               >
-                <input type="radio" name="locale" value={value} defaultChecked={profile.locale === value} className="sr-only" />
+                <input
+                  type="radio"
+                  name="locale"
+                  value={value}
+                  defaultChecked={profile.locale === value}
+                  className="sr-only"
+                />
                 {label}
               </label>
             ))}

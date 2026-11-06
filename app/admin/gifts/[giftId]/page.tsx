@@ -14,7 +14,10 @@ import { disableGift } from "@/features/admin/actions";
 import { getGiftForModeration, requireAdmin } from "@/features/admin/queries";
 
 /** Moderation view. Admin read of another user's gift is logged by the action taken, not the view. */
-export default async function AdminGiftPage({ params, searchParams }: PageProps<"/admin/gifts/[giftId]">) {
+export default async function AdminGiftPage({
+  params,
+  searchParams,
+}: PageProps<"/admin/gifts/[giftId]">) {
   await requireAdmin();
   const { giftId } = await params;
   const query = await searchParams;
@@ -37,7 +40,10 @@ export default async function AdminGiftPage({ params, searchParams }: PageProps<
           </div>
         }
       />
-      <AdminFlash ok={typeof query.ok === "string" ? query.ok : undefined} error={typeof query.error === "string" ? query.error : undefined} />
+      <AdminFlash
+        ok={typeof query.ok === "string" ? query.ok : undefined}
+        error={typeof query.error === "string" ? query.error : undefined}
+      />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
         <GiftView
@@ -62,13 +68,21 @@ export default async function AdminGiftPage({ params, searchParams }: PageProps<
                 <div key={r.id} className="rounded-xl border border-border p-3 text-sm">
                   <div className="flex flex-wrap items-center gap-2">
                     <Chip tone="neutral">{t(`reports.reasons.${r.reason}`)}</Chip>
-                    <Chip tone={r.status === "open" ? "primary" : "neutral"}>{t(`reports.status.${r.status}`)}</Chip>
-                    <span className="text-xs text-muted-foreground">{format.dateTime(new Date(r.created_at), { dateStyle: "medium" })}</span>
+                    <Chip tone={r.status === "open" ? "primary" : "neutral"}>
+                      {t(`reports.status.${r.status}`)}
+                    </Chip>
+                    <span className="text-xs text-muted-foreground">
+                      {format.dateTime(new Date(r.created_at), { dateStyle: "medium" })}
+                    </span>
                   </div>
-                  {r.details && <p className="mt-2 whitespace-pre-line text-muted-foreground">{r.details}</p>}
+                  {r.details && (
+                    <p className="mt-2 whitespace-pre-line text-muted-foreground">{r.details}</p>
+                  )}
                 </div>
               ))}
-              {data.reports.length === 0 && <p className="text-sm text-muted-foreground">{t("gift.noReports")}</p>}
+              {data.reports.length === 0 && (
+                <p className="text-sm text-muted-foreground">{t("gift.noReports")}</p>
+              )}
             </CardContent>
           </Card>
 

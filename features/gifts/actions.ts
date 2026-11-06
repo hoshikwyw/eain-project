@@ -8,7 +8,13 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient, createClientWithUser, getCurrentUser } from "@/lib/supabase/server";
 import { MEDIA_BUCKET } from "./media";
 import { editorPayloadSchema, type SaveGiftState, type Section } from "./schemas";
-import { pruneMediaReferences, questionsFromSections, rowsFromSections, sectionsFromRows, themeFromPayload } from "./sections";
+import {
+  pruneMediaReferences,
+  questionsFromSections,
+  rowsFromSections,
+  sectionsFromRows,
+  themeFromPayload,
+} from "./sections";
 import { defaultTheme, isAvailableTemplate, templates } from "./templates";
 
 /** Creates a draft from a template and opens the editor. */
@@ -50,7 +56,11 @@ export async function createGiftFromTemplate(slug: string): Promise<never> {
 
   if (error || !gift) {
     // The database trigger raises when the free limit of five gifts is hit.
-    redirect(error?.message.includes("gift limit") ? "/dashboard/gifts?error=limit" : "/create?error=unknown");
+    redirect(
+      error?.message.includes("gift limit")
+        ? "/dashboard/gifts?error=limit"
+        : "/create?error=unknown",
+    );
   }
 
   const { error: sectionsError } = await supabase
@@ -86,7 +96,11 @@ export async function refreshGiftPages(giftId: string): Promise<void> {
  * long. The pages that show this gift are refreshed when the editor is
  * left, by refreshGiftPages.
  */
-export async function saveGift(giftId: string, _prev: SaveGiftState, formData: FormData): Promise<SaveGiftState> {
+export async function saveGift(
+  giftId: string,
+  _prev: SaveGiftState,
+  formData: FormData,
+): Promise<SaveGiftState> {
   let raw: unknown;
   try {
     raw = JSON.parse(String(formData.get("payload") ?? ""));
@@ -112,9 +126,14 @@ export async function saveGift(giftId: string, _prev: SaveGiftState, formData: F
   const { data: owned } = await supabase.from("gift_media").select("id").eq("gift_id", giftId);
   const sections = pruneMediaReferences(v.sections, new Set((owned ?? []).map((m) => m.id)));
 
-  const { error: deleteError } = await supabase.from("gift_sections").delete().eq("gift_id", giftId);
+  const { error: deleteError } = await supabase
+    .from("gift_sections")
+    .delete()
+    .eq("gift_id", giftId);
   if (deleteError) return { status: "error" };
-  const { error: insertError } = await supabase.from("gift_sections").insert(rowsFromSections(giftId, sections));
+  const { error: insertError } = await supabase
+    .from("gift_sections")
+    .insert(rowsFromSections(giftId, sections));
   if (insertError) return { status: "error" };
 
   if (!(await syncQuestions(supabase, giftId, sections))) return { status: "error" };
@@ -127,7 +146,10 @@ export async function saveGift(giftId: string, _prev: SaveGiftState, formData: F
     .limit(1)
     .maybeSingle();
   const recipientResult = recipient
-    ? await supabase.from("gift_recipients").update({ name: v.recipientName }).eq("id", recipient.id)
+    ? await supabase
+        .from("gift_recipients")
+        .update({ name: v.recipientName })
+        .eq("id", recipient.id)
     : await supabase.from("gift_recipients").insert({ gift_id: giftId, name: v.recipientName });
   if (recipientResult.error) return { status: "error" };
 
@@ -147,7 +169,10 @@ async function syncQuestions(
   const questions = questionsFromSections(sections);
   const keepIds = questions.map((q) => q.questionId);
 
-  const { data: existing } = await supabase.from("gift_questions").select("id").eq("gift_id", giftId);
+  const { data: existing } = await supabase
+    .from("gift_questions")
+    .select("id")
+    .eq("gift_id", giftId);
   const stale = (existing ?? []).map((q) => q.id).filter((id) => !keepIds.includes(id));
   if (stale.length > 0) {
     const { error } = await supabase.from("gift_questions").delete().in("id", stale);
@@ -156,21 +181,41 @@ async function syncQuestions(
 
   for (const q of questions) {
     const { error } = await supabase.from("gift_questions").upsert(
-      { id: q.questionId, gift_id: giftId, type: q.kind, prompt: q.prompt, position: q.position, is_required: q.required },
+      {
+        id: q.questionId,
+        gift_id: giftId,
+        type: q.kind,
+        prompt: q.prompt,
+        position: q.position,
+        is_required: q.required,
+      },
       { onConflict: "id" },
     );
     if (error) return false;
 
     const optionIds = q.options.map((o) => o.id);
-    const { data: existingOptions } = await supabase.from("gift_question_options").select("id").eq("question_id", q.questionId);
-    const staleOptions = (existingOptions ?? []).map((o) => o.id).filter((id) => !optionIds.includes(id));
+    const { data: existingOptions } = await supabase
+      .from("gift_question_options")
+      .select("id")
+      .eq("question_id", q.questionId);
+    const staleOptions = (existingOptions ?? [])
+      .map((o) => o.id)
+      .filter((id) => !optionIds.includes(id));
     if (staleOptions.length > 0) {
-      const { error: delError } = await supabase.from("gift_question_options").delete().in("id", staleOptions);
+      const { error: delError } = await supabase
+        .from("gift_question_options")
+        .delete()
+        .in("id", staleOptions);
       if (delError) return false;
     }
     if (q.options.length > 0) {
       const { error: optError } = await supabase.from("gift_question_options").upsert(
-        q.options.map((o, position) => ({ id: o.id, question_id: q.questionId, label: o.label, position })),
+        q.options.map((o, position) => ({
+          id: o.id,
+          question_id: q.questionId,
+          label: o.label,
+          position,
+        })),
         { onConflict: "id" },
       );
       if (optError) return false;
@@ -184,21 +229,43 @@ export async function duplicateGift(giftId: string): Promise<void> {
   const { supabase, user } = await createClientWithUser();
   if (!user) redirect("/auth/login");
 
-  const [{ data: source }, { data: sections }, { data: recipient }, { data: media }] = await Promise.all([
-    supabase.from("gifts").select("*").eq("id", giftId).eq("sender_id", user.id).neq("status", "deleted").maybeSingle(),
-    supabase.from("gift_sections").select("*").eq("gift_id", giftId).order("position"),
-    supabase.from("gift_recipients").select("name").eq("gift_id", giftId).order("created_at").limit(1).maybeSingle(),
-    supabase.from("gift_media").select("*").eq("gift_id", giftId),
-  ]);
+  const [{ data: source }, { data: sections }, { data: recipient }, { data: media }] =
+    await Promise.all([
+      supabase
+        .from("gifts")
+        .select("*")
+        .eq("id", giftId)
+        .eq("sender_id", user.id)
+        .neq("status", "deleted")
+        .maybeSingle(),
+      supabase.from("gift_sections").select("*").eq("gift_id", giftId).order("position"),
+      supabase
+        .from("gift_recipients")
+        .select("name")
+        .eq("gift_id", giftId)
+        .order("created_at")
+        .limit(1)
+        .maybeSingle(),
+      supabase.from("gift_media").select("*").eq("gift_id", giftId),
+    ]);
   if (!source) redirect("/dashboard/gifts");
 
   const { data: copy, error } = await supabase
     .from("gifts")
-    .insert({ sender_id: user.id, template_id: source.template_id, title: `${source.title} (2)`.slice(0, 120), theme: source.theme })
+    .insert({
+      sender_id: user.id,
+      template_id: source.template_id,
+      title: `${source.title} (2)`.slice(0, 120),
+      theme: source.theme,
+    })
     .select("id")
     .single();
   if (error || !copy) {
-    redirect(error?.message.includes("gift limit") ? "/dashboard/gifts?error=limit" : `/dashboard/gifts/${giftId}?error=duplicate`);
+    redirect(
+      error?.message.includes("gift limit")
+        ? "/dashboard/gifts?error=limit"
+        : `/dashboard/gifts/${giftId}?error=duplicate`,
+    );
   }
 
   // Copy storage objects so deleting one gift never removes the other's photos.
@@ -213,7 +280,8 @@ export async function duplicateGift(giftId: string): Promise<void> {
       const newThumb = m.thumb_path ? `${base}_thumb.${ext}` : null;
       const copied = await admin.storage.from(MEDIA_BUCKET).copy(m.storage_path, newPath);
       if (copied.error) continue;
-      if (m.thumb_path && newThumb) await admin.storage.from(MEDIA_BUCKET).copy(m.thumb_path, newThumb);
+      if (m.thumb_path && newThumb)
+        await admin.storage.from(MEDIA_BUCKET).copy(m.thumb_path, newThumb);
       const { error: rowError } = await supabase.from("gift_media").insert({
         id: newId,
         gift_id: copy.id,
@@ -247,18 +315,30 @@ export async function duplicateGift(giftId: string): Promise<void> {
   };
 
   if (sections && sections.length > 0) {
-    const copied = sections.map((s) => ({ gift_id: copy.id, type: s.type, position: s.position, content: remap(s.content) as never }));
+    const copied = sections.map((s) => ({
+      gift_id: copy.id,
+      type: s.type,
+      position: s.position,
+      content: remap(s.content) as never,
+    }));
     await supabase.from("gift_sections").insert(copied);
-    const { data: rows } = await supabase.from("gift_sections").select("id, type, content, position").eq("gift_id", copy.id);
+    const { data: rows } = await supabase
+      .from("gift_sections")
+      .select("id, type, content, position")
+      .eq("gift_id", copy.id);
     await syncQuestions(supabase, copy.id, sectionsFromRows(rows ?? []));
   }
-  if (recipient) await supabase.from("gift_recipients").insert({ gift_id: copy.id, name: recipient.name });
+  if (recipient)
+    await supabase.from("gift_recipients").insert({ gift_id: copy.id, name: recipient.name });
 
   revalidatePath("/dashboard", "layout");
   redirect(`/create/${copy.id}`);
 }
 
-async function rpcOnGift(fn: "publish_gift" | "unpublish_gift" | "regenerate_gift_link" | "delete_gift", giftId: string) {
+async function rpcOnGift(
+  fn: "publish_gift" | "unpublish_gift" | "regenerate_gift_link" | "delete_gift",
+  giftId: string,
+) {
   const supabase = await createClient();
   const { error } = await supabase.rpc(fn, { p_gift_id: giftId });
   revalidatePath("/dashboard", "layout");
@@ -278,7 +358,10 @@ export async function publishGift(giftId: string): Promise<void> {
  * Saves the editor payload, then publishes. Returns the save state when the
  * save fails so the editor keeps the user's unsaved content on screen.
  */
-export async function saveAndPublishGift(giftId: string, formData: FormData): Promise<SaveGiftState | void> {
+export async function saveAndPublishGift(
+  giftId: string,
+  formData: FormData,
+): Promise<SaveGiftState | void> {
   const result = await saveGift(giftId, {}, formData);
   if (result.status !== "saved") return result;
   await publishGift(giftId);

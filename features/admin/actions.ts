@@ -30,7 +30,10 @@ export async function setUserRole(formData: FormData): Promise<void> {
   });
   if (!parsed.success) back(to, "error", "invalid");
   const supabase = await createClient();
-  const { error } = await supabase.rpc("admin_set_role", { p_user_id: parsed.data.userId, p_role: parsed.data.role });
+  const { error } = await supabase.rpc("admin_set_role", {
+    p_user_id: parsed.data.userId,
+    p_role: parsed.data.role,
+  });
   revalidatePath("/admin", "layout");
   if (error) back(to, "error", error.message.includes("own role") ? "ownRole" : "failed");
   back(to, "ok", "role");
@@ -41,10 +44,17 @@ export async function adjustPoints(formData: FormData): Promise<void> {
   const parsed = z
     .object({
       userId: z.uuid(),
-      amount: z.coerce.number().int().refine((n) => n !== 0 && Math.abs(n) <= 100000),
+      amount: z.coerce
+        .number()
+        .int()
+        .refine((n) => n !== 0 && Math.abs(n) <= 100000),
       description: z.string().trim().max(200).default(""),
     })
-    .safeParse({ userId: formData.get("userId"), amount: formData.get("amount"), description: formData.get("description") ?? "" });
+    .safeParse({
+      userId: formData.get("userId"),
+      amount: formData.get("amount"),
+      description: formData.get("description") ?? "",
+    });
   if (!parsed.success) back(to, "error", "invalid");
   const supabase = await createClient();
   const { error } = await supabase.rpc("admin_adjust_points", {
@@ -112,26 +122,36 @@ export async function updateTemplateDetails(formData: FormData): Promise<void> {
 }
 
 export async function resolveReport(formData: FormData): Promise<void> {
-  const parsed = z.object({ reportId: z.uuid(), status: z.enum(["reviewing", "resolved", "dismissed"]) }).safeParse({
-    reportId: formData.get("reportId"),
-    status: formData.get("status"),
-  });
+  const parsed = z
+    .object({ reportId: z.uuid(), status: z.enum(["reviewing", "resolved", "dismissed"]) })
+    .safeParse({
+      reportId: formData.get("reportId"),
+      status: formData.get("status"),
+    });
   if (!parsed.success) back("/admin/reports", "error", "invalid");
   const supabase = await createClient();
-  const { error } = await supabase.rpc("admin_resolve_report", { p_report_id: parsed.data.reportId, p_status: parsed.data.status });
+  const { error } = await supabase.rpc("admin_resolve_report", {
+    p_report_id: parsed.data.reportId,
+    p_status: parsed.data.status,
+  });
   revalidatePath("/admin", "layout");
   if (error) back("/admin/reports", "error", "failed");
   back("/admin/reports", "ok", "report");
 }
 
 export async function disableGift(formData: FormData): Promise<void> {
-  const parsed = z.object({ giftId: z.uuid(), reason: z.string().trim().max(300).default("") }).safeParse({
-    giftId: formData.get("giftId"),
-    reason: formData.get("reason") ?? "",
-  });
+  const parsed = z
+    .object({ giftId: z.uuid(), reason: z.string().trim().max(300).default("") })
+    .safeParse({
+      giftId: formData.get("giftId"),
+      reason: formData.get("reason") ?? "",
+    });
   if (!parsed.success) back("/admin/reports", "error", "invalid");
   const supabase = await createClient();
-  const { error } = await supabase.rpc("admin_disable_gift", { p_gift_id: parsed.data.giftId, p_reason: parsed.data.reason });
+  const { error } = await supabase.rpc("admin_disable_gift", {
+    p_gift_id: parsed.data.giftId,
+    p_reason: parsed.data.reason,
+  });
   revalidatePath("/admin", "layout");
   if (error) back(`/admin/gifts/${parsed.data.giftId}`, "error", "failed");
   back(`/admin/gifts/${parsed.data.giftId}`, "ok", "disabled");

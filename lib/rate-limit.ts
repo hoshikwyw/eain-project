@@ -21,7 +21,11 @@ export function clientKeyFromHeaders(headers: Headers): string {
 }
 
 /** Fixed window counter in Postgres. Fails open on database errors. */
-export async function checkRateLimit(key: string, limit: number, windowSeconds: number): Promise<boolean> {
+export async function checkRateLimit(
+  key: string,
+  limit: number,
+  windowSeconds: number,
+): Promise<boolean> {
   const admin = createAdminClient();
   const { data, error } = await admin.rpc("check_rate_limit", {
     p_key: key,

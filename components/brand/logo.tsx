@@ -22,8 +22,13 @@ export function LogoMark({ className }: { className?: string }) {
 export function Wordmark({ className }: { className?: string }) {
   return (
     <span className={cn("font-display text-2xl font-semibold tracking-tight", className)}>
-      Ea<span className="relative">
-        i<span aria-hidden="true" className="absolute -top-1 left-1/2 -translate-x-1/2 text-[0.45em] text-brand">
+      Ea
+      <span className="relative">
+        i
+        <span
+          aria-hidden="true"
+          className="absolute -top-1 left-1/2 -translate-x-1/2 text-[0.45em] text-brand"
+        >
           ♥
         </span>
       </span>

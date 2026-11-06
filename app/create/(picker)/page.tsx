@@ -38,14 +38,14 @@ export default async function CreatePage({ searchParams }: PageProps<"/create">)
           <p className="mt-1 text-muted-foreground">{t("subtitle")}</p>
         </div>
         {/* Phones have no balance in the top bar, and it decides what can be unlocked here. */}
-        <PointsPill balance={profile.points_balance} label={tNav("points")} className="mt-1 shrink-0 md:hidden" />
+        <PointsPill
+          balance={profile.points_balance}
+          label={tNav("points")}
+          className="mt-1 shrink-0 md:hidden"
+        />
       </div>
 
-      {error && (
-        <Notice role="alert">
-          {t(`errors.${error}`)}
-        </Notice>
-      )}
+      {error && <Notice role="alert">{t(`errors.${error}`)}</Notice>}
 
       <TemplateGrid
         templates={templates}

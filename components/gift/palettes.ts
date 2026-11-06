@@ -273,7 +273,8 @@ const morePalettes = {
 /** Every look. Typed as a full record so adding a look without a palette fails to compile. */
 export const palettes: Record<ThemeVariant, CSSProperties> = { ...basePalettes, ...morePalettes };
 
-const channels = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)) as [number, number, number];
+const channels = (hex: string) =>
+  [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)) as [number, number, number];
 
 /** Black or white, whichever reads better on the colour. */
 function readableOn(hex: string): string {
@@ -300,7 +301,13 @@ export function contrastRatio(a: string, b: string): number {
  * CSS and may be a gradient; the rest are #rrggbb, with `bgHex` the
  * background's first colour.
  */
-export function lookColors(variant: ThemeVariant): { bg: string; bgHex: string; card: string; text: string; accent: string } {
+export function lookColors(variant: ThemeVariant): {
+  bg: string;
+  bgHex: string;
+  card: string;
+  text: string;
+  accent: string;
+} {
   const base = palettes[variant] as Record<string, string>;
   const bg = base["--t-bg"] ?? "#ffffff";
   return {
@@ -363,4 +370,9 @@ export const variantSwatch: Record<ThemeVariant, string> = {
 };
 
 /** Looks with a dark card, for grouping in the picker. */
-export const DARK_VARIANTS: ReadonlySet<ThemeVariant> = new Set(["night", "forest", "noir", "berry"]);
+export const DARK_VARIANTS: ReadonlySet<ThemeVariant> = new Set([
+  "night",
+  "forest",
+  "noir",
+  "berry",
+]);

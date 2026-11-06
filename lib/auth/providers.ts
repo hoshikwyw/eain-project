@@ -15,8 +15,14 @@ export async function getAuthProviders(): Promise<AuthProviders> {
       next: { revalidate: 300 },
     });
     if (!res.ok) return { google: false, emailConfirmationOn: false };
-    const json = (await res.json()) as { external?: { google?: boolean }; mailer_autoconfirm?: boolean };
-    return { google: Boolean(json.external?.google), emailConfirmationOn: json.mailer_autoconfirm === false };
+    const json = (await res.json()) as {
+      external?: { google?: boolean };
+      mailer_autoconfirm?: boolean;
+    };
+    return {
+      google: Boolean(json.external?.google),
+      emailConfirmationOn: json.mailer_autoconfirm === false,
+    };
   } catch {
     return { google: false, emailConfirmationOn: false };
   }

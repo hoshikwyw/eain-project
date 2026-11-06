@@ -12,7 +12,11 @@ export function ThemeToggle() {
   const t = useTranslations("settings");
   const { resolvedTheme, setTheme } = useTheme();
   // Theme is unknown on the server. Render a neutral icon until hydrated.
-  const mounted = useSyncExternalStore(subscribeNoop, () => true, () => false);
+  const mounted = useSyncExternalStore(
+    subscribeNoop,
+    () => true,
+    () => false,
+  );
 
   const isDark = mounted && resolvedTheme === "dark";
 

@@ -15,7 +15,9 @@ const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const site = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:5173";
 
-const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+const admin = createClient(url, serviceKey, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
 const user = createClient(url, anonKey, { auth: { persistSession: false } });
 
 let userId: string;
@@ -44,10 +46,19 @@ describe("core loop", () => {
   });
 
   it("creates a draft with sections and a recipient", async () => {
-    const { data: template } = await user.from("templates").select("id").eq("slug", "birthday-postcard").single();
+    const { data: template } = await user
+      .from("templates")
+      .select("id")
+      .eq("slug", "birthday-postcard")
+      .single();
     const { data: gift, error } = await user
       .from("gifts")
-      .insert({ sender_id: userId, template_id: template!.id, title: "Core loop gift", theme: { variant: "night" } })
+      .insert({
+        sender_id: userId,
+        template_id: template!.id,
+        title: "Core loop gift",
+        theme: { variant: "night" },
+      })
       .select("id, status, share_token")
       .single();
     assert.equal(error, null);
@@ -57,15 +68,33 @@ describe("core loop", () => {
 
     const { error: sErr } = await user.from("gift_sections").insert([
       { gift_id: giftId, type: "text", position: 0, content: { heading: "Happy Birthday, Su!" } },
-      { gift_id: giftId, type: "message", position: 1, content: { text: "Hope your day is lovely." } },
-      { gift_id: giftId, type: "final_message", position: 2, content: { text: "With love,", signature: "Core" } },
+      {
+        gift_id: giftId,
+        type: "message",
+        position: 1,
+        content: { text: "Hope your day is lovely." },
+      },
+      {
+        gift_id: giftId,
+        type: "final_message",
+        position: 2,
+        content: { text: "With love,", signature: "Core" },
+      },
     ]);
     assert.equal(sErr, null);
-    const { error: rErr } = await user.from("gift_recipients").insert({ gift_id: giftId, name: "Su" });
+    const { error: rErr } = await user
+      .from("gift_recipients")
+      .insert({ gift_id: giftId, name: "Su" });
     assert.equal(rErr, null);
 
-    const { data: events } = await user.from("gift_events").select("event_type").eq("gift_id", giftId);
-    assert.deepEqual(events?.map((e) => e.event_type), ["created"]);
+    const { data: events } = await user
+      .from("gift_events")
+      .select("event_type")
+      .eq("gift_id", giftId);
+    assert.deepEqual(
+      events?.map((e) => e.event_type),
+      ["created"],
+    );
   });
 
   it("a draft is not reachable by its link", async () => {
@@ -106,15 +135,28 @@ describe("core loop", () => {
     const r2 = await fetch(`${site}/api/g/${token}/events`, { method: "POST", headers, body });
     assert.equal(r2.status, 200);
 
-    const { data: events } = await user.from("gift_events").select("event_type").eq("gift_id", giftId).eq("event_type", "opened");
+    const { data: events } = await user
+      .from("gift_events")
+      .select("event_type")
+      .eq("gift_id", giftId)
+      .eq("event_type", "opened");
     assert.equal(events?.length, 1, "same session counted once");
 
-    const { data: recipient } = await user.from("gift_recipients").select("first_opened_at, open_count").eq("gift_id", giftId).single();
+    const { data: recipient } = await user
+      .from("gift_recipients")
+      .select("first_opened_at, open_count")
+      .eq("gift_id", giftId)
+      .single();
     assert.ok(recipient?.first_opened_at);
     assert.equal(recipient?.open_count, 1);
 
-    const { data: notifications } = await user.from("notifications").select("type, title_key, read_at").eq("gift_id", giftId);
-    assert.deepEqual(notifications, [{ type: "gift_opened", title_key: "giftOpened", read_at: null }]);
+    const { data: notifications } = await user
+      .from("notifications")
+      .select("type, title_key, read_at")
+      .eq("gift_id", giftId);
+    assert.deepEqual(notifications, [
+      { type: "gift_opened", title_key: "giftOpened", read_at: null },
+    ]);
 
     const { data: profile } = await user.from("profiles").select("points_balance").single();
     assert.equal(profile?.points_balance, 115);
@@ -125,13 +167,21 @@ describe("core loop", () => {
     const headers = { "Content-Type": "application/json" };
     await fetch(`${site}/api/g/${token}/events`, { method: "POST", headers, body });
     await fetch(`${site}/api/g/${token}/events`, { method: "POST", headers, body });
-    const { data } = await user.from("gift_events").select("id").eq("gift_id", giftId).eq("event_type", "viewed");
+    const { data } = await user
+      .from("gift_events")
+      .select("id")
+      .eq("gift_id", giftId)
+      .eq("event_type", "viewed");
     assert.equal(data?.length, 1);
   });
 
   it("rejects bad event payloads", async () => {
     const headers = { "Content-Type": "application/json" };
-    const bad = await fetch(`${site}/api/g/${token}/events`, { method: "POST", headers, body: '{"type":"hack","sessionId":"x"}' });
+    const bad = await fetch(`${site}/api/g/${token}/events`, {
+      method: "POST",
+      headers,
+      body: '{"type":"hack","sessionId":"x"}',
+    });
     assert.equal(bad.status, 400);
     const unknown = await fetch(`${site}/api/g/${"a".repeat(43)}/events`, {
       method: "POST",

@@ -42,7 +42,15 @@ function caretToEnd(el: HTMLElement) {
  * while it is edited, so the caret never jumps; React only writes it when the
  * value changes from somewhere else (the side panel).
  */
-export function EditableText({ value, onChange, placeholder, max, multiline, field, index }: Props) {
+export function EditableText({
+  value,
+  onChange,
+  placeholder,
+  max,
+  multiline,
+  field,
+  index,
+}: Props) {
   const ref = useRef<HTMLSpanElement>(null);
   // Rendered once so the server and the first paint already show the text.
   const [initial] = useState(value);

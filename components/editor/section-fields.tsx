@@ -5,7 +5,15 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PHOTO_SIZE_MAX, PHOTO_SIZE_MIN, QUESTION_KINDS, REACTIONS, type MediaItem, type QuestionKind, type Section } from "@/features/gifts/schemas";
+import {
+  PHOTO_SIZE_MAX,
+  PHOTO_SIZE_MIN,
+  QUESTION_KINDS,
+  REACTIONS,
+  type MediaItem,
+  type QuestionKind,
+  type Section,
+} from "@/features/gifts/schemas";
 import { PhotoPicker } from "./photo-picker";
 
 const selectClass =
@@ -37,7 +45,9 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
               value={section.content.heading}
               maxLength={80}
               required
-              onChange={(e) => onChange({ ...section, content: { ...section.content, heading: e.target.value } })}
+              onChange={(e) =>
+                onChange({ ...section, content: { ...section.content, heading: e.target.value } })
+              }
             />
           </Field>
           <Field label={t("subheading")} htmlFor={`${id}-sub`}>
@@ -45,14 +55,23 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
               id={`${id}-sub`}
               value={section.content.subheading}
               maxLength={160}
-              onChange={(e) => onChange({ ...section, content: { ...section.content, subheading: e.target.value } })}
+              onChange={(e) =>
+                onChange({
+                  ...section,
+                  content: { ...section.content, subheading: e.target.value },
+                })
+              }
             />
           </Field>
         </>
       );
     case "message":
       return (
-        <Field label={t("message")} htmlFor={`${id}-text`} counter={`${section.content.text.length}/1000`}>
+        <Field
+          label={t("message")}
+          htmlFor={`${id}-text`}
+          counter={`${section.content.text.length}/1000`}
+        >
           <textarea
             id={`${id}-text`}
             value={section.content.text}
@@ -60,7 +79,9 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
             rows={5}
             required
             className={textareaClass}
-            onChange={(e) => onChange({ ...section, content: { ...section.content, text: e.target.value } })}
+            onChange={(e) =>
+              onChange({ ...section, content: { ...section.content, text: e.target.value } })
+            }
           />
         </Field>
       );
@@ -72,18 +93,27 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
             media={media}
             onMediaChange={onMediaChange}
             selected={section.content.mediaId ? [section.content.mediaId] : []}
-            onSelectedChange={(ids) => onChange({ ...section, content: { ...section.content, mediaId: ids[0] ?? null } })}
+            onSelectedChange={(ids) =>
+              onChange({ ...section, content: { ...section.content, mediaId: ids[0] ?? null } })
+            }
             max={1}
           />
           {section.content.mediaId && (
-            <PhotoSizeField id={`${id}-size`} label={t("photoSize")} value={section.content.size} onChange={(size) => onChange({ ...section, content: { ...section.content, size } })} />
+            <PhotoSizeField
+              id={`${id}-size`}
+              label={t("photoSize")}
+              value={section.content.size}
+              onChange={(size) => onChange({ ...section, content: { ...section.content, size } })}
+            />
           )}
           <Field label={t("caption")} htmlFor={`${id}-caption`}>
             <Input
               id={`${id}-caption`}
               value={section.content.caption}
               maxLength={160}
-              onChange={(e) => onChange({ ...section, content: { ...section.content, caption: e.target.value } })}
+              onChange={(e) =>
+                onChange({ ...section, content: { ...section.content, caption: e.target.value } })
+              }
             />
           </Field>
         </>
@@ -96,25 +126,35 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
             media={media}
             onMediaChange={onMediaChange}
             selected={section.content.mediaIds}
-            onSelectedChange={(ids) => onChange({ ...section, content: { ...section.content, mediaIds: ids } })}
+            onSelectedChange={(ids) =>
+              onChange({ ...section, content: { ...section.content, mediaIds: ids } })
+            }
             max={5}
           />
           {section.content.mediaIds.length > 0 && (
-            <PhotoSizeField id={`${id}-size`} label={t("photoSize")} value={section.content.size} onChange={(size) => onChange({ ...section, content: { ...section.content, size } })} />
+            <PhotoSizeField
+              id={`${id}-size`}
+              label={t("photoSize")}
+              value={section.content.size}
+              onChange={(size) => onChange({ ...section, content: { ...section.content, size } })}
+            />
           )}
           <Field label={t("caption")} htmlFor={`${id}-caption`}>
             <Input
               id={`${id}-caption`}
               value={section.content.caption}
               maxLength={160}
-              onChange={(e) => onChange({ ...section, content: { ...section.content, caption: e.target.value } })}
+              onChange={(e) =>
+                onChange({ ...section, content: { ...section.content, caption: e.target.value } })
+              }
             />
           </Field>
         </>
       );
     case "timeline": {
       const items = section.content.items;
-      const setItems = (next: typeof items) => onChange({ ...section, content: { ...section.content, items: next } });
+      const setItems = (next: typeof items) =>
+        onChange({ ...section, content: { ...section.content, items: next } });
       return (
         <div className="flex flex-col gap-3">
           {items.map((item, i) => (
@@ -125,7 +165,9 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
                   placeholder={t("date")}
                   value={item.date}
                   maxLength={40}
-                  onChange={(e) => setItems(items.map((it, j) => (j === i ? { ...it, date: e.target.value } : it)))}
+                  onChange={(e) =>
+                    setItems(items.map((it, j) => (j === i ? { ...it, date: e.target.value } : it)))
+                  }
                 />
                 <Input
                   aria-label={t("momentTitle")}
@@ -133,7 +175,11 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
                   value={item.title}
                   maxLength={80}
                   required
-                  onChange={(e) => setItems(items.map((it, j) => (j === i ? { ...it, title: e.target.value } : it)))}
+                  onChange={(e) =>
+                    setItems(
+                      items.map((it, j) => (j === i ? { ...it, title: e.target.value } : it)),
+                    )
+                  }
                 />
               </div>
               <textarea
@@ -143,10 +189,18 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
                 maxLength={300}
                 rows={2}
                 className={textareaClass}
-                onChange={(e) => setItems(items.map((it, j) => (j === i ? { ...it, text: e.target.value } : it)))}
+                onChange={(e) =>
+                  setItems(items.map((it, j) => (j === i ? { ...it, text: e.target.value } : it)))
+                }
               />
               {items.length > 1 && (
-                <Button type="button" variant="ghost" size="sm" className="self-end text-destructive" onClick={() => setItems(items.filter((_, j) => j !== i))}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="self-end text-destructive"
+                  onClick={() => setItems(items.filter((_, j) => j !== i))}
+                >
                   <Trash2 />
                   {t("removeMoment")}
                 </Button>
@@ -154,7 +208,13 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
             </div>
           ))}
           {items.length < 8 && (
-            <Button type="button" variant="secondary" size="sm" className="self-start" onClick={() => setItems([...items, { date: "", title: "", text: "" }])}>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="self-start"
+              onClick={() => setItems([...items, { date: "", title: "", text: "" }])}
+            >
               <Plus />
               {t("addMoment")}
             </Button>
@@ -173,7 +233,9 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
               rows={3}
               required
               className={textareaClass}
-              onChange={(e) => onChange({ ...section, content: { ...section.content, text: e.target.value } })}
+              onChange={(e) =>
+                onChange({ ...section, content: { ...section.content, text: e.target.value } })
+              }
             />
           </Field>
           <Field label={t("attribution")} htmlFor={`${id}-attr`}>
@@ -181,7 +243,12 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
               id={`${id}-attr`}
               value={section.content.attribution}
               maxLength={80}
-              onChange={(e) => onChange({ ...section, content: { ...section.content, attribution: e.target.value } })}
+              onChange={(e) =>
+                onChange({
+                  ...section,
+                  content: { ...section.content, attribution: e.target.value },
+                })
+              }
             />
           </Field>
         </>
@@ -202,7 +269,8 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
             return [];
         }
       };
-      const setOptions = (options: typeof c.options) => onChange({ ...section, content: { ...c, options } });
+      const setOptions = (options: typeof c.options) =>
+        onChange({ ...section, content: { ...c, options } });
       const editableOptions = c.kind === "choice" || c.kind === "yes_no";
       return (
         <div className="flex flex-col gap-4">
@@ -214,7 +282,9 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
                 maxLength={300}
                 required
                 placeholder={t("promptPlaceholder")}
-                onChange={(e) => onChange({ ...section, content: { ...c, prompt: e.target.value } })}
+                onChange={(e) =>
+                  onChange({ ...section, content: { ...c, prompt: e.target.value } })
+                }
               />
             </Field>
             <Field label={t("answerType")} htmlFor={`${id}-kind`}>
@@ -246,17 +316,33 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
                     value={o.label}
                     maxLength={120}
                     required
-                    onChange={(e) => setOptions(c.options.map((x) => (x.id === o.id ? { ...x, label: e.target.value } : x)))}
+                    onChange={(e) =>
+                      setOptions(
+                        c.options.map((x) => (x.id === o.id ? { ...x, label: e.target.value } : x)),
+                      )
+                    }
                   />
                   {c.kind === "choice" && c.options.length > 2 && (
-                    <Button type="button" variant="ghost" size="icon" aria-label={t("removeOption")} onClick={() => setOptions(c.options.filter((x) => x.id !== o.id))}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label={t("removeOption")}
+                      onClick={() => setOptions(c.options.filter((x) => x.id !== o.id))}
+                    >
                       <Trash2 />
                     </Button>
                   )}
                 </div>
               ))}
               {c.kind === "choice" && c.options.length < 6 && (
-                <Button type="button" variant="secondary" size="sm" className="self-start" onClick={() => setOptions([...c.options, { id: crypto.randomUUID(), label: "" }])}>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="self-start"
+                  onClick={() => setOptions([...c.options, { id: crypto.randomUUID(), label: "" }])}
+                >
                   <Plus />
                   {t("addOption")}
                 </Button>
@@ -268,7 +354,9 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
             <input
               type="checkbox"
               checked={c.required}
-              onChange={(e) => onChange({ ...section, content: { ...c, required: e.target.checked } })}
+              onChange={(e) =>
+                onChange({ ...section, content: { ...c, required: e.target.checked } })
+              }
               className="size-4 accent-primary"
             />
             {t("required")}
@@ -284,7 +372,9 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
               id={`${id}-final`}
               value={section.content.text}
               maxLength={300}
-              onChange={(e) => onChange({ ...section, content: { ...section.content, text: e.target.value } })}
+              onChange={(e) =>
+                onChange({ ...section, content: { ...section.content, text: e.target.value } })
+              }
             />
           </Field>
           <Field label={t("signature")} htmlFor={`${id}-sig`} hint={t("signatureHint")}>
@@ -292,7 +382,9 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
               id={`${id}-sig`}
               value={section.content.signature}
               maxLength={80}
-              onChange={(e) => onChange({ ...section, content: { ...section.content, signature: e.target.value } })}
+              onChange={(e) =>
+                onChange({ ...section, content: { ...section.content, signature: e.target.value } })
+              }
             />
           </Field>
         </div>
@@ -301,7 +393,17 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
 }
 
 /** How wide the photo is on the card, from narrow to the full width. */
-function PhotoSizeField({ id, label, value, onChange }: { id: string; label: string; value: number | undefined; onChange: (size: number) => void }) {
+function PhotoSizeField({
+  id,
+  label,
+  value,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: number | undefined;
+  onChange: (size: number) => void;
+}) {
   const size = value ?? PHOTO_SIZE_MAX;
   return (
     <div className="flex flex-col gap-1.5">

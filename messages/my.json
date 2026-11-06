@@ -669,8 +669,18 @@
       "markReviewing": "စစ်ဆေးနေသည်ဟု မှတ်",
       "resolve": "ဖြေရှင်းပြီး",
       "dismiss": "ပယ်ဖျက်",
-      "status": { "open": "မဖြေရှင်းရသေး", "reviewing": "စစ်ဆေးနေ", "resolved": "ဖြေရှင်းပြီး", "dismissed": "ပယ်ဖျက်ပြီး" },
-      "giftStatus": { "draft": "မူကြမ်း", "published": "ရောက်ရှိနေ", "unpublished": "ပိတ်ထား", "deleted": "ဖျက်ပြီး" },
+      "status": {
+        "open": "မဖြေရှင်းရသေး",
+        "reviewing": "စစ်ဆေးနေ",
+        "resolved": "ဖြေရှင်းပြီး",
+        "dismissed": "ပယ်ဖျက်ပြီး"
+      },
+      "giftStatus": {
+        "draft": "မူကြမ်း",
+        "published": "ရောက်ရှိနေ",
+        "unpublished": "ပိတ်ထား",
+        "deleted": "ဖျက်ပြီး"
+      },
       "reasons": {
         "harassment": "နှောင့်ယှက်မှု",
         "spam": "စပမ်",

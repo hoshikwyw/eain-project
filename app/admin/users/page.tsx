@@ -21,12 +21,21 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/admin
   return (
     <div className="flex flex-col gap-6">
       <PageHeader title={t("nav.users")} subtitle={t("users.subtitle")} />
-      <AdminFlash ok={typeof params.ok === "string" ? params.ok : undefined} error={typeof params.error === "string" ? params.error : undefined} />
+      <AdminFlash
+        ok={typeof params.ok === "string" ? params.ok : undefined}
+        error={typeof params.error === "string" ? params.error : undefined}
+      />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <form className="relative w-full max-w-sm" role="search">
           <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input name="q" type="search" defaultValue={query} placeholder={t("users.search")} className="pl-10" />
+          <Input
+            name="q"
+            type="search"
+            defaultValue={query}
+            placeholder={t("users.search")}
+            className="pl-10"
+          />
         </form>
         <p className="text-sm text-muted-foreground">{t("users.count", { count: users.length })}</p>
       </div>
@@ -42,15 +51,20 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/admin
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="truncate font-semibold">{u.displayName || t("users.unnamed")}</p>
+                      <p className="truncate font-semibold">
+                        {u.displayName || t("users.unnamed")}
+                      </p>
                       {u.id === me.id && <Chip tone="neutral">{t("users.you")}</Chip>}
                       {u.role === "admin" && <Chip tone="primary">{t("users.roles.admin")}</Chip>}
                       {u.suspended && <Chip tone="brand">{t("users.suspended")}</Chip>}
                     </div>
                     <p className="truncate text-xs text-muted-foreground">
-                      {u.email} · {t(`users.providers.${u.provider === "google" ? "google" : "email"}`)} ·{" "}
+                      {u.email} ·{" "}
+                      {t(`users.providers.${u.provider === "google" ? "google" : "email"}`)} ·{" "}
                       {u.lastSignInAt
-                        ? t("users.lastSeen", { when: format.relativeTime(new Date(u.lastSignInAt)) })
+                        ? t("users.lastSeen", {
+                            when: format.relativeTime(new Date(u.lastSignInAt)),
+                          })
                         : t("users.neverSignedIn")}
                     </p>
                   </div>
@@ -64,7 +78,9 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/admin
             </Link>
           </li>
         ))}
-        {users.length === 0 && <li className="py-8 text-center text-sm text-muted-foreground">{t("users.empty")}</li>}
+        {users.length === 0 && (
+          <li className="py-8 text-center text-sm text-muted-foreground">{t("users.empty")}</li>
+        )}
       </ul>
     </div>
   );

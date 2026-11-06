@@ -40,8 +40,13 @@ export async function GET(request: Request) {
   let purgedGifts = 0;
   let purgedPhotos = 0;
   for (const gift of expired ?? []) {
-    const { data: media } = await admin.from("gift_media").select("storage_path, thumb_path").eq("gift_id", gift.id);
-    const paths = (media ?? []).flatMap((m) => [m.storage_path, m.thumb_path].filter((p): p is string => Boolean(p)));
+    const { data: media } = await admin
+      .from("gift_media")
+      .select("storage_path, thumb_path")
+      .eq("gift_id", gift.id);
+    const paths = (media ?? []).flatMap((m) =>
+      [m.storage_path, m.thumb_path].filter((p): p is string => Boolean(p)),
+    );
     if (paths.length) {
       const { error: storageError } = await admin.storage.from(MEDIA_BUCKET).remove(paths);
       if (storageError) continue; // Keep the row so the next run retries the files.

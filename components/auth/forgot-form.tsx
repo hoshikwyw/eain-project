@@ -22,7 +22,10 @@ export function ForgotForm({ expired }: { expired?: boolean }) {
         </span>
         <p className="font-semibold">{t("sentTitle")}</p>
         <p className="text-sm text-muted-foreground">{t("sentText")}</p>
-        <Link href="/auth/login" className="text-sm font-semibold text-primary-ink underline-offset-4 hover:underline">
+        <Link
+          href="/auth/login"
+          className="text-sm font-semibold text-primary-ink underline-offset-4 hover:underline"
+        >
           {t("backToLogin")}
         </Link>
       </div>
@@ -31,25 +34,27 @@ export function ForgotForm({ expired }: { expired?: boolean }) {
 
   return (
     <form action={formAction} className="flex flex-col gap-4" noValidate>
-      {expired && (
-        <Notice role="status">
-          {t("expired")}
-        </Notice>
-      )}
+      {expired && <Notice role="status">{t("expired")}</Notice>}
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="email">{t("email")}</Label>
-        <Input id="email" name="email" type="email" autoComplete="email" inputMode="email" required />
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          inputMode="email"
+          required
+        />
       </div>
-      {state.status && (
-        <Notice role="alert">
-          {t(`errors.${state.status}`)}
-        </Notice>
-      )}
+      {state.status && <Notice role="alert">{t(`errors.${state.status}`)}</Notice>}
       <SubmitButton className="w-full" pendingLabel={t("sending")}>
         {t("send")}
       </SubmitButton>
       <p className="text-center text-xs text-muted-foreground">{t("sameDevice")}</p>
-      <Link href="/auth/login" className="text-center text-sm font-semibold text-primary-ink underline-offset-4 hover:underline">
+      <Link
+        href="/auth/login"
+        className="text-center text-sm font-semibold text-primary-ink underline-offset-4 hover:underline"
+      >
         {t("backToLogin")}
       </Link>
     </form>

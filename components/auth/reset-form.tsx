@@ -17,12 +17,28 @@ export function ResetForm() {
     <form action={formAction} className="flex flex-col gap-4" noValidate>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="password">{t("password")}</Label>
-        <Input id="password" name="password" type="password" autoComplete="new-password" minLength={8} maxLength={72} required />
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          autoComplete="new-password"
+          minLength={8}
+          maxLength={72}
+          required
+        />
         <p className="text-xs text-muted-foreground">{t("hint")}</p>
       </div>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="confirm">{t("confirm")}</Label>
-        <Input id="confirm" name="confirm" type="password" autoComplete="new-password" minLength={8} maxLength={72} required />
+        <Input
+          id="confirm"
+          name="confirm"
+          type="password"
+          autoComplete="new-password"
+          minLength={8}
+          maxLength={72}
+          required
+        />
       </div>
       {state.status && (
         <Notice role="alert">

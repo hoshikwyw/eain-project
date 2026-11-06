@@ -25,7 +25,14 @@ type Options = {
  * keyboard, publishing, and the "leave site?" warning while there are
  * unsaved changes.
  */
-export function useGiftSave({ giftId, autosave, initialJson, payloadJson, valid, onInvalid }: Options) {
+export function useGiftSave({
+  giftId,
+  autosave,
+  initialJson,
+  payloadJson,
+  valid,
+  onInvalid,
+}: Options) {
   // What the server last confirmed as saved, to show unsaved changes.
   const [lastSaved, setLastSaved] = useState(initialJson);
   const dirty = payloadJson !== lastSaved;
@@ -117,5 +124,14 @@ export function useGiftSave({ giftId, autosave, initialJson, payloadJson, valid,
     startTransition(() => formAction(fd));
   };
 
-  return { dirty, state, formAction, saving, publishing: publishing || publishQueued, publishState, publish, saveNow };
+  return {
+    dirty,
+    state,
+    formAction,
+    saving,
+    publishing: publishing || publishQueued,
+    publishState,
+    publish,
+    saveNow,
+  };
 }

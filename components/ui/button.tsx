@@ -9,8 +9,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: "bg-primary text-primary-foreground shadow-soft hover:brightness-110",
-        secondary:
-          "border border-border bg-card text-foreground hover:bg-secondary",
+        secondary: "border border-border bg-card text-foreground hover:bg-secondary",
         soft: "bg-accent text-accent-foreground hover:brightness-95 dark:hover:brightness-110",
         ghost: "text-foreground hover:bg-secondary",
         /** Quiet, high-contrast call to action for editorial pages. Inverts in dark mode. */

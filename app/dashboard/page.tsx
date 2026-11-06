@@ -23,7 +23,17 @@ const TEMPLATES_SHOWN = 8;
 const ACTIVITY_SHOWN = 4;
 
 /** A section's title, a line under it, and an optional "see all" link on the right. */
-function SectionHeading({ title, hint, href, linkLabel }: { title: string; hint?: string; href?: string; linkLabel?: string }) {
+function SectionHeading({
+  title,
+  hint,
+  href,
+  linkLabel,
+}: {
+  title: string;
+  hint?: string;
+  href?: string;
+  linkLabel?: string;
+}) {
   return (
     <div className="flex items-end justify-between gap-4">
       <div>
@@ -31,7 +41,10 @@ function SectionHeading({ title, hint, href, linkLabel }: { title: string; hint?
         {hint && <p className="mt-0.5 text-sm text-muted-foreground">{hint}</p>}
       </div>
       {href && linkLabel && (
-        <Link href={href} className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary-ink underline-offset-4 hover:underline">
+        <Link
+          href={href}
+          className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary-ink underline-offset-4 hover:underline"
+        >
           {linkLabel}
           <ArrowRight className="size-4" />
         </Link>
@@ -57,7 +70,11 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
     getDashboardStats(profile.id),
     listMyGiftCards(GIFTS_SHOWN),
     loadTemplateCards(locale),
-    supabase.from("notifications").select("*").order("created_at", { ascending: false }).limit(ACTIVITY_SHOWN),
+    supabase
+      .from("notifications")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(ACTIVITY_SHOWN),
   ]);
   const shelf = templates.filter((tp) => isAvailableTemplate(tp.slug)).slice(0, TEMPLATES_SHOWN);
   const activity = notifications ?? [];
@@ -73,7 +90,9 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
       {/* Greeting */}
       <section className="bg-hero relative flex flex-col-reverse items-center gap-2 overflow-hidden rounded-[2rem] px-6 py-8 sm:flex-row sm:gap-8 sm:px-10 sm:py-10">
         <div className="flex min-w-0 flex-1 flex-col items-center gap-4 text-center sm:items-start sm:text-left">
-          <h1 className="font-display text-3xl font-semibold text-balance sm:text-4xl lg:text-5xl my:text-wrap my:max-sm:text-2xl">{t("welcome", { name: profile.display_name })}</h1>
+          <h1 className="font-display text-3xl font-semibold text-balance sm:text-4xl lg:text-5xl my:text-wrap my:max-sm:text-2xl">
+            {t("welcome", { name: profile.display_name })}
+          </h1>
           <p className="max-w-md text-muted-foreground sm:text-lg">{t("welcomeSubtitle")}</p>
           <Button asChild size="lg">
             <Link href="/create">
@@ -89,7 +108,10 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
                 [MessageCircleHeart, t("home.statReplies", { count: stats.responses })],
               ] as const
             ).map(([Icon, label]) => (
-              <li key={label} className="inline-flex items-center gap-1.5 rounded-full bg-background/60 px-3 py-1 text-muted-foreground">
+              <li
+                key={label}
+                className="inline-flex items-center gap-1.5 rounded-full bg-background/60 px-3 py-1 text-muted-foreground"
+              >
                 <Icon className="size-4" />
                 {label}
               </li>
@@ -129,13 +151,23 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
       {/* Templates to start from */}
       {shelf.length > 0 && (
         <section className="flex flex-col gap-4">
-          <SectionHeading title={t("home.startNew")} hint={t("home.startNewHint")} href="/create" linkLabel={t("home.allTemplates")} />
+          <SectionHeading
+            title={t("home.startNew")}
+            hint={t("home.startNewHint")}
+            href="/create"
+            linkLabel={t("home.allTemplates")}
+          />
           {/* One row that scrolls sideways; it bleeds to the screen edge on phones. */}
           <ul className="-mx-4 flex snap-x scroll-px-4 gap-3 overflow-x-auto px-4 pt-1 pb-3 sm:gap-4">
             {shelf.map((tp) => {
               const card = (
                 <>
-                  <TemplatePreview slug={tp.slug} variant={tp.variant} locale={locale} name={tp.name} />
+                  <TemplatePreview
+                    slug={tp.slug}
+                    variant={tp.variant}
+                    locale={locale}
+                    name={tp.name}
+                  />
                   <span className="mt-2.5 flex items-center justify-between gap-2 px-1">
                     <span className="truncate text-sm font-semibold">{tp.name}</span>
                     {tp.isPremium && !tp.unlocked ? (
@@ -144,12 +176,17 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
                         {tp.pointPrice}
                       </span>
                     ) : (
-                      !tp.isPremium && <span className="shrink-0 text-xs font-semibold text-success">{t("home.free")}</span>
+                      !tp.isPremium && (
+                        <span className="shrink-0 text-xs font-semibold text-success">
+                          {t("home.free")}
+                        </span>
+                      )
                     )}
                   </span>
                 </>
               );
-              const cardClass = "block w-52 rounded-2xl outline-none transition-transform duration-200 hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-ring sm:w-60";
+              const cardClass =
+                "block w-52 rounded-2xl outline-none transition-transform duration-200 hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-ring sm:w-60";
               return (
                 <li key={tp.id} className="shrink-0 snap-start">
                   {tp.available ? (
@@ -213,7 +250,10 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
                   [t("points.earn.response"), 20],
                 ] as const
               ).map(([label, amount]) => (
-                <li key={label} className="flex items-center justify-between gap-3 rounded-xl bg-background/60 px-3 py-2">
+                <li
+                  key={label}
+                  className="flex items-center justify-between gap-3 rounded-xl bg-background/60 px-3 py-2"
+                >
                   <span>{label}</span>
                   <span className="font-bold text-success">+{amount}</span>
                 </li>

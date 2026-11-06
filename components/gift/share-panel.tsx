@@ -51,7 +51,7 @@ export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title }: Props) {
   return (
     <div className="flex flex-col gap-3">
       {/* The link and its copy button, as one pill. */}
-      <div className="flex items-center gap-2 glass rounded-full border p-1.5 pl-4 focus-within:ring-2 focus-within:ring-ring/60">
+      <div className="flex items-center gap-2 rounded-full border glass p-1.5 pl-4 focus-within:ring-2 focus-within:ring-ring/60">
         <label htmlFor="share-url" className="sr-only">
           {t("link")}
         </label>
@@ -75,7 +75,7 @@ export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title }: Props) {
         </Button>
       )}
 
-      <div className="flex items-center gap-4 glass rounded-2xl border p-3">
+      <div className="flex items-center gap-4 rounded-2xl border glass p-3">
         <div
           className="size-28 shrink-0 overflow-hidden rounded-xl bg-white p-1.5 [&_svg]:size-full"
           role="img"

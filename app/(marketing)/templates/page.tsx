@@ -6,7 +6,11 @@ import { isSupabaseConfigured } from "@/lib/env";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("templatesPage");
-  return { title: t("title"), description: t("seoDescription"), alternates: { canonical: "/templates" } };
+  return {
+    title: t("title"),
+    description: t("seoDescription"),
+    alternates: { canonical: "/templates" },
+  };
 }
 
 /** Public template library. Browsing needs no account; creating does. */
@@ -24,7 +28,12 @@ export default async function TemplatesPage() {
         <h1 className="font-display text-4xl font-semibold">{t("title")}</h1>
         <p className="mt-2 text-lg text-muted-foreground">{t("subtitle")}</p>
       </div>
-      <TemplateGrid templates={templates} categories={categories} mode="browse" locale={locale === "my" ? "my" : "en"} />
+      <TemplateGrid
+        templates={templates}
+        categories={categories}
+        mode="browse"
+        locale={locale === "my" ? "my" : "en"}
+      />
     </div>
   );
 }

@@ -46,7 +46,13 @@ export function UserMenu({ displayName, email, isAdmin }: Props) {
 
   const initial = initialOf(displayName);
   const avatar = (className: string) => (
-    <span aria-hidden="true" className={cn("grid shrink-0 place-items-center rounded-full bg-brand-soft font-bold text-accent-foreground dark:text-brand", className)}>
+    <span
+      aria-hidden="true"
+      className={cn(
+        "grid shrink-0 place-items-center rounded-full bg-brand-soft font-bold text-accent-foreground dark:text-brand",
+        className,
+      )}
+    >
       {initial}
     </span>
   );
@@ -68,7 +74,7 @@ export function UserMenu({ displayName, email, isAdmin }: Props) {
       </button>
 
       {open && (
-        <div className="absolute top-[calc(100%+0.75rem)] right-0 z-50 w-72 max-w-[calc(100vw-2rem)] glass-strong overflow-hidden rounded-3xl border shadow-xl">
+        <div className="absolute top-[calc(100%+0.75rem)] right-0 z-50 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-3xl border glass-strong shadow-xl">
           <div className="flex items-center gap-3 p-4">
             {avatar("size-11 text-base")}
             <div className="min-w-0">

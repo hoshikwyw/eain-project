@@ -11,7 +11,10 @@
 import path from "node:path";
 import sharp from "sharp";
 
-const root = path.resolve(new URL(".", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"), "..");
+const root = path.resolve(
+  new URL(".", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"),
+  "..",
+);
 const W = 1200;
 const H = 630;
 
@@ -51,7 +54,13 @@ const art = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" he
   ${sparkle(1120, 380, 1.3, "#ffc94d", 0.9)}
   ${sparkle(676, 196, 1.1, "#ffc94d", 0.85)}
   ${sparkle(980, 210, 0.9, "#ffffff")}
-  ${[[92, 548, 9], [1150, 70, 8], [596, 56, 6], [1128, 566, 10], [44, 300, 7]]
+  ${[
+    [92, 548, 9],
+    [1150, 70, 8],
+    [596, 56, 6],
+    [1128, 566, 10],
+    [44, 300, 7],
+  ]
     .map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#f4a3b5" opacity="0.45"/>`)
     .join("")}
 
@@ -84,7 +93,10 @@ const art = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" he
   <text x="215" y="522" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="26" fill="#ffffff">Tap to open</text>
 </svg>`);
 
-const mark = await sharp(path.join(root, "public", "brand", "logo-mark.webp")).resize({ height: 64 }).png().toBuffer();
+const mark = await sharp(path.join(root, "public", "brand", "logo-mark.webp"))
+  .resize({ height: 64 })
+  .png()
+  .toBuffer();
 
 const out = path.join(root, "public", "brand", "gift-preview.png");
 const info = await sharp(art)

@@ -23,7 +23,9 @@ export async function signMedia(rows: MediaRow[]): Promise<Record<string, MediaI
   if (rows.length === 0) return {};
   const admin = createAdminClient();
   const paths = rows.flatMap((r) => [r.storage_path, r.thumb_path ?? r.storage_path]);
-  const { data } = await admin.storage.from(MEDIA_BUCKET).createSignedUrls(paths, SIGNED_URL_SECONDS);
+  const { data } = await admin.storage
+    .from(MEDIA_BUCKET)
+    .createSignedUrls(paths, SIGNED_URL_SECONDS);
   const urlByPath = new Map((data ?? []).map((d) => [d.path, d.signedUrl]));
 
   const out: Record<string, MediaItem> = {};

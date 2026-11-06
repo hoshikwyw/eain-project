@@ -1,6 +1,16 @@
 "use client";
 
-import { AlignCenter, AlignLeft, AlignRight, Bold, ChevronDown, Italic, Minus, Plus, RotateCcw } from "lucide-react";
+import {
+  AlignCenter,
+  AlignLeft,
+  AlignRight,
+  Bold,
+  ChevronDown,
+  Italic,
+  Minus,
+  Plus,
+  RotateCcw,
+} from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
 import { TEXT_FONTS } from "@/components/gift/text-fonts";
 import { TEXT_FONT_KEYS, type TextStyle } from "@/features/gifts/schemas";
@@ -10,7 +20,20 @@ const MIN_SCALE = 0.5;
 const MAX_SCALE = 2.5;
 
 /** Ready-made text colours, dark to light then round the wheel. */
-const SWATCHES = ["#1f1f1f", "#6b7280", "#ffffff", "#e11d48", "#f97316", "#f59e0b", "#16a34a", "#0d9488", "#0ea5e9", "#2563eb", "#7c3aed", "#db2777"];
+const SWATCHES = [
+  "#1f1f1f",
+  "#6b7280",
+  "#ffffff",
+  "#e11d48",
+  "#f97316",
+  "#f59e0b",
+  "#16a34a",
+  "#0d9488",
+  "#0ea5e9",
+  "#2563eb",
+  "#7c3aed",
+  "#db2777",
+];
 
 type Align = NonNullable<TextStyle["align"]>;
 
@@ -21,7 +44,11 @@ type Shown = { bold: boolean; italic: boolean; align: Align; color: string };
  * Reads how a text is drawn, so the buttons show what is on screen even when
  * it comes from the design (a heading that is bold or centred on its own).
  */
-function useShown(canvas: RefObject<HTMLElement | null>, selector: string, watch: unknown): Shown | null {
+function useShown(
+  canvas: RefObject<HTMLElement | null>,
+  selector: string,
+  watch: unknown,
+): Shown | null {
   const [shown, setShown] = useState<{ selector: string; value: Shown } | null>(null);
 
   useLayoutEffect(() => {
@@ -33,11 +60,18 @@ function useShown(canvas: RefObject<HTMLElement | null>, selector: string, watch
       const value: Shown = {
         bold: Number.parseInt(cs.fontWeight, 10) >= 600,
         italic: cs.fontStyle === "italic",
-        align: cs.textAlign === "center" ? "center" : cs.textAlign === "right" || cs.textAlign === "end" ? "right" : "left",
+        align:
+          cs.textAlign === "center"
+            ? "center"
+            : cs.textAlign === "right" || cs.textAlign === "end"
+              ? "right"
+              : "left",
         color: cs.color,
       };
       setShown((prev) =>
-        prev && prev.selector === selector && (Object.keys(value) as (keyof Shown)[]).every((k) => prev.value[k] === value[k])
+        prev &&
+        prev.selector === selector &&
+        (Object.keys(value) as (keyof Shown)[]).every((k) => prev.value[k] === value[k])
           ? prev
           : { selector, value },
       );
@@ -80,7 +114,11 @@ type Props = {
   };
 };
 
-const ALIGN_ICONS: Record<Align, React.ComponentType<{ className?: string }>> = { left: AlignLeft, center: AlignCenter, right: AlignRight };
+const ALIGN_ICONS: Record<Align, React.ComponentType<{ className?: string }>> = {
+  left: AlignLeft,
+  center: AlignCenter,
+  right: AlignRight,
+};
 const NEXT_ALIGN: Record<Align, Align> = { left: "center", center: "right", right: "left" };
 
 /**
@@ -111,12 +149,21 @@ export function TextToolbar({ canvas, selector, watch, style, onChange, onReset,
   }, [open]);
 
   const scale = style?.scale ?? 1;
-  const setScale = (next: number) => onChange({ scale: Math.min(Math.max(Math.round(next * 20) / 20, MIN_SCALE), MAX_SCALE) });
+  const setScale = (next: number) =>
+    onChange({ scale: Math.min(Math.max(Math.round(next * 20) / 20, MIN_SCALE), MAX_SCALE) });
   const align = shown?.align ?? "left";
   const AlignIcon = ALIGN_ICONS[align];
-  const alignLabel = { left: labels.alignLeft, center: labels.alignCenter, right: labels.alignRight }[NEXT_ALIGN[align]];
+  const alignLabel = {
+    left: labels.alignLeft,
+    center: labels.alignCenter,
+    right: labels.alignRight,
+  }[NEXT_ALIGN[align]];
   // A gradient heading has no single colour to show.
-  const colorShown = style?.color ?? (shown && !/, 0\)$/.test(shown.color) && shown.color !== "transparent" ? shown.color : undefined);
+  const colorShown =
+    style?.color ??
+    (shown && !/, 0\)$/.test(shown.color) && shown.color !== "transparent"
+      ? shown.color
+      : undefined);
 
   return (
     <div
@@ -124,7 +171,7 @@ export function TextToolbar({ canvas, selector, watch, style, onChange, onReset,
       data-canvas-ui=""
       role="toolbar"
       aria-label={labels.tools}
-      className="relative mx-auto flex w-fit max-w-full flex-wrap items-center justify-center glass-strong gap-1 rounded-2xl border p-1 text-foreground shadow-lg"
+      className="relative mx-auto flex w-fit max-w-full flex-wrap items-center justify-center gap-1 rounded-2xl border glass-strong p-1 text-foreground shadow-lg"
       // Keeps the caret in the text while a tool is pressed.
       onMouseDown={(e) => {
         if (!(e.target instanceof HTMLInputElement)) e.preventDefault();
@@ -145,24 +192,53 @@ export function TextToolbar({ canvas, selector, watch, style, onChange, onReset,
       </button>
 
       <div className="flex items-center">
-        <button type="button" aria-label={labels.smaller} disabled={scale <= MIN_SCALE} onClick={() => setScale(scale - 0.1)} className={toolClass(false)}>
+        <button
+          type="button"
+          aria-label={labels.smaller}
+          disabled={scale <= MIN_SCALE}
+          onClick={() => setScale(scale - 0.1)}
+          className={toolClass(false)}
+        >
           <Minus className="size-4" />
         </button>
         <span aria-hidden="true" className="w-10 text-center text-xs font-semibold tabular-nums">
           {Math.round(scale * 100)}%
         </span>
-        <button type="button" aria-label={labels.larger} disabled={scale >= MAX_SCALE} onClick={() => setScale(scale + 0.1)} className={toolClass(false)}>
+        <button
+          type="button"
+          aria-label={labels.larger}
+          disabled={scale >= MAX_SCALE}
+          onClick={() => setScale(scale + 0.1)}
+          className={toolClass(false)}
+        >
           <Plus className="size-4" />
         </button>
       </div>
 
-      <button type="button" aria-label={labels.bold} aria-pressed={shown?.bold ?? false} onClick={() => onChange({ bold: !(shown?.bold ?? false) })} className={toolClass(shown?.bold ?? false)}>
+      <button
+        type="button"
+        aria-label={labels.bold}
+        aria-pressed={shown?.bold ?? false}
+        onClick={() => onChange({ bold: !(shown?.bold ?? false) })}
+        className={toolClass(shown?.bold ?? false)}
+      >
         <Bold className="size-4" />
       </button>
-      <button type="button" aria-label={labels.italic} aria-pressed={shown?.italic ?? false} onClick={() => onChange({ italic: !(shown?.italic ?? false) })} className={toolClass(shown?.italic ?? false)}>
+      <button
+        type="button"
+        aria-label={labels.italic}
+        aria-pressed={shown?.italic ?? false}
+        onClick={() => onChange({ italic: !(shown?.italic ?? false) })}
+        className={toolClass(shown?.italic ?? false)}
+      >
         <Italic className="size-4" />
       </button>
-      <button type="button" aria-label={alignLabel} onClick={() => onChange({ align: NEXT_ALIGN[align] })} className={toolClass(false)}>
+      <button
+        type="button"
+        aria-label={alignLabel}
+        onClick={() => onChange({ align: NEXT_ALIGN[align] })}
+        className={toolClass(false)}
+      >
         <AlignIcon className="size-4" />
       </button>
 
@@ -177,11 +253,20 @@ export function TextToolbar({ canvas, selector, watch, style, onChange, onReset,
         <span
           aria-hidden="true"
           className="size-5 rounded-full border border-black/15 ring-1 ring-white/40"
-          style={{ background: colorShown ?? "conic-gradient(#f0417f, #ffac1c, #3ec27a, #1fb5c9, #8a63f5, #f0417f)" }}
+          style={{
+            background:
+              colorShown ?? "conic-gradient(#f0417f, #ffac1c, #3ec27a, #1fb5c9, #8a63f5, #f0417f)",
+          }}
         />
       </button>
 
-      <button type="button" aria-label={labels.reset} disabled={!style} onClick={onReset} className={toolClass(false)}>
+      <button
+        type="button"
+        aria-label={labels.reset}
+        disabled={!style}
+        onClick={onReset}
+        className={toolClass(false)}
+      >
         <RotateCcw className="size-4" />
       </button>
 
@@ -197,7 +282,11 @@ export function TextToolbar({ canvas, selector, watch, style, onChange, onReset,
                   onChange({ font: key });
                   setOpen(null);
                 }}
-                className={cn(choiceClass(style?.font === key), TEXT_FONTS[key].className, "text-lg")}
+                className={cn(
+                  choiceClass(style?.font === key),
+                  TEXT_FONTS[key].className,
+                  "text-lg",
+                )}
               >
                 {TEXT_FONTS[key].label}
               </button>
@@ -237,7 +326,14 @@ export function TextToolbar({ canvas, selector, watch, style, onChange, onReset,
           </div>
           <div className="mt-1 grid grid-cols-2 gap-1">
             <label className={cn(choiceClass(false), "relative gap-2 text-sm")}>
-              <span aria-hidden="true" className="size-4 rounded-full" style={{ background: "conic-gradient(#f0417f, #ffac1c, #3ec27a, #1fb5c9, #8a63f5, #f0417f)" }} />
+              <span
+                aria-hidden="true"
+                className="size-4 rounded-full"
+                style={{
+                  background:
+                    "conic-gradient(#f0417f, #ffac1c, #3ec27a, #1fb5c9, #8a63f5, #f0417f)",
+                }}
+              />
               {labels.customColor}
               <input
                 type="color"
@@ -273,7 +369,9 @@ const toolClass = (active: boolean) =>
 const choiceClass = (active: boolean) =>
   cn(
     "flex h-10 cursor-pointer items-center justify-center rounded-xl border px-2 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60 disabled:cursor-default disabled:opacity-40",
-    active ? "border-primary bg-accent text-accent-foreground" : "border-transparent hover:bg-secondary",
+    active
+      ? "border-primary bg-accent text-accent-foreground"
+      : "border-transparent hover:bg-secondary",
   );
 
 /** Lists open centred under the toolbar, so they stay on screen on a phone. */

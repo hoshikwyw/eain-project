@@ -56,7 +56,12 @@ export const stickerSchema = z.object({
   id: z.string().min(1).max(40),
   kind: z.enum(STICKER_KINDS),
   /** Position of the section the sticker sits on. Left out: the whole gift. */
-  anchor: z.number().int().min(0).max(MAX_SECTIONS - 1).optional(),
+  anchor: z
+    .number()
+    .int()
+    .min(0)
+    .max(MAX_SECTIONS - 1)
+    .optional(),
   x: z.number().min(-20).max(120),
   y: z.number().min(-50).max(150),
   size: z.number().min(2).max(200),
@@ -79,7 +84,16 @@ export type GiftTheme = z.infer<typeof giftThemeSchema>;
 // Text styles ----------------------------------------------------------------
 
 /** Stored on gifts, so never rename or remove a key. Faces live in components/gift/text-fonts.ts. */
-export const textFontSchema = z.enum(["serif", "sans", "hand", "script", "elegant", "poster", "typewriter", "padauk"]);
+export const textFontSchema = z.enum([
+  "serif",
+  "sans",
+  "hand",
+  "script",
+  "elegant",
+  "poster",
+  "typewriter",
+  "padauk",
+]);
 export const TEXT_FONT_KEYS = textFontSchema.options;
 export type TextFont = z.infer<typeof textFontSchema>;
 
@@ -100,7 +114,8 @@ export const textStyleSchema = z
   })
   .transform((style) => {
     // Dropped values leave empty keys behind; clear them so "no style" stays empty.
-    for (const key of Object.keys(style) as (keyof typeof style)[]) if (style[key] === undefined) delete style[key];
+    for (const key of Object.keys(style) as (keyof typeof style)[])
+      if (style[key] === undefined) delete style[key];
     return style;
   });
 export type TextStyle = z.infer<typeof textStyleSchema>;
@@ -136,7 +151,13 @@ export const PHOTO_SIZE_MAX = 100;
  * which is how every photo was drawn before sizes existed. A malformed
  * value is dropped instead of failing the section, so it never hides a photo.
  */
-const photoSizeSchema = z.number().int().min(PHOTO_SIZE_MIN).max(PHOTO_SIZE_MAX).optional().catch(undefined);
+const photoSizeSchema = z
+  .number()
+  .int()
+  .min(PHOTO_SIZE_MIN)
+  .max(PHOTO_SIZE_MAX)
+  .optional()
+  .catch(undefined);
 
 export const imageContentSchema = z.object({
   mediaId: z.uuid().nullable().default(null),
@@ -206,10 +227,18 @@ export const sectionSchema = z.discriminatedUnion("type", [
   z.object({ id: z.string().max(40), type: z.literal("text"), content: coverContentSchema }),
   z.object({ id: z.string().max(40), type: z.literal("message"), content: messageContentSchema }),
   z.object({ id: z.string().max(40), type: z.literal("image"), content: imageContentSchema }),
-  z.object({ id: z.string().max(40), type: z.literal("photo_grid"), content: photoGridContentSchema }),
+  z.object({
+    id: z.string().max(40),
+    type: z.literal("photo_grid"),
+    content: photoGridContentSchema,
+  }),
   z.object({ id: z.string().max(40), type: z.literal("timeline"), content: timelineContentSchema }),
   z.object({ id: z.string().max(40), type: z.literal("quote"), content: quoteContentSchema }),
-  z.object({ id: z.string().max(40), type: z.literal("final_message"), content: finalMessageContentSchema }),
+  z.object({
+    id: z.string().max(40),
+    type: z.literal("final_message"),
+    content: finalMessageContentSchema,
+  }),
 ]);
 export type Section = z.infer<typeof sectionSchema>;
 export type EditableSectionType = Section["type"];

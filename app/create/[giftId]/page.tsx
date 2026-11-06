@@ -8,7 +8,10 @@ import { getCurrentProfile } from "@/features/profile/queries";
  * gift's name, undo, save, publish) and no app frame around it, so nothing
  * competes with the gift being made.
  */
-export default async function EditGiftPage({ params, searchParams }: PageProps<"/create/[giftId]">) {
+export default async function EditGiftPage({
+  params,
+  searchParams,
+}: PageProps<"/create/[giftId]">) {
   const { giftId } = await params;
   const query = await searchParams;
 

@@ -29,7 +29,13 @@ type Props = {
 export function StickerLayer({ stickers, clip, editable }: Props) {
   if (!stickers || stickers.length === 0) return null;
   return (
-    <div aria-hidden="true" className={cn("pointer-events-none absolute inset-0 z-10 select-none", clip && "overflow-hidden")}>
+    <div
+      aria-hidden="true"
+      className={cn(
+        "pointer-events-none absolute inset-0 z-10 select-none",
+        clip && "overflow-hidden",
+      )}
+    >
       {stickers.map((s) => (
         <div
           key={s.id}

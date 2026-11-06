@@ -22,40 +22,40 @@ The dark theme is labelled "Dark Theme (Lovely)", which suggests named themes ra
 
 ### Light theme
 
-| Token | Value | Use |
-|---|---|---|
-| bg | #FFF8F4 | Page background, warm cream blush |
-| surface | #FFFFFF | Cards, sidebar |
-| surface-tint | #FFF0EE | Active nav item, soft panels |
-| border | #F8DDD9 | Card and input borders |
-| primary | #F4506E | Buttons, active states, badges |
-| primary-hover | #E03E5E | Button hover |
-| primary-soft | #FFE4E8 | Chips, soft button backgrounds |
-| text | #2B1F21 | Headings and body, warm near-black |
-| text-muted | #8A7477 | Secondary text |
-| success | #2E9E6B on #E3F5EC | "Opened" chip |
-| responded | #F4506E on #FFE4E8 | "Responded" chip |
-| draft | #6B6B6B on #F1EEEE | "Draft" chip |
-| accent-blue | #6FA8C9 | Second bird, illustration accent |
+| Token         | Value              | Use                                |
+| ------------- | ------------------ | ---------------------------------- |
+| bg            | #FFF8F4            | Page background, warm cream blush  |
+| surface       | #FFFFFF            | Cards, sidebar                     |
+| surface-tint  | #FFF0EE            | Active nav item, soft panels       |
+| border        | #F8DDD9            | Card and input borders             |
+| primary       | #F4506E            | Buttons, active states, badges     |
+| primary-hover | #E03E5E            | Button hover                       |
+| primary-soft  | #FFE4E8            | Chips, soft button backgrounds     |
+| text          | #2B1F21            | Headings and body, warm near-black |
+| text-muted    | #8A7477            | Secondary text                     |
+| success       | #2E9E6B on #E3F5EC | "Opened" chip                      |
+| responded     | #F4506E on #FFE4E8 | "Responded" chip                   |
+| draft         | #6B6B6B on #F1EEEE | "Draft" chip                       |
+| accent-blue   | #6FA8C9            | Second bird, illustration accent   |
 
 ### Dark theme ("Plum night")
 
 Changed on 2026-11-06 from the violet-on-indigo "Lovely" palette, which read as a different product next to the pink logo, birds and light theme. The dark theme now keeps the brand's rose and sets it on a dark plum.
 
-| Token | Value | Use |
-|---|---|---|
-| bg | #170D1B | Page background, dark plum |
-| surface | #251630 | Cards and panels |
-| surface-raised | #2E1C38 | Active nav item, highlighted tile |
-| border | #3A2543 | Card borders |
-| primary | #DB3358 | Main call-to-action. Same rose as the light theme, white text |
-| primary-ink | #FF7A9C | The main colour as text or icon on the page (links, active tab) |
-| accent-pink | #FF7396 | Decoration, hearts, chips |
-| accent-blue | #7FB2D0 | Second bird, illustration accent |
-| text | #FCF2F6 | Headings and body |
-| text-muted | #BBA6BA | Secondary text |
-| success | #3DDC97 on #143A2C | "Opened" chip |
-| glow | #FCD9A8 | Moon, heart window, fireflies |
+| Token          | Value              | Use                                                             |
+| -------------- | ------------------ | --------------------------------------------------------------- |
+| bg             | #170D1B            | Page background, dark plum                                      |
+| surface        | #251630            | Cards and panels                                                |
+| surface-raised | #2E1C38            | Active nav item, highlighted tile                               |
+| border         | #3A2543            | Card borders                                                    |
+| primary        | #DB3358            | Main call-to-action. Same rose as the light theme, white text   |
+| primary-ink    | #FF7A9C            | The main colour as text or icon on the page (links, active tab) |
+| accent-pink    | #FF7396            | Decoration, hearts, chips                                       |
+| accent-blue    | #7FB2D0            | Second bird, illustration accent                                |
+| text           | #FCF2F6            | Headings and body                                               |
+| text-muted     | #BBA6BA            | Secondary text                                                  |
+| success        | #3DDC97 on #143A2C | "Opened" chip                                                   |
+| glow           | #FCD9A8            | Moon, heart window, fireflies                                   |
 
 Implementation rule: components use semantic tokens only, never raw hex. Swapping a palette must be a one-file change.
 
@@ -125,15 +125,15 @@ Beautiful Templates, Easy Sharing, Interactive Experience, Track & Connect. Good
 
 ## 7. Differences between the images and the written spec
 
-| Topic | Spec says | Images show | Proposed handling |
-|---|---|---|---|
-| Palette | Soft green, cream, dark green. Avoid overly pink. | Coral pink light theme, purple dark theme | Needs a decision. See PLAN.md. |
-| Logo | Green house outline with lovebirds | Pink lovebirds forming a heart, pink or purple house | Follows the palette decision |
-| Tagline | "Digital gifts that feel like home." | "A little gift, made with love." | Needs a decision |
-| Open counts | Do not show creators raw open counts | Rows show "Opened 1" and "Opened 2" | Show recipients who opened, never raw view counts |
-| Earning points | Only a welcome bonus is described for launch | Earn for create, open, response, invite | Earn rules with caps in V1, referral later |
-| Occasions | Not in spec | Sidebar item | Treat as browse-by-category |
-| Mobile app | Web first | "Mobile App" screens | Responsive web layouts |
+| Topic          | Spec says                                         | Images show                                          | Proposed handling                                 |
+| -------------- | ------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------- |
+| Palette        | Soft green, cream, dark green. Avoid overly pink. | Coral pink light theme, purple dark theme            | Needs a decision. See PLAN.md.                    |
+| Logo           | Green house outline with lovebirds                | Pink lovebirds forming a heart, pink or purple house | Follows the palette decision                      |
+| Tagline        | "Digital gifts that feel like home."              | "A little gift, made with love."                     | Needs a decision                                  |
+| Open counts    | Do not show creators raw open counts              | Rows show "Opened 1" and "Opened 2"                  | Show recipients who opened, never raw view counts |
+| Earning points | Only a welcome bonus is described for launch      | Earn for create, open, response, invite              | Earn rules with caps in V1, referral later        |
+| Occasions      | Not in spec                                       | Sidebar item                                         | Treat as browse-by-category                       |
+| Mobile app     | Web first                                         | "Mobile App" screens                                 | Responsive web layouts                            |
 
 ## 8. Assets still needed
 

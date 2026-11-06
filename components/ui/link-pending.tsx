@@ -11,5 +11,10 @@ import { cn } from "@/lib/utils";
 export function LinkPending({ className }: { className?: string }) {
   const { pending } = useLinkStatus();
   if (!pending) return null;
-  return <Loader2 aria-label="Loading" className={cn("size-4 animate-spin text-muted-foreground", className)} />;
+  return (
+    <Loader2
+      aria-label="Loading"
+      className={cn("size-4 animate-spin text-muted-foreground", className)}
+    />
+  );
 }

@@ -28,7 +28,15 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       siteName: "Eain",
       type: "website",
-      images: [{ url: PREVIEW_IMAGE, width: 1200, height: 630, type: "image/png", alt: t("previewImageAlt") }],
+      images: [
+        {
+          url: PREVIEW_IMAGE,
+          width: 1200,
+          height: 630,
+          type: "image/png",
+          alt: t("previewImageAlt"),
+        },
+      ],
     },
     twitter: { card: "summary_large_image", title, description, images: [PREVIEW_IMAGE] },
   };

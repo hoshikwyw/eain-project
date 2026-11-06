@@ -14,15 +14,24 @@ export async function loadTemplateCards(locale: "en" | "my"): Promise<{
   const [{ data: rows }, { data: categories }, { data: unlocks }] = await Promise.all([
     supabase
       .from("templates")
-      .select("id, slug, category_id, name_en, name_my, description_en, description_my, is_premium, point_price")
+      .select(
+        "id, slug, category_id, name_en, name_my, description_en, description_my, is_premium, point_price",
+      )
       .eq("is_active", true)
       .order("sort_order")
       .order("created_at"),
-    supabase.from("categories").select("id, name_en, name_my, sort_order").eq("is_active", true).order("sort_order"),
+    supabase
+      .from("categories")
+      .select("id, name_en, name_my, sort_order")
+      .eq("is_active", true)
+      .order("sort_order"),
     supabase.from("template_unlocks").select("template_id"),
   ]);
 
-  const cats = (categories ?? []).map((c) => ({ id: c.id, name: locale === "my" ? c.name_my : c.name_en }));
+  const cats = (categories ?? []).map((c) => ({
+    id: c.id,
+    name: locale === "my" ? c.name_my : c.name_en,
+  }));
   const catName = new Map(cats.map((c) => [c.id, c.name]));
   const unlocked = new Set((unlocks ?? []).map((u) => u.template_id));
 

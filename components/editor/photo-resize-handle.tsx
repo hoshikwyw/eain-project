@@ -27,13 +27,23 @@ type Props = {
  * its width is twice the pointer's distance from the middle of the section.
  * Nothing is drawn while the section has no photo yet.
  */
-export function PhotoResizeHandle({ canvas, sectionId, watch, size, onSize, onDone, label }: Props) {
+export function PhotoResizeHandle({
+  canvas,
+  sectionId,
+  watch,
+  size,
+  onSize,
+  onDone,
+  label,
+}: Props) {
   const box = useCanvasBox(canvas, photoSelector(sectionId), watch);
   const [dragging, setDragging] = useState(false);
   if (!box) return null;
 
   const begin = (e: React.PointerEvent) => {
-    const section = canvas.current?.querySelector(sectionSelector(sectionId))?.getBoundingClientRect();
+    const section = canvas.current
+      ?.querySelector(sectionSelector(sectionId))
+      ?.getBoundingClientRect();
     if (!section || section.width === 0) return;
     e.preventDefault();
     e.stopPropagation();

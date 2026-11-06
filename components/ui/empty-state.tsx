@@ -35,7 +35,9 @@ export function EmptyState({ bird = "pink", title, text, children, compact, clas
       )}
       <div>
         {title && <p className="font-display text-lg font-semibold">{title}</p>}
-        <p className={cn("mx-auto max-w-sm text-sm text-muted-foreground", title && "mt-1")}>{text}</p>
+        <p className={cn("mx-auto max-w-sm text-sm text-muted-foreground", title && "mt-1")}>
+          {text}
+        </p>
       </div>
       {children}
     </div>

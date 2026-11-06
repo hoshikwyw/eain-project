@@ -20,21 +20,31 @@ export default async function AdminPointsPage() {
               <li key={row.id} className="flex items-center justify-between gap-3 px-4 py-3">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">
-                    {row.userName} <span className="font-normal text-muted-foreground">· {row.description}</span>
+                    {row.userName}{" "}
+                    <span className="font-normal text-muted-foreground">· {row.description}</span>
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {format.dateTime(new Date(row.created_at), { dateStyle: "medium", timeStyle: "short" })}
+                    {format.dateTime(new Date(row.created_at), {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })}
                     {row.reference_type && ` · ${row.reference_type}`}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Chip tone="neutral">{row.type}</Chip>
-                  <Chip tone={row.amount > 0 ? "success" : "brand"}>{row.amount > 0 ? `+${row.amount}` : row.amount}</Chip>
-                  <span className="w-14 text-right text-xs text-muted-foreground">= {row.balance_after}</span>
+                  <Chip tone={row.amount > 0 ? "success" : "brand"}>
+                    {row.amount > 0 ? `+${row.amount}` : row.amount}
+                  </Chip>
+                  <span className="w-14 text-right text-xs text-muted-foreground">
+                    = {row.balance_after}
+                  </span>
                 </div>
               </li>
             ))}
-            {tx.length === 0 && <li className="p-8 text-center text-sm text-muted-foreground">{t("points.empty")}</li>}
+            {tx.length === 0 && (
+              <li className="p-8 text-center text-sm text-muted-foreground">{t("points.empty")}</li>
+            )}
           </ul>
         </CardContent>
       </Card>

@@ -16,7 +16,7 @@ export function ReportForm({ token }: { token: string }) {
 
   if (state.status === "sent") {
     return (
-      <div role="status" className="panel flex flex-col items-center gap-3 p-8 text-center">
+      <div role="status" className="flex flex-col items-center gap-3 panel p-8 text-center">
         <span className="grid size-14 place-items-center rounded-full bg-success-soft text-success">
           <Check className="size-7" />
         </span>
@@ -27,7 +27,7 @@ export function ReportForm({ token }: { token: string }) {
   }
 
   return (
-    <form action={formAction} className="panel flex flex-col gap-6 p-5 sm:p-7">
+    <form action={formAction} className="flex flex-col gap-6 panel p-5 sm:p-7">
       <fieldset className="flex flex-col gap-2">
         <legend className="mb-2 font-semibold">{t("reason")}</legend>
         {REPORT_REASONS.map((reason) => (
@@ -35,7 +35,13 @@ export function ReportForm({ token }: { token: string }) {
             key={reason}
             className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border px-4 py-3 text-sm transition-colors hover:bg-secondary/60 has-checked:border-primary has-checked:bg-accent has-checked:text-accent-foreground"
           >
-            <input type="radio" name="reason" value={reason} required className="size-4 accent-primary" />
+            <input
+              type="radio"
+              name="reason"
+              value={reason}
+              required
+              className="size-4 accent-primary"
+            />
             {t(`reasons.${reason}`)}
           </label>
         ))}
@@ -53,11 +59,7 @@ export function ReportForm({ token }: { token: string }) {
         />
       </div>
 
-      {state.status && (
-        <Notice role="alert">
-          {t(`errors.${state.status}`)}
-        </Notice>
-      )}
+      {state.status && <Notice role="alert">{t(`errors.${state.status}`)}</Notice>}
 
       <div className="flex flex-col gap-3">
         <Button type="submit" disabled={pending} className="self-start px-6">

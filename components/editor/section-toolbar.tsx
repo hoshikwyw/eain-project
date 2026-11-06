@@ -32,22 +32,61 @@ export function SectionToolbar({ canvas, sectionId, watch, labels, ...p }: Props
   return (
     <div
       data-canvas-ui=""
-      className="absolute z-20 flex items-center gap-0.5 glass-strong rounded-full border p-1 text-foreground shadow-lg"
+      className="absolute z-20 flex items-center gap-0.5 rounded-full border glass-strong p-1 text-foreground shadow-lg"
       style={{ top: box.top - 50, right: Math.max(box.canvasWidth - box.left - box.width - 4, 0) }}
     >
-      <Button type="button" variant="ghost" size="icon" className="size-8" aria-label={labels.moveUp} disabled={!p.canMoveUp} onClick={p.onMoveUp}>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="size-8"
+        aria-label={labels.moveUp}
+        disabled={!p.canMoveUp}
+        onClick={p.onMoveUp}
+      >
         <ChevronUp />
       </Button>
-      <Button type="button" variant="ghost" size="icon" className="size-8" aria-label={labels.moveDown} disabled={!p.canMoveDown} onClick={p.onMoveDown}>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="size-8"
+        aria-label={labels.moveDown}
+        disabled={!p.canMoveDown}
+        onClick={p.onMoveDown}
+      >
         <ChevronDown />
       </Button>
-      <Button type="button" variant="ghost" size="icon" className="size-8" aria-label={labels.edit} onClick={p.onEdit}>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="size-8"
+        aria-label={labels.edit}
+        onClick={p.onEdit}
+      >
         <SlidersHorizontal />
       </Button>
-      <Button type="button" variant="ghost" size="icon" className="size-8" aria-label={labels.duplicate} disabled={!p.canDuplicate} onClick={p.onDuplicate}>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="size-8"
+        aria-label={labels.duplicate}
+        disabled={!p.canDuplicate}
+        onClick={p.onDuplicate}
+      >
         <Copy />
       </Button>
-      <Button type="button" variant="ghost" size="icon" className="size-8 text-destructive" aria-label={labels.remove} disabled={!p.canRemove} onClick={p.onRemove}>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="size-8 text-destructive"
+        aria-label={labels.remove}
+        disabled={!p.canRemove}
+        onClick={p.onRemove}
+      >
         <Trash2 />
       </Button>
     </div>

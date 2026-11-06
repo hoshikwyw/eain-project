@@ -13,7 +13,13 @@ export function GiftThumb({ card, senderName, className }: Props) {
   return (
     // A short gift sits in the middle of the box like a card on a mat; a tall
     // one starts at the top and is cropped ("safe" centring never cuts the top).
-    <div aria-hidden="true" className={cn("relative flex aspect-[4/5] flex-col overflow-hidden rounded-2xl bg-secondary [justify-content:safe_center]", className)}>
+    <div
+      aria-hidden="true"
+      className={cn(
+        "relative flex aspect-[4/5] flex-col [justify-content:safe_center] overflow-hidden rounded-2xl bg-secondary",
+        className,
+      )}
+    >
       <div className="pointer-events-none w-full shrink-0 select-none">
         <GiftView
           sections={card.sections}

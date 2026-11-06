@@ -11,7 +11,7 @@ export function SiteHeader() {
   const t = useTranslations("nav");
 
   return (
-    <header className="sticky top-0 z-40 glass-bar border-b">
+    <header className="sticky top-0 z-40 border-b glass-bar">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 md:h-[4.5rem]">
         <Link href="/" aria-label="Eain" className="rounded-lg">
           <Logo />

@@ -82,24 +82,14 @@ export default async function GiftsPage({ searchParams }: PageProps<"/dashboard/
     <div className="flex flex-col gap-6">
       <div>
         <PageTitle>{t("nav.gifts")}</PageTitle>
-        <p className="mt-1 text-sm text-muted-foreground">{t("gifts.count", { count: cards.length, max: GIFT_LIMIT })}</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {t("gifts.count", { count: cards.length, max: GIFT_LIMIT })}
+        </p>
       </div>
 
-      {params.error === "limit" && (
-        <Notice role="alert">
-          {t("gifts.limitReached")}
-        </Notice>
-      )}
-      {params.error === "delete" && (
-        <Notice role="alert">
-          {t("gifts.deleteFailed")}
-        </Notice>
-      )}
-      {params.deleted === "1" && (
-        <Notice role="status">
-          {t("gifts.deleted")}
-        </Notice>
-      )}
+      {params.error === "limit" && <Notice role="alert">{t("gifts.limitReached")}</Notice>}
+      {params.error === "delete" && <Notice role="alert">{t("gifts.deleteFailed")}</Notice>}
+      {params.deleted === "1" && <Notice role="status">{t("gifts.deleted")}</Notice>}
 
       {cards.length === 0 ? (
         <EmptyState bird="pair" title={t("home.emptyTitle")} text={t("recentGiftsEmpty")}>
@@ -111,7 +101,11 @@ export default async function GiftsPage({ searchParams }: PageProps<"/dashboard/
           </Button>
         </EmptyState>
       ) : (
-        <GiftGallery items={items} initial={isGalleryFilter(params.filter) ? params.filter : "all"} tail={tail} />
+        <GiftGallery
+          items={items}
+          initial={isGalleryFilter(params.filter) ? params.filter : "all"}
+          tail={tail}
+        />
       )}
     </div>
   );

@@ -18,7 +18,10 @@ export type ResetState = { status?: "invalid" | "mismatch" | "error" | "expired"
  * not an account exists, so the form cannot be used to discover accounts.
  * Rate limited per client because the free mailer allows few emails per hour.
  */
-export async function requestPasswordReset(_prev: ForgotState, formData: FormData): Promise<ForgotState> {
+export async function requestPasswordReset(
+  _prev: ForgotState,
+  formData: FormData,
+): Promise<ForgotState> {
   if (!isSupabaseConfigured()) return { status: "notConfigured" };
   const parsed = emailSchema.safeParse(formData.get("email"));
   if (!parsed.success) return { status: "invalid" };

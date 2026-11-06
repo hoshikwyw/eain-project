@@ -54,7 +54,15 @@ type Props = {
   children: React.ReactNode;
 };
 
-export function GiftReveal({ token, questions, opening, variant, colors, recipientName, children }: Props) {
+export function GiftReveal({
+  token,
+  questions,
+  opening,
+  variant,
+  colors,
+  recipientName,
+  children,
+}: Props) {
   const t = useTranslations("gift");
   const [stage, setStage] = useState<Stage>("closed");
   const endRef = useRef<HTMLDivElement>(null);
@@ -106,15 +114,25 @@ export function GiftReveal({ token, questions, opening, variant, colors, recipie
             />
           </span>
         </button>
-        <div className={cn("flex flex-col items-center gap-3 transition-opacity duration-500", stage === "opening" && "opacity-0")}>
-          <p className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">{t("someone")}</p>
+        <div
+          className={cn(
+            "flex flex-col items-center gap-3 transition-opacity duration-500",
+            stage === "opening" && "opacity-0",
+          )}
+        >
+          <p className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
+            {t("someone")}
+          </p>
           <PageTitle className="text-balance">{t("specialForYou")}</PageTitle>
         </div>
         <Button
           size="lg"
           onClick={open}
           disabled={stage === "opening"}
-          className={cn("min-w-52 transition-opacity duration-500", stage === "opening" && "opacity-0")}
+          className={cn(
+            "min-w-52 transition-opacity duration-500",
+            stage === "opening" && "opacity-0",
+          )}
         >
           <Gift />
           {t("openYourGift")}
@@ -125,7 +143,7 @@ export function GiftReveal({ token, questions, opening, variant, colors, recipie
   }
 
   return (
-    <div className="animate-in fade-in zoom-in-95 mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 py-8 duration-700 sm:py-14">
+    <div className="mx-auto flex w-full max-w-2xl animate-in flex-col gap-8 px-4 py-8 duration-700 zoom-in-95 fade-in sm:py-14">
       {children}
       <ResponseForm
         token={token}
@@ -149,7 +167,10 @@ export function GiftReveal({ token, questions, opening, variant, colors, recipie
             </Link>
           </Button>
         </div>
-        <Link href={`/g/${token}/report`} className="text-xs text-muted-foreground underline-offset-4 hover:underline">
+        <Link
+          href={`/g/${token}/report`}
+          className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+        >
           {t("reportThis")}
         </Link>
       </div>

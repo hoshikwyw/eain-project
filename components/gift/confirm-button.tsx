@@ -20,7 +20,15 @@ type Props = React.ComponentProps<typeof Button> & {
  * opens a popup that asks first, and the popup's confirm button submits the
  * form. Must sit inside the form.
  */
-export function ConfirmButton({ confirmText, confirmLabel, danger, onClick, children, disabled, ...props }: Props) {
+export function ConfirmButton({
+  confirmText,
+  confirmLabel,
+  danger,
+  onClick,
+  children,
+  disabled,
+  ...props
+}: Props) {
   const { pending } = useFormStatus();
   const t = useTranslations("common");
   const [open, setOpen] = useState(false);

@@ -28,7 +28,9 @@ export function ResponseForm({ token, questions, sessionId, onStarted }: Props) 
   const doneKey = `eain_responded_${token}`;
   // This form mounts only after the receiver taps "open", so it never renders
   // on the server and reading localStorage in the initialiser is safe.
-  const [state, setState] = useState<"idle" | "sending" | "sent" | "duplicate" | "error" | "invalid">(() => {
+  const [state, setState] = useState<
+    "idle" | "sending" | "sent" | "duplicate" | "error" | "invalid"
+  >(() => {
     try {
       return window.localStorage.getItem(doneKey) ? "sent" : "idle";
     } catch {
@@ -93,16 +95,18 @@ export function ResponseForm({ token, questions, sessionId, onStarted }: Props) 
 
   if (state === "sent" || state === "duplicate") {
     return (
-      <div role="status" className="panel flex flex-col items-center gap-3 p-8 text-center">
+      <div role="status" className="flex flex-col items-center gap-3 panel p-8 text-center">
         <Bird variant="pink" className="w-20" />
         <p className="font-display text-xl font-semibold">{t("sentTitle")}</p>
-        <p className="text-sm text-muted-foreground">{state === "sent" ? t("sentText") : t("alreadyText")}</p>
+        <p className="text-sm text-muted-foreground">
+          {state === "sent" ? t("sentText") : t("alreadyText")}
+        </p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={submit} className="panel flex flex-col gap-6 p-6 sm:p-8">
+    <form onSubmit={submit} className="flex flex-col gap-6 panel p-6 sm:p-8">
       <div>
         <h2 className="font-display text-2xl font-semibold">{t("title")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">{t("subtitle")}</p>
@@ -114,20 +118,17 @@ export function ResponseForm({ token, questions, sessionId, onStarted }: Props) 
             {q.prompt}
             {q.required && <span className="ml-1 text-primary-ink">*</span>}
           </legend>
-          <QuestionInput question={q} index={index} value={answers[q.id]} onChange={(a) => set(q.id, a)} />
+          <QuestionInput
+            question={q}
+            index={index}
+            value={answers[q.id]}
+            onChange={(a) => set(q.id, a)}
+          />
         </fieldset>
       ))}
 
-      {state === "invalid" && (
-        <Notice role="alert">
-          {t("invalid")}
-        </Notice>
-      )}
-      {state === "error" && (
-        <Notice role="alert">
-          {t("error")}
-        </Notice>
-      )}
+      {state === "invalid" && <Notice role="alert">{t("invalid")}</Notice>}
+      {state === "error" && <Notice role="alert">{t("error")}</Notice>}
 
       <Button type="submit" size="lg" disabled={state === "sending"} className="self-start">
         <Send />
@@ -184,7 +185,9 @@ function QuestionInput({
               onClick={() => onChange({ number: n })}
               className={cn(
                 "size-11 rounded-full border text-lg font-semibold transition-colors",
-                value?.number === n ? "border-primary bg-primary text-primary-foreground" : "border-border hover:bg-secondary",
+                value?.number === n
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border hover:bg-secondary",
               )}
             >
               {n}
@@ -205,7 +208,9 @@ function QuestionInput({
               onClick={() => onChange({ optionId: o.id })}
               className={cn(
                 "grid size-12 place-items-center rounded-full border text-2xl transition-transform",
-                value?.optionId === o.id ? "scale-110 border-primary bg-accent" : "border-border hover:bg-secondary",
+                value?.optionId === o.id
+                  ? "scale-110 border-primary bg-accent"
+                  : "border-border hover:bg-secondary",
               )}
             >
               {o.label}
@@ -223,7 +228,9 @@ function QuestionInput({
               key={o.id}
               className={cn(
                 "flex cursor-pointer items-center gap-3 rounded-2xl border px-4 py-3 text-sm transition-colors",
-                value?.optionId === o.id ? "border-primary bg-accent text-accent-foreground" : "border-border hover:bg-secondary",
+                value?.optionId === o.id
+                  ? "border-primary bg-accent text-accent-foreground"
+                  : "border-border hover:bg-secondary",
               )}
             >
               <input

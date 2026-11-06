@@ -19,7 +19,12 @@ export default async function SignupPage({ searchParams }: PageProps<"/auth/sign
 
   return (
     <AuthShell title={t("createAccount")} subtitle={t("signupSubtitle")} reward>
-      <AuthForm mode="signup" next={next} configured={isSupabaseConfigured()} googleEnabled={providers.google} />
+      <AuthForm
+        mode="signup"
+        next={next}
+        configured={isSupabaseConfigured()}
+        googleEnabled={providers.google}
+      />
     </AuthShell>
   );
 }

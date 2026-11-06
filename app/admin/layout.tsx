@@ -31,7 +31,9 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
             <Chip tone="primary">{t("badge")}</Chip>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="hidden text-sm text-muted-foreground md:inline">{me.display_name}</span>
+            <span className="hidden text-sm text-muted-foreground md:inline">
+              {me.display_name}
+            </span>
             <Button asChild variant="ghost" size="sm">
               {/* Plain anchor: the user site may be a different origin. */}
               <a href={userHref("/dashboard")}>

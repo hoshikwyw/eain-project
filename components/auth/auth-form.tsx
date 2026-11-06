@@ -30,7 +30,14 @@ function asNotice(value: string | undefined): Notice | undefined {
   return NOTICES.find((n) => n === value);
 }
 
-export function AuthForm({ mode, next, notice, configured, googleEnabled, allowSignup = true }: Props) {
+export function AuthForm({
+  mode,
+  next,
+  notice,
+  configured,
+  googleEnabled,
+  allowSignup = true,
+}: Props) {
   const t = useTranslations("auth");
   const action = mode === "login" ? signIn : signUp;
   const [state, formAction, pending] = useActionState(action, initialState);
@@ -92,7 +99,10 @@ export function AuthForm({ mode, next, notice, configured, googleEnabled, allowS
           <div className="flex items-center justify-between">
             <Label htmlFor="password">{t("password")}</Label>
             {mode === "login" && (
-              <Link href="/auth/forgot" className="text-xs font-semibold text-primary-ink underline-offset-4 hover:underline">
+              <Link
+                href="/auth/forgot"
+                className="text-xs font-semibold text-primary-ink underline-offset-4 hover:underline"
+              >
                 {t("forgotLink")}
               </Link>
             )}
@@ -106,17 +116,15 @@ export function AuthForm({ mode, next, notice, configured, googleEnabled, allowS
             maxLength={72}
             required
           />
-          {mode === "signup" && <p className="text-xs text-muted-foreground">{t("passwordHint")}</p>}
+          {mode === "signup" && (
+            <p className="text-xs text-muted-foreground">{t("passwordHint")}</p>
+          )}
         </div>
 
         {errorKey ? (
-          <Notice role="alert">
-            {t(`errors.${errorKey}`)}
-          </Notice>
+          <Notice role="alert">{t(`errors.${errorKey}`)}</Notice>
         ) : noticeKey ? (
-          <Notice role="status">
-            {t(`notices.${noticeKey}`)}
-          </Notice>
+          <Notice role="status">{t(`notices.${noticeKey}`)}</Notice>
         ) : null}
 
         <Button type="submit" className="w-full" disabled={pending || !configured}>
@@ -142,7 +150,10 @@ export function AuthForm({ mode, next, notice, configured, googleEnabled, allowS
 function GoogleMark() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4">
-      <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.3-1.6 3.8-5.5 3.8-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.9 1.5l2.6-2.6C16.8 3.1 14.6 2 12 2 6.5 2 2 6.5 2 12s4.5 10 10 10c5.8 0 9.6-4 9.6-9.8 0-.7-.1-1.2-.2-1.7H12Z" />
+      <path
+        fill="#EA4335"
+        d="M12 10.2v3.9h5.5c-.2 1.3-1.6 3.8-5.5 3.8-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.9 1.5l2.6-2.6C16.8 3.1 14.6 2 12 2 6.5 2 2 6.5 2 12s4.5 10 10 10c5.8 0 9.6-4 9.6-9.8 0-.7-.1-1.2-.2-1.7H12Z"
+      />
     </svg>
   );
 }

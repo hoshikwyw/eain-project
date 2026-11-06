@@ -33,11 +33,16 @@ export default async function AdminReportsPage({ searchParams }: PageProps<"/adm
           </div>
         }
       />
-      <AdminFlash ok={typeof params.ok === "string" ? params.ok : undefined} error={typeof params.error === "string" ? params.error : undefined} />
+      <AdminFlash
+        ok={typeof params.ok === "string" ? params.ok : undefined}
+        error={typeof params.error === "string" ? params.error : undefined}
+      />
 
       {reports.length === 0 ? (
         <Card>
-          <CardContent className="p-8 text-center text-sm text-muted-foreground">{t("reports.empty")}</CardContent>
+          <CardContent className="p-8 text-center text-sm text-muted-foreground">
+            {t("reports.empty")}
+          </CardContent>
         </Card>
       ) : (
         <ul className="flex flex-col gap-3">
@@ -46,22 +51,39 @@ export default async function AdminReportsPage({ searchParams }: PageProps<"/adm
               <Card>
                 <CardContent className="flex flex-col gap-3 p-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Chip tone={r.status === "open" ? "primary" : r.status === "reviewing" ? "brand" : "neutral"}>
+                    <Chip
+                      tone={
+                        r.status === "open"
+                          ? "primary"
+                          : r.status === "reviewing"
+                            ? "brand"
+                            : "neutral"
+                      }
+                    >
                       {t(`reports.status.${r.status}`)}
                     </Chip>
                     <Chip tone="neutral">{t(`reports.reasons.${r.reason}`)}</Chip>
                     <span className="text-xs text-muted-foreground">
-                      {format.dateTime(new Date(r.created_at), { dateStyle: "medium", timeStyle: "short" })}
+                      {format.dateTime(new Date(r.created_at), {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })}
                     </span>
                   </div>
                   <div>
                     <p className="font-semibold">
                       {r.gift ? r.gift.title : t("reports.giftGone")}
                       {r.gift && (
-                        <span className="ml-2 text-xs font-normal text-muted-foreground">{t(`reports.giftStatus.${r.gift.status}`)}</span>
+                        <span className="ml-2 text-xs font-normal text-muted-foreground">
+                          {t(`reports.giftStatus.${r.gift.status}`)}
+                        </span>
                       )}
                     </p>
-                    {r.details && <p className="mt-1 text-sm whitespace-pre-line text-muted-foreground">{r.details}</p>}
+                    {r.details && (
+                      <p className="mt-1 text-sm whitespace-pre-line text-muted-foreground">
+                        {r.details}
+                      </p>
+                    )}
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     {r.gift && (

@@ -51,7 +51,13 @@ export function EditorBar(p: Props) {
     <div className="flex flex-wrap items-center gap-x-2 gap-y-1 py-2 lg:h-16 lg:flex-nowrap lg:gap-x-4 lg:py-0">
       {/* Which gift this is. Its own row on phones, the left end of the bar on wide screens. */}
       <div className="flex min-w-0 basis-full items-center gap-2 lg:max-w-xs lg:basis-auto xl:max-w-sm">
-        <Button asChild variant="ghost" size="icon" className="size-9 shrink-0" aria-label={t("back")}>
+        <Button
+          asChild
+          variant="ghost"
+          size="icon"
+          className="size-9 shrink-0"
+          aria-label={t("back")}
+        >
           <Link href="/dashboard/gifts">
             <ArrowLeft />
           </Link>
@@ -73,10 +79,26 @@ export function EditorBar(p: Props) {
 
       {/* What can be done with it. */}
       <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:gap-2">
-        <Button type="button" variant="ghost" size="icon" className="size-9" aria-label={t("undo")} disabled={!p.history.canUndo} onClick={p.history.undo}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="size-9"
+          aria-label={t("undo")}
+          disabled={!p.history.canUndo}
+          onClick={p.history.undo}
+        >
           <Undo2 />
         </Button>
-        <Button type="button" variant="ghost" size="icon" className="size-9" aria-label={t("redo")} disabled={!p.history.canRedo} onClick={p.history.redo}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="size-9"
+          aria-label={t("redo")}
+          disabled={!p.history.canRedo}
+          onClick={p.history.redo}
+        >
           <Redo2 />
         </Button>
         <p role="status" className={cn("min-w-0 flex-1 truncate text-sm", p.note?.tone)}>
@@ -93,7 +115,13 @@ export function EditorBar(p: Props) {
             <span className="max-sm:sr-only">{t("playScene")}</span>
           </Button>
         ) : (
-          <Button type="button" variant="ghost" size="sm" aria-pressed={p.previewing} onClick={p.onPreview}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-pressed={p.previewing}
+            onClick={p.onPreview}
+          >
             {p.previewing ? <Pencil /> : <Eye />}
             <span className="max-sm:sr-only">{p.previewing ? t("backToEdit") : t("preview")}</span>
           </Button>
@@ -107,19 +135,35 @@ export function EditorBar(p: Props) {
           }}
         >
           <input type="hidden" name="payload" value={p.payloadJson} />
-          <Button type="submit" variant="secondary" size="sm" disabled={p.saving || p.publishing} aria-busy={p.saving} className={cn(!p.publishing && "disabled:opacity-100")}>
+          <Button
+            type="submit"
+            variant="secondary"
+            size="sm"
+            disabled={p.saving || p.publishing}
+            aria-busy={p.saving}
+            className={cn(!p.publishing && "disabled:opacity-100")}
+          >
             {p.saving ? <Loader2 className="animate-spin" /> : <Save />}
             <span className="max-sm:sr-only">{p.saving ? t("saving") : t("save")}</span>
           </Button>
         </form>
-        <Button type="button" size="sm" className="px-4" onClick={p.onPublish} disabled={p.publishing} aria-busy={p.publishing}>
+        <Button
+          type="button"
+          size="sm"
+          className="px-4"
+          onClick={p.onPublish}
+          disabled={p.publishing}
+          aria-busy={p.publishing}
+        >
           {p.publishing ? <Loader2 className="animate-spin" /> : <Send />}
           {p.publishing ? (
             t("publishing")
           ) : (
             <>
               {/* The long label only where the bar has room for it and for the save status. */}
-              <span className="xl:hidden">{p.published ? t("republishShort") : t("publishShort")}</span>
+              <span className="xl:hidden">
+                {p.published ? t("republishShort") : t("publishShort")}
+              </span>
               <span className="max-xl:hidden">{p.published ? t("republish") : t("publish")}</span>
             </>
           )}

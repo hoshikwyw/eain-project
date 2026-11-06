@@ -38,12 +38,19 @@ export async function listMyGiftCards(limit?: number): Promise<GiftCard[]> {
   if (!gifts || gifts.length === 0) return [];
 
   const ids = gifts.map((g) => g.id);
-  const [{ data: recipients }, { data: templates }, { data: sections }, { data: mediaRows }] = await Promise.all([
-    supabase.from("gift_recipients").select("gift_id, name, first_opened_at").in("gift_id", ids),
-    supabase.from("templates").select("id, slug"),
-    supabase.from("gift_sections").select("id, gift_id, type, content, position").in("gift_id", ids),
-    supabase.from("gift_media").select("id, gift_id, storage_path, thumb_path, width, height").in("gift_id", ids),
-  ]);
+  const [{ data: recipients }, { data: templates }, { data: sections }, { data: mediaRows }] =
+    await Promise.all([
+      supabase.from("gift_recipients").select("gift_id, name, first_opened_at").in("gift_id", ids),
+      supabase.from("templates").select("id, slug"),
+      supabase
+        .from("gift_sections")
+        .select("id, gift_id, type, content, position")
+        .in("gift_id", ids),
+      supabase
+        .from("gift_media")
+        .select("id, gift_id, storage_path, thumb_path, width, height")
+        .in("gift_id", ids),
+    ]);
   const media = await signMedia(mediaRows ?? []);
   const recipientByGift = new Map((recipients ?? []).map((r) => [r.gift_id, r]));
   const slugById = new Map((templates ?? []).map((t) => [t.id, t.slug]));
@@ -54,7 +61,11 @@ export async function listMyGiftCards(limit?: number): Promise<GiftCard[]> {
     style: getTemplateStyle(slugById.get(gift.template_id) ?? ""),
     ...lookFromTheme(gift.theme),
     sections: sectionsFromRows((sections ?? []).filter((s) => s.gift_id === gift.id)),
-    media: Object.fromEntries((mediaRows ?? []).filter((m) => m.gift_id === gift.id && media[m.id]).map((m) => [m.id, media[m.id]!])),
+    media: Object.fromEntries(
+      (mediaRows ?? [])
+        .filter((m) => m.gift_id === gift.id && media[m.id])
+        .map((m) => [m.id, media[m.id]!]),
+    ),
   }));
 }
 
@@ -90,12 +101,23 @@ export async function getEditorGift(giftId: string): Promise<EditorGift | null> 
     .maybeSingle();
   if (!gift) return null;
 
-  const [{ data: template }, { data: sections }, { data: recipient }, { data: mediaRows }] = await Promise.all([
-    supabase.from("templates").select("id, slug, name_en, name_my").eq("id", gift.template_id).single(),
-    supabase.from("gift_sections").select("*").eq("gift_id", giftId).order("position"),
-    supabase.from("gift_recipients").select("*").eq("gift_id", giftId).order("created_at").limit(1).maybeSingle(),
-    supabase.from("gift_media").select("*").eq("gift_id", giftId).order("created_at"),
-  ]);
+  const [{ data: template }, { data: sections }, { data: recipient }, { data: mediaRows }] =
+    await Promise.all([
+      supabase
+        .from("templates")
+        .select("id, slug, name_en, name_my")
+        .eq("id", gift.template_id)
+        .single(),
+      supabase.from("gift_sections").select("*").eq("gift_id", giftId).order("position"),
+      supabase
+        .from("gift_recipients")
+        .select("*")
+        .eq("gift_id", giftId)
+        .order("created_at")
+        .limit(1)
+        .maybeSingle(),
+      supabase.from("gift_media").select("*").eq("gift_id", giftId).order("created_at"),
+    ]);
 
   if (!template) return null;
 
@@ -134,7 +156,10 @@ export async function getGiftResponses(giftId: string): Promise<ResponseView[]> 
     supabase
       .from("gift_answers")
       .select("response_id, question_id, option_id, answer_text, answer_number")
-      .in("response_id", responses.map((r) => r.id)),
+      .in(
+        "response_id",
+        responses.map((r) => r.id),
+      ),
     supabase.from("gift_questions").select("id, prompt, position").eq("gift_id", giftId),
   ]);
   const promptById = new Map((questions ?? []).map((q) => [q.id, q]));
@@ -144,7 +169,11 @@ export async function getGiftResponses(giftId: string): Promise<ResponseView[]> 
     createdAt: r.created_at,
     answers: (answers ?? [])
       .filter((a) => a.response_id === r.id)
-      .sort((a, b) => (promptById.get(a.question_id)?.position ?? 0) - (promptById.get(b.question_id)?.position ?? 0))
+      .sort(
+        (a, b) =>
+          (promptById.get(a.question_id)?.position ?? 0) -
+          (promptById.get(b.question_id)?.position ?? 0),
+      )
       .map((a) => ({
         prompt: promptById.get(a.question_id)?.prompt ?? "",
         value: a.answer_text ?? (a.answer_number !== null ? `${a.answer_number}/5` : ""),

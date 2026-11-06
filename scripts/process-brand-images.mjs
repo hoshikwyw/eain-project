@@ -18,12 +18,18 @@ import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
-const root = path.resolve(new URL(".", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"), "..");
+const root = path.resolve(
+  new URL(".", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"),
+  "..",
+);
 const brand = path.join(root, "public", "brand");
 const appDir = path.join(root, "app");
 
 async function loadRaw(file) {
-  const { data, info } = await sharp(file).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const { data, info } = await sharp(file)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
   return { data, width: info.width, height: info.height };
 }
 
@@ -48,7 +54,10 @@ function cornerColor({ data, width, height }) {
  * Flood fill from the border over pixels close to the background colour.
  * innerT: fully transparent below this distance. outerT: fully opaque above.
  */
-function removeBackground(img, { innerT = 18, outerT = 60, extraSeeds = [], allow = () => true } = {}) {
+function removeBackground(
+  img,
+  { innerT = 18, outerT = 60, extraSeeds = [], allow = () => true } = {},
+) {
   const { data, width, height } = img;
   const bg = cornerColor(img);
   const dist = new Float32Array(width * height);
@@ -207,7 +216,12 @@ function removeGreenBackground(img, { tint = "green", ground = true } = {}) {
     tail = 0;
     const isGround = (p) => {
       const i = p * 4;
-      return !inRegion[p] && !groundShadow[p] && p >= bandTop * width && T.ground(data[i], data[i + 1], data[i + 2], green[p]);
+      return (
+        !inRegion[p] &&
+        !groundShadow[p] &&
+        p >= bandTop * width &&
+        T.ground(data[i], data[i + 1], data[i + 2], green[p])
+      );
     };
     for (let p = bandTop * width; p < n; p++) {
       if (!inRegion[p]) continue;
@@ -271,7 +285,10 @@ function removeGreenBackground(img, { tint = "green", ground = true } = {}) {
 }
 
 function contentBounds({ data, width, height }, pad = 4) {
-  let minX = width, minY = height, maxX = -1, maxY = -1;
+  let minX = width,
+    minY = height,
+    maxX = -1,
+    maxY = -1;
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       if (data[(y * width + x) * 4 + 3] > 8) {
@@ -297,7 +314,9 @@ async function writeWebp(img, outFile, targetWidth) {
     .resize({ width: targetWidth, withoutEnlargement: true, kernel: "lanczos3" })
     .webp({ quality: 88, alphaQuality: 90, effort: 6 });
   const info = await pipeline.toFile(outFile);
-  console.log(`${path.basename(outFile)}: ${info.width}x${info.height} ${Math.round(info.size / 1024)} KB`);
+  console.log(
+    `${path.basename(outFile)}: ${info.width}x${info.height} ${Math.round(info.size / 1024)} KB`,
+  );
   return info;
 }
 
@@ -313,7 +332,11 @@ await mkdir(brand, { recursive: true });
   const lockup = sharp(path.join(brand, "eain-mainLogo2.png"));
   const meta = await lockup.metadata();
   const cropH = Math.round(meta.height * 0.67);
-  const { data, info } = await lockup.extract({ left: 0, top: 0, width: meta.width, height: cropH }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const { data, info } = await lockup
+    .extract({ left: 0, top: 0, width: meta.width, height: cropH })
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
   const img = { data, width: info.width, height: info.height };
   // Colour distance gives clean edges on the green roof and leaves. The cream backdrop is warm
   // (red minus blue 12..17) and the white parrot face is not (-1..6), so the fill may only pass
@@ -331,11 +354,17 @@ await cutout("male.png", "bird-blue.webp", 600);
 {
   const img = await loadRaw(path.join(brand, "eain-appIcon.png"));
   const bg = cornerColor(img);
-  let minX = img.width, minY = img.height, maxX = -1, maxY = -1;
+  let minX = img.width,
+    minY = img.height,
+    maxX = -1,
+    maxY = -1;
   for (let y = 0; y < img.height; y++) {
     for (let x = 0; x < img.width; x++) {
       const i = (y * img.width + x) * 4;
-      const d = Math.abs(img.data[i] - bg[0]) + Math.abs(img.data[i + 1] - bg[1]) + Math.abs(img.data[i + 2] - bg[2]);
+      const d =
+        Math.abs(img.data[i] - bg[0]) +
+        Math.abs(img.data[i + 1] - bg[1]) +
+        Math.abs(img.data[i + 2] - bg[2]);
       if (d > 24) {
         if (x < minX) minX = x;
         if (x > maxX) maxX = x;
@@ -345,14 +374,29 @@ await cutout("male.png", "bird-blue.webp", 600);
     }
   }
   const side = Math.max(maxX - minX + 1, maxY - minY + 1);
-  const left = Math.max(0, Math.min(img.width - side, Math.round(minX + (maxX - minX + 1 - side) / 2)));
-  const top = Math.max(0, Math.min(img.height - side, Math.round(minY + (maxY - minY + 1 - side) / 2)));
-  const tile = sharp(path.join(brand, "eain-appIcon.png")).extract({ left, top, width: side, height: side });
+  const left = Math.max(
+    0,
+    Math.min(img.width - side, Math.round(minX + (maxX - minX + 1 - side) / 2)),
+  );
+  const top = Math.max(
+    0,
+    Math.min(img.height - side, Math.round(minY + (maxY - minY + 1 - side) / 2)),
+  );
+  const tile = sharp(path.join(brand, "eain-appIcon.png")).extract({
+    left,
+    top,
+    width: side,
+    height: side,
+  });
   for (const [size, name] of [
     [512, "icon.png"],
     [180, "apple-icon.png"],
   ]) {
-    const info = await tile.clone().resize(size, size, { kernel: "lanczos3" }).png({ compressionLevel: 9 }).toFile(path.join(appDir, name));
+    const info = await tile
+      .clone()
+      .resize(size, size, { kernel: "lanczos3" })
+      .png({ compressionLevel: 9 })
+      .toFile(path.join(appDir, name));
     console.log(`${name}: ${info.width}x${info.height} ${Math.round(info.size / 1024)} KB`);
   }
 }

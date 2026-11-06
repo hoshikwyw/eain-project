@@ -32,6 +32,13 @@ export async function POST(request: Request, context: { params: Promise<{ token:
   const result = await submitResponse(token, parsed.data);
   if (result.ok) return NextResponse.json({ ok: true });
 
-  const status = result.reason === "not-found" ? 404 : result.reason === "duplicate" ? 409 : result.reason === "invalid" ? 400 : 500;
+  const status =
+    result.reason === "not-found"
+      ? 404
+      : result.reason === "duplicate"
+        ? 409
+        : result.reason === "invalid"
+          ? 400
+          : 500;
   return NextResponse.json({ ok: false, error: result.reason }, { status });
 }

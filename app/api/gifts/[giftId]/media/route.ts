@@ -23,7 +23,8 @@ type Ctx = { params: Promise<{ giftId: string }> };
  */
 export async function POST(request: Request, { params }: Ctx) {
   const { giftId } = await params;
-  if (!z.uuid().safeParse(giftId).success) return NextResponse.json({ error: "bad-request" }, { status: 400 });
+  if (!z.uuid().safeParse(giftId).success)
+    return NextResponse.json({ error: "bad-request" }, { status: 400 });
 
   const { supabase, user } = await createClientWithUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
@@ -36,8 +37,12 @@ export async function POST(request: Request, { params }: Ctx) {
     .maybeSingle();
   if (!gift) return NextResponse.json({ error: "not-found" }, { status: 404 });
 
-  const { count } = await supabase.from("gift_media").select("id", { count: "exact", head: true }).eq("gift_id", giftId);
-  if ((count ?? 0) >= MAX_PHOTOS_PER_GIFT) return NextResponse.json({ error: "limit" }, { status: 409 });
+  const { count } = await supabase
+    .from("gift_media")
+    .select("id", { count: "exact", head: true })
+    .eq("gift_id", giftId);
+  if ((count ?? 0) >= MAX_PHOTOS_PER_GIFT)
+    return NextResponse.json({ error: "limit" }, { status: 409 });
 
   let form: FormData;
   try {
@@ -53,10 +58,22 @@ export async function POST(request: Request, { params }: Ctx) {
   if (!(file instanceof Blob) || !(thumb instanceof Blob)) {
     return NextResponse.json({ error: "bad-request" }, { status: 400 });
   }
-  if (file.size === 0 || file.size > MAX_UPLOAD_BYTES || thumb.size === 0 || thumb.size > MAX_THUMB_BYTES) {
+  if (
+    file.size === 0 ||
+    file.size > MAX_UPLOAD_BYTES ||
+    thumb.size === 0 ||
+    thumb.size > MAX_THUMB_BYTES
+  ) {
     return NextResponse.json({ error: "too-large" }, { status: 413 });
   }
-  if (!Number.isInteger(width) || !Number.isInteger(height) || width < 1 || height < 1 || width > MAX_DIMENSION || height > MAX_DIMENSION) {
+  if (
+    !Number.isInteger(width) ||
+    !Number.isInteger(height) ||
+    width < 1 ||
+    height < 1 ||
+    width > MAX_DIMENSION ||
+    height > MAX_DIMENSION
+  ) {
     return NextResponse.json({ error: "bad-dimensions" }, { status: 400 });
   }
 
@@ -75,8 +92,16 @@ export async function POST(request: Request, { params }: Ctx) {
   const admin = createAdminClient();
   const bucket = admin.storage.from(MEDIA_BUCKET);
   const [main, small] = await Promise.all([
-    bucket.upload(storagePath, fileBytes, { contentType: mime, upsert: false, cacheControl: "31536000" }),
-    bucket.upload(thumbPath, thumbBytes, { contentType: thumbMime, upsert: false, cacheControl: "31536000" }),
+    bucket.upload(storagePath, fileBytes, {
+      contentType: mime,
+      upsert: false,
+      cacheControl: "31536000",
+    }),
+    bucket.upload(thumbPath, thumbBytes, {
+      contentType: thumbMime,
+      upsert: false,
+      cacheControl: "31536000",
+    }),
   ]);
   if (main.error || small.error) {
     await removeMediaObjects([storagePath, thumbPath]);
@@ -103,7 +128,10 @@ export async function POST(request: Request, { params }: Ctx) {
   if (error || !row) {
     await removeMediaObjects([storagePath, thumbPath]);
     const limit = error?.message.includes("photo limit");
-    return NextResponse.json({ error: limit ? "limit" : "database" }, { status: limit ? 409 : 500 });
+    return NextResponse.json(
+      { error: limit ? "limit" : "database" },
+      { status: limit ? 409 : 500 },
+    );
   }
 
   const signed = await signMedia([row]);

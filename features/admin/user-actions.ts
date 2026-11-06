@@ -22,7 +22,12 @@ function back(userId: string, key: "ok" | "error", value: string): never {
 
 async function audit(action: string, userId: string, details: Record<string, unknown>) {
   const supabase = await createClient();
-  await supabase.rpc("admin_log", { p_action: action, p_target_type: "user", p_target_id: userId, p_details: details as never });
+  await supabase.rpc("admin_log", {
+    p_action: action,
+    p_target_type: "user",
+    p_target_id: userId,
+    p_details: details as never,
+  });
 }
 
 /** Blocks sign-in and token refresh. Existing sessions end when their token expires, within an hour. */
@@ -69,7 +74,11 @@ export async function takeUserGiftsOffline(formData: FormData): Promise<void> {
   const { userId, reason } = parsed.data;
 
   const admin = createAdminClient();
-  const { data: gifts } = await admin.from("gifts").select("id").eq("sender_id", userId).eq("status", "published");
+  const { data: gifts } = await admin
+    .from("gifts")
+    .select("id")
+    .eq("sender_id", userId)
+    .eq("status", "published");
   const supabase = await createClient();
   for (const g of gifts ?? []) {
     await supabase.rpc("admin_disable_gift", { p_gift_id: g.id, p_reason: reason });
@@ -98,8 +107,13 @@ export async function deleteUserAccount(formData: FormData): Promise<void> {
   const email = authData?.user?.email?.toLowerCase() ?? "";
   if (!email || email !== confirmEmail) back(userId, "error", "confirmEmail");
 
-  const { data: media } = await admin.from("gift_media").select("storage_path, thumb_path").eq("owner_id", userId);
-  const paths = (media ?? []).flatMap((m) => [m.storage_path, m.thumb_path].filter((p): p is string => Boolean(p)));
+  const { data: media } = await admin
+    .from("gift_media")
+    .select("storage_path, thumb_path")
+    .eq("owner_id", userId);
+  const paths = (media ?? []).flatMap((m) =>
+    [m.storage_path, m.thumb_path].filter((p): p is string => Boolean(p)),
+  );
   if (paths.length) await admin.storage.from(MEDIA_BUCKET).remove(paths);
 
   await audit("delete_user", userId, { email, photosRemoved: paths.length });

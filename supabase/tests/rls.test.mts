@@ -21,10 +21,14 @@ const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!url || !anonKey || !serviceKey) {
-  throw new Error("Set NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY.");
+  throw new Error(
+    "Set NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY.",
+  );
 }
 
-const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+const admin = createClient(url, serviceKey, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
 const anon = createClient(url, anonKey, { auth: { persistSession: false } });
 
 type TestUser = { id: string; client: SupabaseClient; giftId: string };
@@ -69,7 +73,14 @@ describe("row level security", () => {
   });
 
   it("anon reads nothing private", async () => {
-    for (const table of ["profiles", "gifts", "gift_responses", "gift_events", "point_transactions", "notifications"]) {
+    for (const table of [
+      "profiles",
+      "gifts",
+      "gift_responses",
+      "gift_events",
+      "point_transactions",
+      "notifications",
+    ]) {
       const { data, error } = await anon.from(table).select("*").limit(1);
       assert.ok(error || (data ?? []).length === 0, `anon could read ${table}`);
     }
@@ -83,20 +94,31 @@ describe("row level security", () => {
 
   it("a user sees only their own profile", async () => {
     const { data } = await a.client.from("profiles").select("id");
-    assert.deepEqual((data ?? []).map((r) => r.id), [a.id]);
+    assert.deepEqual(
+      (data ?? []).map((r) => r.id),
+      [a.id],
+    );
   });
 
   it("a user gets 100 welcome points through the ledger", async () => {
     const { data: profile } = await a.client.from("profiles").select("points_balance").single();
     assert.equal(profile?.points_balance, 100);
-    const { data: tx } = await a.client.from("point_transactions").select("type, amount, balance_after");
+    const { data: tx } = await a.client
+      .from("point_transactions")
+      .select("type, amount, balance_after");
     assert.deepEqual(tx, [{ type: "bonus", amount: 100, balance_after: 100 }]);
   });
 
   it("a user cannot change their own role or balance", async () => {
-    const role = await a.client.from("profiles").update({ role: "admin" } as never).eq("id", a.id);
+    const role = await a.client
+      .from("profiles")
+      .update({ role: "admin" } as never)
+      .eq("id", a.id);
     assert.ok(role.error, "role update should be denied");
-    const points = await a.client.from("profiles").update({ points_balance: 9999 } as never).eq("id", a.id);
+    const points = await a.client
+      .from("profiles")
+      .update({ points_balance: 9999 } as never)
+      .eq("id", a.id);
     assert.ok(points.error, "points update should be denied");
     const { data } = await a.client.from("profiles").select("role, points_balance").single();
     assert.deepEqual(data, { role: "user", points_balance: 100 });
@@ -111,7 +133,10 @@ describe("row level security", () => {
 
   it("creator A cannot see creator B's gifts", async () => {
     const { data } = await a.client.from("gifts").select("id");
-    assert.deepEqual((data ?? []).map((g) => g.id), [a.giftId]);
+    assert.deepEqual(
+      (data ?? []).map((g) => g.id),
+      [a.giftId],
+    );
     const direct = await a.client.from("gifts").select("id").eq("id", b.giftId);
     assert.equal((direct.data ?? []).length, 0);
   });
@@ -146,14 +171,28 @@ describe("row level security", () => {
     assert.equal((events.data ?? []).length, 0);
 
     const own = await b.client.from("gift_responses").select("id").eq("gift_id", b.giftId);
-    assert.deepEqual((own.data ?? []).map((r) => r.id), [response!.id]);
+    assert.deepEqual(
+      (own.data ?? []).map((r) => r.id),
+      [response!.id],
+    );
   });
 
   it("a user cannot change their share token", async () => {
-    const { data: before } = await a.client.from("gifts").select("share_token").eq("id", a.giftId).single();
-    const { error } = await a.client.from("gifts").update({ share_token: "short" } as never).eq("id", a.giftId);
+    const { data: before } = await a.client
+      .from("gifts")
+      .select("share_token")
+      .eq("id", a.giftId)
+      .single();
+    const { error } = await a.client
+      .from("gifts")
+      .update({ share_token: "short" } as never)
+      .eq("id", a.giftId);
     assert.ok(error);
-    const { data: afterRow } = await a.client.from("gifts").select("share_token").eq("id", a.giftId).single();
+    const { data: afterRow } = await a.client
+      .from("gifts")
+      .select("share_token")
+      .eq("id", a.giftId)
+      .single();
     assert.equal(afterRow?.share_token, before?.share_token);
     assert.equal(before?.share_token.length, 43);
   });

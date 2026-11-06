@@ -10,12 +10,19 @@ const site = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:5173").repla
 const adminSite = (process.env.NEXT_PUBLIC_ADMIN_SITE_URL ?? site).replace(/\/$/, "");
 const ref = new URL(url).hostname.split(".")[0];
 
-const service = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+const service = createClient(url, serviceKey, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
 const client = createClient(url, anonKey, { auth: { persistSession: false } });
 
 const email = `admin-check-${Date.now()}@example.com`;
 const password = `Check-${Math.random().toString(36).slice(2)}-pass`;
-const { data, error } = await service.auth.admin.createUser({ email, password, email_confirm: true, user_metadata: { display_name: "Admin check" } });
+const { data, error } = await service.auth.admin.createUser({
+  email,
+  password,
+  email_confirm: true,
+  user_metadata: { display_name: "Admin check" },
+});
 if (error) throw error;
 const id = data.user.id;
 try {
@@ -23,15 +30,42 @@ try {
   const { data: s } = await client.auth.signInWithPassword({ email, password });
   const value = "base64-" + Buffer.from(JSON.stringify(s.session)).toString("base64url");
   const name = `sb-${ref}-auth-token`;
-  const cookie = value.length <= 3180 ? `${name}=${value}` : Array.from({ length: Math.ceil(value.length / 3180) }, (_, i) => `${name}.${i}=${value.slice(i * 3180, (i + 1) * 3180)}`).join("; ");
+  const cookie =
+    value.length <= 3180
+      ? `${name}=${value}`
+      : Array.from(
+          { length: Math.ceil(value.length / 3180) },
+          (_, i) => `${name}.${i}=${value.slice(i * 3180, (i + 1) * 3180)}`,
+        ).join("; ");
 
-  const { data: firstTemplate } = await service.from("templates").select("id").order("sort_order").limit(1).single();
-  const paths = ["/admin", "/admin/users", "/admin/templates", `/admin/templates/${firstTemplate.id}`, "/admin/reports", "/admin/reports?scope=all", "/admin/points", "/admin/payments", "/admin/audit", "/dashboard"];
+  const { data: firstTemplate } = await service
+    .from("templates")
+    .select("id")
+    .order("sort_order")
+    .limit(1)
+    .single();
+  const paths = [
+    "/admin",
+    "/admin/users",
+    "/admin/templates",
+    `/admin/templates/${firstTemplate.id}`,
+    "/admin/reports",
+    "/admin/reports?scope=all",
+    "/admin/points",
+    "/admin/payments",
+    "/admin/audit",
+    "/dashboard",
+  ];
   for (const path of paths) {
-    const res = await fetch(`${path.startsWith("/admin") ? adminSite : site}${path}`, { headers: { cookie }, redirect: "manual" });
+    const res = await fetch(`${path.startsWith("/admin") ? adminSite : site}${path}`, {
+      headers: { cookie },
+      redirect: "manual",
+    });
     const html = await res.text();
     // An admin page shows the admin bar. Other pages are only checked for their status.
-    const marker = path.startsWith("/admin") && (html.includes("Admin</span>") || html.includes('aria-label="Admin"'));
+    const marker =
+      path.startsWith("/admin") &&
+      (html.includes("Admin</span>") || html.includes('aria-label="Admin"'));
     console.log(`${path} -> ${res.status} ${marker ? "(admin chrome present)" : ""}`);
   }
 } finally {

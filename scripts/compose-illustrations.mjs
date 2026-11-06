@@ -13,7 +13,10 @@ import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
-const root = path.resolve(new URL(".", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"), "..");
+const root = path.resolve(
+  new URL(".", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"),
+  "..",
+);
 const brand = path.join(root, "public", "brand");
 const outDir = path.join(brand, "illustrations");
 const W = 1200;
@@ -32,19 +35,30 @@ const shapes = {
   heart: (x, y, s, c, o) =>
     `<path transform="translate(${x} ${y}) scale(${s / 24})" fill="${c}" opacity="${o}" d="M12 21s-7-4.6-9.5-9.2C.6 8 3 4 6.8 4c2 0 3.6 1.2 5.2 3 1.6-1.8 3.2-3 5.2-3 3.8 0 6.2 4 4.3 7.8C19 16.4 12 21 12 21z"/>`,
   dot: (x, y, s, c, o) => `<circle cx="${x}" cy="${y}" r="${s / 2}" fill="${c}" opacity="${o}"/>`,
-  confetti: (x, y, s, c, o, r) => `<rect x="${x}" y="${y}" width="${s * 0.45}" height="${s}" rx="${s * 0.12}" fill="${c}" opacity="${o}" transform="rotate(${r} ${x} ${y})"/>`,
+  confetti: (x, y, s, c, o, r) =>
+    `<rect x="${x}" y="${y}" width="${s * 0.45}" height="${s}" rx="${s * 0.12}" fill="${c}" opacity="${o}" transform="rotate(${r} ${x} ${y})"/>`,
   sparkle: (x, y, s, c, o) =>
     `<path transform="translate(${x} ${y}) scale(${s / 24})" fill="${c}" opacity="${o}" d="M12 0c1 7 5 11 12 12-7 1-11 5-12 12-1-7-5-11-12-12 7-1 11-5 12-12z"/>`,
-  star: (x, y, s, c, o) => `<circle cx="${x}" cy="${y}" r="${s / 6}" fill="${c}" opacity="${o}"/><circle cx="${x}" cy="${y}" r="${s / 2}" fill="${c}" opacity="${o * 0.18}"/>`,
-  leaf: (x, y, s, c, o, r) => `<ellipse cx="${x}" cy="${y}" rx="${s * 0.28}" ry="${s * 0.6}" fill="${c}" opacity="${o}" transform="rotate(${r} ${x} ${y})"/>`,
-  petal: (x, y, s, c, o, r) => `<ellipse cx="${x}" cy="${y}" rx="${s * 0.35}" ry="${s * 0.55}" fill="${c}" opacity="${o}" transform="rotate(${r} ${x} ${y})"/>`,
-  balloonString: (x, y, s, c, o) => `<path d="M${x} ${y} q ${s * 0.3} ${s * 0.6} 0 ${s * 1.2} q -${s * 0.3} ${s * 0.6} 0 ${s * 1.2}" stroke="${c}" stroke-width="3" fill="none" opacity="${o}"/>`,
+  star: (x, y, s, c, o) =>
+    `<circle cx="${x}" cy="${y}" r="${s / 6}" fill="${c}" opacity="${o}"/><circle cx="${x}" cy="${y}" r="${s / 2}" fill="${c}" opacity="${o * 0.18}"/>`,
+  leaf: (x, y, s, c, o, r) =>
+    `<ellipse cx="${x}" cy="${y}" rx="${s * 0.28}" ry="${s * 0.6}" fill="${c}" opacity="${o}" transform="rotate(${r} ${x} ${y})"/>`,
+  petal: (x, y, s, c, o, r) =>
+    `<ellipse cx="${x}" cy="${y}" rx="${s * 0.35}" ry="${s * 0.55}" fill="${c}" opacity="${o}" transform="rotate(${r} ${x} ${y})"/>`,
+  balloonString: (x, y, s, c, o) =>
+    `<path d="M${x} ${y} q ${s * 0.3} ${s * 0.6} 0 ${s * 1.2} q -${s * 0.3} ${s * 0.6} 0 ${s * 1.2}" stroke="${c}" stroke-width="3" fill="none" opacity="${o}"/>`,
   balloon: (x, y, s, c, o) =>
     `<ellipse cx="${x}" cy="${y}" rx="${s * 0.42}" ry="${s * 0.5}" fill="${c}" opacity="${o}"/><path d="M${x - s * 0.06} ${y + s * 0.5} l ${s * 0.06} ${s * 0.1} l ${s * 0.06} -${s * 0.1} z" fill="${c}" opacity="${o}"/>`,
 };
 
 /** Scatter `count` shapes in a band, avoiding a central keep-out box where the birds sit. */
-function scatter(kind, count, colors, seed, { band = [0, H * 0.7], size = [18, 40], opacity = [0.5, 0.95], keepOut } = {}) {
+function scatter(
+  kind,
+  count,
+  colors,
+  seed,
+  { band = [0, H * 0.7], size = [18, 40], opacity = [0.5, 0.95], keepOut } = {},
+) {
   const r = rng(seed);
   const parts = [];
   let tries = 0;
@@ -55,7 +69,16 @@ function scatter(kind, count, colors, seed, { band = [0, H * 0.7], size = [18, 4
     const s = size[0] + r() * (size[1] - size[0]);
     const o = opacity[0] + r() * (opacity[1] - opacity[0]);
     const c = colors[Math.floor(r() * colors.length)];
-    parts.push(shapes[kind](x.toFixed(1), y.toFixed(1), s.toFixed(1), c, o.toFixed(2), Math.round(r() * 360)));
+    parts.push(
+      shapes[kind](
+        x.toFixed(1),
+        y.toFixed(1),
+        s.toFixed(1),
+        c,
+        o.toFixed(2),
+        Math.round(r() * 360),
+      ),
+    );
   }
   return parts.join("");
 }
@@ -63,7 +86,12 @@ function scatter(kind, count, colors, seed, { band = [0, H * 0.7], size = [18, 4
 // Drawn props -----------------------------------------------------------------
 
 /** Two-tier cake on a plate with candles. (x, y) is the plate centre; s is the cake width. */
-function cake(x, y, s, { base = "#f7c7d4", frosting = "#fff4f6", accent = "#e8476c", candles = 3 } = {}) {
+function cake(
+  x,
+  y,
+  s,
+  { base = "#f7c7d4", frosting = "#fff4f6", accent = "#e8476c", candles = 3 } = {},
+) {
   const h1 = s * 0.42;
   const w2 = s * 0.7;
   const h2 = s * 0.34;
@@ -73,10 +101,12 @@ function cake(x, y, s, { base = "#f7c7d4", frosting = "#fff4f6", accent = "#e847
   let out = `<ellipse cx="${x}" cy="${y}" rx="${s * 0.62}" ry="${s * 0.12}" fill="#e9e2ea"/>`;
   out += `<rect x="${x - s / 2}" y="${top1}" width="${s}" height="${h1}" rx="${s * 0.06}" fill="${base}"/>`;
   out += `<rect x="${x - s / 2}" y="${top1}" width="${s}" height="${h1 * 0.32}" rx="${s * 0.06}" fill="${frosting}"/>`;
-  for (let i = 0; i < 6; i++) out += drip(x - s / 2 + (i + 0.5) * (s / 6), top1 + h1 * 0.32, s * 0.07);
+  for (let i = 0; i < 6; i++)
+    out += drip(x - s / 2 + (i + 0.5) * (s / 6), top1 + h1 * 0.32, s * 0.07);
   out += `<rect x="${x - w2 / 2}" y="${top2}" width="${w2}" height="${h2}" rx="${s * 0.05}" fill="${base}"/>`;
   out += `<rect x="${x - w2 / 2}" y="${top2}" width="${w2}" height="${h2 * 0.35}" rx="${s * 0.05}" fill="${frosting}"/>`;
-  for (let i = 0; i < 4; i++) out += drip(x - w2 / 2 + (i + 0.5) * (w2 / 4), top2 + h2 * 0.35, s * 0.06);
+  for (let i = 0; i < 4; i++)
+    out += drip(x - w2 / 2 + (i + 0.5) * (w2 / 4), top2 + h2 * 0.35, s * 0.06);
   for (let i = 0; i < candles; i++) {
     const cx = x - ((candles - 1) * s * 0.14) / 2 + i * s * 0.14;
     const ch = s * 0.22;
@@ -134,8 +164,16 @@ function popper(x, y, s, rot, color) {
     const d = s * (0.9 + r() * 1.2);
     const px = x + Math.cos((a * Math.PI) / 180) * d;
     const py = y - s * 0.9 + Math.sin((a * Math.PI) / 180) * d;
-    burst += shapes.confetti(px, py, s * 0.22, [C.orange, C.gold, C.pink, C.mintSoft, C.blue][i % 5], 0.9, Math.round(r() * 360));
-    if (i % 3 === 0) burst += `<path d="M${x} ${y - s * 0.9} Q${(x + px) / 2 + 20} ${(y - s * 0.9 + py) / 2 - 30} ${px} ${py}" stroke="${C.gold}" stroke-width="3" fill="none" opacity="0.6"/>`;
+    burst += shapes.confetti(
+      px,
+      py,
+      s * 0.22,
+      [C.orange, C.gold, C.pink, C.mintSoft, C.blue][i % 5],
+      0.9,
+      Math.round(r() * 360),
+    );
+    if (i % 3 === 0)
+      burst += `<path d="M${x} ${y - s * 0.9} Q${(x + px) / 2 + 20} ${(y - s * 0.9 + py) / 2 - 30} ${px} ${py}" stroke="${C.gold}" stroke-width="3" fill="none" opacity="0.6"/>`;
   }
   const cone = `<path d="M${x} ${y} l${-s * 0.28} ${-s * 0.9} h${s * 0.56} z" fill="${color}"/><path d="M${x - s * 0.2} ${y - s * 0.62} l${s * 0.4} 0" stroke="#fff" stroke-width="3" opacity="0.6"/><path d="M${x - s * 0.12} ${y - s * 0.36} l${s * 0.24} 0" stroke="#fff" stroke-width="3" opacity="0.6"/>`;
   return `<g transform="rotate(${rot} ${x} ${y})">${burst}${cone}</g>`;
@@ -166,7 +204,12 @@ function partyHat(x, y, h, rot, { body, stripe, brim, pom }) {
     bands += `<rect x="${x - w}" y="${y - h + (i * h) / 5}" width="${w * 2}" height="${h / 9}" fill="${stripe}"/>`;
   }
   let dots = "";
-  for (const [dx, dy] of [[-0.12, 0.3], [0.1, 0.52], [-0.18, 0.74], [0.2, 0.86]]) {
+  for (const [dx, dy] of [
+    [-0.12, 0.3],
+    [0.1, 0.52],
+    [-0.18, 0.74],
+    [0.2, 0.86],
+  ]) {
     dots += `<circle cx="${x + dx * w}" cy="${y - h + dy * h}" r="${h * 0.035}" fill="#fff" opacity="0.85"/>`;
   }
   return `<g transform="rotate(${rot} ${x} ${y})">
@@ -191,7 +234,9 @@ function balloonCluster(tieX, tieY, balloons) {
 }
 
 function svg(inner) {
-  return Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${inner}</svg>`);
+  return Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${inner}</svg>`,
+  );
 }
 
 async function bird(name, height, { flop = false } = {}) {
@@ -240,19 +285,44 @@ const scenes = {
         [1120, 180, 118, "#3ec27a"],
         [1070, 300, 100, "#f0417f"],
       ]) +
-      cake(185, H - 40, 220, { base: "#ffd3e4", frosting: "#fffaf3", accent: "#f0417f", candles: 4 }) +
+      cake(185, H - 40, 220, {
+        base: "#ffd3e4",
+        frosting: "#fffaf3",
+        accent: "#f0417f",
+        candles: 4,
+      }) +
       giftBox(1040, H - 40, 150, "#8a63f5", "#ffc53d") +
       giftBox(1150, H - 40, 105, "#1fb5c9", "#f0417f");
     // Head positions measured on lovebirds.webp as fractions of its size.
     const hats =
-      partyHat(x + couple.w * 0.3, y + couple.h * 0.13, 82, -16, { body: "#1fb5c9", stripe: "#ffac1c", brim: "#f0417f", pom: "#ffd24d" }) +
-      partyHat(x + couple.w * 0.69, y + couple.h * 0.07, 86, 14, { body: "#f0417f", stripe: "#8a63f5", brim: "#ffac1c", pom: "#3ec27a" });
+      partyHat(x + couple.w * 0.3, y + couple.h * 0.13, 82, -16, {
+        body: "#1fb5c9",
+        stripe: "#ffac1c",
+        brim: "#f0417f",
+        pom: "#ffd24d",
+      }) +
+      partyHat(x + couple.w * 0.69, y + couple.h * 0.07, 86, 14, {
+        body: "#f0417f",
+        stripe: "#8a63f5",
+        brim: "#ffac1c",
+        pom: "#3ec27a",
+      });
     return {
       under: svg(
         shadow(x + couple.w / 2, H - 30, couple.w) +
           props +
-          scatter("confetti", 46, rainbow, 11, { band: [150, 470], size: [14, 28], opacity: [0.6, 0.95], keepOut: [x + 40, y, x + couple.w - 40, H] }) +
-          scatter("sparkle", 10, ["#ffd24d", "#1fb5c9", "#f0417f"], 12, { band: [140, 420], size: [18, 34], opacity: [0.7, 1], keepOut: [x + 40, y, x + couple.w - 40, H] }),
+          scatter("confetti", 46, rainbow, 11, {
+            band: [150, 470],
+            size: [14, 28],
+            opacity: [0.6, 0.95],
+            keepOut: [x + 40, y, x + couple.w - 40, H],
+          }) +
+          scatter("sparkle", 10, ["#ffd24d", "#1fb5c9", "#f0417f"], 12, {
+            band: [140, 420],
+            size: [18, 34],
+            opacity: [0.7, 1],
+            keepOut: [x + 40, y, x + couple.w - 40, H],
+          }),
       ),
       layers: [{ input: couple.buf, left: x, top: y }],
       over: svg(hats),
@@ -268,10 +338,19 @@ const scenes = {
       [330, 130, 120, C.gold],
       [150, 300, 110, C.pinkSoft],
     ]
-      .map(([bx, by, s, c]) => shapes.balloonString(bx, by + s * 0.55, s, "#9a7b6a", 0.7) + shapes.balloon(bx, by, s, c, 0.95))
+      .map(
+        ([bx, by, s, c]) =>
+          shapes.balloonString(bx, by + s * 0.55, s, "#9a7b6a", 0.7) +
+          shapes.balloon(bx, by, s, c, 0.95),
+      )
       .join("");
     const props =
-      cake(1010, H - 40, 200, { base: "#ffd9b3", frosting: "#fff8f0", accent: C.orange, candles: 5 }) +
+      cake(1010, H - 40, 200, {
+        base: "#ffd9b3",
+        frosting: "#fff8f0",
+        accent: C.orange,
+        candles: 5,
+      }) +
       giftBox(300, H - 40, 130, C.orange, C.gold) +
       giftBox(300, H - 40 - 130, 95, C.gold, C.orange) +
       giftBox(420, H - 40, 90, C.pinkSoft, C.pink);
@@ -280,7 +359,12 @@ const scenes = {
         shadow(x + b.w / 2, H - 30, b.w) +
           balloons +
           props +
-          scatter("confetti", 44, [C.orange, C.gold, C.pinkSoft, C.blue], 21, { band: [0, 480], size: [14, 30], opacity: [0.5, 0.95], keepOut: [x, y, x + b.w, H] }),
+          scatter("confetti", 44, [C.orange, C.gold, C.pinkSoft, C.blue], 21, {
+            band: [0, 480],
+            size: [14, 30],
+            opacity: [0.5, 0.95],
+            keepOut: [x, y, x + b.w, H],
+          }),
       ),
       layers: [{ input: b.buf, left: x, top: y }],
       over: svg(""),
@@ -292,7 +376,16 @@ const scenes = {
     const x = Math.round((W - couple.w) / 2);
     const y = H - couple.h - 30;
     return {
-      under: svg(shadow(W / 2, H - 30, couple.w) + scatter("heart", 18, [C.pink, C.pinkSoft, C.purple], 31, { band: [20, 520], size: [22, 54], opacity: [0.35, 0.85], keepOut: [x + 60, y + 40, x + couple.w - 60, H] }) + scatter("star", 30, [C.glow], 32, { band: [0, 420], size: [10, 22], opacity: [0.6, 1] })),
+      under: svg(
+        shadow(W / 2, H - 30, couple.w) +
+          scatter("heart", 18, [C.pink, C.pinkSoft, C.purple], 31, {
+            band: [20, 520],
+            size: [22, 54],
+            opacity: [0.35, 0.85],
+            keepOut: [x + 60, y + 40, x + couple.w - 60, H],
+          }) +
+          scatter("star", 30, [C.glow], 32, { band: [0, 420], size: [10, 22], opacity: [0.6, 1] }),
+      ),
       layers: [{ input: couple.buf, left: x, top: y }],
       over: svg(""),
     };
@@ -306,7 +399,16 @@ const scenes = {
     const x1 = Math.round((W - total) / 2);
     const x2 = x1 + pink.w + gap;
     return {
-      under: svg(shadow(x1 + pink.w / 2, H - 30, pink.w) + shadow(x2 + blue.w / 2, H - 30, blue.w) + scatter("sparkle", 22, [C.gold, C.mintSoft, C.cream], 41, { band: [20, 520], size: [16, 40], opacity: [0.5, 0.95], keepOut: [x1, H - pink.h, x2 + blue.w, H] })),
+      under: svg(
+        shadow(x1 + pink.w / 2, H - 30, pink.w) +
+          shadow(x2 + blue.w / 2, H - 30, blue.w) +
+          scatter("sparkle", 22, [C.gold, C.mintSoft, C.cream], 41, {
+            band: [20, 520],
+            size: [16, 40],
+            opacity: [0.5, 0.95],
+            keepOut: [x1, H - pink.h, x2 + blue.w, H],
+          }),
+      ),
       layers: [
         { input: pink.buf, left: x1, top: H - pink.h - 30 },
         { input: blue.buf, left: x2, top: H - blue.h - 30 },
@@ -320,7 +422,15 @@ const scenes = {
     const x = Math.round((W - b.w) / 2);
     const y = H - b.h - 30;
     return {
-      under: svg(shadow(W / 2, H - 30, b.w) + scatter("leaf", 34, [C.mintSoft, C.mint, "#b7e3c9"], 51, { band: [0, 620], size: [30, 64], opacity: [0.35, 0.8], keepOut: [x + 40, y + 40, x + b.w - 40, H] })),
+      under: svg(
+        shadow(W / 2, H - 30, b.w) +
+          scatter("leaf", 34, [C.mintSoft, C.mint, "#b7e3c9"], 51, {
+            band: [0, 620],
+            size: [30, 64],
+            opacity: [0.35, 0.8],
+            keepOut: [x + 40, y + 40, x + b.w - 40, H],
+          }),
+      ),
       layers: [{ input: b.buf, left: x, top: y }],
       over: svg(""),
     };
@@ -331,7 +441,16 @@ const scenes = {
     const x = Math.round((W - b.w) / 2);
     const y = H - b.h - 30;
     return {
-      under: svg(shadow(W / 2, H - 30, b.w) + `<circle cx="${W / 2}" cy="${y + 200}" r="300" fill="${C.gold}" opacity="0.18"/>` + scatter("sparkle", 24, [C.gold, C.orange, C.cream], 61, { band: [0, 600], size: [18, 44], opacity: [0.5, 1], keepOut: [x + 40, y + 40, x + b.w - 40, H] })),
+      under: svg(
+        shadow(W / 2, H - 30, b.w) +
+          `<circle cx="${W / 2}" cy="${y + 200}" r="300" fill="${C.gold}" opacity="0.18"/>` +
+          scatter("sparkle", 24, [C.gold, C.orange, C.cream], 61, {
+            band: [0, 600],
+            size: [18, 44],
+            opacity: [0.5, 1],
+            keepOut: [x + 40, y + 40, x + b.w - 40, H],
+          }),
+      ),
       layers: [{ input: b.buf, left: x, top: y }],
       over: svg(""),
     };
@@ -346,10 +465,25 @@ const scenes = {
       const t = (i + 1) / 8;
       const hx = x1 + pink.w + t * (x2 - x1 - pink.w);
       const hy = 430 - Math.sin(t * Math.PI) * 190;
-      return shapes.heart(hx, hy, 18 + Math.sin(t * Math.PI) * 14, i % 2 ? C.pink : C.pinkSoft, 0.85);
+      return shapes.heart(
+        hx,
+        hy,
+        18 + Math.sin(t * Math.PI) * 14,
+        i % 2 ? C.pink : C.pinkSoft,
+        0.85,
+      );
     }).join("");
     return {
-      under: svg(shadow(x1 + pink.w / 2, H - 30, pink.w) + shadow(x2 + blue.w / 2, H - 30, blue.w) + scatter("star", 40, [C.glow, C.cream], 71, { band: [0, 380], size: [8, 20], opacity: [0.6, 1] }) + trail),
+      under: svg(
+        shadow(x1 + pink.w / 2, H - 30, pink.w) +
+          shadow(x2 + blue.w / 2, H - 30, blue.w) +
+          scatter("star", 40, [C.glow, C.cream], 71, {
+            band: [0, 380],
+            size: [8, 20],
+            opacity: [0.6, 1],
+          }) +
+          trail,
+      ),
       layers: [
         { input: pink.buf, left: x1, top: H - pink.h - 30 },
         { input: blue.buf, left: x2, top: H - blue.h - 30 },
@@ -362,7 +496,15 @@ const scenes = {
     const couple = await bird("lovebirds", 600);
     const x = Math.round((W - couple.w) / 2);
     return {
-      under: svg(shadow(W / 2, H - 30, couple.w) + scatter("petal", 12, [C.pinkSoft, C.cream], 81, { band: [40, 400], size: [18, 30], opacity: [0.3, 0.6], keepOut: [x, 100, x + couple.w, H] })),
+      under: svg(
+        shadow(W / 2, H - 30, couple.w) +
+          scatter("petal", 12, [C.pinkSoft, C.cream], 81, {
+            band: [40, 400],
+            size: [18, 30],
+            opacity: [0.3, 0.6],
+            keepOut: [x, 100, x + couple.w, H],
+          }),
+      ),
       layers: [{ input: couple.buf, left: x, top: H - couple.h - 30 }],
       over: svg(""),
     };
@@ -373,7 +515,16 @@ const scenes = {
     const x = Math.round((W - couple.w) / 2);
     const moon = `<circle cx="960" cy="150" r="70" fill="${C.glow}" opacity="0.95"/><circle cx="1000" cy="130" r="62" fill="#1b1442" opacity="0"/>`;
     return {
-      under: svg(shadow(W / 2, H - 30, couple.w) + moon + scatter("star", 60, [C.glow, C.cream], 91, { band: [0, 460], size: [6, 22], opacity: [0.5, 1], keepOut: [880, 60, 1050, 240] })),
+      under: svg(
+        shadow(W / 2, H - 30, couple.w) +
+          moon +
+          scatter("star", 60, [C.glow, C.cream], 91, {
+            band: [0, 460],
+            size: [6, 22],
+            opacity: [0.5, 1],
+            keepOut: [880, 60, 1050, 240],
+          }),
+      ),
       layers: [{ input: couple.buf, left: x, top: H - couple.h - 30 }],
       over: svg(""),
     };
@@ -392,8 +543,17 @@ const scenes = {
       under: svg(
         shadow(x + b.w / 2, H - 30, b.w) +
           props +
-          scatter("confetti", 40, [C.orange, C.gold, C.pink, C.mintSoft, C.blue], 101, { band: [140, 560], size: [16, 34], opacity: [0.55, 0.95], keepOut: [x + 30, y + 30, x + b.w - 30, H] }) +
-          scatter("sparkle", 10, [C.gold], 102, { band: [150, 320], size: [20, 40], opacity: [0.7, 1] }),
+          scatter("confetti", 40, [C.orange, C.gold, C.pink, C.mintSoft, C.blue], 101, {
+            band: [140, 560],
+            size: [16, 34],
+            opacity: [0.55, 0.95],
+            keepOut: [x + 30, y + 30, x + b.w - 30, H],
+          }) +
+          scatter("sparkle", 10, [C.gold], 102, {
+            band: [150, 320],
+            size: [20, 40],
+            opacity: [0.7, 1],
+          }),
       ),
       layers: [{ input: b.buf, left: x, top: y }],
       over: svg(""),
@@ -404,8 +564,14 @@ const scenes = {
 await mkdir(outDir, { recursive: true });
 for (const [slug, build] of Object.entries(scenes)) {
   const scene = await build();
-  const info = await sharp({ create: { width: W, height: H, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
-    .composite([{ input: scene.under, left: 0, top: 0 }, ...scene.layers, { input: scene.over, left: 0, top: 0 }])
+  const info = await sharp({
+    create: { width: W, height: H, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } },
+  })
+    .composite([
+      { input: scene.under, left: 0, top: 0 },
+      ...scene.layers,
+      { input: scene.over, left: 0, top: 0 },
+    ])
     .webp({ quality: 86, alphaQuality: 90, effort: 6 })
     .toFile(path.join(outDir, `${slug}.webp`));
   console.log(`${slug}.webp: ${info.width}x${info.height} ${Math.round(info.size / 1024)} KB`);

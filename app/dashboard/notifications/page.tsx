@@ -14,8 +14,10 @@ function Group({ title, items }: { title: string; items: Notification[] }) {
   if (items.length === 0) return null;
   return (
     <section className="flex flex-col gap-2">
-      <CapsLabel as="h2" className="px-1">{title}</CapsLabel>
-      <ul className="panel flex flex-col divide-y divide-border p-1.5">
+      <CapsLabel as="h2" className="px-1">
+        {title}
+      </CapsLabel>
+      <ul className="flex flex-col divide-y divide-border panel p-1.5">
         {items.map((n) => (
           <li key={n.id}>
             <NotificationItem notification={n} />
@@ -51,7 +53,9 @@ export default async function NotificationsPage() {
           <PageTitle>{t("nav.notifications")}</PageTitle>
           {items.length > 0 && (
             <p className="mt-1 text-sm text-muted-foreground">
-              {unread.length > 0 ? t("notifications.unread", { count: unread.length }) : t("notifications.allRead")}
+              {unread.length > 0
+                ? t("notifications.unread", { count: unread.length })
+                : t("notifications.allRead")}
             </p>
           )}
         </div>

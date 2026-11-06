@@ -30,13 +30,25 @@ export async function processImage(file: File): Promise<ProcessedImage> {
   const blob = await draw(bitmap, width, height, mime, 0.82);
 
   const tScale = Math.min(1, THUMB_EDGE / Math.max(width, height));
-  const thumb = await draw(bitmap, Math.round(width * tScale), Math.round(height * tScale), mime, 0.75);
+  const thumb = await draw(
+    bitmap,
+    Math.round(width * tScale),
+    Math.round(height * tScale),
+    mime,
+    0.75,
+  );
   bitmap.close();
 
   return { blob, thumb, width, height, mime };
 }
 
-function draw(bitmap: ImageBitmap, w: number, h: number, mime: string, quality: number): Promise<Blob> {
+function draw(
+  bitmap: ImageBitmap,
+  w: number,
+  h: number,
+  mime: string,
+  quality: number,
+): Promise<Blob> {
   const canvas = document.createElement("canvas");
   canvas.width = w;
   canvas.height = h;

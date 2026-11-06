@@ -37,7 +37,12 @@ type Props = {
 /** The row of tool tabs: across the top of the side panel on wide screens, along the bottom on phones. */
 export function ToolTabs({ tabs, labels, active, onPick, label, className }: Props) {
   return (
-    <div role="tablist" aria-label={label} style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }} className={cn("grid gap-1", className)}>
+    <div
+      role="tablist"
+      aria-label={label}
+      style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
+      className={cn("grid gap-1", className)}
+    >
       {tabs.map((name) => {
         const Icon = TAB_ICONS[name];
         const chosen = active === name;
@@ -50,7 +55,9 @@ export function ToolTabs({ tabs, labels, active, onPick, label, className }: Pro
             onClick={() => onPick(name)}
             className={cn(
               "flex cursor-pointer flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[11px] leading-tight font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
-              chosen ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+              chosen
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:bg-secondary hover:text-foreground",
             )}
           >
             <Icon className="size-5" />

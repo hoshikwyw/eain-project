@@ -7,7 +7,8 @@ import { defaultScene, type SceneKind } from "./scene";
  * section renderer and differ by decoration, layout, default look and the
  * sections they start with.
  */
-export type Decoration = "petals" | "stars" | "confetti" | "hearts" | "sparkles" | "leaves" | "party";
+export type Decoration =
+  "petals" | "stars" | "confetti" | "hearts" | "sparkles" | "leaves" | "party";
 
 /** card: one framed card. scroll: each section is its own card, revealed as you scroll. */
 export type Layout = "card" | "scroll";
@@ -82,9 +83,21 @@ const cover = (heading: string, subheading = ""): Section => ({
   content: { heading, subheading },
 });
 const message = (text: string): Section => ({ id: sid(), type: "message", content: { text } });
-const image = (caption = ""): Section => ({ id: sid(), type: "image", content: { mediaId: null, caption } });
-const grid = (caption = ""): Section => ({ id: sid(), type: "photo_grid", content: { mediaIds: [], caption } });
-const quote = (text: string, attribution = ""): Section => ({ id: sid(), type: "quote", content: { text, attribution } });
+const image = (caption = ""): Section => ({
+  id: sid(),
+  type: "image",
+  content: { mediaId: null, caption },
+});
+const grid = (caption = ""): Section => ({
+  id: sid(),
+  type: "photo_grid",
+  content: { mediaIds: [], caption },
+});
+const quote = (text: string, attribution = ""): Section => ({
+  id: sid(),
+  type: "quote",
+  content: { text, attribution },
+});
 const final = (text: string, signature = ""): Section => ({
   id: sid(),
   type: "final_message",
@@ -122,11 +135,41 @@ export const templates: Record<string, TemplateDefinition> = {
     scene: "night-garden",
     defaultSections: (l) => [
       cover(my(l, "My Dear", "ချစ်ရသူ")),
-      message(my(l, "You've been working so hard lately…\nI know you're tired", "ဒီရက်ပိုင်း အရမ်း ကြိုးစားနေတာ သိတယ်…\nပင်ပန်းနေမှန်းလည်း သိတယ်")),
-      message(my(l, "So take a little break with me\nand watch these flowers bloom 🌸", "ခဏလောက် အနားယူပြီး\nဒီပန်းလေးတွေ ပွင့်တာ ကြည့်ရအောင် 🌸")),
-      message(my(l, "Every single one of them\nbloomed just for you", "ပန်းတစ်ပွင့်ချင်းစီတိုင်းက\nမင်းအတွက်ပဲ ပွင့်တာပါ")),
-      message(my(l, "You're stronger than you know\nand you're never alone 💛", "မင်းက ထင်တာထက် ပိုသန်မာတယ်\nဘယ်တော့မှ တစ်ယောက်တည်း မဟုတ်ဘူး 💛")),
-      message(my(l, "Rest well, and smile a little\nI love you so much ❤️", "ကောင်းကောင်း အနားယူပြီး နည်းနည်းလေး ပြုံးပါ\nအရမ်း ချစ်တယ် ❤️")),
+      message(
+        my(
+          l,
+          "You've been working so hard lately…\nI know you're tired",
+          "ဒီရက်ပိုင်း အရမ်း ကြိုးစားနေတာ သိတယ်…\nပင်ပန်းနေမှန်းလည်း သိတယ်",
+        ),
+      ),
+      message(
+        my(
+          l,
+          "So take a little break with me\nand watch these flowers bloom 🌸",
+          "ခဏလောက် အနားယူပြီး\nဒီပန်းလေးတွေ ပွင့်တာ ကြည့်ရအောင် 🌸",
+        ),
+      ),
+      message(
+        my(
+          l,
+          "Every single one of them\nbloomed just for you",
+          "ပန်းတစ်ပွင့်ချင်းစီတိုင်းက\nမင်းအတွက်ပဲ ပွင့်တာပါ",
+        ),
+      ),
+      message(
+        my(
+          l,
+          "You're stronger than you know\nand you're never alone 💛",
+          "မင်းက ထင်တာထက် ပိုသန်မာတယ်\nဘယ်တော့မှ တစ်ယောက်တည်း မဟုတ်ဘူး 💛",
+        ),
+      ),
+      message(
+        my(
+          l,
+          "Rest well, and smile a little\nI love you so much ❤️",
+          "ကောင်းကောင်း အနားယူပြီး နည်းနည်းလေး ပြုံးပါ\nအရမ်း ချစ်တယ် ❤️",
+        ),
+      ),
     ],
   },
   "birthday-postcard": {
@@ -157,7 +200,9 @@ export const templates: Record<string, TemplateDefinition> = {
     defaultSections: (l) => [
       cover(my(l, "Surprise!", "အံ့အားသင့်စရာ!"), my(l, "It is your day.", "ဒီနေ့ဟာ သင့်နေ့ပါ။")),
       image(my(l, "A favourite moment", "အကြိုက်ဆုံး အခိုက်အတန့်")),
-      message(my(l, "Here is everything I wanted to say today.", "ဒီနေ့ ပြောချင်တာအားလုံး ဒီမှာပါ။")),
+      message(
+        my(l, "Here is everything I wanted to say today.", "ဒီနေ့ ပြောချင်တာအားလုံး ဒီမှာပါ။"),
+      ),
       final(my(l, "Happy birthday,", "မွေးနေ့ပျော်ရွှင်ပါစေ")),
     ],
   },
@@ -167,9 +212,16 @@ export const templates: Record<string, TemplateDefinition> = {
     layout: "scroll",
     defaultVariant: "night",
     defaultSections: (l) => [
-      cover(my(l, "Happy Anniversary", "နှစ်ပတ်လည် ပျော်ရွှင်ပါစေ"), my(l, "Still my favourite person.", "အခုထိ အကြိုက်ဆုံးလူပါ။")),
+      cover(
+        my(l, "Happy Anniversary", "နှစ်ပတ်လည် ပျော်ရွှင်ပါစေ"),
+        my(l, "Still my favourite person.", "အခုထိ အကြိုက်ဆုံးလူပါ။"),
+      ),
       timeline([
-        { date: my(l, "The beginning", "အစ"), title: my(l, "Where it started", "စတင်ခဲ့သည့်နေရာ"), text: "" },
+        {
+          date: my(l, "The beginning", "အစ"),
+          title: my(l, "Where it started", "စတင်ခဲ့သည့်နေရာ"),
+          text: "",
+        },
         { date: my(l, "Today", "ဒီနေ့"), title: my(l, "Still here", "အခုထိ"), text: "" },
       ]),
       grid(my(l, "Us", "ကျွန်တော်တို့")),
@@ -184,7 +236,13 @@ export const templates: Record<string, TemplateDefinition> = {
     defaultSections: (l) => [
       cover(my(l, "To my friend", "သူငယ်ချင်းဆီသို့")),
       message(my(l, "Thank you for always being there.", "အမြဲရှိနေပေးတာ ကျေးဇူးတင်ပါတယ်။")),
-      quote(my(l, "Good friends are like stars. You do not always see them, but they are always there.", "သူငယ်ချင်းကောင်းတွေက ကြယ်တွေလိုပါ။ အမြဲမမြင်ရပေမယ့် အမြဲရှိနေပါတယ်။")),
+      quote(
+        my(
+          l,
+          "Good friends are like stars. You do not always see them, but they are always there.",
+          "သူငယ်ချင်းကောင်းတွေက ကြယ်တွေလိုပါ။ အမြဲမမြင်ရပေမယ့် အမြဲရှိနေပါတယ်။",
+        ),
+      ),
       final(my(l, "Your friend,", "သင့်သူငယ်ချင်း")),
     ],
   },
@@ -206,7 +264,13 @@ export const templates: Record<string, TemplateDefinition> = {
     defaultVariant: "sunset",
     defaultSections: (l) => [
       cover(my(l, "You deserve to hear this", "ဒါကို သင်ကြားသင့်ပါတယ်")),
-      message(my(l, "Here is what I notice and admire about you.", "သင့်အကြောင်း ကျွန်တော် သတိထားမိပြီး လေးစားတဲ့အရာများ။")),
+      message(
+        my(
+          l,
+          "Here is what I notice and admire about you.",
+          "သင့်အကြောင်း ကျွန်တော် သတိထားမိပြီး လေးစားတဲ့အရာများ။",
+        ),
+      ),
       final(my(l, "With appreciation,", "လေးစားစွာဖြင့်")),
     ],
   },
@@ -217,7 +281,9 @@ export const templates: Record<string, TemplateDefinition> = {
     defaultVariant: "night",
     defaultSections: (l) => [
       cover(my(l, "Miss you", "လွမ်းတယ်")),
-      message(my(l, "The distance is long, but you are close.", "အကွာအဝေး ဝေးပေမယ့် သင်က နီးနေပါတယ်။")),
+      message(
+        my(l, "The distance is long, but you are close.", "အကွာအဝေး ဝေးပေမယ့် သင်က နီးနေပါတယ်။"),
+      ),
       image(),
       final(my(l, "Until soon,", "မကြာမီ ပြန်တွေ့မယ်")),
     ],
@@ -256,7 +322,13 @@ export const templates: Record<string, TemplateDefinition> = {
     defaultVariant: "sunset",
     defaultSections: (l) => [
       cover(my(l, "Congratulations!", "ဂုဏ်ယူပါတယ်!")),
-      message(my(l, "You did it. I am so proud of you.", "သင် လုပ်နိုင်ခဲ့ပါပြီ။ သင့်အတွက် အရမ်း ဂုဏ်ယူပါတယ်။")),
+      message(
+        my(
+          l,
+          "You did it. I am so proud of you.",
+          "သင် လုပ်နိုင်ခဲ့ပါပြီ။ သင့်အတွက် အရမ်း ဂုဏ်ယူပါတယ်။",
+        ),
+      ),
       final(my(l, "Cheers,", "ဂုဏ်ပြုလျက်")),
     ],
   },
@@ -292,5 +364,9 @@ export function isAvailableTemplate(slug: string): boolean {
 
 export function defaultTheme(slug: string): GiftTheme {
   const style = getTemplateStyle(slug);
-  return { variant: style.defaultVariant, opening: style.defaultOpening, ...(style.scene && { scene: defaultScene }) };
+  return {
+    variant: style.defaultVariant,
+    opening: style.defaultOpening,
+    ...(style.scene && { scene: defaultScene }),
+  };
 }

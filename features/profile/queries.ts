@@ -46,8 +46,15 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats>
       .select("id", { count: "exact", head: true })
       .eq("sender_id", userId)
       .eq("status", "published"),
-    supabase.from("gift_events").select("gift_id").eq("event_type", "opened").in("gift_id", giftIds),
-    supabase.from("gift_responses").select("id", { count: "exact", head: true }).in("gift_id", giftIds),
+    supabase
+      .from("gift_events")
+      .select("gift_id")
+      .eq("event_type", "opened")
+      .in("gift_id", giftIds),
+    supabase
+      .from("gift_responses")
+      .select("id", { count: "exact", head: true })
+      .in("gift_id", giftIds),
   ]);
 
   const openedGiftIds = new Set((openedEvents.data ?? []).map((e) => e.gift_id));

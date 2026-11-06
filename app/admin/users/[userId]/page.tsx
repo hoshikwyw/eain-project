@@ -13,13 +13,22 @@ import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { adjustPoints, setUserRole } from "@/features/admin/actions";
 import { requireAdmin } from "@/features/admin/queries";
-import { deleteUserAccount, suspendUser, takeUserGiftsOffline, unsuspendUser } from "@/features/admin/user-actions";
+import {
+  deleteUserAccount,
+  suspendUser,
+  takeUserGiftsOffline,
+  unsuspendUser,
+} from "@/features/admin/user-actions";
 import { getUserAdmin } from "@/features/admin/users";
 import { Notice } from "@/components/ui/notice";
 
-const selectClass = "h-11 rounded-xl border border-input bg-card px-3.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/40";
+const selectClass =
+  "h-11 rounded-xl border border-input bg-card px-3.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/40";
 
-export default async function AdminUserDetailPage({ params, searchParams }: PageProps<"/admin/users/[userId]">) {
+export default async function AdminUserDetailPage({
+  params,
+  searchParams,
+}: PageProps<"/admin/users/[userId]">) {
   const me = await requireAdmin();
   const { userId } = await params;
   const query = await searchParams;
@@ -29,7 +38,8 @@ export default async function AdminUserDetailPage({ params, searchParams }: Page
   if (!u) notFound();
 
   const isSelf = u.id === me.id;
-  const date = (iso: string | null) => (iso ? format.dateTime(new Date(iso), { dateStyle: "medium", timeStyle: "short" }) : "—");
+  const date = (iso: string | null) =>
+    iso ? format.dateTime(new Date(iso), { dateStyle: "medium", timeStyle: "short" }) : "—";
   const published = u.gifts.filter((g) => g.status === "published").length;
 
   return (
@@ -46,7 +56,10 @@ export default async function AdminUserDetailPage({ params, searchParams }: Page
           </Button>
         }
       />
-      <AdminFlash ok={typeof query.ok === "string" ? query.ok : undefined} error={typeof query.error === "string" ? query.error : undefined} />
+      <AdminFlash
+        ok={typeof query.ok === "string" ? query.ok : undefined}
+        error={typeof query.error === "string" ? query.error : undefined}
+      />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         <div className="flex flex-col gap-6">
@@ -57,19 +70,35 @@ export default async function AdminUserDetailPage({ params, searchParams }: Page
             <CardContent>
               <dl className="grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
                 <Row label={t("users.detail.status")}>
-                  {u.suspended ? <Chip tone="brand">{t("users.suspended")}</Chip> : <Chip tone="success">{t("users.active")}</Chip>}
+                  {u.suspended ? (
+                    <Chip tone="brand">{t("users.suspended")}</Chip>
+                  ) : (
+                    <Chip tone="success">{t("users.active")}</Chip>
+                  )}
                 </Row>
                 <Row label={t("users.role")}>
-                  <Chip tone={u.profile?.role === "admin" ? "primary" : "neutral"}>{t(`users.roles.${u.profile?.role === "admin" ? "admin" : "user"}`)}</Chip>
+                  <Chip tone={u.profile?.role === "admin" ? "primary" : "neutral"}>
+                    {t(`users.roles.${u.profile?.role === "admin" ? "admin" : "user"}`)}
+                  </Chip>
                 </Row>
-                <Row label={t("users.detail.signIn")}>{t(`users.providers.${u.provider === "google" ? "google" : "email"}`)}</Row>
-                <Row label={t("users.detail.emailConfirmed")}>{u.emailConfirmed ? t("users.detail.yes") : t("users.detail.no")}</Row>
+                <Row label={t("users.detail.signIn")}>
+                  {t(`users.providers.${u.provider === "google" ? "google" : "email"}`)}
+                </Row>
+                <Row label={t("users.detail.emailConfirmed")}>
+                  {u.emailConfirmed ? t("users.detail.yes") : t("users.detail.no")}
+                </Row>
                 <Row label={t("users.detail.joined")}>{date(u.createdAt)}</Row>
                 <Row label={t("users.detail.lastSignIn")}>{date(u.lastSignInAt)}</Row>
-                <Row label={t("users.detail.language")}>{u.profile?.locale === "my" ? "မြန်မာ" : "English"}</Row>
+                <Row label={t("users.detail.language")}>
+                  {u.profile?.locale === "my" ? "မြန်မာ" : "English"}
+                </Row>
                 <Row label={t("users.detail.points")}>{u.profile?.points_balance ?? 0}</Row>
-                <Row label={t("users.detail.gifts")}>{t("users.detail.giftsSummary", { total: u.gifts.length, published })}</Row>
-                <Row label={t("users.detail.storage")}>{format.number(u.storageBytes / 1024 / 1024, { maximumFractionDigits: 2 })} MB</Row>
+                <Row label={t("users.detail.gifts")}>
+                  {t("users.detail.giftsSummary", { total: u.gifts.length, published })}
+                </Row>
+                <Row label={t("users.detail.storage")}>
+                  {format.number(u.storageBytes / 1024 / 1024, { maximumFractionDigits: 2 })} MB
+                </Row>
                 <Row label="ID">
                   <code className="text-xs">{u.id}</code>
                 </Row>
@@ -89,14 +118,21 @@ export default async function AdminUserDetailPage({ params, searchParams }: Page
                 <ul className="divide-y divide-border">
                   {u.gifts.map((g) => (
                     <li key={g.id}>
-                      <Link href={`/admin/gifts/${g.id}`} className="flex items-center justify-between gap-3 py-3 hover:text-primary-ink">
+                      <Link
+                        href={`/admin/gifts/${g.id}`}
+                        className="flex items-center justify-between gap-3 py-3 hover:text-primary-ink"
+                      >
                         <div className="min-w-0">
                           <p className="truncate text-sm font-semibold">{g.title}</p>
                           <p className="text-xs text-muted-foreground">
                             {g.templateName} · {date(g.created_at)}
                           </p>
                         </div>
-                        {g.status === "deleted" ? <Chip tone="neutral">{t("reports.giftStatus.deleted")}</Chip> : <GiftStatusChip status={g.status} opened={g.opened} />}
+                        {g.status === "deleted" ? (
+                          <Chip tone="neutral">{t("reports.giftStatus.deleted")}</Chip>
+                        ) : (
+                          <GiftStatusChip status={g.status} opened={g.opened} />
+                        )}
                       </Link>
                     </li>
                   ))}
@@ -115,14 +151,21 @@ export default async function AdminUserDetailPage({ params, searchParams }: Page
               ) : (
                 <ul className="divide-y divide-border">
                   {u.transactions.map((tx) => (
-                    <li key={tx.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
+                    <li
+                      key={tx.id}
+                      className="flex items-center justify-between gap-3 py-2.5 text-sm"
+                    >
                       <div className="min-w-0">
                         <p className="truncate">{tx.description}</p>
                         <p className="text-xs text-muted-foreground">{date(tx.created_at)}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Chip tone={tx.amount > 0 ? "success" : "brand"}>{tx.amount > 0 ? `+${tx.amount}` : tx.amount}</Chip>
-                        <span className="w-12 text-right text-xs text-muted-foreground">= {tx.balance_after}</span>
+                        <Chip tone={tx.amount > 0 ? "success" : "brand"}>
+                          {tx.amount > 0 ? `+${tx.amount}` : tx.amount}
+                        </Chip>
+                        <span className="w-12 text-right text-xs text-muted-foreground">
+                          = {tx.balance_after}
+                        </span>
                       </div>
                     </li>
                   ))}
@@ -187,7 +230,12 @@ export default async function AdminUserDetailPage({ params, searchParams }: Page
                 <form action={setUserRole} className="flex gap-2">
                   <input type="hidden" name="userId" value={u.id} />
                   <input type="hidden" name="returnTo" value={`/admin/users/${u.id}`} />
-                  <select name="role" defaultValue={u.profile?.role ?? "user"} className={selectClass} aria-label={t("users.role")}>
+                  <select
+                    name="role"
+                    defaultValue={u.profile?.role ?? "user"}
+                    className={selectClass}
+                    aria-label={t("users.role")}
+                  >
                     <option value="user">{t("users.roles.user")}</option>
                     <option value="admin">{t("users.roles.admin")}</option>
                   </select>
@@ -201,7 +249,9 @@ export default async function AdminUserDetailPage({ params, searchParams }: Page
             <Card>
               <CardHeader>
                 <CardTitle>{t("users.detail.moderation")}</CardTitle>
-                <CardDescription>{u.suspended ? t("users.detail.suspendedHint") : t("users.detail.suspendHint")}</CardDescription>
+                <CardDescription>
+                  {u.suspended ? t("users.detail.suspendedHint") : t("users.detail.suspendHint")}
+                </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-4">
                 {u.suspended ? (
@@ -214,18 +264,37 @@ export default async function AdminUserDetailPage({ params, searchParams }: Page
                 ) : (
                   <form action={suspendUser} className="flex flex-col gap-2">
                     <input type="hidden" name="userId" value={u.id} />
-                    <Input name="reason" placeholder={t("users.detail.reasonPlaceholder")} maxLength={300} />
-                    <ConfirmButton variant="secondary" className="w-full" confirmText={t("users.detail.suspendConfirm")}>
+                    <Input
+                      name="reason"
+                      placeholder={t("users.detail.reasonPlaceholder")}
+                      maxLength={300}
+                    />
+                    <ConfirmButton
+                      variant="secondary"
+                      className="w-full"
+                      confirmText={t("users.detail.suspendConfirm")}
+                    >
                       {t("users.detail.suspend")}
                     </ConfirmButton>
                   </form>
                 )}
 
                 {published > 0 && (
-                  <form action={takeUserGiftsOffline} className="flex flex-col gap-2 border-t border-border pt-4">
+                  <form
+                    action={takeUserGiftsOffline}
+                    className="flex flex-col gap-2 border-t border-border pt-4"
+                  >
                     <input type="hidden" name="userId" value={u.id} />
-                    <Input name="reason" placeholder={t("users.detail.offlineReason")} maxLength={300} />
-                    <ConfirmButton variant="secondary" className="w-full" confirmText={t("users.detail.offlineConfirm", { count: published })}>
+                    <Input
+                      name="reason"
+                      placeholder={t("users.detail.offlineReason")}
+                      maxLength={300}
+                    />
+                    <ConfirmButton
+                      variant="secondary"
+                      className="w-full"
+                      confirmText={t("users.detail.offlineConfirm", { count: published })}
+                    >
                       {t("users.detail.offline", { count: published })}
                     </ConfirmButton>
                   </form>
@@ -246,8 +315,20 @@ export default async function AdminUserDetailPage({ params, searchParams }: Page
                   <label className="text-xs text-muted-foreground" htmlFor="confirmEmail">
                     {t("users.detail.typeEmail", { email: u.email })}
                   </label>
-                  <Input id="confirmEmail" name="confirmEmail" type="email" autoComplete="off" required placeholder={u.email} />
-                  <ConfirmButton variant="ghost" className="w-full text-destructive" confirmText={t("users.detail.deleteConfirm")} danger>
+                  <Input
+                    id="confirmEmail"
+                    name="confirmEmail"
+                    type="email"
+                    autoComplete="off"
+                    required
+                    placeholder={u.email}
+                  />
+                  <ConfirmButton
+                    variant="ghost"
+                    className="w-full text-destructive"
+                    confirmText={t("users.detail.deleteConfirm")}
+                    danger
+                  >
                     {t("users.detail.delete")}
                   </ConfirmButton>
                 </form>

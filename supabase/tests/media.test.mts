@@ -15,7 +15,9 @@ const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const site = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:5173";
 const projectRef = new URL(url).hostname.split(".")[0]!;
 
-const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+const admin = createClient(url, serviceKey, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
 const user = createClient(url, anonKey, { auth: { persistSession: false } });
 
 // A real 1x1 PNG. The route sniffs bytes, so a fake extension is not enough.
@@ -36,7 +38,8 @@ function sessionCookie(session: Session): string {
   const value = "base64-" + Buffer.from(JSON.stringify(session)).toString("base64url");
   if (value.length <= 3180) return `${name}=${value}`;
   const parts: string[] = [];
-  for (let i = 0; i * 3180 < value.length; i++) parts.push(`${name}.${i}=${value.slice(i * 3180, (i + 1) * 3180)}`);
+  for (let i = 0; i * 3180 < value.length; i++)
+    parts.push(`${name}.${i}=${value.slice(i * 3180, (i + 1) * 3180)}`);
   return parts.join("; ");
 }
 
@@ -59,14 +62,22 @@ describe("photo uploads", () => {
   before(async () => {
     const email = `media-${Date.now()}@example.com`;
     const password = `Test-${Math.random().toString(36).slice(2)}-pass`;
-    const { data, error } = await admin.auth.admin.createUser({ email, password, email_confirm: true });
+    const { data, error } = await admin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+    });
     if (error || !data.user) throw error ?? new Error("createUser failed");
     userId = data.user.id;
     const signIn = await user.auth.signInWithPassword({ email, password });
     if (signIn.error || !signIn.data.session) throw signIn.error ?? new Error("no session");
     cookie = sessionCookie(signIn.data.session);
 
-    const { data: template } = await user.from("templates").select("id").eq("slug", "miss-you").single();
+    const { data: template } = await user
+      .from("templates")
+      .select("id")
+      .eq("slug", "miss-you")
+      .single();
     const { data: gift } = await user
       .from("gifts")
       .insert({ sender_id: userId, template_id: template!.id, title: "Media gift" })
@@ -78,15 +89,23 @@ describe("photo uploads", () => {
 
   after(async () => {
     if (userId) {
-      const { data: rows } = await admin.from("gift_media").select("storage_path, thumb_path").eq("owner_id", userId);
-      const paths = (rows ?? []).flatMap((r) => [r.storage_path, r.thumb_path].filter(Boolean) as string[]);
+      const { data: rows } = await admin
+        .from("gift_media")
+        .select("storage_path, thumb_path")
+        .eq("owner_id", userId);
+      const paths = (rows ?? []).flatMap(
+        (r) => [r.storage_path, r.thumb_path].filter(Boolean) as string[],
+      );
       if (paths.length) await admin.storage.from("gift-media").remove(paths);
       await admin.auth.admin.deleteUser(userId);
     }
   });
 
   it("rejects unauthenticated uploads", async () => {
-    const res = await fetch(`${site}/api/gifts/${giftId}/media`, { method: "POST", body: form(PNG_1X1) });
+    const res = await fetch(`${site}/api/gifts/${giftId}/media`, {
+      method: "POST",
+      body: form(PNG_1X1),
+    });
     assert.equal(res.status, 401);
   });
 
@@ -110,12 +129,25 @@ describe("photo uploads", () => {
     const img = await fetch(body.url);
     assert.equal(img.status, 200);
 
-    const { data: row } = await user.from("gift_media").select("owner_id, gift_id, mime_type, bytes").eq("id", mediaId).single();
-    assert.deepEqual(row, { owner_id: userId, gift_id: giftId, mime_type: "image/png", bytes: PNG_1X1.byteLength });
+    const { data: row } = await user
+      .from("gift_media")
+      .select("owner_id, gift_id, mime_type, bytes")
+      .eq("id", mediaId)
+      .single();
+    assert.deepEqual(row, {
+      owner_id: userId,
+      gift_id: giftId,
+      mime_type: "image/png",
+      bytes: PNG_1X1.byteLength,
+    });
   });
 
   it("the private bucket has no public url", async () => {
-    const { data: row } = await admin.from("gift_media").select("storage_path").eq("id", mediaId).single();
+    const { data: row } = await admin
+      .from("gift_media")
+      .select("storage_path")
+      .eq("id", mediaId)
+      .single();
     const publicUrl = `${url}/storage/v1/object/public/gift-media/${row!.storage_path}`;
     const res = await fetch(publicUrl);
     assert.notEqual(res.status, 200, "public path must not serve private media");
@@ -123,14 +155,22 @@ describe("photo uploads", () => {
 
   it("a photo section renders on the public page after publish", async () => {
     await user.from("gift_sections").insert([
-      { gift_id: giftId, type: "text", position: 0, content: { heading: "Photo test", subheading: "" } },
+      {
+        gift_id: giftId,
+        type: "text",
+        position: 0,
+        content: { heading: "Photo test", subheading: "" },
+      },
       { gift_id: giftId, type: "image", position: 1, content: { mediaId, caption: "Our day" } },
     ]);
     const pub = await user.rpc("publish_gift", { p_gift_id: giftId });
     assert.equal(pub.error, null);
     const html = await (await fetch(`${site}/g/${token}`)).text();
     assert.ok(html.includes("Our day"));
-    assert.ok(html.includes("/storage/v1/object/sign/"), "image should be served through a signed url");
+    assert.ok(
+      html.includes("/storage/v1/object/sign/"),
+      "image should be served through a signed url",
+    );
   });
 
   it("enforces the per-gift photo limit", async () => {
@@ -140,7 +180,10 @@ describe("photo uploads", () => {
     }
     const sixth = await upload(form(PNG_1X1));
     assert.equal(sixth.status, 409);
-    const { count } = await admin.from("gift_media").select("id", { count: "exact", head: true }).eq("gift_id", giftId);
+    const { count } = await admin
+      .from("gift_media")
+      .select("id", { count: "exact", head: true })
+      .eq("gift_id", giftId);
     assert.equal(count, 5);
   });
 
@@ -152,7 +195,11 @@ describe("photo uploads", () => {
     try {
       const signIn = await other.auth.signInWithPassword({ email, password });
       const otherCookie = sessionCookie(signIn.data.session!);
-      const up = await fetch(`${site}/api/gifts/${giftId}/media`, { method: "POST", body: form(PNG_1X1), headers: { cookie: otherCookie } });
+      const up = await fetch(`${site}/api/gifts/${giftId}/media`, {
+        method: "POST",
+        body: form(PNG_1X1),
+        headers: { cookie: otherCookie },
+      });
       assert.equal(up.status, 404);
       const del = await fetch(`${site}/api/gifts/${giftId}/media`, {
         method: "DELETE",
@@ -166,16 +213,26 @@ describe("photo uploads", () => {
   });
 
   it("the owner can delete a photo and its objects", async () => {
-    const { data: row } = await admin.from("gift_media").select("storage_path").eq("id", mediaId).single();
+    const { data: row } = await admin
+      .from("gift_media")
+      .select("storage_path")
+      .eq("id", mediaId)
+      .single();
     const res = await fetch(`${site}/api/gifts/${giftId}/media`, {
       method: "DELETE",
       headers: { cookie, "Content-Type": "application/json" },
       body: JSON.stringify({ mediaId }),
     });
     assert.equal(res.status, 200);
-    const { data: gone } = await admin.from("gift_media").select("id").eq("id", mediaId).maybeSingle();
+    const { data: gone } = await admin
+      .from("gift_media")
+      .select("id")
+      .eq("id", mediaId)
+      .maybeSingle();
     assert.equal(gone, null);
-    const { data: signed } = await admin.storage.from("gift-media").createSignedUrl(row!.storage_path, 60);
+    const { data: signed } = await admin.storage
+      .from("gift-media")
+      .createSignedUrl(row!.storage_path, 60);
     const fetched = signed ? await fetch(signed.signedUrl) : null;
     assert.ok(!fetched || fetched.status !== 200, "object should be removed from storage");
   });

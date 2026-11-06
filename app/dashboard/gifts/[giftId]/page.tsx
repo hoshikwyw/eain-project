@@ -8,7 +8,13 @@ import { GiftView } from "@/components/gift/gift-view";
 import { SharePanel } from "@/components/gift/share-panel";
 import { Button } from "@/components/ui/button";
 import { SubmitButton } from "@/components/ui/submit-button";
-import { deleteGift, duplicateGift, publishGift, regenerateGiftLink, unpublishGift } from "@/features/gifts/actions";
+import {
+  deleteGift,
+  duplicateGift,
+  publishGift,
+  regenerateGiftLink,
+  unpublishGift,
+} from "@/features/gifts/actions";
 import { getGiftDetail, getGiftResponses } from "@/features/gifts/queries";
 import { getCurrentProfile } from "@/features/profile/queries";
 import { makeQr } from "@/lib/qr";
@@ -19,7 +25,14 @@ import { Notice } from "@/components/ui/notice";
 import { PageTitle } from "@/components/ui/page-title";
 import { CapsLabel } from "@/components/ui/caps-label";
 
-const TIMELINE = ["created", "published", "shared", "opened", "viewed", "responded"] as const satisfies readonly GiftEventType[];
+const TIMELINE = [
+  "created",
+  "published",
+  "shared",
+  "opened",
+  "viewed",
+  "responded",
+] as const satisfies readonly GiftEventType[];
 
 /** A white panel in the side column. */
 const PANEL = "panel p-5 sm:p-6";
@@ -31,14 +44,21 @@ const ROW = "h-12 w-full justify-start gap-3 rounded-2xl px-3";
  * creator does with it — pass it on, read the replies, see how far it has
  * travelled, and manage it. On a phone the share area comes first.
  */
-export default async function GiftDetailPage({ params, searchParams }: PageProps<"/dashboard/gifts/[giftId]">) {
+export default async function GiftDetailPage({
+  params,
+  searchParams,
+}: PageProps<"/dashboard/gifts/[giftId]">) {
   const { giftId } = await params;
   const query = await searchParams;
   const t = await getTranslations("dashboard.gifts");
   const tNav = await getTranslations("dashboard.nav");
   const format = await getFormatter();
 
-  const [data, profile, responses] = await Promise.all([getGiftDetail(giftId), getCurrentProfile(), getGiftResponses(giftId)]);
+  const [data, profile, responses] = await Promise.all([
+    getGiftDetail(giftId),
+    getCurrentProfile(),
+    getGiftResponses(giftId),
+  ]);
   if (!data) notFound();
   const hasQuestions = data.sections.some((s) => s.type === "question");
 
@@ -84,16 +104,8 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
           {t("justPublished")}
         </Notice>
       )}
-      {query.regenerated === "1" && (
-        <Notice role="status">
-          {t("linkRegenerated")}
-        </Notice>
-      )}
-      {query.error === "duplicate" && (
-        <Notice role="alert">
-          {t("duplicateFailed")}
-        </Notice>
-      )}
+      {query.regenerated === "1" && <Notice role="status">{t("linkRegenerated")}</Notice>}
+      {query.error === "duplicate" && <Notice role="alert">{t("duplicateFailed")}</Notice>}
 
       {/* One column on phones and tablets; from laptop width the gift sits on the left and the rest in a side column. */}
       <div className="mx-auto grid w-full max-w-2xl grid-cols-1 gap-6 lg:max-w-none lg:grid-cols-[minmax(0,1fr)_380px] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-8">
@@ -101,10 +113,18 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
         <section className="bg-hero flex flex-col gap-4 rounded-3xl p-5 sm:p-6 lg:col-start-2 lg:row-start-1">
           <div>
             <h2 className="font-display text-xl font-semibold">{t("share")}</h2>
-            <p className="mt-0.5 text-sm text-muted-foreground">{isPublished ? t("shareDescription") : t("publishToShare")}</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              {isPublished ? t("shareDescription") : t("publishToShare")}
+            </p>
           </div>
           {isPublished && qr ? (
-            <SharePanel giftId={gift.id} url={shareUrl} qrSvg={qr.svg} qrPngDataUrl={qr.pngDataUrl} title={gift.title} />
+            <SharePanel
+              giftId={gift.id}
+              url={shareUrl}
+              qrSvg={qr.svg}
+              qrPngDataUrl={qr.pngDataUrl}
+              title={gift.title}
+            />
           ) : (
             <form action={publishGift.bind(null, gift.id)}>
               <SubmitButton className="w-full">
@@ -116,7 +136,10 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
         </section>
 
         {/* The gift itself, as the person it is for will see it */}
-        <section aria-labelledby="gift-preview" className="glass rounded-[2rem] border p-3 sm:p-8 lg:col-start-1 lg:row-span-2 lg:row-start-1">
+        <section
+          aria-labelledby="gift-preview"
+          className="rounded-[2rem] border glass p-3 sm:p-8 lg:col-start-1 lg:row-span-2 lg:row-start-1"
+        >
           <CapsLabel as="h2" id="gift-preview" className="pt-1 pb-3 text-center sm:pt-0 sm:pb-5">
             {t("preview")}
           </CapsLabel>
@@ -136,19 +159,28 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
         <div className="flex flex-col gap-6 lg:col-start-2 lg:row-start-2">
           {(hasQuestions || responses.length > 0) && (
             <section className={PANEL}>
-              <h2 className="font-display text-lg font-semibold">{t("responses.title", { count: responses.length })}</h2>
-              <p className="mt-0.5 text-sm text-muted-foreground">{responses.length === 0 ? t("responses.empty") : t("responses.description")}</p>
+              <h2 className="font-display text-lg font-semibold">
+                {t("responses.title", { count: responses.length })}
+              </h2>
+              <p className="mt-0.5 text-sm text-muted-foreground">
+                {responses.length === 0 ? t("responses.empty") : t("responses.description")}
+              </p>
               {responses.length > 0 && (
                 <ul className="mt-4 flex flex-col gap-3">
                   {responses.map((r) => (
                     <li key={r.id} className="rounded-2xl bg-secondary/60 p-4">
                       <p className="mb-2 text-xs text-muted-foreground">
-                        {format.dateTime(new Date(r.createdAt), { dateStyle: "medium", timeStyle: "short" })}
+                        {format.dateTime(new Date(r.createdAt), {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })}
                       </p>
                       <dl className="flex flex-col gap-2">
                         {r.answers.map((a, i) => (
                           <div key={i}>
-                            <dt className="text-xs font-semibold text-muted-foreground">{a.prompt}</dt>
+                            <dt className="text-xs font-semibold text-muted-foreground">
+                              {a.prompt}
+                            </dt>
                             <dd className="text-sm break-words whitespace-pre-line">{a.value}</dd>
                           </div>
                         ))}
@@ -179,16 +211,32 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
                       >
                         {event && <Check className="size-3.5" />}
                       </span>
-                      {!last && <span className={cn("w-0.5 flex-1", event ? "bg-success/40" : "bg-border")} />}
+                      {!last && (
+                        <span
+                          className={cn("w-0.5 flex-1", event ? "bg-success/40" : "bg-border")}
+                        />
+                      )}
                     </span>
                     <div className={cn("min-w-0", !last && "pb-4")}>
-                      <p className={cn("text-sm leading-6", event ? "font-semibold" : "text-muted-foreground")}>{t(`events.${type}`)}</p>
+                      <p
+                        className={cn(
+                          "text-sm leading-6",
+                          event ? "font-semibold" : "text-muted-foreground",
+                        )}
+                      >
+                        {t(`events.${type}`)}
+                      </p>
                       {event && (
                         <p className="text-xs text-muted-foreground">
-                          {format.dateTime(new Date(event.created_at), { dateStyle: "medium", timeStyle: "short" })}
+                          {format.dateTime(new Date(event.created_at), {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          })}
                         </p>
                       )}
-                      {!event && type === "opened" && isPublished && <p className="text-xs text-muted-foreground">{t("notOpenedYet")}</p>}
+                      {!event && type === "opened" && isPublished && (
+                        <p className="text-xs text-muted-foreground">{t("notOpenedYet")}</p>
+                      )}
                     </div>
                   </li>
                 );
@@ -226,8 +274,16 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
               </ConfirmButton>
             </form>
             <p className="px-3 pb-1 pl-10 text-xs text-muted-foreground">{t("regenerateHint")}</p>
-            <form action={deleteGift.bind(null, gift.id)} className="mt-1 border-t border-border pt-1">
-              <ConfirmButton variant="ghost" className={cn(ROW, "text-destructive")} confirmText={t("deleteConfirm")} danger>
+            <form
+              action={deleteGift.bind(null, gift.id)}
+              className="mt-1 border-t border-border pt-1"
+            >
+              <ConfirmButton
+                variant="ghost"
+                className={cn(ROW, "text-destructive")}
+                confirmText={t("deleteConfirm")}
+                danger
+              >
                 <Trash2 />
                 {t("delete")}
               </ConfirmButton>

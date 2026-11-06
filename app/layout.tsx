@@ -45,7 +45,16 @@ export async function generateMetadata(): Promise<Metadata> {
     robots:
       appMode === "admin"
         ? { index: false, follow: false }
-        : { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
+        : {
+            index: true,
+            follow: true,
+            googleBot: {
+              index: true,
+              follow: true,
+              "max-image-preview": "large",
+              "max-snippet": -1,
+            },
+          },
     verification: verification ? { google: verification } : undefined,
   };
 }

@@ -24,12 +24,19 @@ export default async function AdminAuditPage() {
                   <span className="text-muted-foreground">
                     {l.target_type} {l.target_id}
                   </span>
-                  <span className="text-xs text-muted-foreground">{format.dateTime(new Date(l.created_at), { dateStyle: "medium", timeStyle: "short" })}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {format.dateTime(new Date(l.created_at), {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })}
+                  </span>
                 </div>
                 <code className="text-xs text-muted-foreground">{JSON.stringify(l.details)}</code>
               </li>
             ))}
-            {logs.length === 0 && <li className="p-8 text-center text-sm text-muted-foreground">{t("audit.empty")}</li>}
+            {logs.length === 0 && (
+              <li className="p-8 text-center text-sm text-muted-foreground">{t("audit.empty")}</li>
+            )}
           </ul>
         </CardContent>
       </Card>

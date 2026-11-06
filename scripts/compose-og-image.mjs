@@ -7,7 +7,10 @@
 import path from "node:path";
 import sharp from "sharp";
 
-const root = path.resolve(new URL(".", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"), "..");
+const root = path.resolve(
+  new URL(".", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"),
+  "..",
+);
 const W = 1200;
 const H = 630;
 
@@ -35,7 +38,10 @@ const background = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="$
   <text x="230" y="505" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="22" fill="#ffffff">Create a gift</text>
 </svg>`);
 
-const birds = await sharp(path.join(root, "public", "brand", "lovebirds.webp")).resize({ height: 440 }).png().toBuffer();
+const birds = await sharp(path.join(root, "public", "brand", "lovebirds.webp"))
+  .resize({ height: 440 })
+  .png()
+  .toBuffer();
 const birdMeta = await sharp(birds).metadata();
 
 const out = path.join(root, "app", "opengraph-image.png");

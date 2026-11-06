@@ -25,13 +25,22 @@ type Props = {
  */
 export function StatusPage({ bird = "pair", title, text, children, note, logo, className }: Props) {
   return (
-    <div className={cn("flex flex-1 flex-col items-center justify-center gap-6 px-4 py-16 text-center", className)}>
-      <div className={bird === "pair" ? "w-full max-w-60" : "w-full max-w-36"}>{bird === "pair" ? <Lovebirds /> : <Bird variant={bird} />}</div>
+    <div
+      className={cn(
+        "flex flex-1 flex-col items-center justify-center gap-6 px-4 py-16 text-center",
+        className,
+      )}
+    >
+      <div className={bird === "pair" ? "w-full max-w-60" : "w-full max-w-36"}>
+        {bird === "pair" ? <Lovebirds /> : <Bird variant={bird} />}
+      </div>
       <div className="flex flex-col gap-2">
         <PageTitle className="text-balance my:text-wrap">{title}</PageTitle>
         <p className="mx-auto max-w-md text-muted-foreground">{text}</p>
       </div>
-      {children && <div className="flex flex-wrap items-center justify-center gap-2">{children}</div>}
+      {children && (
+        <div className="flex flex-wrap items-center justify-center gap-2">{children}</div>
+      )}
       {note && <p className="text-xs text-muted-foreground">{note}</p>}
       {logo && (
         <Link href="/" aria-label="Eain" className="mt-2 rounded-lg">

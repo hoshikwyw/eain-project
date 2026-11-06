@@ -1,9 +1,28 @@
 "use client";
 
-import { BookOpen, ChevronDown, ChevronUp, Gift, Mail, Play, Plus, RotateCcw, ScrollText, Sparkles, Theater, Trash2, TriangleAlert } from "lucide-react";
+import {
+  BookOpen,
+  ChevronDown,
+  ChevronUp,
+  Gift,
+  Mail,
+  Play,
+  Plus,
+  RotateCcw,
+  ScrollText,
+  Sparkles,
+  Theater,
+  Trash2,
+  TriangleAlert,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
-import { contrastRatio, DARK_VARIANTS, lookColors, variantSwatch } from "@/components/gift/palettes";
+import {
+  contrastRatio,
+  DARK_VARIANTS,
+  lookColors,
+  variantSwatch,
+} from "@/components/gift/palettes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,7 +45,16 @@ import { cn } from "@/lib/utils";
 import { SectionFields } from "./section-fields";
 import { sectionSummary } from "./text-fields";
 
-const SECTION_TYPES: EditableSectionType[] = ["text", "message", "image", "photo_grid", "timeline", "quote", "question", "final_message"];
+const SECTION_TYPES: EditableSectionType[] = [
+  "text",
+  "message",
+  "image",
+  "photo_grid",
+  "timeline",
+  "quote",
+  "question",
+  "final_message",
+];
 
 const OPENING_ICONS: Record<Opening, React.ComponentType<{ className?: string }>> = {
   envelope: Mail,
@@ -40,7 +68,9 @@ const OPENING_ICONS: Record<Opening, React.ComponentType<{ className?: string }>
 const optionClass = (active: boolean) =>
   cn(
     "flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border text-center text-xs font-semibold transition-colors",
-    active ? "border-primary bg-accent text-accent-foreground ring-1 ring-primary" : "border-border hover:bg-secondary",
+    active
+      ? "border-primary bg-accent text-accent-foreground ring-1 ring-primary"
+      : "border-border hover:bg-secondary",
   );
 
 type SectionsPanelProps = {
@@ -82,7 +112,11 @@ export function SectionsPanel(p: SectionsPanelProps) {
               ref={selected ? selectedRow : undefined}
               className={cn(
                 "rounded-2xl border bg-card",
-                selected ? "border-primary ring-1 ring-primary" : p.invalidIds.has(section.id) ? "border-destructive" : "border-border",
+                selected
+                  ? "border-primary ring-1 ring-primary"
+                  : p.invalidIds.has(section.id)
+                    ? "border-destructive"
+                    : "border-border",
               )}
             >
               <div className="flex items-center gap-0.5 py-1 pr-1.5 pl-3.5">
@@ -92,22 +126,54 @@ export function SectionsPanel(p: SectionsPanelProps) {
                   className="flex min-w-0 flex-1 cursor-pointer flex-col py-1.5 text-left outline-none"
                   onClick={() => p.onSelect(selected ? null : section.id)}
                 >
-                  <span className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">{t(`sectionTypes.${section.type}`)}</span>
+                  <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                    {t(`sectionTypes.${section.type}`)}
+                  </span>
                   <span className="truncate text-sm">{sectionSummary(section) || "…"}</span>
                 </button>
-                <Button type="button" variant="ghost" size="icon" className="size-8" aria-label={t("moveUp")} disabled={index === 0} onClick={() => p.onMove(index, -1)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-8"
+                  aria-label={t("moveUp")}
+                  disabled={index === 0}
+                  onClick={() => p.onMove(index, -1)}
+                >
                   <ChevronUp />
                 </Button>
-                <Button type="button" variant="ghost" size="icon" className="size-8" aria-label={t("moveDown")} disabled={index === p.sections.length - 1} onClick={() => p.onMove(index, 1)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-8"
+                  aria-label={t("moveDown")}
+                  disabled={index === p.sections.length - 1}
+                  onClick={() => p.onMove(index, 1)}
+                >
                   <ChevronDown />
                 </Button>
-                <Button type="button" variant="ghost" size="icon" className="size-8 text-destructive" aria-label={t("removeSection")} disabled={p.sections.length <= 1} onClick={() => p.onRemove(section.id)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-8 text-destructive"
+                  aria-label={t("removeSection")}
+                  disabled={p.sections.length <= 1}
+                  onClick={() => p.onRemove(section.id)}
+                >
                   <Trash2 />
                 </Button>
               </div>
               {selected && (
                 <div className="flex flex-col gap-4 border-t border-border p-3.5">
-                  <SectionFields section={section} onChange={p.onChange} giftId={p.giftId} media={p.media} onMediaChange={p.onMediaChange} />
+                  <SectionFields
+                    section={section}
+                    onChange={p.onChange}
+                    giftId={p.giftId}
+                    media={p.media}
+                    onMediaChange={p.onMediaChange}
+                  />
                 </div>
               )}
             </li>
@@ -123,7 +189,7 @@ export function SectionsPanel(p: SectionsPanelProps) {
               type="button"
               variant="secondary"
               size="sm"
-             
+
               onClick={() => {
                 p.onAdd(type);
                 setAdding(false);
@@ -132,31 +198,55 @@ export function SectionsPanel(p: SectionsPanelProps) {
               {t(`sectionTypes.${type}`)}
             </Button>
           ))}
-          <Button type="button" variant="ghost" size="sm" className="col-span-2" onClick={() => setAdding(false)}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="col-span-2"
+            onClick={() => setAdding(false)}
+          >
             {t("cancel")}
           </Button>
         </div>
       ) : (
-        <Button type="button" variant="secondary" className="self-start" disabled={p.sections.length >= MAX_SECTIONS} onClick={() => setAdding(true)}>
+        <Button
+          type="button"
+          variant="secondary"
+          className="self-start"
+          disabled={p.sections.length >= MAX_SECTIONS}
+          onClick={() => setAdding(true)}
+        >
           <Plus />
           {t("addSection")}
         </Button>
       )}
-      <p className="text-xs text-muted-foreground">{t("sectionCount", { count: p.sections.length, max: MAX_SECTIONS })}</p>
+      <p className="text-xs text-muted-foreground">
+        {t("sectionCount", { count: p.sections.length, max: MAX_SECTIONS })}
+      </p>
     </div>
   );
 }
 
 /** The sticker library. Picking one puts it on the gift, ready to be dragged into place. */
-export function StickersPanel({ count, onAdd }: { count: number; onAdd: (kind: StickerKind) => void }) {
+export function StickersPanel({
+  count,
+  onAdd,
+}: {
+  count: number;
+  onAdd: (kind: StickerKind) => void;
+}) {
   const t = useTranslations("editor");
   const full = count >= MAX_STICKERS;
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-xs leading-relaxed text-muted-foreground">{full ? t("stickerLimit", { max: MAX_STICKERS }) : t("stickersHint")}</p>
+      <p className="text-xs leading-relaxed text-muted-foreground">
+        {full ? t("stickerLimit", { max: MAX_STICKERS }) : t("stickersHint")}
+      </p>
       {STICKER_GROUPS.map((group) => (
         <div key={group.key} className="flex flex-col gap-2">
-          <h3 className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">{t(`stickerGroups.${group.key}`)}</h3>
+          <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+            {t(`stickerGroups.${group.key}`)}
+          </h3>
           <div className="grid grid-cols-6 gap-1.5">
             {group.kinds.map((kind) => (
               <button
@@ -174,7 +264,9 @@ export function StickersPanel({ count, onAdd }: { count: number; onAdd: (kind: S
           </div>
         </div>
       ))}
-      <p className="text-xs text-muted-foreground">{t("stickerCount", { count, max: MAX_STICKERS })}</p>
+      <p className="text-xs text-muted-foreground">
+        {t("stickerCount", { count, max: MAX_STICKERS })}
+      </p>
     </div>
   );
 }
@@ -194,7 +286,13 @@ type LookPanelProps = {
 const MIN_CONTRAST = 3;
 
 /** The colour of the flowers in an animated garden. */
-export function FlowersPanel({ flower, onChange }: { flower: FlowerColor; onChange: (flower: FlowerColor) => void }) {
+export function FlowersPanel({
+  flower,
+  onChange,
+}: {
+  flower: FlowerColor;
+  onChange: (flower: FlowerColor) => void;
+}) {
   const t = useTranslations("editor");
   return (
     <fieldset className="flex flex-col gap-3">
@@ -205,10 +303,27 @@ export function FlowersPanel({ flower, onChange }: { flower: FlowerColor; onChan
           const { petal, edge } = flowerSwatch[key];
           return (
             <label key={key} className={cn(optionClass(flower === key), "p-3")}>
-              <input type="radio" name="flower" value={key} checked={flower === key} onChange={() => onChange(key)} className="sr-only" />
+              <input
+                type="radio"
+                name="flower"
+                value={key}
+                checked={flower === key}
+                onChange={() => onChange(key)}
+                className="sr-only"
+              />
               <svg aria-hidden="true" viewBox="-24 -24 48 48" className="size-11">
                 {[0, 90, 180, 270].map((angle) => (
-                  <ellipse key={angle} cx="0" cy="-11" rx="8.5" ry="11" fill={petal} stroke={edge} strokeWidth="1.2" transform={`rotate(${angle})`} />
+                  <ellipse
+                    key={angle}
+                    cx="0"
+                    cy="-11"
+                    rx="8.5"
+                    ry="11"
+                    fill={petal}
+                    stroke={edge}
+                    strokeWidth="1.2"
+                    transform={`rotate(${angle})`}
+                  />
                 ))}
                 <circle r="5.5" fill="#ffd75a" stroke="#e9a21f" strokeWidth="0.8" />
               </svg>
@@ -222,7 +337,13 @@ export function FlowersPanel({ flower, onChange }: { flower: FlowerColor; onChan
 }
 
 /** The gift's look: a ready-made colour set to start from, then any colour of it changed. */
-export function LookPanel({ variant, colors, templateVariant, onVariant, onColors }: LookPanelProps) {
+export function LookPanel({
+  variant,
+  colors,
+  templateVariant,
+  onVariant,
+  onColors,
+}: LookPanelProps) {
   const t = useTranslations("editor");
   const look = lookColors(variant);
 
@@ -234,7 +355,8 @@ export function LookPanel({ variant, colors, templateVariant, onVariant, onColor
     for (const key of keys) delete next[key];
     onColors(next);
   };
-  const lowContrast = contrastRatio(colors.text ?? look.text, colors.card ?? look.card) < MIN_CONTRAST;
+  const lowContrast =
+    contrastRatio(colors.text ?? look.text, colors.card ?? look.card) < MIN_CONTRAST;
 
   return (
     <div className="flex flex-col gap-5">
@@ -242,12 +364,25 @@ export function LookPanel({ variant, colors, templateVariant, onVariant, onColor
         <legend className="sr-only">{t("theme")}</legend>
         {([false, true] as const).map((dark) => (
           <div key={String(dark)} className="flex flex-col gap-2">
-            <p className="text-xs text-muted-foreground">{dark ? t("darkLooks") : t("lightLooks")}</p>
+            <p className="text-xs text-muted-foreground">
+              {dark ? t("darkLooks") : t("lightLooks")}
+            </p>
             <div className="grid grid-cols-3 gap-2">
               {THEME_VARIANTS.filter((v) => DARK_VARIANTS.has(v) === dark).map((v) => (
                 <label key={v} className={cn(optionClass(variant === v), "p-2")}>
-                  <input type="radio" name="variant" value={v} checked={variant === v} onChange={() => onVariant(v)} className="sr-only" />
-                  <span aria-hidden="true" className="h-8 w-full rounded-lg ring-1 ring-black/5" style={{ background: variantSwatch[v] }} />
+                  <input
+                    type="radio"
+                    name="variant"
+                    value={v}
+                    checked={variant === v}
+                    onChange={() => onVariant(v)}
+                    className="sr-only"
+                  />
+                  <span
+                    aria-hidden="true"
+                    className="h-8 w-full rounded-lg ring-1 ring-black/5"
+                    style={{ background: variantSwatch[v] }}
+                  />
                   <span className="leading-tight">{t(`variants.${v}`)}</span>
                 </label>
               ))}
@@ -270,14 +405,27 @@ export function LookPanel({ variant, colors, templateVariant, onVariant, onColor
       <div className="flex flex-col gap-2 border-t border-border pt-4">
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-sm font-semibold">{t("yourColors")}</h3>
-          <Button type="button" variant="ghost" size="sm" disabled={Object.keys(colors).length === 0} onClick={() => onColors({})}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={Object.keys(colors).length === 0}
+            onClick={() => onColors({})}
+          >
             <RotateCcw />
             {t("resetColors")}
           </Button>
         </div>
         <p className="text-xs leading-relaxed text-muted-foreground">{t("colorsHint")}</p>
         <ul className="flex flex-col gap-1.5">
-          <ColorRow label={t("colorBg")} value={colors.bg} shown={colors.bg ?? look.bg} start={look.bgHex} onChange={(hex) => set("bg", hex)} onClear={() => clear("bg", "bg2")} />
+          <ColorRow
+            label={t("colorBg")}
+            value={colors.bg}
+            shown={colors.bg ?? look.bg}
+            start={look.bgHex}
+            onChange={(hex) => set("bg", hex)}
+            onClear={() => clear("bg", "bg2")}
+          />
           <ColorRow
             label={t("colorBg2")}
             value={colors.bg2}
@@ -287,12 +435,36 @@ export function LookPanel({ variant, colors, templateVariant, onVariant, onColor
             onChange={(hex) => set("bg2", hex)}
             onClear={() => clear("bg2")}
           />
-          <ColorRow label={t("colorCard")} value={colors.card} shown={colors.card ?? look.card} start={look.card} onChange={(hex) => set("card", hex)} onClear={() => clear("card")} />
-          <ColorRow label={t("colorText")} value={colors.text} shown={colors.text ?? look.text} start={look.text} onChange={(hex) => set("text", hex)} onClear={() => clear("text")} />
-          <ColorRow label={t("colorAccent")} value={colors.accent} shown={colors.accent ?? look.accent} start={look.accent} onChange={(hex) => set("accent", hex)} onClear={() => clear("accent")} />
+          <ColorRow
+            label={t("colorCard")}
+            value={colors.card}
+            shown={colors.card ?? look.card}
+            start={look.card}
+            onChange={(hex) => set("card", hex)}
+            onClear={() => clear("card")}
+          />
+          <ColorRow
+            label={t("colorText")}
+            value={colors.text}
+            shown={colors.text ?? look.text}
+            start={look.text}
+            onChange={(hex) => set("text", hex)}
+            onClear={() => clear("text")}
+          />
+          <ColorRow
+            label={t("colorAccent")}
+            value={colors.accent}
+            shown={colors.accent ?? look.accent}
+            start={look.accent}
+            onChange={(hex) => set("accent", hex)}
+            onClear={() => clear("accent")}
+          />
         </ul>
         {lowContrast && (
-          <p role="status" className="flex items-start gap-2 rounded-xl bg-secondary p-3 text-xs leading-relaxed">
+          <p
+            role="status"
+            className="flex items-start gap-2 rounded-xl bg-secondary p-3 text-xs leading-relaxed"
+          >
             <TriangleAlert className="size-4 shrink-0 text-destructive" />
             {t("lowContrast")}
           </p>
@@ -324,7 +496,10 @@ function ColorRow({ label, value, shown, start, empty, onChange, onClear }: Colo
       <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 rounded-xl p-1.5 hover:bg-secondary">
         <span
           aria-hidden="true"
-          className={cn("relative grid size-9 shrink-0 place-items-center rounded-full border border-black/15 ring-1 ring-white/30", !shown && "border-dashed border-border")}
+          className={cn(
+            "relative grid size-9 shrink-0 place-items-center rounded-full border border-black/15 ring-1 ring-white/30",
+            !shown && "border-dashed border-border",
+          )}
           style={{ background: shown }}
         >
           {!shown && <Plus className="size-4 text-muted-foreground" />}
@@ -338,10 +513,20 @@ function ColorRow({ label, value, shown, start, empty, onChange, onClear }: Colo
         </span>
         <span className="flex min-w-0 flex-col">
           <span className="text-sm font-semibold">{label}</span>
-          <span className="truncate text-xs text-muted-foreground uppercase tabular-nums">{value ?? empty ?? t("lookColor")}</span>
+          <span className="truncate text-xs text-muted-foreground uppercase tabular-nums">
+            {value ?? empty ?? t("lookColor")}
+          </span>
         </span>
       </label>
-      <Button type="button" variant="ghost" size="icon" className="size-8" aria-label={t("resetColor", { name: label })} disabled={!value} onClick={onClear}>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="size-8"
+        aria-label={t("resetColor", { name: label })}
+        disabled={!value}
+        onClick={onClear}
+      >
         <RotateCcw />
       </Button>
     </li>
@@ -349,7 +534,15 @@ function ColorRow({ label, value, shown, start, empty, onChange, onClear }: Colo
 }
 
 /** How the gift opens for the receiver. Picking one plays it. */
-export function OpeningPanel({ opening, onChange, onPlay }: { opening: Opening; onChange: (opening: Opening) => void; onPlay: () => void }) {
+export function OpeningPanel({
+  opening,
+  onChange,
+  onPlay,
+}: {
+  opening: Opening;
+  onChange: (opening: Opening) => void;
+  onPlay: () => void;
+}) {
   const t = useTranslations("editor");
   return (
     <div role="radiogroup" aria-label={t("opening")} className="flex flex-col gap-3">
@@ -402,12 +595,24 @@ export function DetailsPanel(p: DetailsPanelProps) {
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="title">{t("title")}</Label>
-        <Input id="title" value={p.title} onChange={(e) => p.onTitle(e.target.value)} maxLength={120} aria-invalid={p.titleInvalid || undefined} />
+        <Input
+          id="title"
+          value={p.title}
+          onChange={(e) => p.onTitle(e.target.value)}
+          maxLength={120}
+          aria-invalid={p.titleInvalid || undefined}
+        />
         <p className="text-xs text-muted-foreground">{t("titleHint")}</p>
       </div>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="recipientName">{t("recipientName")}</Label>
-        <Input id="recipientName" value={p.recipientName} onChange={(e) => p.onRecipientName(e.target.value)} maxLength={80} placeholder={t("recipientPlaceholder")} />
+        <Input
+          id="recipientName"
+          value={p.recipientName}
+          onChange={(e) => p.onRecipientName(e.target.value)}
+          maxLength={80}
+          placeholder={t("recipientPlaceholder")}
+        />
       </div>
     </div>
   );

@@ -9,7 +9,8 @@ type SceneFonts = { css: string; body: string; script: string };
 
 let cachedFonts: SceneFonts | null = null;
 
-const familyNames = (fontFamily: string) => fontFamily.split(",").map((f) => f.trim().replace(/^["']|["']$/g, ""));
+const familyNames = (fontFamily: string) =>
+  fontFamily.split(",").map((f) => f.trim().replace(/^["']|["']$/g, ""));
 
 /**
  * The app's own fonts for the scene: the @font-face rules of the faces it
@@ -32,8 +33,12 @@ function sceneFonts(): SceneFonts {
     const base = sheet.href ?? window.location.href;
     for (const rule of Array.from(rules)) {
       if (!(rule instanceof CSSFontFaceRule)) continue;
-      if (!familyNames(rule.style.getPropertyValue("font-family")).some((name) => wanted.has(name))) continue;
-      css += rule.cssText.replace(/url\((["']?)([^"')]+)\1\)/g, (_match, _quote, url: string) => `url("${new URL(url, base).href}")`);
+      if (!familyNames(rule.style.getPropertyValue("font-family")).some((name) => wanted.has(name)))
+        continue;
+      css += rule.cssText.replace(
+        /url\((["']?)([^"')]+)\1\)/g,
+        (_match, _quote, url: string) => `url("${new URL(url, base).href}")`,
+      );
     }
   }
   const myanmar = notoSansMyanmar.style.fontFamily;
@@ -72,11 +77,21 @@ export function SceneFrame({ kind, config, title, className }: Props) {
       // Only this frame, on this site, is answered.
       if (!target || e.source !== target || e.origin !== window.location.origin) return;
       if ((e.data as { type?: unknown } | null)?.type !== "eain:scene-ready") return;
-      target.postMessage({ type: "eain:scene-config", config: latest.current, fonts: sceneFonts() }, window.location.origin);
+      target.postMessage(
+        { type: "eain:scene-config", config: latest.current, fonts: sceneFonts() },
+        window.location.origin,
+      );
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
   }, []);
 
-  return <iframe ref={frame} src={SCENE_SRC[kind]} title={title} className={cn("block size-full border-0", className)} />;
+  return (
+    <iframe
+      ref={frame}
+      src={SCENE_SRC[kind]}
+      title={title}
+      className={cn("block size-full border-0", className)}
+    />
+  );
 }

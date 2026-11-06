@@ -1,6 +1,12 @@
 import type { ReactNode } from "react";
 import type { GiftScene } from "@/features/gifts/scene";
-import type { GiftColors, MediaItem, Section, Sticker, ThemeVariant } from "@/features/gifts/schemas";
+import type {
+  GiftColors,
+  MediaItem,
+  Section,
+  Sticker,
+  ThemeVariant,
+} from "@/features/gifts/schemas";
 import type { Design, TemplateStyle } from "@/features/gifts/templates";
 
 export type Labels = { forName: string; forYou: string; addPhoto: string; questionNote: string };
@@ -49,4 +55,9 @@ export type GiftRendererProps = {
 };
 
 /** What every design and section is handed: the renderer's own input, plus what it worked out from it. */
-export type Ctx = GiftRendererProps & { design: Design; eyebrow: string; visible: Section[]; sectionStickers: Map<string, Sticker[]> };
+export type Ctx = GiftRendererProps & {
+  design: Design;
+  eyebrow: string;
+  visible: Section[];
+  sectionStickers: Map<string, Sticker[]>;
+};

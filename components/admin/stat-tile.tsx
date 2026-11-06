@@ -11,7 +11,7 @@ export function StatTile({ label, value, icon: Icon }: Props) {
           <Icon className="size-5" />
         </span>
         <div className="min-w-0">
-          <p className="font-display text-2xl font-semibold leading-none">{value}</p>
+          <p className="font-display text-2xl leading-none font-semibold">{value}</p>
           <p className="mt-1 truncate text-xs text-muted-foreground">{label}</p>
         </div>
       </CardContent>

@@ -40,13 +40,18 @@ export type AdminStats = {
 export async function getAdminStats(): Promise<AdminStats> {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("admin_stats", {});
-  if (error || !data || typeof data !== "object") throw new Error(error?.message ?? "admin_stats failed");
+  if (error || !data || typeof data !== "object")
+    throw new Error(error?.message ?? "admin_stats failed");
   return data as unknown as AdminStats;
 }
 
 export async function listUsers(query: string) {
   const supabase = await createClient();
-  let q = supabase.from("profiles").select("*").order("created_at", { ascending: false }).limit(100);
+  let q = supabase
+    .from("profiles")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(100);
   if (query.trim()) q = q.ilike("display_name", `%${query.trim().replace(/[%_]/g, "")}%`);
   const { data } = await q;
   return data ?? [];
@@ -60,7 +65,10 @@ export async function listReports(scope: "open" | "all") {
   if (!reports || reports.length === 0) return [];
 
   const giftIds = [...new Set(reports.map((r) => r.gift_id))];
-  const { data: gifts } = await supabase.from("gifts").select("id, title, status, sender_id").in("id", giftIds);
+  const { data: gifts } = await supabase
+    .from("gifts")
+    .select("id, title, status, sender_id")
+    .in("id", giftIds);
   const giftById = new Map((gifts ?? []).map((g) => [g.id, g]));
   return reports.map((r) => ({ ...r, gift: giftById.get(r.gift_id) ?? null }));
 }
@@ -77,7 +85,10 @@ export async function listTemplatesAdmin() {
   ]);
   const categoryName = new Map((categories ?? []).map((c) => [c.id, c.name_en]));
   const statsById = new Map(
-    (stats ?? []).map((s) => [s.template_id, { gifts: Number(s.gifts), published: Number(s.published), unlocks: Number(s.unlocks) }]),
+    (stats ?? []).map((s) => [
+      s.template_id,
+      { gifts: Number(s.gifts), published: Number(s.published), unlocks: Number(s.unlocks) },
+    ]),
   );
   return (rows ?? []).map((t) => ({
     ...t,
@@ -93,31 +104,51 @@ export async function getTemplateAdmin(templateId: string) {
 
 export async function listCategoriesAdmin() {
   const supabase = await createClient();
-  const { data } = await supabase.from("categories").select("id, name_en, name_my, sort_order").order("sort_order");
+  const { data } = await supabase
+    .from("categories")
+    .select("id, name_en, name_my, sort_order")
+    .order("sort_order");
   return data ?? [];
 }
 
 export async function listRecentTransactions() {
   const supabase = await createClient();
-  const { data: tx } = await supabase.from("point_transactions").select("*").order("created_at", { ascending: false }).limit(100);
+  const { data: tx } = await supabase
+    .from("point_transactions")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(100);
   if (!tx || tx.length === 0) return [];
   const userIds = [...new Set(tx.map((t) => t.user_id))];
-  const { data: profiles } = await supabase.from("profiles").select("id, display_name").in("id", userIds);
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, display_name")
+    .in("id", userIds);
   const nameById = new Map((profiles ?? []).map((p) => [p.id, p.display_name]));
   return tx.map((t) => ({ ...t, userName: nameById.get(t.user_id) ?? t.user_id.slice(0, 8) }));
 }
 
 export async function listPayments() {
   const supabase = await createClient();
-  const { data } = await supabase.from("payments").select("*").order("created_at", { ascending: false }).limit(100);
+  const { data } = await supabase
+    .from("payments")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(100);
   return data ?? [];
 }
 
 export async function listAuditLogs() {
   const supabase = await createClient();
-  const { data: logs } = await supabase.from("admin_audit_logs").select("*").order("created_at", { ascending: false }).limit(200);
+  const { data: logs } = await supabase
+    .from("admin_audit_logs")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(200);
   if (!logs || logs.length === 0) return [];
-  const adminIds = [...new Set(logs.map((l) => l.admin_id).filter((id): id is string => Boolean(id)))];
+  const adminIds = [
+    ...new Set(logs.map((l) => l.admin_id).filter((id): id is string => Boolean(id))),
+  ];
   const { data: profiles } = adminIds.length
     ? await supabase.from("profiles").select("id, display_name").in("id", adminIds)
     : { data: [] };
@@ -133,15 +164,34 @@ export async function getGiftForModeration(giftId: string) {
   const supabase = await createClient();
   const { data: gift } = await supabase.from("gifts").select("*").eq("id", giftId).maybeSingle();
   if (!gift) return null;
-  const [{ data: template }, { data: sections }, { data: recipient }, { data: media }, { data: sender }, { data: reports }] =
-    await Promise.all([
-      supabase.from("templates").select("slug").eq("id", gift.template_id).single(),
-      supabase.from("gift_sections").select("id, type, content, position").eq("gift_id", giftId),
-      supabase.from("gift_recipients").select("name").eq("gift_id", giftId).order("created_at").limit(1).maybeSingle(),
-      supabase.from("gift_media").select("id, storage_path, thumb_path, width, height").eq("gift_id", giftId),
-      supabase.from("profiles").select("display_name").eq("id", gift.sender_id).single(),
-      supabase.from("reports").select("*").eq("gift_id", giftId).order("created_at", { ascending: false }),
-    ]);
+  const [
+    { data: template },
+    { data: sections },
+    { data: recipient },
+    { data: media },
+    { data: sender },
+    { data: reports },
+  ] = await Promise.all([
+    supabase.from("templates").select("slug").eq("id", gift.template_id).single(),
+    supabase.from("gift_sections").select("id, type, content, position").eq("gift_id", giftId),
+    supabase
+      .from("gift_recipients")
+      .select("name")
+      .eq("gift_id", giftId)
+      .order("created_at")
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from("gift_media")
+      .select("id, storage_path, thumb_path, width, height")
+      .eq("gift_id", giftId),
+    supabase.from("profiles").select("display_name").eq("id", gift.sender_id).single(),
+    supabase
+      .from("reports")
+      .select("*")
+      .eq("gift_id", giftId)
+      .order("created_at", { ascending: false }),
+  ]);
   return {
     gift,
     style: getTemplateStyle(template?.slug ?? ""),

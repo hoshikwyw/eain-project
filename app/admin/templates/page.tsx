@@ -19,16 +19,26 @@ export default async function AdminTemplatesPage({ searchParams }: PageProps<"/a
   return (
     <div className="flex flex-col gap-6">
       <PageHeader title={t("nav.templates")} subtitle={t("templates.subtitle")} />
-      <AdminFlash ok={typeof params.ok === "string" ? params.ok : undefined} error={typeof params.error === "string" ? params.error : undefined} />
+      <AdminFlash
+        ok={typeof params.ok === "string" ? params.ok : undefined}
+        error={typeof params.error === "string" ? params.error : undefined}
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {templates.map((tp) => (
           <Card key={tp.id} className={tp.is_active ? "" : "opacity-70"}>
             <CardContent className="flex h-full flex-col gap-4 p-4">
-              <TemplatePreview slug={tp.slug} variant={getTemplateStyle(tp.slug).defaultVariant} locale="en" name={tp.name_en} />
+              <TemplatePreview
+                slug={tp.slug}
+                variant={getTemplateStyle(tp.slug).defaultVariant}
+                locale="en"
+                name={tp.name_en}
+              />
               <div className="flex flex-col gap-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-semibold text-muted-foreground">#{tp.sort_order}</span>
+                  <span className="text-xs font-semibold text-muted-foreground">
+                    #{tp.sort_order}
+                  </span>
                   <h2 className="font-semibold">{tp.name_en}</h2>
                 </div>
                 <p className="text-sm text-muted-foreground" lang="my">
@@ -36,11 +46,19 @@ export default async function AdminTemplatesPage({ searchParams }: PageProps<"/a
                 </p>
               </div>
               <div className="flex flex-wrap gap-1.5">
-                <Chip tone={tp.is_active ? "success" : "neutral"}>{tp.is_active ? t("templates.active") : t("templates.inactive")}</Chip>
+                <Chip tone={tp.is_active ? "success" : "neutral"}>
+                  {tp.is_active ? t("templates.active") : t("templates.inactive")}
+                </Chip>
                 {tp.is_featured && <Chip tone="brand">{t("templates.featured")}</Chip>}
-                <Chip tone={tp.is_premium ? "primary" : "neutral"}>{tp.is_premium ? `${t("templates.premium")} · ${tp.point_price}` : t("templates.free")}</Chip>
+                <Chip tone={tp.is_premium ? "primary" : "neutral"}>
+                  {tp.is_premium
+                    ? `${t("templates.premium")} · ${tp.point_price}`
+                    : t("templates.free")}
+                </Chip>
                 <Chip tone="neutral">{tp.categoryName}</Chip>
-                {!isAvailableTemplate(tp.slug) && <Chip tone="brand">{t("templates.noLayout")}</Chip>}
+                {!isAvailableTemplate(tp.slug) && (
+                  <Chip tone="brand">{t("templates.noLayout")}</Chip>
+                )}
               </div>
               <dl className="grid grid-cols-3 gap-2 rounded-xl bg-muted/60 p-3 text-center text-xs">
                 <div>

@@ -25,7 +25,9 @@ export async function unlockTemplate(formData: FormData): Promise<void> {
   revalidatePath("/create");
 
   if (error) {
-    redirect(error.message.includes("insufficient") ? "/create?error=points" : "/create?error=unknown");
+    redirect(
+      error.message.includes("insufficient") ? "/create?error=points" : "/create?error=unknown",
+    );
   }
   redirect(`/create?template=${slug}`);
 }

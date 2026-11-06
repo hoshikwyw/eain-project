@@ -66,11 +66,16 @@ export function sceneConfig(
   for (const s of sections) {
     if (s.type === "message") pages.push(lines(s.content.text));
     if (s.type === "final_message") {
-      pages.push([...lines(s.content.text), s.content.signature.trim() || names.sender.trim()].filter(Boolean));
+      pages.push(
+        [...lines(s.content.text), s.content.signature.trim() || names.sender.trim()].filter(
+          Boolean,
+        ),
+      );
     }
   }
   return {
-    name: (heading?.type === "text" ? heading.content.heading.trim() : "") || names.recipient.trim(),
+    name:
+      (heading?.type === "text" ? heading.content.heading.trim() : "") || names.recipient.trim(),
     pages: pages.filter((page) => page.length > 0),
     tapHint,
     flower: scene?.flower ?? defaultScene.flower,

@@ -19,8 +19,18 @@ type Options = {
 };
 
 /** What can be done to stickers on the gift: change one, add one, drag one, copy one. */
-export function useStickerActions({ canvasRef, sections, stickers, setStickers, select, setSelected, onAdded, onDragEnd }: Options) {
-  const patchSticker = (id: string, next: (s: Sticker) => Sticker) => setStickers((all) => all.map((s) => (s.id === id ? next(s) : s)));
+export function useStickerActions({
+  canvasRef,
+  sections,
+  stickers,
+  setStickers,
+  select,
+  setSelected,
+  onAdded,
+  onDragEnd,
+}: Options) {
+  const patchSticker = (id: string, next: (s: Sticker) => Sticker) =>
+    setStickers((all) => all.map((s) => (s.id === id ? next(s) : s)));
 
   /** Puts a new sticker in the middle of the part of the gift that is on screen. */
   const addSticker = (kind: StickerKind) => {
@@ -64,12 +74,22 @@ export function useStickerActions({ canvasRef, sections, stickers, setStickers, 
         const dy = ev.clientY - origin.y;
         if (!moved && Math.hypot(dx, dy) < 4) return;
         moved = { dx, dy };
-        patchSticker(id, (s) => ({ ...s, x: sticker.x + (dx / box.width) * 100, y: sticker.y + (dy / box.height) * 100 }));
+        patchSticker(id, (s) => ({
+          ...s,
+          x: sticker.x + (dx / box.width) * 100,
+          y: sticker.y + (dy / box.height) * 100,
+        }));
       },
       () => {
         if (!moved) return;
         const { dx, dy } = moved;
-        patchSticker(id, (s) => stickerAt(canvas, sections, s, { cx: start.cx + dx, cy: start.cy + dy, size: start.size }));
+        patchSticker(id, (s) =>
+          stickerAt(canvas, sections, s, {
+            cx: start.cx + dx,
+            cy: start.cy + dy,
+            size: start.size,
+          }),
+        );
         onDragEnd();
       },
     );
@@ -77,7 +97,12 @@ export function useStickerActions({ canvasRef, sections, stickers, setStickers, 
 
   const duplicateSticker = (sticker: Sticker) => {
     if (stickers.length >= MAX_STICKERS) return;
-    const copy = { ...sticker, id: crypto.randomUUID(), x: Math.min(sticker.x + 5, 120), y: Math.min(sticker.y + 5, 150) };
+    const copy = {
+      ...sticker,
+      id: crypto.randomUUID(),
+      x: Math.min(sticker.x + 5, 120),
+      y: Math.min(sticker.y + 5, 150),
+    };
     setStickers([...stickers, copy]);
     setSelected(copy.id);
   };

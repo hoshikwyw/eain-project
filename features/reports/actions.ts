@@ -12,17 +12,30 @@ import { reportSchema, type ReportState } from "./schemas";
  * Authorization: the share token. Rate limited per client. Stores only the
  * reason and free text; the reporter id is set only when someone is signed in.
  */
-export async function submitReport(token: string, _prev: ReportState, formData: FormData): Promise<ReportState> {
-  if (!isSupabaseConfigured() || !/^[A-Za-z0-9_-]{40,64}$/.test(token)) return { status: "not-found" };
+export async function submitReport(
+  token: string,
+  _prev: ReportState,
+  formData: FormData,
+): Promise<ReportState> {
+  if (!isSupabaseConfigured() || !/^[A-Za-z0-9_-]{40,64}$/.test(token))
+    return { status: "not-found" };
 
-  const parsed = reportSchema.safeParse({ reason: formData.get("reason"), details: formData.get("details") ?? "" });
+  const parsed = reportSchema.safeParse({
+    reason: formData.get("reason"),
+    details: formData.get("details") ?? "",
+  });
   if (!parsed.success) return { status: "invalid" };
 
   const allowed = await checkRateLimit(`report:${clientKeyFromHeaders(await headers())}`, 5, 3600);
   if (!allowed) return { status: "rate-limited" };
 
   const admin = createAdminClient();
-  const { data: gift } = await admin.from("gifts").select("id").eq("share_token", token).neq("status", "deleted").maybeSingle();
+  const { data: gift } = await admin
+    .from("gifts")
+    .select("id")
+    .eq("share_token", token)
+    .neq("status", "deleted")
+    .maybeSingle();
   if (!gift) return { status: "not-found" };
 
   let reporterId: string | null = null;

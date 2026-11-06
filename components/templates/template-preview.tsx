@@ -19,7 +19,10 @@ export function TemplatePreview({ slug, variant, locale, name }: Props) {
 
   if (!definition) {
     return (
-      <div style={palettes[variant]} className="flex aspect-[4/3] items-end rounded-xl p-4 text-[color:var(--t-fg)] [background:var(--t-bg)]">
+      <div
+        style={palettes[variant]}
+        className="flex aspect-[4/3] items-end rounded-xl p-4 text-[color:var(--t-fg)] [background:var(--t-bg)]"
+      >
         <span className="font-display text-xl font-semibold">{name}</span>
       </div>
     );

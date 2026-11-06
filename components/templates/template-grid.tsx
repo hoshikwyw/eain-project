@@ -45,7 +45,14 @@ type Props = {
 };
 
 /** Template library with category chips and search. Filtering is client-side; the list is small. */
-export function TemplateGrid({ templates, categories, mode, pointsBalance = null, highlightSlug, locale }: Props) {
+export function TemplateGrid({
+  templates,
+  categories,
+  mode,
+  pointsBalance = null,
+  highlightSlug,
+  locale,
+}: Props) {
   const t = useTranslations("create");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
@@ -60,7 +67,10 @@ export function TemplateGrid({ templates, categories, mode, pointsBalance = null
     return templates.filter(
       (x) =>
         (!category || x.categoryId === category) &&
-        (!q || x.name.toLowerCase().includes(q) || x.description.toLowerCase().includes(q) || x.category.toLowerCase().includes(q)),
+        (!q ||
+          x.name.toLowerCase().includes(q) ||
+          x.description.toLowerCase().includes(q) ||
+          x.category.toLowerCase().includes(q)),
     );
   }, [templates, query, category]);
 
@@ -79,7 +89,7 @@ export function TemplateGrid({ templates, categories, mode, pointsBalance = null
           />
         </div>
         {/* One row that scrolls sideways on phones; wraps where there is room. */}
-        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:flex-wrap">
+        <div className="-mx-4 flex [scrollbar-width:none] gap-2 overflow-x-auto px-4 pb-1 sm:flex-wrap">
           <FilterChip active={category === null} onClick={() => setCategory(null)}>
             {t("allCategories")}
           </FilterChip>
@@ -100,12 +110,17 @@ export function TemplateGrid({ templates, categories, mode, pointsBalance = null
               key={template.id}
               id={`template-${template.slug}`}
               className={cn(
-                "panel flex scroll-mt-24 flex-col gap-3 p-3",
+                "flex scroll-mt-24 flex-col gap-3 panel p-3",
                 template.slug === highlightSlug && "ring-2 ring-primary",
                 !template.available && !(template.isPremium && !template.unlocked) && "opacity-80",
               )}
             >
-              <TemplatePreview slug={template.slug} variant={template.variant} locale={locale} name={template.name} />
+              <TemplatePreview
+                slug={template.slug}
+                variant={template.variant}
+                locale={locale}
+                name={template.name}
+              />
               <div className="flex flex-1 flex-col gap-1 px-1.5">
                 <div className="flex items-center justify-between gap-2">
                   <h2 className="truncate font-semibold">{template.name}</h2>
@@ -121,7 +136,9 @@ export function TemplateGrid({ templates, categories, mode, pointsBalance = null
                   )}
                 </div>
                 <p className="text-xs font-semibold text-muted-foreground">{template.category}</p>
-                <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{template.description}</p>
+                <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                  {template.description}
+                </p>
               </div>
               <TemplateAction template={template} mode={mode} pointsBalance={pointsBalance} />
             </article>
@@ -182,7 +199,9 @@ function TemplateAction({
     }
     return (
       <Button asChild variant="secondary" className="w-full">
-        <Link href="/dashboard/points">{t("needMorePoints", { points: template.pointPrice - pointsBalance })}</Link>
+        <Link href="/dashboard/points">
+          {t("needMorePoints", { points: template.pointPrice - pointsBalance })}
+        </Link>
       </Button>
     );
   }
@@ -194,7 +213,15 @@ function TemplateAction({
   );
 }
 
-function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function FilterChip({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
       type="button"
@@ -202,7 +229,9 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
       aria-pressed={active}
       className={cn(
         "h-9 shrink-0 cursor-pointer rounded-full px-4 text-sm font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
-        active ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground",
+        active
+          ? "bg-primary text-primary-foreground"
+          : "bg-secondary text-muted-foreground hover:text-foreground",
       )}
     >
       {children}

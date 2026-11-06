@@ -14,7 +14,12 @@ export default function AuthLoading() {
           <Skeleton className="h-5 w-64 bg-background/40" />
         </div>
       )}
-      <div className={cn("flex flex-1 flex-col", branded && "lg:rounded-l-[2.5rem] lg:bg-background/80")}>
+      <div
+        className={cn(
+          "flex flex-1 flex-col",
+          branded && "lg:rounded-l-[2.5rem] lg:bg-background/80",
+        )}
+      >
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 lg:px-8">
           <Skeleton className={cn("h-9 w-28", branded && "lg:invisible")} />
           <Skeleton className="h-9 w-24" />
@@ -22,7 +27,7 @@ export default function AuthLoading() {
         <div className="flex flex-1 items-start justify-center px-4 pt-2 pb-16 sm:items-center">
           <div
             className={cn(
-              "flex w-full max-w-md flex-col gap-4 rounded-3xl glass border p-6 sm:p-8",
+              "flex w-full max-w-md flex-col gap-4 rounded-3xl border glass p-6 sm:p-8",
               branded && "lg:border-0 lg:bg-transparent lg:p-0",
             )}
           >

@@ -15,7 +15,9 @@ const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const site = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:5173";
 
-const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+const admin = createClient(url, serviceKey, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
 const user = createClient(url, anonKey, { auth: { persistSession: false } });
 
 let userId: string;
@@ -36,7 +38,11 @@ describe("custom styles", () => {
     const signIn = await user.auth.signInWithPassword({ email, password });
     if (signIn.error) throw signIn.error;
 
-    const { data: template } = await user.from("templates").select("id").eq("slug", "birthday-postcard").single();
+    const { data: template } = await user
+      .from("templates")
+      .select("id")
+      .eq("slug", "birthday-postcard")
+      .single();
     const { data: gift, error: giftError } = await user
       .from("gifts")
       .insert({
@@ -69,21 +75,35 @@ describe("custom styles", () => {
         content: {
           heading: "Styled heading",
           subheading: "Styled subheading",
-          styles: { heading: { color: "#fedcba", scale: 1.75, align: "center", font: "hand", bold: true } },
+          styles: {
+            heading: { color: "#fedcba", scale: 1.75, align: "center", font: "hand", bold: true },
+          },
         },
       },
       {
         gift_id: gift.id,
         type: "message",
         position: 1,
-        content: { text: "Message with a broken style.", styles: { text: { color: "red;background:url(x)" } } },
+        content: {
+          text: "Message with a broken style.",
+          styles: { text: { color: "red;background:url(x)" } },
+        },
       },
-      { gift_id: gift.id, type: "final_message", position: 2, content: { text: "Bye,", signature: "Tester" } },
+      {
+        gift_id: gift.id,
+        type: "final_message",
+        position: 2,
+        content: { text: "Bye,", signature: "Tester" },
+      },
       {
         gift_id: gift.id,
         type: "quote",
         position: 3,
-        content: { text: "ကျေးဇူးတင်ပါတယ်", attribution: "", styles: { text: { font: "padauk", italic: false }, attribution: { font: "comic-sans" } } },
+        content: {
+          text: "ကျေးဇူးတင်ပါတယ်",
+          attribution: "",
+          styles: { text: { font: "padauk", italic: false }, attribution: { font: "comic-sans" } },
+        },
       },
     ]);
     if (sectionsError) throw sectionsError;
@@ -125,12 +145,18 @@ describe("custom styles", () => {
   });
 
   it("mixes the design's tints again from a custom accent", () => {
-    assert.ok(html.includes("color-mix(in srgb, var(--t-accent) 16%, var(--t-card))"), "soft accent");
+    assert.ok(
+      html.includes("color-mix(in srgb, var(--t-accent) 16%, var(--t-card))"),
+      "soft accent",
+    );
     assert.ok(html.includes("color-mix(in srgb, var(--t-accent) 80%, var(--t-fg))"), "highlight");
   });
 
   it("drops malformed style data but keeps the content", () => {
-    assert.ok(html.includes("Message with a broken style."), "text with a bad style is still shown");
+    assert.ok(
+      html.includes("Message with a broken style."),
+      "text with a bad style is still shown",
+    );
     assert.ok(!html.includes("url(x)"), "a bad text colour is not served");
     assert.ok(!html.includes("not-a-colour"), "a bad gift colour is not served");
     assert.ok(!html.includes("no-such-sticker"), "an unknown sticker is not served");

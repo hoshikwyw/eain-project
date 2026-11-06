@@ -30,7 +30,10 @@ export function GiftStage({ children }: { children: React.ReactNode }) {
     const measure = () => {
       const scale = box.clientWidth / STAGE_WIDTH;
       const height = Math.round(card.offsetHeight * scale);
-      if (scale > 0) setFit((prev) => (prev && prev.scale === scale && prev.height === height ? prev : { scale, height }));
+      if (scale > 0)
+        setFit((prev) =>
+          prev && prev.scale === scale && prev.height === height ? prev : { scale, height },
+        );
     };
     // The observer reports once as soon as it starts, which is the first measure.
     const observer = new ResizeObserver(measure);
@@ -43,9 +46,20 @@ export function GiftStage({ children }: { children: React.ReactNode }) {
     <div
       ref={outer}
       className="mx-auto w-full overflow-hidden"
-      style={{ maxWidth: STAGE_MAX_WIDTH, height: fit?.height, visibility: fit ? undefined : "hidden" }}
+      style={{
+        maxWidth: STAGE_MAX_WIDTH,
+        height: fit?.height,
+        visibility: fit ? undefined : "hidden",
+      }}
     >
-      <div ref={inner} style={{ width: STAGE_WIDTH, transformOrigin: "top left", transform: fit ? `scale(${fit.scale})` : undefined }}>
+      <div
+        ref={inner}
+        style={{
+          width: STAGE_WIDTH,
+          transformOrigin: "top left",
+          transform: fit ? `scale(${fit.scale})` : undefined,
+        }}
+      >
         {children}
       </div>
     </div>

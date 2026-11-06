@@ -15,14 +15,14 @@ Other scripts: `pnpm typecheck`, `pnpm lint`, `pnpm format`, `pnpm build`.
 
 Everything is free tier. Nothing is paid.
 
-| Part | Service | Needed for | Cost |
-|---|---|---|---|
-| A. Foundation | None | Landing page, theme, language | $0 |
-| B. Accounts and database | Supabase (hosted, free) | Sign up, log in, gifts, points | $0 |
-| B. Accounts | Google Cloud OAuth client | "Continue with Google" button | $0 |
-| C onward | Same Supabase project | Photos (Storage), responses, notifications | $0 |
-| Deploy | Vercel Hobby | Public URL such as eain.vercel.app | $0 |
-| Later, optional | PostHog free tier | Product analytics | $0 |
+| Part                     | Service                   | Needed for                                 | Cost |
+| ------------------------ | ------------------------- | ------------------------------------------ | ---- |
+| A. Foundation            | None                      | Landing page, theme, language              | $0   |
+| B. Accounts and database | Supabase (hosted, free)   | Sign up, log in, gifts, points             | $0   |
+| B. Accounts              | Google Cloud OAuth client | "Continue with Google" button              | $0   |
+| C onward                 | Same Supabase project     | Photos (Storage), responses, notifications | $0   |
+| Deploy                   | Vercel Hobby              | Public URL such as eain.vercel.app         | $0   |
+| Later, optional          | PostHog free tier         | Product analytics                          | $0   |
 
 Not needed: Docker, a custom domain, an email provider, a payment provider.
 
@@ -44,9 +44,9 @@ pnpm dlx supabase link --project-ref <your-project-ref>
 pnpm dlx supabase db push
 ```
 
-   The project ref is the part before `.supabase.co` in the project URL. Login opens the browser for a personal access token.
+The project ref is the part before `.supabase.co` in the project URL. Login opens the browser for a personal access token.
 
-   **If the CLI cannot reach the database** (the direct host is IPv6 only, and some networks also block the pooler), run the migrations by hand instead: `powershell -File scripts/combine-migrations.ps1` writes `supabase/ALL_MIGRATIONS.sql`. Paste that file into the Supabase SQL editor and run it once on an empty project. It records the versions, so a later `db push` skips them. For a new migration added afterwards, paste only that file's contents.
+**If the CLI cannot reach the database** (the direct host is IPv6 only, and some networks also block the pooler), run the migrations by hand instead: `powershell -File scripts/combine-migrations.ps1` writes `supabase/ALL_MIGRATIONS.sql`. Paste that file into the Supabase SQL editor and run it once on an empty project. It records the versions, so a later `db push` skips them. For a new migration added afterwards, paste only that file's contents.
 
 7. Restart `pnpm dev` so the new `.env.local` is read. Sign up at http://localhost:5173/auth/signup. The new profile receives 100 welcome points.
 

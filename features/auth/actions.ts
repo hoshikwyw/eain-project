@@ -46,7 +46,10 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
 
   if (error) {
     const exists = error.code === "user_already_exists" || /already/i.test(error.message);
-    return { error: exists ? "exists" : "unknown", fields: { displayName: values.displayName, email: values.email } };
+    return {
+      error: exists ? "exists" : "unknown",
+      fields: { displayName: values.displayName, email: values.email },
+    };
   }
 
   // With email confirmation off, a session is returned and the user is in.

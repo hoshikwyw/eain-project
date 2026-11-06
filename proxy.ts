@@ -24,9 +24,11 @@ export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   if (appMode === "admin") {
-    const allowed = isAdminPath(pathname) || pathname.startsWith("/auth/") || pathname.startsWith("/api/");
+    const allowed =
+      isAdminPath(pathname) || pathname.startsWith("/auth/") || pathname.startsWith("/api/");
     if (!allowed) return NextResponse.redirect(new URL("/admin", request.url));
-    if (pathname === "/auth/signup") return NextResponse.redirect(new URL("/auth/login", request.url));
+    if (pathname === "/auth/signup")
+      return NextResponse.redirect(new URL("/auth/login", request.url));
   } else if (appMode === "user" && adminSiteUrl && isAdminPath(pathname)) {
     return NextResponse.redirect(new URL(pathname + search, adminSiteUrl));
   }

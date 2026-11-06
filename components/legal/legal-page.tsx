@@ -12,7 +12,13 @@ const related = [
 ] as const;
 
 /** Plain summary first, then the full text. Marked as draft until legal review. */
-export async function LegalPage({ doc, current }: { doc: LegalDoc; current: (typeof related)[number]["key"] }) {
+export async function LegalPage({
+  doc,
+  current,
+}: {
+  doc: LegalDoc;
+  current: (typeof related)[number]["key"];
+}) {
   const t = await getTranslations("legal");
   const format = await getFormatter();
 
@@ -27,7 +33,7 @@ export async function LegalPage({ doc, current }: { doc: LegalDoc; current: (typ
         <Notice>{t("draftNotice")}</Notice>
       </header>
 
-      <section className="rounded-2xl glass border p-6 shadow-soft">
+      <section className="rounded-2xl border glass p-6 shadow-soft">
         <h2 className="mb-4 font-display text-xl font-semibold">{t("summary")}</h2>
         <ul className="flex flex-col gap-3">
           {doc.summary.map((line, i) => (
@@ -55,15 +61,25 @@ export async function LegalPage({ doc, current }: { doc: LegalDoc; current: (typ
         ))}
       </article>
 
-      <nav aria-label={t("related")} className="flex flex-wrap gap-2 border-t border-border pt-6 text-sm">
+      <nav
+        aria-label={t("related")}
+        className="flex flex-wrap gap-2 border-t border-border pt-6 text-sm"
+      >
         {related
           .filter((r) => r.key !== current)
           .map((r) => (
-            <Link key={r.key} href={r.href} className="rounded-full border border-border px-3.5 py-1.5 font-semibold text-muted-foreground hover:text-foreground">
+            <Link
+              key={r.key}
+              href={r.href}
+              className="rounded-full border border-border px-3.5 py-1.5 font-semibold text-muted-foreground hover:text-foreground"
+            >
               {t(`links.${r.key}`)}
             </Link>
           ))}
-        <Link href="/contact" className="rounded-full border border-border px-3.5 py-1.5 font-semibold text-muted-foreground hover:text-foreground">
+        <Link
+          href="/contact"
+          className="rounded-full border border-border px-3.5 py-1.5 font-semibold text-muted-foreground hover:text-foreground"
+        >
           {t("links.contact")}
         </Link>
       </nav>

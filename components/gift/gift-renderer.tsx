@@ -18,10 +18,20 @@ export type { GiftEdit } from "./gift-types";
  * would drift away from the text they were placed beside.
  */
 export function GiftRenderer(props: GiftRendererProps) {
-  const { sections, style, variant, colors, stickers = [], recipientName, questionMode = "preview", labels } = props;
+  const {
+    sections,
+    style,
+    variant,
+    colors,
+    stickers = [],
+    recipientName,
+    questionMode = "preview",
+    labels,
+  } = props;
   const name = recipientName.trim();
   const eyebrow = name ? labels.forName.replace("{name}", name) : labels.forYou;
-  const visible = questionMode === "hidden" ? sections.filter((s) => s.type !== "question") : sections;
+  const visible =
+    questionMode === "hidden" ? sections.filter((s) => s.type !== "question") : sections;
 
   // Stickers follow the section they sit on. A sticker on a section that is
   // not shown (a question on the receiver page) is not shown either.
@@ -36,7 +46,11 @@ export function GiftRenderer(props: GiftRendererProps) {
     <GiftStage>
       <div style={giftPalette(variant, colors)} className="relative text-[color:var(--t-fg)]">
         {renderDesign(ctx)}
-        <StickerLayer stickers={stickers.filter((s) => s.anchor === undefined)} clip editable={Boolean(props.edit)} />
+        <StickerLayer
+          stickers={stickers.filter((s) => s.anchor === undefined)}
+          clip
+          editable={Boolean(props.edit)}
+        />
       </div>
     </GiftStage>
   );

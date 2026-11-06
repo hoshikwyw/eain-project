@@ -17,17 +17,31 @@ export type ProductEvent =
   | "template_unlocked"
   | "signup";
 
-export async function track(event: ProductEvent, userId: string | null, properties: Record<string, string | number | boolean> = {}) {
+export async function track(
+  event: ProductEvent,
+  userId: string | null,
+  properties: Record<string, string | number | boolean> = {},
+) {
   const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
   if (!key) return;
-  const host = (process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com").replace(/\/$/, "");
+  const host = (process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com").replace(
+    /\/$/,
+    "",
+  );
   const salt = process.env.SUPABASE_SERVICE_ROLE_KEY?.slice(-16) ?? "eain";
-  const distinctId = userId ? createHash("sha256").update(`${userId}|${salt}`).digest("base64url").slice(0, 24) : "anonymous";
+  const distinctId = userId
+    ? createHash("sha256").update(`${userId}|${salt}`).digest("base64url").slice(0, 24)
+    : "anonymous";
   try {
     await fetch(`${host}/capture/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ api_key: key, event, distinct_id: distinctId, properties: { ...properties, $lib: "eain-server" } }),
+      body: JSON.stringify({
+        api_key: key,
+        event,
+        distinct_id: distinctId,
+        properties: { ...properties, $lib: "eain-server" },
+      }),
       signal: AbortSignal.timeout(2000),
     });
   } catch {

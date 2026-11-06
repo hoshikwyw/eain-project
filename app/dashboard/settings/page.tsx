@@ -40,9 +40,16 @@ export default async function SettingsPage() {
           {initialOf(profile.display_name)}
         </span>
         <div className="flex min-w-0 flex-1 flex-col items-start">
-          <p className="max-w-full truncate font-display text-2xl font-semibold">{profile.display_name}</p>
+          <p className="max-w-full truncate font-display text-2xl font-semibold">
+            {profile.display_name}
+          </p>
           <p className="max-w-full truncate text-sm text-muted-foreground">{email}</p>
-          <PointsPill balance={profile.points_balance} label={tNav("points")} tone="plain" className="mt-2.5" />
+          <PointsPill
+            balance={profile.points_balance}
+            label={tNav("points")}
+            tone="plain"
+            className="mt-2.5"
+          />
         </div>
       </section>
 
@@ -62,7 +69,9 @@ export default async function SettingsPage() {
             <ChevronDown className="ml-auto size-4 transition-transform group-open:rotate-180" />
           </summary>
           <div className="flex flex-col gap-4 px-3 pt-2 pb-3">
-            <p className="text-sm text-muted-foreground">{isAdmin ? t("deleteAdminHint") : t("deleteHint")}</p>
+            <p className="text-sm text-muted-foreground">
+              {isAdmin ? t("deleteAdminHint") : t("deleteHint")}
+            </p>
             {!isAdmin && <DeleteAccountForm email={email} />}
           </div>
         </details>

@@ -36,7 +36,15 @@ const handleClass =
  * the round handle to rotate. The frame lets clicks through, so the sticker
  * under it is still dragged directly.
  */
-export function StickerControls({ canvas, sticker, container, watch, onChange, labels, ...p }: Props) {
+export function StickerControls({
+  canvas,
+  sticker,
+  container,
+  watch,
+  onChange,
+  labels,
+  ...p
+}: Props) {
   const box = useCanvasBox(canvas, container, watch);
   if (!box) return null;
 
@@ -55,7 +63,10 @@ export function StickerControls({ canvas, sticker, container, watch, onChange, l
       const dy = ev.clientY - centre.y;
       if (action === "resize") {
         // A corner sits half a diagonal from the centre, whatever the rotation.
-        const width = Math.min(Math.max(Math.hypot(dx, dy) * Math.SQRT2, box.canvasWidth * 0.04), box.canvasWidth * 0.6);
+        const width = Math.min(
+          Math.max(Math.hypot(dx, dy) * Math.SQRT2, box.canvasWidth * 0.04),
+          box.canvasWidth * 0.6,
+        );
         onChange({ size: Math.round((width / box.width) * 10000) / 100 });
       } else {
         // The handle hangs below the sticker, so straight down is no rotation.
@@ -77,7 +88,13 @@ export function StickerControls({ canvas, sticker, container, watch, onChange, l
       <div
         data-canvas-ui=""
         className="pointer-events-none absolute z-20 border-[1.5px] border-[var(--canvas-mark)]"
-        style={{ left: cx, top: cy, width: size, height: size, transform: `translate(-50%, -50%) rotate(${sticker.rotate}deg)` }}
+        style={{
+          left: cx,
+          top: cy,
+          width: size,
+          height: size,
+          transform: `translate(-50%, -50%) rotate(${sticker.rotate}deg)`,
+        }}
       >
         {CORNERS.map((corner) => (
           <span
@@ -88,7 +105,10 @@ export function StickerControls({ canvas, sticker, container, watch, onChange, l
             onMouseDown={(e) => e.preventDefault()}
           />
         ))}
-        <span aria-hidden="true" className="absolute top-full left-1/2 h-5 w-px -translate-x-1/2 bg-[var(--canvas-mark)]" />
+        <span
+          aria-hidden="true"
+          className="absolute top-full left-1/2 h-5 w-px -translate-x-1/2 bg-[var(--canvas-mark)]"
+        />
         <span
           title={labels.rotate}
           className={`${handleClass} top-[calc(100%+1.75rem)] left-1/2 grid size-6 cursor-grab place-items-center rounded-full text-[var(--canvas-mark)]`}
@@ -101,16 +121,38 @@ export function StickerControls({ canvas, sticker, container, watch, onChange, l
 
       <div
         data-canvas-ui=""
-        className="absolute z-20 flex -translate-x-1/2 items-center gap-0.5 glass-strong rounded-full border p-1 text-foreground shadow-lg"
+        className="absolute z-20 flex -translate-x-1/2 items-center gap-0.5 rounded-full border glass-strong p-1 text-foreground shadow-lg"
         style={{ left: Math.min(Math.max(cx, 64), box.canvasWidth - 64), top: toolbarTop }}
       >
-        <Button type="button" variant="ghost" size="icon" className="size-8" aria-label={labels.duplicate} disabled={!p.canDuplicate} onClick={p.onDuplicate}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="size-8"
+          aria-label={labels.duplicate}
+          disabled={!p.canDuplicate}
+          onClick={p.onDuplicate}
+        >
           <Copy />
         </Button>
-        <Button type="button" variant="ghost" size="icon" className="size-8" aria-label={labels.front} onClick={p.onFront}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="size-8"
+          aria-label={labels.front}
+          onClick={p.onFront}
+        >
           <BringToFront />
         </Button>
-        <Button type="button" variant="ghost" size="icon" className="size-8 text-destructive" aria-label={labels.remove} onClick={p.onRemove}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="size-8 text-destructive"
+          aria-label={labels.remove}
+          onClick={p.onRemove}
+        >
           <Trash2 />
         </Button>
       </div>

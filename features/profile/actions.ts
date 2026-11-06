@@ -7,7 +7,10 @@ import { createClientWithUser } from "@/lib/supabase/server";
 
 export type ProfileFormState = { status?: "saved" | "invalid" | "error" };
 
-export async function updateProfile(_prev: ProfileFormState, formData: FormData): Promise<ProfileFormState> {
+export async function updateProfile(
+  _prev: ProfileFormState,
+  formData: FormData,
+): Promise<ProfileFormState> {
   const parsed = profileUpdateSchema.safeParse({
     displayName: formData.get("displayName"),
     locale: formData.get("locale"),

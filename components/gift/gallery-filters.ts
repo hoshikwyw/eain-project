@@ -13,7 +13,10 @@ export function isGalleryFilter(value: unknown): value is GalleryFilter {
  * link counts as a draft, so every gift has a tab. "Opened" follows the
  * status chip: a live gift that has been opened at least once.
  */
-export function galleryGroups({ gift, recipient }: Pick<GiftCard, "gift" | "recipient">): GalleryFilter[] {
+export function galleryGroups({
+  gift,
+  recipient,
+}: Pick<GiftCard, "gift" | "recipient">): GalleryFilter[] {
   if (gift.status !== "published") return ["drafts"];
   return recipient?.first_opened_at ? ["shared", "opened"] : ["shared"];
 }

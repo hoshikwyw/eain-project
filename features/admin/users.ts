@@ -59,7 +59,9 @@ export async function listUsersAdmin(query: string): Promise<AdminUserRow[]> {
         emailConfirmed: Boolean(u.email_confirmed_at),
       };
     })
-    .filter((u) => !q || u.email.toLowerCase().includes(q) || u.displayName.toLowerCase().includes(q))
+    .filter(
+      (u) => !q || u.email.toLowerCase().includes(q) || u.displayName.toLowerCase().includes(q),
+    )
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
@@ -69,23 +71,53 @@ export async function getUserAdmin(userId: string) {
   if (error || !authData?.user) return null;
   const u = authData.user;
 
-  const [{ data: profile }, { data: gifts }, { data: transactions }, { data: templates }, { data: audit }] = await Promise.all([
+  const [
+    { data: profile },
+    { data: gifts },
+    { data: transactions },
+    { data: templates },
+    { data: audit },
+  ] = await Promise.all([
     admin.from("profiles").select("*").eq("id", userId).maybeSingle(),
-    admin.from("gifts").select("id, title, status, template_id, created_at, published_at").eq("sender_id", userId).order("created_at", { ascending: false }),
-    admin.from("point_transactions").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(50),
+    admin
+      .from("gifts")
+      .select("id, title, status, template_id, created_at, published_at")
+      .eq("sender_id", userId)
+      .order("created_at", { ascending: false }),
+    admin
+      .from("point_transactions")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(50),
     admin.from("templates").select("id, name_en"),
-    admin.from("admin_audit_logs").select("*").eq("target_id", userId).order("created_at", { ascending: false }).limit(20),
+    admin
+      .from("admin_audit_logs")
+      .select("*")
+      .eq("target_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(20),
   ]);
 
   const giftIds = (gifts ?? []).map((g) => g.id);
   const [{ data: reports }, { data: recipients }, { data: media }] = await Promise.all([
-    giftIds.length ? admin.from("reports").select("*").in("gift_id", giftIds).order("created_at", { ascending: false }) : Promise.resolve({ data: [] }),
-    giftIds.length ? admin.from("gift_recipients").select("gift_id, first_opened_at").in("gift_id", giftIds) : Promise.resolve({ data: [] }),
+    giftIds.length
+      ? admin
+          .from("reports")
+          .select("*")
+          .in("gift_id", giftIds)
+          .order("created_at", { ascending: false })
+      : Promise.resolve({ data: [] }),
+    giftIds.length
+      ? admin.from("gift_recipients").select("gift_id, first_opened_at").in("gift_id", giftIds)
+      : Promise.resolve({ data: [] }),
     admin.from("gift_media").select("bytes").eq("owner_id", userId),
   ]);
 
   const templateName = new Map((templates ?? []).map((t) => [t.id, t.name_en]));
-  const openedGift = new Set((recipients ?? []).filter((r) => r.first_opened_at).map((r) => r.gift_id));
+  const openedGift = new Set(
+    (recipients ?? []).filter((r) => r.first_opened_at).map((r) => r.gift_id),
+  );
 
   return {
     id: u.id,
@@ -97,7 +129,11 @@ export async function getUserAdmin(userId: string) {
     suspended: isSuspended((u as { banned_until?: string | null }).banned_until),
     bannedUntil: (u as { banned_until?: string | null }).banned_until ?? null,
     profile,
-    gifts: (gifts ?? []).map((g) => ({ ...g, templateName: templateName.get(g.template_id) ?? "", opened: openedGift.has(g.id) })),
+    gifts: (gifts ?? []).map((g) => ({
+      ...g,
+      templateName: templateName.get(g.template_id) ?? "",
+      opened: openedGift.has(g.id),
+    })),
     transactions: transactions ?? [],
     reports: reports ?? [],
     audit: audit ?? [],

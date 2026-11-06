@@ -24,7 +24,12 @@ export default async function AdminPaymentsPage() {
                   <p className="font-semibold">
                     {p.provider} · {p.provider_reference}
                   </p>
-                  <p className="text-xs text-muted-foreground">{format.dateTime(new Date(p.created_at), { dateStyle: "medium", timeStyle: "short" })}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {format.dateTime(new Date(p.created_at), {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })}
+                  </p>
                 </div>
                 <div className="flex items-center gap-2">
                   <span>{format.number(p.amount_mmk)} MMK</span>
@@ -33,7 +38,11 @@ export default async function AdminPaymentsPage() {
                 </div>
               </li>
             ))}
-            {payments.length === 0 && <li className="p-8 text-center text-sm text-muted-foreground">{t("payments.empty")}</li>}
+            {payments.length === 0 && (
+              <li className="p-8 text-center text-sm text-muted-foreground">
+                {t("payments.empty")}
+              </li>
+            )}
           </ul>
         </CardContent>
       </Card>

@@ -15,13 +15,25 @@ export function DeleteAccountForm({ email }: { email: string }) {
       <label htmlFor="confirmEmail" className="text-sm text-muted-foreground">
         {t("typeEmail", { email })}
       </label>
-      <Input id="confirmEmail" name="confirmEmail" type="email" autoComplete="off" required placeholder={email} />
+      <Input
+        id="confirmEmail"
+        name="confirmEmail"
+        type="email"
+        autoComplete="off"
+        required
+        placeholder={email}
+      />
       {state.status && (
         <p role="alert" className="text-sm text-destructive">
           {t(`deleteErrors.${state.status}`)}
         </p>
       )}
-      <ConfirmButton variant="ghost" className="self-start text-destructive" confirmText={t("deleteConfirm")} danger>
+      <ConfirmButton
+        variant="ghost"
+        className="self-start text-destructive"
+        confirmText={t("deleteConfirm")}
+        danger
+      >
         {t("deleteAccount")}
       </ConfirmButton>
     </form>

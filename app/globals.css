@@ -118,7 +118,9 @@
   --bird-b-wing: #6a9dbd;
   --branch: #8b6a5c;
 
-  --eain-shadow-soft: 0 0 0 1px rgb(255 255 255 / 0.03), 0 14px 40px -18px rgb(0 0 0 / 0.65), 0 10px 32px -22px rgb(244 80 110 / 0.4);
+  --eain-shadow-soft:
+    0 0 0 1px rgb(255 255 255 / 0.03), 0 14px 40px -18px rgb(0 0 0 / 0.65),
+    0 10px 32px -22px rgb(244 80 110 / 0.4);
   --hero-gradient: linear-gradient(160deg, #2a1533 0%, #3d1a3d 55%, #55203f 100%);
 
   --scrollbar-thumb: color-mix(in srgb, var(--primary) 50%, transparent);
@@ -206,15 +208,14 @@
   --shadow-soft: var(--eain-shadow-soft);
 
   /* Latin fonts first. Burmese glyphs fall through to the Myanmar fonts. */
-  --font-sans:
-    var(--font-jakarta), var(--font-myanmar), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), var(--font-myanmar), ui-sans-serif, system-ui, sans-serif;
   --font-display:
-    var(--font-fraunces), var(--font-myanmar-serif), var(--font-myanmar), ui-serif, Georgia,
-    serif;
+    var(--font-fraunces), var(--font-myanmar-serif), var(--font-myanmar), ui-serif, Georgia, serif;
   --font-hand: var(--font-caveat), var(--font-myanmar), cursive;
   /* Faces a creator can pick for a text, see components/gift/text-fonts.ts. */
   --font-script: var(--font-pacifico), var(--font-myanmar), cursive;
-  --font-elegant: var(--font-playfair), var(--font-myanmar-serif), var(--font-myanmar), ui-serif, Georgia, serif;
+  --font-elegant:
+    var(--font-playfair), var(--font-myanmar-serif), var(--font-myanmar), ui-serif, Georgia, serif;
   --font-poster: var(--font-bebas), var(--font-myanmar), ui-sans-serif, system-ui, sans-serif;
   --font-typewriter: var(--font-special-elite), var(--font-myanmar), ui-monospace, monospace;
   --font-padauk: var(--font-padauk-face), var(--font-myanmar), ui-sans-serif, system-ui, sans-serif;
@@ -353,7 +354,11 @@
     background-size: 26px 26px;
   }
   .pattern-rays {
-    background-image: repeating-conic-gradient(from 0deg at 50% -20%, var(--t-deco) 0 4deg, transparent 4deg 12deg);
+    background-image: repeating-conic-gradient(
+      from 0deg at 50% -20%,
+      var(--t-deco) 0 4deg,
+      transparent 4deg 12deg
+    );
   }
 }
 
@@ -372,7 +377,7 @@
 
 /* The standard card: a rounded pane of glass with the soft shadow. */
 @utility panel {
-  @apply glass rounded-3xl border shadow-soft;
+  @apply rounded-3xl border glass shadow-soft;
 }
 
 @utility glass-bar {

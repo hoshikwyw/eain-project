@@ -4,7 +4,10 @@ import { getTranslations } from "next-intl/server";
 export default async function GiftLoading() {
   const t = await getTranslations("common");
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-4 px-6 text-center" aria-busy="true">
+    <div
+      className="flex min-h-svh flex-col items-center justify-center gap-4 px-6 text-center"
+      aria-busy="true"
+    >
       <span className="text-3xl text-brand" aria-hidden="true">
         ♥
       </span>

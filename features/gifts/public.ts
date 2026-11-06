@@ -4,7 +4,16 @@ import { cache } from "react";
 import { track } from "@/lib/analytics";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { signMedia } from "./media";
-import type { GiftColors, MediaItem, Opening, PublicQuestion, ResponseSubmission, Section, Sticker, ThemeVariant } from "./schemas";
+import type {
+  GiftColors,
+  MediaItem,
+  Opening,
+  PublicQuestion,
+  ResponseSubmission,
+  Section,
+  Sticker,
+  ThemeVariant,
+} from "./schemas";
 import type { GiftScene } from "./scene";
 import { lookFromTheme, openingFromTheme, referencedMediaIds, sectionsFromRows } from "./sections";
 import { getTemplateStyle, type TemplateStyle } from "./templates";
@@ -42,14 +51,29 @@ export const getPublicGift = cache(async (token: string): Promise<PublicGift | n
     .maybeSingle();
   if (!gift) return null;
 
-  const [{ data: template }, { data: sectionRows }, { data: recipient }, { data: sender }, { data: questionRows }] =
-    await Promise.all([
-      admin.from("templates").select("slug").eq("id", gift.template_id).single(),
-      admin.from("gift_sections").select("id, type, content, position").eq("gift_id", gift.id),
-      admin.from("gift_recipients").select("name").eq("gift_id", gift.id).order("created_at").limit(1).maybeSingle(),
-      admin.from("profiles").select("display_name").eq("id", gift.sender_id).single(),
-      admin.from("gift_questions").select("id, type, prompt, is_required, position").eq("gift_id", gift.id).order("position"),
-    ]);
+  const [
+    { data: template },
+    { data: sectionRows },
+    { data: recipient },
+    { data: sender },
+    { data: questionRows },
+  ] = await Promise.all([
+    admin.from("templates").select("slug").eq("id", gift.template_id).single(),
+    admin.from("gift_sections").select("id, type, content, position").eq("gift_id", gift.id),
+    admin
+      .from("gift_recipients")
+      .select("name")
+      .eq("gift_id", gift.id)
+      .order("created_at")
+      .limit(1)
+      .maybeSingle(),
+    admin.from("profiles").select("display_name").eq("id", gift.sender_id).single(),
+    admin
+      .from("gift_questions")
+      .select("id, type, prompt, is_required, position")
+      .eq("gift_id", gift.id)
+      .order("position"),
+  ]);
 
   const sections = sectionsFromRows(sectionRows ?? []);
   const mediaIds = referencedMediaIds(sections);
@@ -63,7 +87,11 @@ export const getPublicGift = cache(async (token: string): Promise<PublicGift | n
 
   const questionIds = (questionRows ?? []).map((q) => q.id);
   const { data: optionRows } = questionIds.length
-    ? await admin.from("gift_question_options").select("id, question_id, label, position").in("question_id", questionIds).order("position")
+    ? await admin
+        .from("gift_question_options")
+        .select("id, question_id, label, position")
+        .in("question_id", questionIds)
+        .order("position")
     : { data: [] };
 
   const questions: PublicQuestion[] = (questionRows ?? []).map((q) => ({
@@ -71,7 +99,9 @@ export const getPublicGift = cache(async (token: string): Promise<PublicGift | n
     kind: q.type,
     prompt: q.prompt,
     required: q.is_required,
-    options: (optionRows ?? []).filter((o) => o.question_id === q.id).map((o) => ({ id: o.id, label: o.label })),
+    options: (optionRows ?? [])
+      .filter((o) => o.question_id === q.id)
+      .map((o) => ({ id: o.id, label: o.label })),
   }));
 
   const slug = template?.slug ?? "";
@@ -96,7 +126,10 @@ export async function recordReceiverEvent(
 ): Promise<boolean> {
   const admin = createAdminClient();
   if (type === "opened") {
-    const { data, error } = await admin.rpc("record_gift_open", { p_share_token: token, p_session_id: sessionId });
+    const { data, error } = await admin.rpc("record_gift_open", {
+      p_share_token: token,
+      p_session_id: sessionId,
+    });
     if (!error && data === true) await track("gift_opened", null);
     return !error && data === true;
   }
@@ -108,9 +141,13 @@ export async function recordReceiverEvent(
   return !error && data === true;
 }
 
-export type SubmitResult = { ok: true } | { ok: false; reason: "not-found" | "duplicate" | "invalid" | "error" };
+export type SubmitResult =
+  { ok: true } | { ok: false; reason: "not-found" | "duplicate" | "invalid" | "error" };
 
-export async function submitResponse(token: string, submission: ResponseSubmission): Promise<SubmitResult> {
+export async function submitResponse(
+  token: string,
+  submission: ResponseSubmission,
+): Promise<SubmitResult> {
   const admin = createAdminClient();
   const { error } = await admin.rpc("submit_gift_response", {
     p_share_token: token,

@@ -20,10 +20,14 @@ import { giftSceneSchema, type GiftScene } from "./scene";
  * Turns stored rows into typed sections. Malformed rows are dropped so one bad
  * row can never break a page.
  */
-export function sectionsFromRows(rows: Pick<GiftSection, "id" | "type" | "content" | "position">[]): Section[] {
+export function sectionsFromRows(
+  rows: Pick<GiftSection, "id" | "type" | "content" | "position">[],
+): Section[] {
   return [...rows]
     .sort((a, b) => a.position - b.position)
-    .map((row) => sectionSchema.safeParse({ id: row.id, type: row.type, content: row.content ?? {} }))
+    .map((row) =>
+      sectionSchema.safeParse({ id: row.id, type: row.type, content: row.content ?? {} }),
+    )
     .filter((r) => r.success)
     .map((r) => r.data);
 }
@@ -77,7 +81,9 @@ export function sceneFromTheme(theme: unknown): GiftScene | undefined {
  * The theme to store for an editor payload. Empty colours and stickers are
  * left out, and a sticker anchored past the last section moves to the gift.
  */
-export function themeFromPayload(v: Pick<EditorPayload, "variant" | "opening" | "colors" | "stickers" | "scene" | "sections">): GiftTheme {
+export function themeFromPayload(
+  v: Pick<EditorPayload, "variant" | "opening" | "colors" | "stickers" | "scene" | "sections">,
+): GiftTheme {
   const stickers = v.stickers.map(({ anchor, ...s }) =>
     anchor !== undefined && anchor < v.sections.length ? { ...s, anchor } : s,
   );
@@ -92,24 +98,35 @@ export function themeFromPayload(v: Pick<EditorPayload, "variant" | "opening" | 
 
 /** Stickers after the sections at positions `a` and `b` swap places. Each sticker stays on its section. */
 export function swapStickerAnchors(stickers: Sticker[], a: number, b: number): Sticker[] {
-  return stickers.map((s) => (s.anchor === a ? { ...s, anchor: b } : s.anchor === b ? { ...s, anchor: a } : s));
+  return stickers.map((s) =>
+    s.anchor === a ? { ...s, anchor: b } : s.anchor === b ? { ...s, anchor: a } : s,
+  );
 }
 
 /** Stickers after a section is inserted at `position`. Those on later sections move down with them. */
 export function insertStickerAnchor(stickers: Sticker[], position: number): Sticker[] {
-  return stickers.map((s) => (s.anchor !== undefined && s.anchor >= position ? { ...s, anchor: s.anchor + 1 } : s));
+  return stickers.map((s) =>
+    s.anchor !== undefined && s.anchor >= position ? { ...s, anchor: s.anchor + 1 } : s,
+  );
 }
 
 /** Stickers after the section at `position` is removed. Its own stickers go with it. */
 export function dropStickerAnchor(stickers: Sticker[], position: number): Sticker[] {
   return stickers
     .filter((s) => s.anchor !== position)
-    .map((s) => (s.anchor !== undefined && s.anchor > position ? { ...s, anchor: s.anchor - 1 } : s));
+    .map((s) =>
+      s.anchor !== undefined && s.anchor > position ? { ...s, anchor: s.anchor - 1 } : s,
+    );
 }
 
 /** Rows to insert for a section list. Client ids are not stored. */
 export function rowsFromSections(giftId: string, sections: Section[]) {
-  return sections.map((s, position) => ({ gift_id: giftId, type: s.type, position, content: s.content }));
+  return sections.map((s, position) => ({
+    gift_id: giftId,
+    type: s.type,
+    position,
+    content: s.content,
+  }));
 }
 
 /** Every media id a section list references. */
@@ -131,7 +148,10 @@ export function pruneMediaReferences(sections: Section[], ownedIds: Set<string>)
         : s;
     }
     if (s.type === "photo_grid") {
-      return { ...s, content: { ...s.content, mediaIds: s.content.mediaIds.filter((id) => ownedIds.has(id)) } };
+      return {
+        ...s,
+        content: { ...s.content, mediaIds: s.content.mediaIds.filter((id) => ownedIds.has(id)) },
+      };
     }
     return s;
   });
@@ -158,4 +178,3 @@ export function lookFromTheme(theme: unknown) {
     scene: sceneFromTheme(theme),
   };
 }
-

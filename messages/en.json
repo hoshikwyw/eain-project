@@ -669,8 +669,18 @@
       "markReviewing": "Mark reviewing",
       "resolve": "Resolve",
       "dismiss": "Dismiss",
-      "status": { "open": "Open", "reviewing": "Reviewing", "resolved": "Resolved", "dismissed": "Dismissed" },
-      "giftStatus": { "draft": "draft", "published": "live", "unpublished": "offline", "deleted": "deleted" },
+      "status": {
+        "open": "Open",
+        "reviewing": "Reviewing",
+        "resolved": "Resolved",
+        "dismissed": "Dismissed"
+      },
+      "giftStatus": {
+        "draft": "draft",
+        "published": "live",
+        "unpublished": "offline",
+        "deleted": "deleted"
+      },
       "reasons": {
         "harassment": "Harassment",
         "spam": "Spam",

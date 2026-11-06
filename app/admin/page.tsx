@@ -1,4 +1,12 @@
-import { Flag, Gift, Image as ImageIcon, MessageCircleHeart, Send, Star, Users } from "lucide-react";
+import {
+  Flag,
+  Gift,
+  Image as ImageIcon,
+  MessageCircleHeart,
+  Send,
+  Star,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/admin/page-header";
@@ -33,8 +41,16 @@ export default async function AdminOverviewPage() {
         <StatTile label={t("overview.gifts")} value={stats.gifts} icon={Gift} />
         <StatTile label={t("overview.published")} value={stats.published} icon={Send} />
         <StatTile label={t("overview.opened")} value={stats.opened_gifts} icon={Send} />
-        <StatTile label={t("overview.responses")} value={stats.responses} icon={MessageCircleHeart} />
-        <StatTile label={t("overview.publishedWeek")} value={stats.published_last_7_days} icon={Gift} />
+        <StatTile
+          label={t("overview.responses")}
+          value={stats.responses}
+          icon={MessageCircleHeart}
+        />
+        <StatTile
+          label={t("overview.publishedWeek")}
+          value={stats.published_last_7_days}
+          icon={Gift}
+        />
         <StatTile label={t("overview.points")} value={stats.points_in_circulation} icon={Star} />
         <StatTile label={t("overview.photos")} value={stats.media_count} icon={ImageIcon} />
       </div>
@@ -68,23 +84,37 @@ export default async function AdminOverviewPage() {
                   <div className="flex justify-between text-sm">
                     <span className="font-semibold">{t(`overview.usage.${u.key}`)}</span>
                     <span className="text-muted-foreground">
-                      {format.number(u.used / 1024 / 1024, { maximumFractionDigits: 1 })} / {format.number(u.limit / 1024 / 1024, { maximumFractionDigits: 0 })} MB
+                      {format.number(u.used / 1024 / 1024, { maximumFractionDigits: 1 })} /{" "}
+                      {format.number(u.limit / 1024 / 1024, { maximumFractionDigits: 0 })} MB
                     </span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-muted">
-                    <div className={pct > 80 ? "h-full bg-destructive" : "h-full bg-primary"} style={{ width: `${pct}%` }} />
+                    <div
+                      className={pct > 80 ? "h-full bg-destructive" : "h-full bg-primary"}
+                      style={{ width: `${pct}%` }}
+                    />
                   </div>
                 </div>
               );
             })}
             <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
               <li>
-                <a className="text-primary-ink underline-offset-4 hover:underline" href="https://supabase.com/dashboard/project/_/settings/billing/usage" target="_blank" rel="noreferrer">
+                <a
+                  className="text-primary-ink underline-offset-4 hover:underline"
+                  href="https://supabase.com/dashboard/project/_/settings/billing/usage"
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   {t("overview.usage.supabase")}
                 </a>
               </li>
               <li>
-                <a className="text-primary-ink underline-offset-4 hover:underline" href="https://vercel.com/dashboard/usage" target="_blank" rel="noreferrer">
+                <a
+                  className="text-primary-ink underline-offset-4 hover:underline"
+                  href="https://vercel.com/dashboard/usage"
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   {t("overview.usage.vercel")}
                 </a>
               </li>

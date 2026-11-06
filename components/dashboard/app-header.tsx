@@ -36,7 +36,7 @@ export function AppHeader({ displayName, email, pointsBalance, unreadCount, isAd
   return (
     <header className="sticky top-0 z-40">
       {/* The glass is a layer of its own, so the account menu can blur the page behind it too. */}
-      <div aria-hidden="true" className="glass-bar absolute inset-0 -z-10 border-b" />
+      <div aria-hidden="true" className="absolute inset-0 -z-10 border-b glass-bar" />
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4 md:h-[4.5rem]">
         <Link href="/dashboard" aria-label="Eain" className="rounded-lg">
           <Logo />
@@ -52,7 +52,9 @@ export function AppHeader({ displayName, email, pointsBalance, unreadCount, isAd
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-colors",
-                  active ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground",
+                  active
+                    ? "bg-secondary text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {t(`nav.${key}`)}
@@ -74,15 +76,24 @@ export function AppHeader({ displayName, email, pointsBalance, unreadCount, isAd
 
           <Link
             href="/dashboard/notifications"
-            aria-label={unreadCount > 0 ? `${t("nav.notifications")}: ${unreadCount}` : t("nav.notifications")}
+            aria-label={
+              unreadCount > 0 ? `${t("nav.notifications")}: ${unreadCount}` : t("nav.notifications")
+            }
             aria-current={onNotifications ? "page" : undefined}
             className={cn(
               "relative grid size-9 place-items-center rounded-full transition-colors max-md:hidden",
-              onNotifications ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+              onNotifications
+                ? "bg-secondary text-foreground"
+                : "text-muted-foreground hover:bg-secondary hover:text-foreground",
             )}
           >
             <Bell className="size-5" />
-            {unreadCount > 0 && <span aria-hidden="true" className="absolute top-1.5 right-1.5 size-2.5 rounded-full bg-brand ring-2 ring-background" />}
+            {unreadCount > 0 && (
+              <span
+                aria-hidden="true"
+                className="absolute top-1.5 right-1.5 size-2.5 rounded-full bg-brand ring-2 ring-background"
+              />
+            )}
           </Link>
 
           <UserMenu displayName={displayName} email={email} isAdmin={isAdmin} />

@@ -10,10 +10,13 @@ import { createClient } from "@supabase/supabase-js";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!url || !serviceKey) throw new Error("Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env.local");
+if (!url || !serviceKey)
+  throw new Error("Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env.local");
 
 const apply = process.argv.includes("--yes");
-const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+const admin = createClient(url, serviceKey, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
 
 const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
 if (error) throw error;
@@ -27,10 +30,18 @@ for (const u of targets) {
     console.log(`would remove ${u.email}`);
     continue;
   }
-  const { data: media } = await admin.from("gift_media").select("storage_path, thumb_path").eq("owner_id", u.id);
+  const { data: media } = await admin
+    .from("gift_media")
+    .select("storage_path, thumb_path")
+    .eq("owner_id", u.id);
   const paths = (media ?? []).flatMap((m) => [m.storage_path, m.thumb_path].filter(Boolean));
   if (paths.length) await admin.storage.from("gift-media").remove(paths);
   const { error: delError } = await admin.auth.admin.deleteUser(u.id);
-  console.log(delError ? `failed ${u.email}: ${delError.message}` : `removed ${u.email} (${paths.length} files)`);
+  console.log(
+    delError
+      ? `failed ${u.email}: ${delError.message}`
+      : `removed ${u.email} (${paths.length} files)`,
+  );
 }
-if (!apply && targets.length > 0) console.log(`\n${targets.length} test accounts. Run again with --yes to remove them.`);
+if (!apply && targets.length > 0)
+  console.log(`\n${targets.length} test accounts. Run again with --yes to remove them.`);

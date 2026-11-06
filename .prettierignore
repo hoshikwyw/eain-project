@@ -1,0 +1,16 @@
+# Files `pnpm format` must leave exactly as they are.
+
+# Served as they are: the animated scenes with their vendored library, and the
+# Google Search Console file, which Google compares byte for byte.
+public/
+
+# Legal text: only its authors change it.
+content/
+
+# Written and re-added by `next dev`.
+AGENTS.md
+CLAUDE.md
+
+# Generated.
+pnpm-lock.yaml
+next-env.d.ts

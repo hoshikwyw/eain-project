@@ -30,7 +30,9 @@ export function AdminNav() {
             aria-current={active ? "page" : undefined}
             className={cn(
               "inline-flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors",
-              active ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground",
+              active
+                ? "border-primary text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >
             {t(key)}

@@ -39,7 +39,9 @@ export async function AuthShell({ title, subtitle, reward, children }: Props) {
           <div className="max-w-md">
             <p className="font-display text-4xl leading-tight font-light text-balance xl:text-5xl my:text-3xl my:leading-[1.5] my:text-wrap">
               {t.rich("headline", {
-                em: (chunks) => <em className="font-normal text-primary-ink italic my:not-italic">{chunks}</em>,
+                em: (chunks) => (
+                  <em className="font-normal text-primary-ink italic my:not-italic">{chunks}</em>
+                ),
               })}
             </p>
             <p className="mt-4 text-lg text-muted-foreground">{t("subtitle")}</p>
@@ -48,7 +50,12 @@ export async function AuthShell({ title, subtitle, reward, children }: Props) {
         </aside>
       )}
 
-      <div className={cn("flex flex-1 flex-col", branded && "lg:rounded-l-[2.5rem] lg:bg-background/80")}>
+      <div
+        className={cn(
+          "flex flex-1 flex-col",
+          branded && "lg:rounded-l-[2.5rem] lg:bg-background/80",
+        )}
+      >
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 lg:px-8">
           <Link href="/" aria-label="Eain" className={cn("rounded-lg", branded && "lg:invisible")}>
             <Logo />
@@ -68,11 +75,16 @@ export async function AuthShell({ title, subtitle, reward, children }: Props) {
             )}
             <div
               className={cn(
-                "flex flex-col gap-6 rounded-3xl glass border p-6 shadow-soft sm:p-8",
+                "flex flex-col gap-6 rounded-3xl border glass p-6 shadow-soft sm:p-8",
                 branded && "lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none",
               )}
             >
-              <div className={cn("flex flex-col items-center gap-2 text-center", branded && "lg:items-start lg:text-left")}>
+              <div
+                className={cn(
+                  "flex flex-col items-center gap-2 text-center",
+                  branded && "lg:items-start lg:text-left",
+                )}
+              >
                 <h1 className="font-display text-2xl font-semibold sm:text-3xl">{title}</h1>
                 {reward ? (
                   <p className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1 text-sm font-semibold text-accent-foreground dark:text-brand">

@@ -26,9 +26,16 @@ export function SiteFooter() {
               {t("footer.promise")}
             </p>
           </div>
-          <nav aria-label="Footer" className="grid grid-cols-2 gap-x-14 gap-y-3 text-sm sm:grid-cols-3">
+          <nav
+            aria-label="Footer"
+            className="grid grid-cols-2 gap-x-14 gap-y-3 text-sm sm:grid-cols-3"
+          >
             {links.map((link) => (
-              <Link key={link.key} href={link.href} className="text-muted-foreground transition-colors hover:text-foreground">
+              <Link
+                key={link.key}
+                href={link.href}
+                className="text-muted-foreground transition-colors hover:text-foreground"
+              >
                 {t(`footer.${link.key}`)}
               </Link>
             ))}

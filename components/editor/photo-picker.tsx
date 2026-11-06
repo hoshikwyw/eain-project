@@ -22,7 +22,14 @@ type Props = {
  * The gift's photo library. Upload compresses in the browser, then posts to
  * the media route which checks the real bytes before storing.
  */
-export function PhotoPicker({ giftId, media, onMediaChange, selected, onSelectedChange, max }: Props) {
+export function PhotoPicker({
+  giftId,
+  media,
+  onMediaChange,
+  selected,
+  onSelectedChange,
+  max,
+}: Props) {
   const t = useTranslations("editor.photos");
   const tCommon = useTranslations("common");
   /** The photo a delete was asked for, while the popup is up. */
@@ -56,7 +63,13 @@ export function PhotoPicker({ giftId, media, onMediaChange, selected, onSelected
       const res = await fetch(`/api/gifts/${giftId}/media`, { method: "POST", body: form });
       if (!res.ok) {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
-        setError(body.error === "limit" ? t("errors.limit") : body.error === "not-image" ? t("errors.notImage") : t("errors.failed"));
+        setError(
+          body.error === "limit"
+            ? t("errors.limit")
+            : body.error === "not-image"
+              ? t("errors.notImage")
+              : t("errors.failed"),
+        );
         return;
       }
       const item = (await res.json()) as MediaItem;
@@ -64,7 +77,13 @@ export function PhotoPicker({ giftId, media, onMediaChange, selected, onSelected
       toggle(item.id);
     } catch (e) {
       const code = e instanceof Error ? e.message : "";
-      setError(code === "too-large" ? t("errors.tooLarge") : code === "not-image" ? t("errors.notImage") : t("errors.failed"));
+      setError(
+        code === "too-large"
+          ? t("errors.tooLarge")
+          : code === "not-image"
+            ? t("errors.notImage")
+            : t("errors.failed"),
+      );
     } finally {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = "";
@@ -161,7 +180,14 @@ export function PhotoPicker({ giftId, media, onMediaChange, selected, onSelected
         </p>
       )}
       {full && media.length > 0 && (
-        <Button type="button" variant="ghost" size="sm" className="self-start" onClick={() => inputRef.current?.click()} disabled>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="self-start"
+          onClick={() => inputRef.current?.click()}
+          disabled
+        >
           {t("limitReached")}
         </Button>
       )}

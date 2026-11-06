@@ -25,14 +25,30 @@ import {
   type Sticker,
   type ThemeVariant,
 } from "@/features/gifts/schemas";
-import { dropStickerAnchor, insertStickerAnchor, swapStickerAnchors } from "@/features/gifts/sections";
+import {
+  dropStickerAnchor,
+  insertStickerAnchor,
+  swapStickerAnchors,
+} from "@/features/gifts/sections";
 import type { TemplateStyle } from "@/features/gifts/templates";
 import { cn } from "@/lib/utils";
 import type { GiftStatus } from "@/types/database";
-import { sectionSelector, stickerContainerSelector, textSelector, type TextTarget } from "./canvas-geometry";
+import {
+  sectionSelector,
+  stickerContainerSelector,
+  textSelector,
+  type TextTarget,
+} from "./canvas-geometry";
 import { EditableText } from "./editable-text";
 import { EditorBar } from "./editor-bar";
-import { DetailsPanel, FlowersPanel, LookPanel, OpeningPanel, SectionsPanel, StickersPanel } from "./editor-panels";
+import {
+  DetailsPanel,
+  FlowersPanel,
+  LookPanel,
+  OpeningPanel,
+  SectionsPanel,
+  StickersPanel,
+} from "./editor-panels";
 import { CARD_TABS, SCENE_SECTION_TYPES, SCENE_TABS, ToolTabs, type Tab } from "./editor-tabs";
 import { copyOfSection, emptySection } from "./new-section";
 import { PhotoResizeHandle } from "./photo-resize-handle";
@@ -102,11 +118,22 @@ export function GiftEditor(props: Props) {
   const [previewing, setPreviewing] = useState(false);
   /** Turned on by a save that was stopped, so nothing is flagged while the user is still writing. */
   const [showInvalid, setShowInvalid] = useState(false);
-  const [scrollTo, setScrollTo] = useState<{ id: string; block: ScrollLogicalPosition } | null>(null);
+  const [scrollTo, setScrollTo] = useState<{ id: string; block: ScrollLogicalPosition } | null>(
+    null,
+  );
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const payload = useMemo<EditorPayload>(
-    () => ({ title, recipientName, variant, opening, colors, stickers, ...(sceneKind && { scene }), sections }),
+    () => ({
+      title,
+      recipientName,
+      variant,
+      opening,
+      colors,
+      stickers,
+      ...(sceneKind && { scene }),
+      sections,
+    }),
     [title, recipientName, variant, opening, colors, stickers, sceneKind, scene, sections],
   );
   const payloadJson = JSON.stringify(payload);
@@ -133,24 +160,25 @@ export function GiftEditor(props: Props) {
   // A draft saves itself once the creator pauses. A published gift does not:
   // a save there is live for the receiver at once, so it stays a deliberate step.
   const autosave = props.status !== "published";
-  const { dirty, state, formAction, saving, publishing, publishState, publish, saveNow } = useGiftSave({
-    giftId: props.giftId,
-    autosave,
-    initialJson: () =>
-      JSON.stringify({
-        title: props.title,
-        recipientName: props.recipientName,
-        variant: props.variant,
-        opening: props.opening,
-        colors: props.colors,
-        stickers: props.stickers,
-        ...(props.style.scene && { scene: props.scene ?? defaultScene }),
-        sections: props.sections,
-      }),
-    payloadJson,
-    valid,
-    onInvalid: () => revealInvalid(),
-  });
+  const { dirty, state, formAction, saving, publishing, publishState, publish, saveNow } =
+    useGiftSave({
+      giftId: props.giftId,
+      autosave,
+      initialJson: () =>
+        JSON.stringify({
+          title: props.title,
+          recipientName: props.recipientName,
+          variant: props.variant,
+          opening: props.opening,
+          colors: props.colors,
+          stickers: props.stickers,
+          ...(props.style.scene && { scene: props.scene ?? defaultScene }),
+          sections: props.sections,
+        }),
+      payloadJson,
+      valid,
+      onInvalid: () => revealInvalid(),
+    });
 
   // Opening preview: show the closed gift for a moment, play it, then close.
   useEffect(() => {
@@ -164,7 +192,9 @@ export function GiftEditor(props: Props) {
 
   useEffect(() => {
     if (!scrollTo) return;
-    canvasRef.current?.querySelector(sectionSelector(scrollTo.id))?.scrollIntoView({ block: scrollTo.block, behavior: "smooth" });
+    canvasRef.current
+      ?.querySelector(sectionSelector(scrollTo.id))
+      ?.scrollIntoView({ block: scrollTo.block, behavior: "smooth" });
   }, [scrollTo]);
 
   useStickerKeys(selectedSticker, setStickers, setSelectedSticker);
@@ -173,7 +203,8 @@ export function GiftEditor(props: Props) {
 
   // Sections ------------------------------------------------------------------
 
-  const updateSection = (next: Section) => setSections((s) => s.map((sec) => (sec.id === next.id ? next : sec)));
+  const updateSection = (next: Section) =>
+    setSections((s) => s.map((sec) => (sec.id === next.id ? next : sec)));
   const setText = useCallback(
     (id: string, field: string, value: string, index?: number) =>
       setSections((all) => all.map((s) => (s.id === id ? withText(s, field, value, index) : s))),
@@ -278,26 +309,38 @@ export function GiftEditor(props: Props) {
 
   const onCanvasFocus = (e: React.FocusEvent) => {
     pickOnCanvas(e.target, false);
-    const el = e.target instanceof HTMLElement && e.target.matches(".editable-text") ? e.target : null;
+    const el =
+      e.target instanceof HTMLElement && e.target.matches(".editable-text") ? e.target : null;
     const sectionId = el?.closest<HTMLElement>("[data-section-id]")?.dataset.sectionId;
     const field = el?.dataset.textField;
     if (!el || !sectionId || !field) return;
-    setActiveText({ sectionId, field, index: el.dataset.textIndex === undefined ? undefined : Number(el.dataset.textIndex) });
+    setActiveText({
+      sectionId,
+      field,
+      index: el.dataset.textIndex === undefined ? undefined : Number(el.dataset.textIndex),
+    });
   };
 
   // The text's tools stay while focus is on them, and go when it leaves for somewhere else.
   const onCanvasBlur = (e: React.FocusEvent) => {
-    if (!(e.relatedTarget instanceof Element && e.relatedTarget.closest("[data-canvas-ui]"))) setActiveText(null);
+    if (!(e.relatedTarget instanceof Element && e.relatedTarget.closest("[data-canvas-ui]")))
+      setActiveText(null);
   };
   const onTextToolsBlur = (e: React.FocusEvent) => {
     const next = e.relatedTarget;
-    if (!(next instanceof Element && (next.closest("[data-canvas-ui]") || canvasRef.current?.contains(next)))) setActiveText(null);
+    if (!(
+      next instanceof Element &&
+      (next.closest("[data-canvas-ui]") || canvasRef.current?.contains(next))
+    ))
+      setActiveText(null);
   };
 
   /** Changes the style of the text being edited. A value of undefined goes back to the design's own. */
   const styleActiveText = (change: (section: Section, field: string) => Section) => {
     if (!activeText) return;
-    setSections((all) => all.map((s) => (s.id === activeText.sectionId ? change(s, activeText.field) : s)));
+    setSections((all) =>
+      all.map((s) => (s.id === activeText.sectionId ? change(s, activeText.field) : s)),
+    );
   };
 
   // Saving --------------------------------------------------------------------
@@ -365,10 +408,15 @@ export function GiftEditor(props: Props) {
   const selectedIndex = sections.findIndex((s) => s.id === selectedId);
   const selectedSection = selectedIndex >= 0 ? sections[selectedIndex] : undefined;
   /** The selected section when it holds a photo or photos, which can then be resized on the gift. */
-  const selectedPhoto = selectedSection && (selectedSection.type === "image" || selectedSection.type === "photo_grid") ? selectedSection : undefined;
+  const selectedPhoto =
+    selectedSection && (selectedSection.type === "image" || selectedSection.type === "photo_grid")
+      ? selectedSection
+      : undefined;
   const sticker = stickers.find((s) => s.id === selectedSticker);
   const stickerBox = sticker && stickerContainerSelector(sections, sticker);
-  const activeSection = activeText ? sections.find((s) => s.id === activeText.sectionId) : undefined;
+  const activeSection = activeText
+    ? sections.find((s) => s.id === activeText.sectionId)
+    : undefined;
   const tabs = sceneKind ? SCENE_TABS : CARD_TABS;
   const tabLabel: Record<Tab, string> = {
     sections: t("sections"),
@@ -385,7 +433,7 @@ export function GiftEditor(props: Props) {
       {/* The editor's own bar, across the whole screen; its content lines up with the page below. */}
       <div className="sticky top-0 z-30 flex flex-col px-[max(1rem,calc(50%-35rem))]">
         {/* The glass is a layer of its own, so the text tools' popups can blur the gift behind them. */}
-        <div aria-hidden="true" className="glass-bar absolute inset-0 -z-10 border-b" />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 border-b glass-bar" />
         <EditorBar
           title={title}
           detailsLabel={tabLabel.details}
@@ -415,14 +463,19 @@ export function GiftEditor(props: Props) {
         {!previewing && (
           // Lined up with the gift below: the tools for the text being edited, or the hint.
           <div className="grid lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-6">
-            <div className="flex min-h-12 items-center justify-center py-1.5" onBlur={onTextToolsBlur}>
+            <div
+              className="flex min-h-12 items-center justify-center py-1.5"
+              onBlur={onTextToolsBlur}
+            >
               {!sceneKind && activeText && activeSection ? (
                 <TextToolbar
                   canvas={canvasRef}
                   selector={textSelector(activeText)}
                   watch={sections}
                   style={textStyle(activeSection, activeText.field)}
-                  onChange={(change) => styleActiveText((s, field) => withTextStyle(s, field, change))}
+                  onChange={(change) =>
+                    styleActiveText((s, field) => withTextStyle(s, field, change))
+                  }
                   onReset={() => styleActiveText(withoutTextStyle)}
                   labels={{
                     tools: t("textTools"),
@@ -442,7 +495,9 @@ export function GiftEditor(props: Props) {
                   }}
                 />
               ) : (
-                <p className="text-center text-sm leading-relaxed text-muted-foreground">{sceneKind ? t("sceneHint") : t("canvasHint")}</p>
+                <p className="text-center text-sm leading-relaxed text-muted-foreground">
+                  {sceneKind ? t("sceneHint") : t("canvasHint")}
+                </p>
               )}
             </div>
           </div>
@@ -508,7 +563,11 @@ export function GiftEditor(props: Props) {
                   size={selectedPhoto.content.size ?? PHOTO_SIZE_MAX}
                   onSize={(size) =>
                     // Two branches so each keeps its own content type.
-                    updateSection(selectedPhoto.type === "image" ? { ...selectedPhoto, content: { ...selectedPhoto.content, size } } : { ...selectedPhoto, content: { ...selectedPhoto.content, size } })
+                    updateSection(
+                      selectedPhoto.type === "image"
+                        ? { ...selectedPhoto, content: { ...selectedPhoto.content, size } }
+                        : { ...selectedPhoto, content: { ...selectedPhoto.content, size } },
+                    )
                   }
                   // The release is followed by a click, which would land beside the photo and clear the selection.
                   onDone={markDragged}
@@ -521,7 +580,9 @@ export function GiftEditor(props: Props) {
                   selector={textSelector(activeText)}
                   watch={sections}
                   scale={textStyle(activeSection, activeText.field)?.scale ?? 1}
-                  onScale={(scale) => styleActiveText((s, field) => withTextStyle(s, field, { scale }))}
+                  onScale={(scale) =>
+                    styleActiveText((s, field) => withTextStyle(s, field, { scale }))
+                  }
                   label={t("resizeText")}
                 />
               )}
@@ -534,7 +595,9 @@ export function GiftEditor(props: Props) {
                   onChange={(change) => patchSticker(sticker.id, (s) => ({ ...s, ...change }))}
                   canDuplicate={stickers.length < MAX_STICKERS}
                   onDuplicate={() => duplicateSticker(sticker)}
-                  onFront={() => setStickers((all) => [...all.filter((s) => s.id !== sticker.id), sticker])}
+                  onFront={() =>
+                    setStickers((all) => [...all.filter((s) => s.id !== sticker.id), sticker])
+                  }
                   onRemove={() => {
                     setStickers((all) => all.filter((s) => s.id !== sticker.id));
                     setSelectedSticker(null);
@@ -550,9 +613,13 @@ export function GiftEditor(props: Props) {
               )}
             </div>
 
-            <div className="glass flex flex-col gap-2 rounded-3xl border p-5">
-              <p className="text-sm text-muted-foreground">{published ? t("publishedHint") : t("publishHint")}</p>
-              <p className="text-xs text-muted-foreground">{autosave ? t("draftAutosave") : t("publishSaves")}</p>
+            <div className="flex flex-col gap-2 rounded-3xl border glass p-5">
+              <p className="text-sm text-muted-foreground">
+                {published ? t("publishedHint") : t("publishHint")}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {autosave ? t("draftAutosave") : t("publishSaves")}
+              </p>
               <Button asChild variant="secondary" size="sm" className="mt-1 self-start">
                 <Link href={`/dashboard/gifts/${props.giftId}`}>{t("manage")}</Link>
               </Button>
@@ -569,14 +636,32 @@ export function GiftEditor(props: Props) {
             "lg:sticky lg:top-32 lg:max-h-[calc(100svh-9rem)] lg:self-start lg:rounded-3xl lg:border lg:shadow-soft",
           )}
         >
-          <ToolTabs tabs={tabs} labels={tabLabel} active={tab} onPick={setTab} label={t("tools")} className="border-b border-border p-1.5 max-lg:hidden" />
+          <ToolTabs
+            tabs={tabs}
+            labels={tabLabel}
+            active={tab}
+            onPick={setTab}
+            label={t("tools")}
+            className="border-b border-border p-1.5 max-lg:hidden"
+          />
           <div className="flex items-center justify-between border-b border-border py-2 pr-2 pl-4 lg:hidden">
             <h2 className="text-sm font-semibold">{tabLabel[tab]}</h2>
-            <Button type="button" variant="ghost" size="icon" className="size-9" aria-label={t("closePanel")} onClick={() => setSheetOpen(false)}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="size-9"
+              aria-label={t("closePanel")}
+              onClick={() => setSheetOpen(false)}
+            >
               <X />
             </Button>
           </div>
-          <div role="tabpanel" aria-label={tabLabel[tab]} className="overflow-y-auto overscroll-contain p-4">
+          <div
+            role="tabpanel"
+            aria-label={tabLabel[tab]}
+            className="overflow-y-auto overscroll-contain p-4"
+          >
             {tab === "sections" && (
               <SectionsPanel
                 sections={sections}
@@ -594,7 +679,12 @@ export function GiftEditor(props: Props) {
               />
             )}
             {tab === "stickers" && <StickersPanel count={stickers.length} onAdd={addSticker} />}
-            {tab === "flowers" && <FlowersPanel flower={scene.flower} onChange={(flower) => setScene({ ...scene, flower })} />}
+            {tab === "flowers" && (
+              <FlowersPanel
+                flower={scene.flower}
+                onChange={(flower) => setScene({ ...scene, flower })}
+              />
+            )}
             {tab === "look" && (
               <LookPanel
                 variant={variant}
@@ -607,7 +697,13 @@ export function GiftEditor(props: Props) {
                 onColors={setColors}
               />
             )}
-            {tab === "opening" && <OpeningPanel opening={opening} onChange={setOpening} onPlay={() => setOpeningPreview("closed")} />}
+            {tab === "opening" && (
+              <OpeningPanel
+                opening={opening}
+                onChange={setOpening}
+                onPlay={() => setOpeningPreview("closed")}
+              />
+            )}
             {tab === "details" && (
               <DetailsPanel
                 title={title}
@@ -627,24 +723,40 @@ export function GiftEditor(props: Props) {
         active={sheetOpen ? tab : null}
         onPick={(name) => (sheetOpen && tab === name ? setSheetOpen(false) : openTab(name))}
         label={t("tools")}
-        className="glass-bar fixed inset-x-0 bottom-0 z-40 border-t px-1.5 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t glass-bar px-1.5 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] lg:hidden"
       />
 
       {playing && sceneKind && (
-        <PreviewOverlay label={t("scenePreview")} closeLabel={t("closePreview")} onClose={() => setPlaying(false)}>
+        <PreviewOverlay
+          label={t("scenePreview")}
+          closeLabel={t("closePreview")}
+          onClose={() => setPlaying(false)}
+        >
           {/* The same phone-shaped frame the receiver sees, with what is in the editor right now. */}
-          <div className="h-[min(88svh,46rem)] w-full max-w-md overflow-hidden rounded-3xl shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="h-[min(88svh,46rem)] w-full max-w-md overflow-hidden rounded-3xl shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <SceneFrame
               kind={sceneKind}
               title={tGift("sceneTitle")}
-              config={sceneConfig(sections, scene, { recipient: recipientName, sender: senderName }, tGift("tapToBloom"))}
+              config={sceneConfig(
+                sections,
+                scene,
+                { recipient: recipientName, sender: senderName },
+                tGift("tapToBloom"),
+              )}
             />
           </div>
         </PreviewOverlay>
       )}
 
       {openingPreview && (
-        <PreviewOverlay label={t("openingPreview")} closeLabel={t("closePreview")} onClose={() => setOpeningPreview(null)}>
+        <PreviewOverlay
+          label={t("openingPreview")}
+          closeLabel={t("closePreview")}
+          onClose={() => setOpeningPreview(null)}
+        >
           <GiftOpening
             key={opening}
             kind={opening}

@@ -53,9 +53,69 @@ export type StickerKind = keyof typeof STICKERS;
 export const STICKER_KINDS = Object.keys(STICKERS) as [StickerKind, ...StickerKind[]];
 
 /** The library as the editor shows it. Every sticker belongs to one group. */
-export const STICKER_GROUPS: { key: "love" | "party" | "nature" | "cute"; kinds: StickerKind[] }[] = [
-  { key: "love", kinds: ["heart", "pink-heart", "two-hearts", "heart-arrow", "kiss", "love-letter", "ring", "rose", "bouquet"] },
-  { key: "party", kinds: ["balloon", "party", "confetti", "cake", "cupcake", "gift", "cheers", "crown", "trophy", "medal"] },
-  { key: "nature", kinds: ["flower", "sunflower", "tulip", "clover", "butterfly", "rainbow", "sun", "moon", "star", "sparkles", "cloud", "fire"] },
-  { key: "cute", kinds: ["teddy", "cat", "dog", "bunny", "panda", "bird", "smile", "hug", "star-eyes", "blow-kiss", "angel", "cool"] },
-];
+export const STICKER_GROUPS: { key: "love" | "party" | "nature" | "cute"; kinds: StickerKind[] }[] =
+  [
+    {
+      key: "love",
+      kinds: [
+        "heart",
+        "pink-heart",
+        "two-hearts",
+        "heart-arrow",
+        "kiss",
+        "love-letter",
+        "ring",
+        "rose",
+        "bouquet",
+      ],
+    },
+    {
+      key: "party",
+      kinds: [
+        "balloon",
+        "party",
+        "confetti",
+        "cake",
+        "cupcake",
+        "gift",
+        "cheers",
+        "crown",
+        "trophy",
+        "medal",
+      ],
+    },
+    {
+      key: "nature",
+      kinds: [
+        "flower",
+        "sunflower",
+        "tulip",
+        "clover",
+        "butterfly",
+        "rainbow",
+        "sun",
+        "moon",
+        "star",
+        "sparkles",
+        "cloud",
+        "fire",
+      ],
+    },
+    {
+      key: "cute",
+      kinds: [
+        "teddy",
+        "cat",
+        "dog",
+        "bunny",
+        "panda",
+        "bird",
+        "smile",
+        "hug",
+        "star-eyes",
+        "blow-kiss",
+        "angel",
+        "cool",
+      ],
+    },
+  ];

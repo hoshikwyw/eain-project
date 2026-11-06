@@ -169,7 +169,8 @@ export interface TemplateUnlock extends Record<string, unknown> {
   created_at: string;
 }
 
-export type ReportReason = "harassment" | "spam" | "scam" | "inappropriate" | "copyright" | "malicious_link" | "other";
+export type ReportReason =
+  "harassment" | "spam" | "scam" | "inappropriate" | "copyright" | "malicious_link" | "other";
 export type ReportStatus = "open" | "reviewing" | "resolved" | "dismissed";
 
 export interface Report extends Record<string, unknown> {
@@ -268,7 +269,10 @@ export interface Database {
       profiles: Table<
         Profile,
         ReadOnly,
-        Pick<Partial<Profile>, "display_name" | "avatar_url" | "locale" | "notify_on_open" | "notify_on_response">
+        Pick<
+          Partial<Profile>,
+          "display_name" | "avatar_url" | "locale" | "notify_on_open" | "notify_on_response"
+        >
       >;
       point_transactions: Table<PointTransaction, ReadOnly, ReadOnly>;
       notifications: Table<Notification, ReadOnly, Pick<Partial<Notification>, "read_at">>;
@@ -295,12 +299,14 @@ export interface Database {
       >;
       gift_questions: Table<
         GiftQuestion,
-        Pick<GiftQuestion, "gift_id" | "type" | "prompt"> & Partial<Pick<GiftQuestion, "id" | "section_id" | "position" | "is_required">>,
+        Pick<GiftQuestion, "gift_id" | "type" | "prompt"> &
+          Partial<Pick<GiftQuestion, "id" | "section_id" | "position" | "is_required">>,
         Partial<Pick<GiftQuestion, "type" | "prompt" | "position" | "is_required" | "section_id">>
       >;
       gift_question_options: Table<
         GiftQuestionOption,
-        Pick<GiftQuestionOption, "question_id" | "label"> & Partial<Pick<GiftQuestionOption, "id" | "position">>,
+        Pick<GiftQuestionOption, "question_id" | "label"> &
+          Partial<Pick<GiftQuestionOption, "id" | "position">>,
         Partial<Pick<GiftQuestionOption, "label" | "position">>
       >;
       gift_answers: Table<GiftAnswer, ReadOnly, ReadOnly>;
@@ -325,7 +331,10 @@ export interface Database {
       regenerate_gift_link: { Args: { p_gift_id: string }; Returns: Gift };
       delete_gift: { Args: { p_gift_id: string }; Returns: undefined };
       record_gift_open: { Args: { p_share_token: string; p_session_id: string }; Returns: boolean };
-      record_gift_viewed: { Args: { p_share_token: string; p_session_id: string }; Returns: boolean };
+      record_gift_viewed: {
+        Args: { p_share_token: string; p_session_id: string };
+        Returns: boolean;
+      };
       record_receiver_event: {
         Args: { p_share_token: string; p_session_id: string; p_type: GiftEventType };
         Returns: boolean;
@@ -341,7 +350,10 @@ export interface Database {
         Returns: undefined;
       };
       admin_disable_gift: { Args: { p_gift_id: string; p_reason: string }; Returns: undefined };
-      admin_resolve_report: { Args: { p_report_id: string; p_status: ReportStatus }; Returns: undefined };
+      admin_resolve_report: {
+        Args: { p_report_id: string; p_status: ReportStatus };
+        Returns: undefined;
+      };
       admin_set_role: { Args: { p_user_id: string; p_role: UserRole }; Returns: undefined };
       admin_adjust_points: {
         Args: { p_user_id: string; p_amount: number; p_description: string };

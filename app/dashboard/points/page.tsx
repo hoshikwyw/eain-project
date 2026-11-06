@@ -1,4 +1,14 @@
-import { CreditCard, Gift, LockOpen, MailOpen, MessageCircleHeart, Sparkles, Star, Undo2, type LucideIcon } from "lucide-react";
+import {
+  CreditCard,
+  Gift,
+  LockOpen,
+  MailOpen,
+  MessageCircleHeart,
+  Sparkles,
+  Star,
+  Undo2,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { Bird } from "@/components/brand/lovebirds";
@@ -51,11 +61,19 @@ export default async function PointsPage() {
 
   // Names of the templates that were unlocked, in the reader's language.
   const locale = (await getLocale()) === "my" ? "my" : "en";
-  const unlockedIds = [...new Set(transactions.filter((tx) => tx.reference_type === "template_unlock" && tx.reference_id).map((tx) => tx.reference_id!))];
+  const unlockedIds = [
+    ...new Set(
+      transactions
+        .filter((tx) => tx.reference_type === "template_unlock" && tx.reference_id)
+        .map((tx) => tx.reference_id!),
+    ),
+  ];
   const { data: unlocked } = unlockedIds.length
     ? await supabase.from("templates").select("id, name_en, name_my").in("id", unlockedIds)
     : { data: [] };
-  const templateName = new Map((unlocked ?? []).map((tp) => [tp.id, locale === "my" ? tp.name_my : tp.name_en]));
+  const templateName = new Map(
+    (unlocked ?? []).map((tp) => [tp.id, locale === "my" ? tp.name_my : tp.name_en]),
+  );
 
   /** One history line in the reader's language. Anything of an unknown kind keeps the sentence it was stored with. */
   const entryLabel = (tx: PointTransaction): string => {
@@ -63,10 +81,16 @@ export default async function PointsPage() {
     if (known) return t(`points.entries.${known}`);
     if (tx.reference_type === "template_unlock") {
       const name = tx.reference_id ? templateName.get(tx.reference_id) : undefined;
-      return name ? t("points.entries.template_unlock", { name }) : t("points.entries.template_unlock_unknown");
+      return name
+        ? t("points.entries.template_unlock", { name })
+        : t("points.entries.template_unlock_unknown");
     }
     // An adjustment shows the note the admin wrote, when there is one.
-    if (tx.reference_type === "admin_adjustment" && (!tx.description || tx.description === DEFAULT_ADJUSTMENT_NOTE)) return t("points.entries.admin_adjustment");
+    if (
+      tx.reference_type === "admin_adjustment" &&
+      (!tx.description || tx.description === DEFAULT_ADJUSTMENT_NOTE)
+    )
+      return t("points.entries.admin_adjustment");
     return tx.description || t(`points.types.${tx.type}`);
   };
 
@@ -99,13 +123,20 @@ export default async function PointsPage() {
         </div>
         <ul className="grid grid-cols-3 gap-2.5 sm:gap-4">
           {WAYS_TO_EARN.map(({ key, amount, icon: Icon }) => (
-            <li key={key} className="panel flex flex-col items-center gap-2 px-2 py-5 text-center sm:flex-row sm:gap-4 sm:px-5 sm:text-left">
+            <li
+              key={key}
+              className="flex flex-col items-center gap-2 panel px-2 py-5 text-center sm:flex-row sm:gap-4 sm:px-5 sm:text-left"
+            >
               <span className="grid size-11 shrink-0 place-items-center rounded-full bg-brand-soft text-accent-foreground sm:size-12 dark:text-brand">
                 <Icon className="size-5 sm:size-6" />
               </span>
               <span className="min-w-0 sm:flex-1">
-                <span className="block font-display text-2xl font-semibold text-success">+{amount}</span>
-                <span className="block text-xs text-muted-foreground sm:text-sm">{t(`points.earn.${key}`)}</span>
+                <span className="block font-display text-2xl font-semibold text-success">
+                  +{amount}
+                </span>
+                <span className="block text-xs text-muted-foreground sm:text-sm">
+                  {t(`points.earn.${key}`)}
+                </span>
               </span>
             </li>
           ))}
@@ -118,20 +149,37 @@ export default async function PointsPage() {
         {transactions.length === 0 ? (
           <EmptyState bird="pink" compact text={t("points.empty")} />
         ) : (
-          <ul className="panel flex flex-col divide-y divide-border px-2 sm:px-3">
+          <ul className="flex flex-col divide-y divide-border panel px-2 sm:px-3">
             {transactions.map((tx) => {
               const Icon = TYPE_ICON[tx.type] ?? Star;
               const gained = tx.amount > 0;
               return (
                 <li key={tx.id} className="flex items-center gap-3.5 px-2 py-3.5">
-                  <span className={cn("grid size-10 shrink-0 place-items-center rounded-full", gained ? "bg-success-soft text-success" : "bg-secondary text-muted-foreground")}>
+                  <span
+                    className={cn(
+                      "grid size-10 shrink-0 place-items-center rounded-full",
+                      gained
+                        ? "bg-success-soft text-success"
+                        : "bg-secondary text-muted-foreground",
+                    )}
+                  >
                     <Icon className="size-5" />
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{entryLabel(tx)}</p>
-                    <p className="text-xs text-muted-foreground">{format.dateTime(new Date(tx.created_at), { dateStyle: "medium", timeStyle: "short" })}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {format.dateTime(new Date(tx.created_at), {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })}
+                    </p>
                   </div>
-                  <span className={cn("shrink-0 font-display text-lg font-semibold tabular-nums", gained ? "text-success" : "text-muted-foreground")}>
+                  <span
+                    className={cn(
+                      "shrink-0 font-display text-lg font-semibold tabular-nums",
+                      gained ? "text-success" : "text-muted-foreground",
+                    )}
+                  >
                     {gained ? `+${tx.amount}` : tx.amount}
                   </span>
                 </li>

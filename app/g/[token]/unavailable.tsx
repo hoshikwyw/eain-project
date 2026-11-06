@@ -7,7 +7,12 @@ import { StatusPage } from "@/components/ui/status-page";
 export async function GiftUnavailable() {
   const t = await getTranslations("gift");
   return (
-    <StatusPage title={t("unavailableTitle")} text={t("unavailableText")} logo className="min-h-svh">
+    <StatusPage
+      title={t("unavailableTitle")}
+      text={t("unavailableText")}
+      logo
+      className="min-h-svh"
+    >
       <Button asChild variant="soft">
         <Link href="/">{t("goHome")}</Link>
       </Button>
