@@ -14,6 +14,8 @@ import { loadTemplateCards } from "@/features/gifts/template-cards";
 import { isAvailableTemplate } from "@/features/gifts/templates";
 import { getCurrentProfile, getDashboardStats } from "@/features/profile/queries";
 import { createClient } from "@/lib/supabase/server";
+import { Notice } from "@/components/ui/notice";
+import { CapsLabel } from "@/components/ui/caps-label";
 
 /** How many of each thing the home screen shows before "see all". */
 const GIFTS_SHOWN = 4;
@@ -63,9 +65,9 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
   return (
     <div className="flex flex-col gap-10 sm:gap-12">
       {notice === "passwordUpdated" && (
-        <p role="status" className="rounded-xl bg-success-soft px-3.5 py-2.5 text-sm text-success">
+        <Notice role="status" tone="success">
           {t("passwordUpdated")}
-        </p>
+        </Notice>
       )}
 
       {/* Greeting */}
@@ -73,7 +75,7 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
         <div className="flex min-w-0 flex-1 flex-col items-center gap-4 text-center sm:items-start sm:text-left">
           <h1 className="font-display text-3xl font-semibold text-balance sm:text-4xl lg:text-5xl my:text-wrap my:max-sm:text-2xl">{t("welcome", { name: profile.display_name })}</h1>
           <p className="max-w-md text-muted-foreground sm:text-lg">{t("welcomeSubtitle")}</p>
-          <Button asChild size="lg" className="rounded-full">
+          <Button asChild size="lg">
             <Link href="/create">
               <Plus />
               {t("createNewGift")}
@@ -109,7 +111,7 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
         />
         {cards.length === 0 ? (
           <EmptyState bird="pink" title={t("home.emptyTitle")} text={t("recentGiftsEmpty")}>
-            <Button asChild variant="soft" className="rounded-full">
+            <Button asChild variant="soft">
               <Link href="/create">{t("createFirstGift")}</Link>
             </Button>
           </EmptyState>
@@ -202,7 +204,7 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
             <Bird variant="blue" className="w-16" />
           </div>
           <div>
-            <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase my:tracking-normal my:normal-case">{t("home.waysToEarn")}</p>
+            <CapsLabel>{t("home.waysToEarn")}</CapsLabel>
             <ul className="mt-2 flex flex-col gap-1.5 text-sm">
               {(
                 [
@@ -218,7 +220,7 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
               ))}
             </ul>
           </div>
-          <Button asChild variant="secondary" size="sm" className="rounded-full">
+          <Button asChild variant="secondary" size="sm">
             <Link href="/dashboard/points">{t("points.history")}</Link>
           </Button>
         </section>

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { submitReport } from "@/features/reports/actions";
 import { REPORT_REASONS, type ReportState } from "@/features/reports/schemas";
+import { Notice } from "@/components/ui/notice";
 
 export function ReportForm({ token }: { token: string }) {
   const t = useTranslations("report");
@@ -15,7 +16,7 @@ export function ReportForm({ token }: { token: string }) {
 
   if (state.status === "sent") {
     return (
-      <div role="status" className="flex flex-col items-center gap-3 rounded-3xl glass border p-8 text-center shadow-soft">
+      <div role="status" className="panel flex flex-col items-center gap-3 p-8 text-center">
         <span className="grid size-14 place-items-center rounded-full bg-success-soft text-success">
           <Check className="size-7" />
         </span>
@@ -26,7 +27,7 @@ export function ReportForm({ token }: { token: string }) {
   }
 
   return (
-    <form action={formAction} className="flex flex-col gap-6 rounded-3xl glass border p-5 shadow-soft sm:p-7">
+    <form action={formAction} className="panel flex flex-col gap-6 p-5 sm:p-7">
       <fieldset className="flex flex-col gap-2">
         <legend className="mb-2 font-semibold">{t("reason")}</legend>
         {REPORT_REASONS.map((reason) => (
@@ -53,13 +54,13 @@ export function ReportForm({ token }: { token: string }) {
       </div>
 
       {state.status && (
-        <p role="alert" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
+        <Notice role="alert">
           {t(`errors.${state.status}`)}
-        </p>
+        </Notice>
       )}
 
       <div className="flex flex-col gap-3">
-        <Button type="submit" disabled={pending} className="self-start rounded-full px-6">
+        <Button type="submit" disabled={pending} className="self-start px-6">
           {pending ? t("sending") : t("send")}
         </Button>
         <p className="text-xs text-muted-foreground">{t("privacy")}</p>

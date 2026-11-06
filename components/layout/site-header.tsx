@@ -32,7 +32,7 @@ export function SiteHeader() {
           <Link href="/auth/login" className={`${navLink} hidden px-3 sm:inline`}>
             {t("login")}
           </Link>
-          <Button asChild variant="ink" size="sm" className="rounded-full px-5">
+          <Button asChild variant="ink" size="sm" className="px-5">
             <Link href="/create">{t("createGift")}</Link>
           </Button>
         </div>

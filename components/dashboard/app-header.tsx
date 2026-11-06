@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Plus, Star } from "lucide-react";
+import { Bell, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -10,6 +10,7 @@ import { LinkPending } from "@/components/ui/link-pending";
 import { cn } from "@/lib/utils";
 import { isActivePath, navItems, topNavKeys } from "./nav-items";
 import { UserMenu } from "./user-menu";
+import { PointsPill } from "./points-pill";
 
 type Props = {
   displayName: string;
@@ -62,21 +63,14 @@ export function AppHeader({ displayName, email, pointsBalance, unreadCount, isAd
         </nav>
 
         <div className="ml-auto flex items-center gap-2 md:gap-3">
-          <Button asChild size="sm" className="rounded-full px-5 max-lg:hidden">
+          <Button asChild size="sm" className="px-5 max-lg:hidden">
             <Link href="/create">
               <Plus />
               {t("createNewGift")}
             </Link>
           </Button>
 
-          <Link
-            href="/dashboard/points"
-            aria-label={`${t("nav.points")}: ${pointsBalance}`}
-            className="inline-flex h-9 items-center gap-1.5 rounded-full bg-brand-soft px-3.5 text-sm font-bold text-accent-foreground transition hover:brightness-95 max-md:hidden dark:text-brand dark:hover:brightness-110"
-          >
-            <Star className="size-4 fill-current" />
-            {pointsBalance}
-          </Link>
+          <PointsPill balance={pointsBalance} label={t("nav.points")} className="max-md:hidden" />
 
           <Link
             href="/dashboard/notifications"

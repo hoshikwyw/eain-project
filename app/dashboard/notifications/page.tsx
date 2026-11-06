@@ -6,14 +6,16 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { markAllNotificationsRead } from "@/features/notifications/actions";
 import { createClient } from "@/lib/supabase/server";
 import type { Notification } from "@/types/database";
+import { PageTitle } from "@/components/ui/page-title";
+import { CapsLabel } from "@/components/ui/caps-label";
 
 /** One group of the inbox: a small heading and its rows in a panel. */
 function Group({ title, items }: { title: string; items: Notification[] }) {
   if (items.length === 0) return null;
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="px-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase my:tracking-normal my:normal-case">{title}</h2>
-      <ul className="flex flex-col divide-y divide-border rounded-3xl glass border p-1.5 shadow-soft">
+      <CapsLabel as="h2" className="px-1">{title}</CapsLabel>
+      <ul className="panel flex flex-col divide-y divide-border p-1.5">
         {items.map((n) => (
           <li key={n.id}>
             <NotificationItem notification={n} />
@@ -46,7 +48,7 @@ export default async function NotificationsPage() {
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl font-semibold sm:text-4xl">{t("nav.notifications")}</h1>
+          <PageTitle>{t("nav.notifications")}</PageTitle>
           {items.length > 0 && (
             <p className="mt-1 text-sm text-muted-foreground">
               {unread.length > 0 ? t("notifications.unread", { count: unread.length }) : t("notifications.allRead")}
@@ -55,7 +57,7 @@ export default async function NotificationsPage() {
         </div>
         {unread.length > 0 && (
           <form action={markAllNotificationsRead}>
-            <SubmitButton variant="secondary" size="sm" className="rounded-full">
+            <SubmitButton variant="secondary" size="sm">
               <CheckCheck />
               {t("notifications.markAllRead")}
             </SubmitButton>

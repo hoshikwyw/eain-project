@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { Notice } from "@/components/ui/notice";
 
 type Props = { ok?: string; error?: string };
 
@@ -11,16 +12,16 @@ export function AdminFlash({ ok, error }: Props) {
   const errorKey = errorKeys.find((k) => k === error);
   if (okKey) {
     return (
-      <p role="status" className="rounded-xl bg-success-soft px-3.5 py-2.5 text-sm text-success">
+      <Notice role="status" tone="success">
         {t(`ok.${okKey}`)}
-      </p>
+      </Notice>
     );
   }
   if (errorKey) {
     return (
-      <p role="alert" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
+      <Notice role="alert">
         {t(`error.${errorKey}`)}
-      </p>
+      </Notice>
     );
   }
   return null;

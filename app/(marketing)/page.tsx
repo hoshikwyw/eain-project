@@ -102,13 +102,13 @@ export default async function HomePage() {
           </h1>
           <p className="mt-7 max-w-xl text-lg text-muted-foreground md:text-xl">{t("home.subtitle")}</p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <Button asChild variant="ink" size="lg" className="rounded-full px-8">
+            <Button asChild variant="ink" size="lg" className="px-8">
               <Link href="/create">
                 {t("home.primaryCta")}
                 <ArrowRight />
               </Link>
             </Button>
-            <Button asChild variant="ghost" size="lg" className="rounded-full px-6 text-muted-foreground hover:bg-transparent hover:text-foreground">
+            <Button asChild variant="ghost" size="lg" className="px-6 text-muted-foreground hover:bg-transparent hover:text-foreground">
               <Link href="/templates">{t("home.secondaryCta")}</Link>
             </Button>
           </div>
@@ -259,7 +259,7 @@ export default async function HomePage() {
         <h2 className="mt-8 font-display text-4xl font-light leading-tight tracking-[-0.02em] text-balance md:text-6xl my:leading-[1.5]">
           {t("finalCta.title")}
         </h2>
-        <Button asChild variant="ink" size="lg" className="mt-10 rounded-full px-8">
+        <Button asChild variant="ink" size="lg" className="mt-10 px-8">
           <Link href="/create">
             {t("finalCta.button")}
             <ArrowRight />

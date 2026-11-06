@@ -13,7 +13,7 @@ export default async function AccountDeletedPage() {
   const t = await getTranslations("accountDeleted");
   return (
     <StatusPage bird="blue" title={t("title")} text={t("text")} className="py-20">
-      <Button asChild variant="secondary" className="rounded-full">
+      <Button asChild variant="secondary">
         <Link href="/">{t("home")}</Link>
       </Button>
     </StatusPage>

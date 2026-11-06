@@ -9,7 +9,7 @@ export default function NotFound() {
   return (
     <main className="flex flex-1 flex-col">
       <StatusPage title={t("title")} text={t("text")} logo>
-        <Button asChild className="rounded-full">
+        <Button asChild>
           <Link href="/">{t("home")}</Link>
         </Button>
       </StatusPage>

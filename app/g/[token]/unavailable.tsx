@@ -8,7 +8,7 @@ export async function GiftUnavailable() {
   const t = await getTranslations("gift");
   return (
     <StatusPage title={t("unavailableTitle")} text={t("unavailableText")} logo className="min-h-svh">
-      <Button asChild variant="soft" className="rounded-full">
+      <Button asChild variant="soft">
         <Link href="/">{t("goHome")}</Link>
       </Button>
     </StatusPage>

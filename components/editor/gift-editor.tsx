@@ -637,12 +637,12 @@ export function GiftEditor(props: Props) {
             </span>
             {sceneKind ? (
               // The card is only a summary, so "preview" plays the animation itself.
-              <Button type="button" variant="ghost" size="sm" className="rounded-full" onClick={() => setPlaying(true)}>
+              <Button type="button" variant="ghost" size="sm" onClick={() => setPlaying(true)}>
                 <Play />
                 <span className="max-sm:sr-only">{t("playScene")}</span>
               </Button>
             ) : (
-              <Button type="button" variant="ghost" size="sm" className="rounded-full" aria-pressed={previewing} onClick={() => setPreviewing((v) => !v)}>
+              <Button type="button" variant="ghost" size="sm" aria-pressed={previewing} onClick={() => setPreviewing((v) => !v)}>
                 {previewing ? <Pencil /> : <Eye />}
                 <span className="max-sm:sr-only">{previewing ? t("backToEdit") : t("preview")}</span>
               </Button>
@@ -656,12 +656,12 @@ export function GiftEditor(props: Props) {
               }}
             >
               <input type="hidden" name="payload" value={payloadJson} />
-              <Button type="submit" variant="secondary" size="sm" className="rounded-full" disabled={saving || publishing} aria-busy={saving}>
+              <Button type="submit" variant="secondary" size="sm" disabled={saving || publishing} aria-busy={saving}>
                 {saving ? <Loader2 className="animate-spin" /> : <Save />}
                 <span className="max-sm:sr-only">{saving ? t("saving") : t("save")}</span>
               </Button>
             </form>
-            <Button type="button" size="sm" className="rounded-full px-4" onClick={publish} disabled={publishing || saving} aria-busy={publishing}>
+            <Button type="button" size="sm" className="px-4" onClick={publish} disabled={publishing || saving} aria-busy={publishing}>
               {publishing ? <Loader2 className="animate-spin" /> : <Send />}
               {publishing ? (
                 t("publishing")
@@ -826,7 +826,7 @@ export function GiftEditor(props: Props) {
             <div className="glass flex flex-col gap-2 rounded-3xl border p-5">
               <p className="text-sm text-muted-foreground">{published ? t("publishedHint") : t("publishHint")}</p>
               <p className="text-xs text-muted-foreground">{autosave ? t("draftAutosave") : t("publishSaves")}</p>
-              <Button asChild variant="secondary" size="sm" className="mt-1 self-start rounded-full">
+              <Button asChild variant="secondary" size="sm" className="mt-1 self-start">
                 <Link href={`/dashboard/gifts/${props.giftId}`}>{t("manage")}</Link>
               </Button>
             </div>

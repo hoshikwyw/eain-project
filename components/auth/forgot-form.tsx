@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { requestPasswordReset, type ForgotState } from "@/features/auth/password";
+import { Notice } from "@/components/ui/notice";
 
 export function ForgotForm({ expired }: { expired?: boolean }) {
   const t = useTranslations("auth.forgot");
@@ -31,20 +32,20 @@ export function ForgotForm({ expired }: { expired?: boolean }) {
   return (
     <form action={formAction} className="flex flex-col gap-4" noValidate>
       {expired && (
-        <p role="status" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
+        <Notice role="status">
           {t("expired")}
-        </p>
+        </Notice>
       )}
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="email">{t("email")}</Label>
         <Input id="email" name="email" type="email" autoComplete="email" inputMode="email" required />
       </div>
       {state.status && (
-        <p role="alert" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
+        <Notice role="alert">
           {t(`errors.${state.status}`)}
-        </p>
+        </Notice>
       )}
-      <SubmitButton className="w-full rounded-full" pendingLabel={t("sending")}>
+      <SubmitButton className="w-full" pendingLabel={t("sending")}>
         {t("send")}
       </SubmitButton>
       <p className="text-center text-xs text-muted-foreground">{t("sameDevice")}</p>

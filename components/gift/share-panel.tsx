@@ -62,14 +62,14 @@ export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title }: Props) {
           onFocus={(e) => e.currentTarget.select()}
           className="min-w-0 flex-1 bg-transparent font-mono text-xs outline-none"
         />
-        <Button type="button" size="sm" onClick={copy} aria-live="polite" className="rounded-full">
+        <Button type="button" size="sm" onClick={copy} aria-live="polite">
           {copied ? <Check /> : <Copy />}
           {copied ? t("copied") : t("copy")}
         </Button>
       </div>
 
       {canShare && (
-        <Button type="button" variant="secondary" onClick={share} className="w-full rounded-full">
+        <Button type="button" variant="secondary" onClick={share} className="w-full">
           <Share2 />
           {t("nativeShare")}
         </Button>
@@ -87,7 +87,7 @@ export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title }: Props) {
             <p className="text-sm font-semibold">{t("qrTitle")}</p>
             <p className="text-xs text-muted-foreground">{t("qrHint")}</p>
           </div>
-          <Button asChild variant="secondary" size="sm" className="rounded-full">
+          <Button asChild variant="secondary" size="sm">
             <a href={qrPngDataUrl} download="eain-gift-qr.png" onClick={recordShared}>
               <Download />
               {t("downloadQr")}

@@ -1,11 +1,12 @@
-import { Star } from "lucide-react";
-import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { TemplateGrid } from "@/components/templates/template-grid";
 import { createGiftFromTemplate } from "@/features/gifts/actions";
 import { loadTemplateCards } from "@/features/gifts/template-cards";
 import { isAvailableTemplate } from "@/features/gifts/templates";
 import { getCurrentProfile } from "@/features/profile/queries";
+import { Notice } from "@/components/ui/notice";
+import { PageTitle } from "@/components/ui/page-title";
+import { PointsPill } from "@/components/dashboard/points-pill";
 
 const ERRORS = ["template", "premium", "points", "unknown"] as const;
 
@@ -33,24 +34,17 @@ export default async function CreatePage({ searchParams }: PageProps<"/create">)
     <div className="flex flex-col gap-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl font-semibold sm:text-4xl">{t("title")}</h1>
+          <PageTitle>{t("title")}</PageTitle>
           <p className="mt-1 text-muted-foreground">{t("subtitle")}</p>
         </div>
         {/* Phones have no balance in the top bar, and it decides what can be unlocked here. */}
-        <Link
-          href="/dashboard/points"
-          aria-label={`${tNav("points")}: ${profile.points_balance}`}
-          className="mt-1 inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-brand-soft px-3.5 text-sm font-bold text-accent-foreground md:hidden dark:text-brand"
-        >
-          <Star className="size-4 fill-current" />
-          {profile.points_balance}
-        </Link>
+        <PointsPill balance={profile.points_balance} label={tNav("points")} className="mt-1 shrink-0 md:hidden" />
       </div>
 
       {error && (
-        <p role="alert" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
+        <Notice role="alert">
           {t(`errors.${error}`)}
-        </p>
+        </Notice>
       )}
 
       <TemplateGrid

@@ -8,6 +8,7 @@ import { getCurrentProfile } from "@/features/profile/queries";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 import type { PointTransaction, PointTransactionType } from "@/types/database";
+import { PageTitle } from "@/components/ui/page-title";
 
 /** What earns points, and how many. The amounts are set by the database rules. */
 const WAYS_TO_EARN = [
@@ -71,7 +72,7 @@ export default async function PointsPage() {
 
   return (
     <div className="flex flex-col gap-8 sm:gap-10">
-      <h1 className="font-display text-3xl font-semibold sm:text-4xl">{t("points.title")}</h1>
+      <PageTitle>{t("points.title")}</PageTitle>
 
       {/* The wallet */}
       <section className="bg-hero relative flex items-center gap-4 overflow-hidden rounded-4xl px-6 py-8 sm:gap-8 sm:px-10 sm:py-10">
@@ -82,7 +83,7 @@ export default async function PointsPage() {
             {profile.points_balance}
           </p>
           <p className="mt-2 max-w-md text-muted-foreground">{t("points.subtitle")}</p>
-          <Button asChild className="mt-4 rounded-full">
+          <Button asChild className="mt-4">
             <Link href="/create">{t("points.spend")}</Link>
           </Button>
           <p className="mt-2 text-xs text-muted-foreground">{t("points.buySoon")}</p>
@@ -98,7 +99,7 @@ export default async function PointsPage() {
         </div>
         <ul className="grid grid-cols-3 gap-2.5 sm:gap-4">
           {WAYS_TO_EARN.map(({ key, amount, icon: Icon }) => (
-            <li key={key} className="flex flex-col items-center gap-2 rounded-3xl glass border px-2 py-5 text-center shadow-soft sm:flex-row sm:gap-4 sm:px-5 sm:text-left">
+            <li key={key} className="panel flex flex-col items-center gap-2 px-2 py-5 text-center sm:flex-row sm:gap-4 sm:px-5 sm:text-left">
               <span className="grid size-11 shrink-0 place-items-center rounded-full bg-brand-soft text-accent-foreground sm:size-12 dark:text-brand">
                 <Icon className="size-5 sm:size-6" />
               </span>
@@ -117,7 +118,7 @@ export default async function PointsPage() {
         {transactions.length === 0 ? (
           <EmptyState bird="pink" compact text={t("points.empty")} />
         ) : (
-          <ul className="flex flex-col divide-y divide-border rounded-3xl glass border px-2 shadow-soft sm:px-3">
+          <ul className="panel flex flex-col divide-y divide-border px-2 sm:px-3">
             {transactions.map((tx) => {
               const Icon = TYPE_ICON[tx.type] ?? Star;
               const gained = tx.amount > 0;

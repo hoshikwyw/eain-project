@@ -100,7 +100,7 @@ export function TemplateGrid({ templates, categories, mode, pointsBalance = null
               key={template.id}
               id={`template-${template.slug}`}
               className={cn(
-                "flex scroll-mt-24 flex-col gap-3 rounded-3xl glass border p-3 shadow-soft",
+                "panel flex scroll-mt-24 flex-col gap-3 p-3",
                 template.slug === highlightSlug && "ring-2 ring-primary",
                 !template.available && !(template.isPremium && !template.unlocked) && "opacity-80",
               )}
@@ -147,12 +147,12 @@ function TemplateAction({
     return mode === "create" ? (
       <form action={createGift}>
         <input type="hidden" name="template" value={template.slug} />
-        <SubmitButton className="w-full rounded-full" pendingLabel={t("creating")}>
+        <SubmitButton className="w-full" pendingLabel={t("creating")}>
           {t("useTemplate")}
         </SubmitButton>
       </form>
     ) : (
-      <Button asChild className="w-full rounded-full">
+      <Button asChild className="w-full">
         <Link href={`/create?template=${template.slug}`}>{t("useTemplate")}</Link>
       </Button>
     );
@@ -161,7 +161,7 @@ function TemplateAction({
   if (template.isPremium && !template.unlocked) {
     if (mode === "browse" || pointsBalance === null) {
       return (
-        <Button asChild variant="secondary" className="w-full rounded-full">
+        <Button asChild variant="secondary" className="w-full">
           <Link href={`/create?template=${template.slug}`}>
             <Lock />
             {t("unlockFor", { points: template.pointPrice })}
@@ -173,7 +173,7 @@ function TemplateAction({
       return (
         <form action={unlockTemplate}>
           <input type="hidden" name="template" value={template.slug} />
-          <SubmitButton variant="soft" className="w-full rounded-full" pendingLabel={t("unlocking")}>
+          <SubmitButton variant="soft" className="w-full" pendingLabel={t("unlocking")}>
             <Lock />
             {t("unlockFor", { points: template.pointPrice })}
           </SubmitButton>
@@ -181,14 +181,14 @@ function TemplateAction({
       );
     }
     return (
-      <Button asChild variant="secondary" className="w-full rounded-full">
+      <Button asChild variant="secondary" className="w-full">
         <Link href="/dashboard/points">{t("needMorePoints", { points: template.pointPrice - pointsBalance })}</Link>
       </Button>
     );
   }
 
   return (
-    <Button variant="secondary" className="w-full rounded-full" disabled>
+    <Button variant="secondary" className="w-full" disabled>
       {t("comingSoon")}
     </Button>
   );

@@ -123,7 +123,7 @@ export function SectionsPanel(p: SectionsPanelProps) {
               type="button"
               variant="secondary"
               size="sm"
-              className="rounded-full"
+             
               onClick={() => {
                 p.onAdd(type);
                 setAdding(false);
@@ -132,12 +132,12 @@ export function SectionsPanel(p: SectionsPanelProps) {
               {t(`sectionTypes.${type}`)}
             </Button>
           ))}
-          <Button type="button" variant="ghost" size="sm" className="col-span-2 rounded-full" onClick={() => setAdding(false)}>
+          <Button type="button" variant="ghost" size="sm" className="col-span-2" onClick={() => setAdding(false)}>
             {t("cancel")}
           </Button>
         </div>
       ) : (
-        <Button type="button" variant="secondary" className="self-start rounded-full" disabled={p.sections.length >= MAX_SECTIONS} onClick={() => setAdding(true)}>
+        <Button type="button" variant="secondary" className="self-start" disabled={p.sections.length >= MAX_SECTIONS} onClick={() => setAdding(true)}>
           <Plus />
           {t("addSection")}
         </Button>
@@ -258,7 +258,7 @@ export function LookPanel({ variant, colors, templateVariant, onVariant, onColor
           type="button"
           variant="ghost"
           size="sm"
-          className="self-start rounded-full"
+          className="self-start"
           disabled={variant === templateVariant && Object.keys(colors).length === 0}
           onClick={() => onVariant(templateVariant)}
         >
@@ -270,7 +270,7 @@ export function LookPanel({ variant, colors, templateVariant, onVariant, onColor
       <div className="flex flex-col gap-2 border-t border-border pt-4">
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-sm font-semibold">{t("yourColors")}</h3>
-          <Button type="button" variant="ghost" size="sm" className="rounded-full" disabled={Object.keys(colors).length === 0} onClick={() => onColors({})}>
+          <Button type="button" variant="ghost" size="sm" disabled={Object.keys(colors).length === 0} onClick={() => onColors({})}>
             <RotateCcw />
             {t("resetColors")}
           </Button>
@@ -355,7 +355,7 @@ export function OpeningPanel({ opening, onChange, onPlay }: { opening: Opening; 
     <div role="radiogroup" aria-label={t("opening")} className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs text-muted-foreground">{t("openingHint")}</p>
-        <Button type="button" variant="soft" size="sm" className="rounded-full" onClick={onPlay}>
+        <Button type="button" variant="soft" size="sm" onClick={onPlay}>
           <Play />
           {t("playOpening")}
         </Button>

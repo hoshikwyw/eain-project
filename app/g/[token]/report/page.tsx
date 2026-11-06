@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/brand/logo";
 import { ReportForm } from "@/components/gift/report-form";
+import { PageTitle } from "@/components/ui/page-title";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("report");
@@ -30,7 +31,7 @@ export default async function ReportGiftPage({ params }: PageProps<"/g/[token]/r
         </Link>
       </div>
       <div>
-        <h1 className="font-display text-3xl font-semibold sm:text-4xl">{t("title")}</h1>
+        <PageTitle>{t("title")}</PageTitle>
         <p className="mt-1 text-muted-foreground">{t("subtitle")}</p>
       </div>
       <ReportForm token={token} />

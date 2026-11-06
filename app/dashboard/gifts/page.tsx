@@ -10,6 +10,8 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { deleteGift } from "@/features/gifts/actions";
 import { listMyGiftCards } from "@/features/gifts/queries";
 import { getCurrentProfile } from "@/features/profile/queries";
+import { Notice } from "@/components/ui/notice";
+import { PageTitle } from "@/components/ui/page-title";
 
 /** The free limit, enforced by the database. Shown here so the count makes sense. */
 const GIFT_LIMIT = 5;
@@ -33,7 +35,7 @@ export default async function GiftsPage({ searchParams }: PageProps<"/dashboard/
         senderName={profile.display_name}
         actions={
           <div className="flex items-center gap-1.5">
-            <Button asChild variant="secondary" size="sm" className="min-w-0 flex-1 rounded-full">
+            <Button asChild variant="secondary" size="sm" className="min-w-0 flex-1">
               <Link href={`/create/${card.gift.id}`}>
                 <Pencil />
                 {t("gifts.edit")}
@@ -43,7 +45,7 @@ export default async function GiftsPage({ searchParams }: PageProps<"/dashboard/
               <ConfirmButton
                 variant="ghost"
                 size="sm"
-                className="rounded-full px-2.5 text-destructive"
+                className="px-2.5 text-destructive"
                 aria-label={t("gifts.delete")}
                 title={t("gifts.delete")}
                 confirmText={t("gifts.deleteConfirm")}
@@ -79,29 +81,29 @@ export default async function GiftsPage({ searchParams }: PageProps<"/dashboard/
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="font-display text-3xl font-semibold sm:text-4xl">{t("nav.gifts")}</h1>
+        <PageTitle>{t("nav.gifts")}</PageTitle>
         <p className="mt-1 text-sm text-muted-foreground">{t("gifts.count", { count: cards.length, max: GIFT_LIMIT })}</p>
       </div>
 
       {params.error === "limit" && (
-        <p role="alert" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
+        <Notice role="alert">
           {t("gifts.limitReached")}
-        </p>
+        </Notice>
       )}
       {params.error === "delete" && (
-        <p role="alert" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
+        <Notice role="alert">
           {t("gifts.deleteFailed")}
-        </p>
+        </Notice>
       )}
       {params.deleted === "1" && (
-        <p role="status" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
+        <Notice role="status">
           {t("gifts.deleted")}
-        </p>
+        </Notice>
       )}
 
       {cards.length === 0 ? (
         <EmptyState bird="pair" title={t("home.emptyTitle")} text={t("recentGiftsEmpty")}>
-          <Button asChild className="rounded-full">
+          <Button asChild>
             <Link href="/create">
               <Plus />
               {t("createFirstGift")}

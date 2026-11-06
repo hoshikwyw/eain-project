@@ -370,6 +370,11 @@
   background-image: linear-gradient(to bottom, var(--glass-sheen), transparent 3.5rem);
 }
 
+/* The standard card: a rounded pane of glass with the soft shadow. */
+@utility panel {
+  @apply glass rounded-3xl border shadow-soft;
+}
+
 @utility glass-bar {
   border-color: var(--glass-border);
   background-color: var(--glass-bar);

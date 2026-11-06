@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { listPayments, requireAdmin } from "@/features/admin/queries";
+import { Notice } from "@/components/ui/notice";
 
 export default async function AdminPaymentsPage() {
   await requireAdmin();
@@ -13,7 +14,7 @@ export default async function AdminPaymentsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader title={t("nav.payments")} subtitle={t("payments.subtitle")} />
-      <p className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">{t("payments.off")}</p>
+      <Notice>{t("payments.off")}</Notice>
       <Card>
         <CardContent className="p-0">
           <ul className="divide-y divide-border">

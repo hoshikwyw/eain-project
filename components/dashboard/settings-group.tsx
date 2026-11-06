@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { CapsLabel } from "@/components/ui/caps-label";
 
 type Props = { title: string; children: React.ReactNode; className?: string };
 
@@ -9,8 +10,8 @@ type Props = { title: string; children: React.ReactNode; className?: string };
 export function SettingsGroup({ title, children, className }: Props) {
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="px-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase my:tracking-normal my:normal-case">{title}</h2>
-      <div className={cn("rounded-3xl glass border shadow-soft", className)}>{children}</div>
+      <CapsLabel as="h2" className="px-1">{title}</CapsLabel>
+      <div className={cn("panel", className)}>{children}</div>
     </section>
   );
 }

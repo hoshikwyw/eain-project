@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { GiftOpening, openingDuration } from "./gift-opening";
 import { giftPalette } from "./palettes";
 import { ResponseForm } from "./response-form";
+import { PageTitle } from "@/components/ui/page-title";
 
 type Stage = "closed" | "opening" | "open";
 
@@ -107,13 +108,13 @@ export function GiftReveal({ token, questions, opening, variant, colors, recipie
         </button>
         <div className={cn("flex flex-col items-center gap-3 transition-opacity duration-500", stage === "opening" && "opacity-0")}>
           <p className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">{t("someone")}</p>
-          <h1 className="font-display text-3xl font-semibold text-balance sm:text-4xl">{t("specialForYou")}</h1>
+          <PageTitle className="text-balance">{t("specialForYou")}</PageTitle>
         </div>
         <Button
           size="lg"
           onClick={open}
           disabled={stage === "opening"}
-          className={cn("min-w-52 rounded-full transition-opacity duration-500", stage === "opening" && "opacity-0")}
+          className={cn("min-w-52 transition-opacity duration-500", stage === "opening" && "opacity-0")}
         >
           <Gift />
           {t("openYourGift")}
@@ -141,7 +142,7 @@ export function GiftReveal({ token, questions, opening, variant, colors, recipie
           <Link href="/" className="inline-flex rounded-lg" aria-label="Eain">
             <Logo />
           </Link>
-          <Button asChild className="mt-1 rounded-full">
+          <Button asChild className="mt-1">
             <Link href="/create">
               <Gift />
               {t("makeYourOwn")}

@@ -17,10 +17,10 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
   return (
     <main className="flex flex-1 flex-col">
       <StatusPage bird="pink" title={t("title")} text={t("text")} note={error.digest ? t("reference", { id: error.digest }) : undefined}>
-        <Button onClick={reset} className="rounded-full">
+        <Button onClick={reset}>
           {t("retry")}
         </Button>
-        <Button asChild variant="secondary" className="rounded-full">
+        <Button asChild variant="secondary">
           <Link href="/">{t("home")}</Link>
         </Button>
       </StatusPage>

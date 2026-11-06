@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { updatePassword, type ResetState } from "@/features/auth/password";
+import { Notice } from "@/components/ui/notice";
 
 export function ResetForm() {
   const t = useTranslations("auth.reset");
@@ -24,7 +25,7 @@ export function ResetForm() {
         <Input id="confirm" name="confirm" type="password" autoComplete="new-password" minLength={8} maxLength={72} required />
       </div>
       {state.status && (
-        <p role="alert" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
+        <Notice role="alert">
           {t(`errors.${state.status}`)}
           {state.status === "expired" && (
             <>
@@ -34,9 +35,9 @@ export function ResetForm() {
               </Link>
             </>
           )}
-        </p>
+        </Notice>
       )}
-      <SubmitButton className="w-full rounded-full" pendingLabel={t("saving")}>
+      <SubmitButton className="w-full" pendingLabel={t("saving")}>
         {t("save")}
       </SubmitButton>
     </form>

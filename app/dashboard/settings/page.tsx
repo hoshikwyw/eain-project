@@ -1,5 +1,4 @@
-import { ChevronDown, LogOut, Star, Trash2 } from "lucide-react";
-import Link from "next/link";
+import { ChevronDown, LogOut, Trash2 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { DeleteAccountForm } from "@/components/dashboard/delete-account-form";
 import { ProfileForm } from "@/components/dashboard/profile-form";
@@ -8,6 +7,9 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { signOut } from "@/features/auth/actions";
 import { getCurrentProfile } from "@/features/profile/queries";
 import { createClient } from "@/lib/supabase/server";
+import { PageTitle } from "@/components/ui/page-title";
+import { initialOf } from "@/lib/utils";
+import { PointsPill } from "@/components/dashboard/points-pill";
 
 /** An action in the account group: icon and label, full width, left aligned. */
 const ACTION = "h-12 w-full justify-start gap-3 rounded-2xl px-3";
@@ -30,7 +32,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
-      <h1 className="font-display text-3xl font-semibold sm:text-4xl">{t("title")}</h1>
+      <PageTitle>{t("title")}</PageTitle>
 
       {/* Who is signed in */}
       <section className="bg-hero flex items-center gap-4 rounded-4xl px-5 py-6 sm:gap-6 sm:px-8 sm:py-7">
@@ -38,19 +40,12 @@ export default async function SettingsPage() {
           aria-hidden="true"
           className="grid size-16 shrink-0 place-items-center rounded-full bg-background/70 font-display text-3xl font-semibold ring-4 ring-background/40 sm:size-20 sm:text-4xl"
         >
-          {profile.display_name.trim().charAt(0).toUpperCase() || "E"}
+          {initialOf(profile.display_name)}
         </span>
         <div className="flex min-w-0 flex-1 flex-col items-start">
           <p className="max-w-full truncate font-display text-2xl font-semibold">{profile.display_name}</p>
           <p className="max-w-full truncate text-sm text-muted-foreground">{email}</p>
-          <Link
-            href="/dashboard/points"
-            aria-label={`${tNav("points")}: ${profile.points_balance}`}
-            className="mt-2.5 inline-flex h-8 items-center gap-1.5 rounded-full bg-background/70 px-3 text-sm font-bold transition hover:bg-background"
-          >
-            <Star className="size-4 fill-current text-brand" />
-            {profile.points_balance}
-          </Link>
+          <PointsPill balance={profile.points_balance} label={tNav("points")} tone="plain" className="mt-2.5" />
         </div>
       </section>
 

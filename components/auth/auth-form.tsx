@@ -8,6 +8,7 @@ import type { AuthFormState } from "@/features/auth/schemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Notice } from "@/components/ui/notice";
 
 type Props = {
   mode: "login" | "signup";
@@ -43,7 +44,7 @@ export function AuthForm({ mode, next, notice, configured, googleEnabled, allowS
         <>
           <form action={signInWithGoogle}>
             <input type="hidden" name="next" value={next} />
-            <Button type="submit" variant="secondary" className="w-full rounded-full" disabled={!configured}>
+            <Button type="submit" variant="secondary" className="w-full" disabled={!configured}>
               <GoogleMark />
               {t("continueWithGoogle")}
             </Button>
@@ -109,16 +110,16 @@ export function AuthForm({ mode, next, notice, configured, googleEnabled, allowS
         </div>
 
         {errorKey ? (
-          <p role="alert" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
+          <Notice role="alert">
             {t(`errors.${errorKey}`)}
-          </p>
+          </Notice>
         ) : noticeKey ? (
-          <p role="status" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
+          <Notice role="status">
             {t(`notices.${noticeKey}`)}
-          </p>
+          </Notice>
         ) : null}
 
-        <Button type="submit" className="w-full rounded-full" disabled={pending || !configured}>
+        <Button type="submit" className="w-full" disabled={pending || !configured}>
           {mode === "login" ? t("logIn") : t("createAccount")}
         </Button>
       </form>

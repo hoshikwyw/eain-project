@@ -15,6 +15,7 @@ import { adjustPoints, setUserRole } from "@/features/admin/actions";
 import { requireAdmin } from "@/features/admin/queries";
 import { deleteUserAccount, suspendUser, takeUserGiftsOffline, unsuspendUser } from "@/features/admin/user-actions";
 import { getUserAdmin } from "@/features/admin/users";
+import { Notice } from "@/components/ui/notice";
 
 const selectClass = "h-11 rounded-xl border border-input bg-card px-3.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/40";
 
@@ -155,7 +156,7 @@ export default async function AdminUserDetailPage({ params, searchParams }: Page
         </div>
 
         <div className="flex flex-col gap-6">
-          {isSelf && <p className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">{t("users.detail.selfNote")}</p>}
+          {isSelf && <Notice>{t("users.detail.selfNote")}</Notice>}
 
           <Card>
             <CardHeader>

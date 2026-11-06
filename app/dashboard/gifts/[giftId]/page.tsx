@@ -15,11 +15,14 @@ import { makeQr } from "@/lib/qr";
 import { getSiteOrigin, giftShareUrl } from "@/lib/site-url";
 import { cn } from "@/lib/utils";
 import type { GiftEventType } from "@/types/database";
+import { Notice } from "@/components/ui/notice";
+import { PageTitle } from "@/components/ui/page-title";
+import { CapsLabel } from "@/components/ui/caps-label";
 
 const TIMELINE = ["created", "published", "shared", "opened", "viewed", "responded"] as const satisfies readonly GiftEventType[];
 
 /** A white panel in the side column. */
-const PANEL = "rounded-3xl glass border p-5 shadow-soft sm:p-6";
+const PANEL = "panel p-5 sm:p-6";
 /** One action in the manage list: icon and label, full width, left aligned. */
 const ROW = "h-12 w-full justify-start gap-3 rounded-2xl px-3";
 
@@ -61,13 +64,13 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
         </Link>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
-            <h1 className="font-display text-3xl font-semibold break-words sm:text-4xl">{gift.title}</h1>
+            <PageTitle className="break-words">{gift.title}</PageTitle>
             <p className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
               <GiftStatusChip status={gift.status} opened={opened} />
               {recipient?.name ? t("for", { name: recipient.name }) : t("noRecipient")}
             </p>
           </div>
-          <Button asChild variant="secondary" className="rounded-full">
+          <Button asChild variant="secondary">
             <Link href={`/create/${gift.id}`}>
               <Pencil />
               {t("edit")}
@@ -77,19 +80,19 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
       </div>
 
       {query.published === "1" && (
-        <p role="status" className="rounded-xl bg-success-soft px-3.5 py-2.5 text-sm text-success">
+        <Notice role="status" tone="success">
           {t("justPublished")}
-        </p>
+        </Notice>
       )}
       {query.regenerated === "1" && (
-        <p role="status" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
+        <Notice role="status">
           {t("linkRegenerated")}
-        </p>
+        </Notice>
       )}
       {query.error === "duplicate" && (
-        <p role="alert" className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">
+        <Notice role="alert">
           {t("duplicateFailed")}
-        </p>
+        </Notice>
       )}
 
       {/* One column on phones and tablets; from laptop width the gift sits on the left and the rest in a side column. */}
@@ -104,7 +107,7 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
             <SharePanel giftId={gift.id} url={shareUrl} qrSvg={qr.svg} qrPngDataUrl={qr.pngDataUrl} title={gift.title} />
           ) : (
             <form action={publishGift.bind(null, gift.id)}>
-              <SubmitButton className="w-full rounded-full">
+              <SubmitButton className="w-full">
                 <Send />
                 {t("publishNow")}
               </SubmitButton>
@@ -114,9 +117,9 @@ export default async function GiftDetailPage({ params, searchParams }: PageProps
 
         {/* The gift itself, as the person it is for will see it */}
         <section aria-labelledby="gift-preview" className="glass rounded-[2rem] border p-3 sm:p-8 lg:col-start-1 lg:row-span-2 lg:row-start-1">
-          <h2 id="gift-preview" className="pt-1 pb-3 text-center text-xs font-semibold tracking-wide text-muted-foreground uppercase sm:pt-0 sm:pb-5 my:tracking-normal my:normal-case">
+          <CapsLabel as="h2" id="gift-preview" className="pt-1 pb-3 text-center sm:pt-0 sm:pb-5">
             {t("preview")}
-          </h2>
+          </CapsLabel>
           <GiftView
             sections={data.sections}
             media={data.media}

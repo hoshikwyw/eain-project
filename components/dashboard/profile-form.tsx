@@ -79,7 +79,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
       </SettingsGroup>
 
       <div className="flex items-center gap-3">
-        <Button type="submit" disabled={pending} className="rounded-full">
+        <Button type="submit" disabled={pending}>
           {t("save")}
         </Button>
         <span role="status" className="text-sm">

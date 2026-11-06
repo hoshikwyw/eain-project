@@ -9,7 +9,7 @@ import { ThemeToggle } from "@/components/settings/theme-toggle";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { signOut } from "@/features/auth/actions";
 import { adminHref } from "@/lib/app-mode";
-import { cn } from "@/lib/utils";
+import { cn, initialOf } from "@/lib/utils";
 
 type Props = { displayName: string; email: string; isAdmin?: boolean };
 
@@ -44,7 +44,7 @@ export function UserMenu({ displayName, email, isAdmin }: Props) {
     };
   }, [open]);
 
-  const initial = displayName.trim().charAt(0).toUpperCase() || "E";
+  const initial = initialOf(displayName);
   const avatar = (className: string) => (
     <span aria-hidden="true" className={cn("grid shrink-0 place-items-center rounded-full bg-brand-soft font-bold text-accent-foreground dark:text-brand", className)}>
       {initial}

@@ -2,6 +2,7 @@ import { Check } from "lucide-react";
 import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import type { LegalDoc } from "@/content/legal";
+import { Notice } from "@/components/ui/notice";
 
 const related = [
   { key: "privacy", href: "/privacy" },
@@ -23,7 +24,7 @@ export async function LegalPage({ doc, current }: { doc: LegalDoc; current: (typ
         <p className="text-xs text-muted-foreground">
           {t("updated", { date: format.dateTime(new Date(doc.updated), { dateStyle: "long" }) })}
         </p>
-        <p className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">{t("draftNotice")}</p>
+        <Notice>{t("draftNotice")}</Notice>
       </header>
 
       <section className="rounded-2xl glass border p-6 shadow-soft">
