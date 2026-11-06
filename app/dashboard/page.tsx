@@ -7,6 +7,7 @@ import { StartTemplateButton } from "@/components/dashboard/start-template";
 import { GiftTile } from "@/components/gift/gift-tile";
 import { TemplatePreview } from "@/components/templates/template-preview";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { createGift } from "@/features/gifts/actions";
 import { listMyGiftCards } from "@/features/gifts/queries";
 import { loadTemplateCards } from "@/features/gifts/template-cards";
@@ -70,7 +71,7 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
       {/* Greeting */}
       <section className="bg-hero relative flex flex-col-reverse items-center gap-2 overflow-hidden rounded-[2rem] px-6 py-8 sm:flex-row sm:gap-8 sm:px-10 sm:py-10">
         <div className="flex min-w-0 flex-1 flex-col items-center gap-4 text-center sm:items-start sm:text-left">
-          <h1 className="font-display text-3xl font-semibold text-balance sm:text-4xl lg:text-5xl">{t("welcome", { name: profile.display_name })}</h1>
+          <h1 className="font-display text-3xl font-semibold text-balance sm:text-4xl lg:text-5xl my:text-wrap my:max-sm:text-2xl">{t("welcome", { name: profile.display_name })}</h1>
           <p className="max-w-md text-muted-foreground sm:text-lg">{t("welcomeSubtitle")}</p>
           <Button asChild size="lg" className="rounded-full">
             <Link href="/create">
@@ -107,16 +108,11 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
           linkLabel={t("viewAll")}
         />
         {cards.length === 0 ? (
-          <div className="flex flex-col items-center gap-4 rounded-3xl border border-dashed border-border px-6 py-10 text-center">
-            <Bird variant="pink" className="w-20" />
-            <div>
-              <p className="font-display text-lg font-semibold">{t("home.emptyTitle")}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{t("recentGiftsEmpty")}</p>
-            </div>
+          <EmptyState bird="pink" title={t("home.emptyTitle")} text={t("recentGiftsEmpty")}>
             <Button asChild variant="soft" className="rounded-full">
               <Link href="/create">{t("createFirstGift")}</Link>
             </Button>
-          </div>
+          </EmptyState>
         ) : (
           <ul className="grid grid-cols-2 gap-x-3 gap-y-5 sm:gap-x-4 md:grid-cols-4">
             {cards.map((card) => (
@@ -181,7 +177,7 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
             linkLabel={t("viewAll")}
           />
           {activity.length === 0 ? (
-            <p className="rounded-3xl bg-secondary/60 px-5 py-6 text-sm text-muted-foreground">{t("home.latelyEmpty")}</p>
+            <EmptyState bird="blue" compact text={t("home.latelyEmpty")} />
           ) : (
             <ul className="flex flex-col gap-1">
               {activity.map((n) => (

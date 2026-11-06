@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Bird } from "@/components/brand/lovebirds";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { getCurrentProfile } from "@/features/profile/queries";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
@@ -88,10 +89,7 @@ export default async function PointsPage() {
       <section className="flex flex-col gap-4">
         <h2 className="font-display text-xl font-semibold sm:text-2xl">{t("points.history")}</h2>
         {transactions.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed border-border px-6 py-10 text-center">
-            <Bird variant="pink" className="w-16" />
-            <p className="text-sm text-muted-foreground">{t("points.empty")}</p>
-          </div>
+          <EmptyState bird="pink" compact text={t("points.empty")} />
         ) : (
           <ul className="flex flex-col divide-y divide-border rounded-3xl border border-border bg-card px-2 shadow-soft sm:px-3">
             {transactions.map((tx) => {

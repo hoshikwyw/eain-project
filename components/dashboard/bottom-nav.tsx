@@ -28,7 +28,7 @@ export function BottomNav({ unreadCount }: { unreadCount: number }) {
         )}
       >
         <Icon className="size-5" />
-        <span>{t(key)}</span>
+        <span className="whitespace-nowrap">{t(key === "gifts" ? "giftsShort" : key)}</span>
         <LinkPending className="absolute top-1 right-2 size-3" />
         {key === "notifications" && unreadCount > 0 && (
           <span className="absolute top-1.5 right-[calc(50%-14px)] size-2 rounded-full bg-brand" />

@@ -1,7 +1,7 @@
 import { CheckCheck } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { Bird } from "@/components/brand/lovebirds";
 import { NotificationItem } from "@/components/dashboard/notification-item";
+import { EmptyState } from "@/components/ui/empty-state";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { markAllNotificationsRead } from "@/features/notifications/actions";
 import { createClient } from "@/lib/supabase/server";
@@ -64,10 +64,7 @@ export default async function NotificationsPage() {
       </div>
 
       {items.length === 0 ? (
-        <div className="flex flex-col items-center gap-4 rounded-3xl border border-dashed border-border px-6 py-12 text-center">
-          <Bird variant="blue" className="w-20" />
-          <p className="max-w-xs text-sm text-muted-foreground">{t("notificationsEmpty")}</p>
-        </div>
+        <EmptyState bird="blue" text={t("notificationsEmpty")} />
       ) : (
         <>
           <Group title={t("notifications.new")} items={unread} />

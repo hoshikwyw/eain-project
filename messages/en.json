@@ -894,6 +894,7 @@
       }
     },
     "nav": {
+      "giftsShort": "My Gifts",
       "dashboard": "Home",
       "main": "Main menu",
       "account": "Account menu",

@@ -50,13 +50,13 @@ export function ListSkeleton({ rows = 4 }: { rows?: number }) {
 /** Template card grid. */
 export function CardGridSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-busy="true">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3" aria-busy="true">
       {Array.from({ length: count }, (_, i) => (
-        <div key={i} className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5">
+        <div key={i} className="flex flex-col gap-3 rounded-3xl border border-border bg-card p-3">
           <Skeleton className="aspect-[4/3]" />
-          <Skeleton className="h-5 w-2/3" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-11 w-full" />
+          <Skeleton className="mx-1.5 h-5 w-2/3" />
+          <Skeleton className="mx-1.5 h-4 w-11/12" />
+          <Skeleton className="h-11 w-full rounded-full" />
         </div>
       ))}
     </div>

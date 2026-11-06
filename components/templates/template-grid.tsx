@@ -5,13 +5,14 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { createGift } from "@/features/gifts/actions";
 import type { ThemeVariant } from "@/features/gifts/schemas";
 import { unlockTemplate } from "@/features/points/actions";
+import { cn } from "@/lib/utils";
 import { TemplatePreview } from "./template-preview";
 
 export type TemplateCard = {
@@ -67,17 +68,18 @@ export function TemplateGrid({ templates, categories, mode, pointsBalance = null
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-3">
         <div className="relative">
-          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="pointer-events-none absolute top-1/2 left-4.5 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t("searchPlaceholder")}
             aria-label={t("searchPlaceholder")}
-            className="pl-10"
+            className="h-12 rounded-full pr-5 pl-11"
           />
         </div>
-        <div className="flex flex-wrap gap-2">
+        {/* One row that scrolls sideways on phones; wraps where there is room. */}
+        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:flex-wrap">
           <FilterChip active={category === null} onClick={() => setCategory(null)}>
             {t("allCategories")}
           </FilterChip>
@@ -90,41 +92,39 @@ export function TemplateGrid({ templates, categories, mode, pointsBalance = null
       </div>
 
       {visible.length === 0 ? (
-        <p className="py-10 text-center text-sm text-muted-foreground">{t("noResults")}</p>
+        <EmptyState bird="pink" text={t("noResults")} />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
           {visible.map((template) => (
-            <Card
+            <article
               key={template.id}
               id={`template-${template.slug}`}
-              className={
-                template.slug === highlightSlug
-                  ? "ring-2 ring-primary"
-                  : template.available || (template.isPremium && !template.unlocked)
-                    ? ""
-                    : "opacity-80"
-              }
+              className={cn(
+                "flex scroll-mt-24 flex-col gap-3 rounded-3xl border border-border bg-card p-3 shadow-soft",
+                template.slug === highlightSlug && "ring-2 ring-primary",
+                !template.available && !(template.isPremium && !template.unlocked) && "opacity-80",
+              )}
             >
-              <CardContent className="flex h-full flex-col gap-4 p-5">
-                <TemplatePreview slug={template.slug} variant={template.variant} locale={locale} name={template.name} />
-                <div className="flex flex-1 flex-col gap-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="font-semibold">{template.name}</h2>
-                    <Chip tone="neutral">{template.category}</Chip>
-                    {template.isPremium ? (
-                      <Chip tone="brand">
-                        <Lock className="size-3" />
-                        {template.pointPrice}
-                      </Chip>
-                    ) : (
-                      <Chip tone="success">{t("free")}</Chip>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground">{template.description}</p>
+              <TemplatePreview slug={template.slug} variant={template.variant} locale={locale} name={template.name} />
+              <div className="flex flex-1 flex-col gap-1 px-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <h2 className="truncate font-semibold">{template.name}</h2>
+                  {template.isPremium ? (
+                    <Chip tone="brand" className="shrink-0">
+                      <Lock className="size-3" />
+                      {template.pointPrice}
+                    </Chip>
+                  ) : (
+                    <Chip tone="success" className="shrink-0">
+                      {t("free")}
+                    </Chip>
+                  )}
                 </div>
-                <TemplateAction template={template} mode={mode} pointsBalance={pointsBalance} />
-              </CardContent>
-            </Card>
+                <p className="text-xs font-semibold text-muted-foreground">{template.category}</p>
+                <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{template.description}</p>
+              </div>
+              <TemplateAction template={template} mode={mode} pointsBalance={pointsBalance} />
+            </article>
           ))}
         </div>
       )}
@@ -147,12 +147,12 @@ function TemplateAction({
     return mode === "create" ? (
       <form action={createGift}>
         <input type="hidden" name="template" value={template.slug} />
-        <SubmitButton className="w-full" pendingLabel={t("creating")}>
+        <SubmitButton className="w-full rounded-full" pendingLabel={t("creating")}>
           {t("useTemplate")}
         </SubmitButton>
       </form>
     ) : (
-      <Button asChild className="w-full">
+      <Button asChild className="w-full rounded-full">
         <Link href={`/create?template=${template.slug}`}>{t("useTemplate")}</Link>
       </Button>
     );
@@ -161,7 +161,7 @@ function TemplateAction({
   if (template.isPremium && !template.unlocked) {
     if (mode === "browse" || pointsBalance === null) {
       return (
-        <Button asChild variant="secondary" className="w-full">
+        <Button asChild variant="secondary" className="w-full rounded-full">
           <Link href={`/create?template=${template.slug}`}>
             <Lock />
             {t("unlockFor", { points: template.pointPrice })}
@@ -173,7 +173,7 @@ function TemplateAction({
       return (
         <form action={unlockTemplate}>
           <input type="hidden" name="template" value={template.slug} />
-          <SubmitButton variant="soft" className="w-full" pendingLabel={t("unlocking")}>
+          <SubmitButton variant="soft" className="w-full rounded-full" pendingLabel={t("unlocking")}>
             <Lock />
             {t("unlockFor", { points: template.pointPrice })}
           </SubmitButton>
@@ -181,14 +181,14 @@ function TemplateAction({
       );
     }
     return (
-      <Button asChild variant="secondary" className="w-full">
+      <Button asChild variant="secondary" className="w-full rounded-full">
         <Link href="/dashboard/points">{t("needMorePoints", { points: template.pointPrice - pointsBalance })}</Link>
       </Button>
     );
   }
 
   return (
-    <Button variant="secondary" className="w-full" disabled>
+    <Button variant="secondary" className="w-full rounded-full" disabled>
       {t("comingSoon")}
     </Button>
   );
@@ -200,11 +200,10 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={
-        active
-          ? "rounded-full bg-primary px-3.5 py-1.5 text-sm font-semibold text-primary-foreground"
-          : "rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground"
-      }
+      className={cn(
+        "h-9 shrink-0 cursor-pointer rounded-full px-4 text-sm font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+        active ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground",
+      )}
     >
       {children}
     </button>

@@ -1,12 +1,12 @@
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { Lovebirds } from "@/components/brand/lovebirds";
 import { ConfirmButton } from "@/components/gift/confirm-button";
 import { galleryGroups, isGalleryFilter } from "@/components/gift/gallery-filters";
 import { GiftGallery } from "@/components/gift/gift-gallery";
 import { GiftTile } from "@/components/gift/gift-tile";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { deleteGift } from "@/features/gifts/actions";
 import { listMyGiftCards } from "@/features/gifts/queries";
 import { getCurrentProfile } from "@/features/profile/queries";
@@ -100,21 +100,14 @@ export default async function GiftsPage({ searchParams }: PageProps<"/dashboard/
       )}
 
       {cards.length === 0 ? (
-        <div className="flex flex-col items-center gap-4 rounded-3xl border border-dashed border-border px-6 py-12 text-center">
-          <div className="w-full max-w-52">
-            <Lovebirds />
-          </div>
-          <div>
-            <p className="font-display text-lg font-semibold">{t("home.emptyTitle")}</p>
-            <p className="mt-1 text-sm text-muted-foreground">{t("recentGiftsEmpty")}</p>
-          </div>
+        <EmptyState bird="pair" title={t("home.emptyTitle")} text={t("recentGiftsEmpty")}>
           <Button asChild className="rounded-full">
             <Link href="/create">
               <Plus />
               {t("createFirstGift")}
             </Link>
           </Button>
-        </div>
+        </EmptyState>
       ) : (
         <GiftGallery items={items} initial={isGalleryFilter(params.filter) ? params.filter : "all"} tail={tail} />
       )}

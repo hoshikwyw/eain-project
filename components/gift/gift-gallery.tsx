@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 import { GALLERY_FILTERS, type GalleryFilter } from "./gallery-filters";
 
@@ -42,7 +43,7 @@ export function GiftGallery({ items, initial, tail }: Props) {
     <div className="flex flex-col gap-5">
       {/* Scrolls sideways if the tabs ever outgrow a narrow phone. */}
       <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none]">
-        <div role="group" aria-label={t("label")} className="inline-flex gap-1 rounded-full bg-secondary p-1">
+        <div role="group" aria-label={t("label")} className="flex gap-1 rounded-full bg-secondary p-1 sm:inline-flex">
           {GALLERY_FILTERS.map((key) => {
             const active = key === filter;
             return (
@@ -52,7 +53,7 @@ export function GiftGallery({ items, initial, tail }: Props) {
                 aria-pressed={active}
                 onClick={() => choose(key)}
                 className={cn(
-                  "inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-full px-3.5 text-sm font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+                  "inline-flex h-9 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full px-2 text-sm sm:flex-none sm:px-3.5 font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
                   active ? "bg-card text-foreground shadow-soft" : "text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -65,9 +66,9 @@ export function GiftGallery({ items, initial, tail }: Props) {
       </div>
 
       {shown.length === 0 && filter !== "all" ? (
-        <p role="status" className="rounded-3xl border border-dashed border-border px-6 py-10 text-center text-sm text-muted-foreground">
-          {t(`empty.${filter}`)}
-        </p>
+        <div role="status">
+          <EmptyState bird={filter === "drafts" ? "pink" : "blue"} compact text={t(`empty.${filter}`)} />
+        </div>
       ) : (
         <ul className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-x-4 lg:grid-cols-4">
           {shown.map((item) => (
