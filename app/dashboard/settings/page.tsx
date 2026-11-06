@@ -6,7 +6,7 @@ import { SettingsGroup } from "@/components/dashboard/settings-group";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { signOut } from "@/features/auth/actions";
 import { getCurrentProfile } from "@/features/profile/queries";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { PageTitle } from "@/components/ui/page-title";
 import { initialOf } from "@/lib/utils";
 import { PointsPill } from "@/components/dashboard/points-pill";
@@ -23,10 +23,7 @@ export default async function SettingsPage() {
   const t = await getTranslations("dashboard.settings");
   const tNav = await getTranslations("dashboard.nav");
   const profile = await getCurrentProfile();
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   const email = user?.email ?? "";
   const isAdmin = profile.role === "admin";
 

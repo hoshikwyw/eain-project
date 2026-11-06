@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createClientWithUser } from "@/lib/supabase/server";
 import type { Profile } from "@/types/database";
 
 /**
@@ -8,10 +8,7 @@ import type { Profile } from "@/types/database";
  * Redirects to login when signed out; proxy.ts normally catches that first.
  */
 export const getCurrentProfile = cache(async (): Promise<Profile> => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await createClientWithUser();
   if (!user) redirect("/auth/login");
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();

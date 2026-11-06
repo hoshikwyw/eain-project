@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { MEDIA_BUCKET } from "@/features/gifts/media";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createClientWithUser } from "@/lib/supabase/server";
 
 export type DeleteAccountState = { status?: "mismatch" | "admin" | "error" };
 
@@ -15,10 +15,7 @@ export type DeleteAccountState = { status?: "mismatch" | "admin" | "error" };
  * its last administrator by accident.
  */
 export async function deleteMyAccount(_prev: DeleteAccountState, formData: FormData): Promise<DeleteAccountState> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await createClientWithUser();
   if (!user) redirect("/auth/login");
 
   const typed = String(formData.get("confirmEmail") ?? "").trim().toLowerCase();

@@ -7,7 +7,7 @@ import { adminSiteUrl, appMode } from "@/lib/app-mode";
 import { isSupabaseConfigured } from "@/lib/env";
 import { checkRateLimit, clientKeyFromHeaders } from "@/lib/rate-limit";
 import { getSiteOrigin } from "@/lib/site-url";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createClientWithUser } from "@/lib/supabase/server";
 import { emailSchema, passwordSchema } from "./schemas";
 
 export type ForgotState = { status?: "sent" | "invalid" | "rate-limited" | "notConfigured" };
@@ -43,10 +43,7 @@ export async function updatePassword(_prev: ResetState, formData: FormData): Pro
   if (!parsed.success) return { status: "invalid" };
   if (parsed.data.password !== parsed.data.confirm) return { status: "mismatch" };
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await createClientWithUser();
   if (!user) return { status: "expired" };
 
   const { error } = await supabase.auth.updateUser({ password: parsed.data.password });

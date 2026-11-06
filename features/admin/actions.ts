@@ -57,36 +57,6 @@ export async function adjustPoints(formData: FormData): Promise<void> {
   back(to, "ok", "points");
 }
 
-export async function updateTemplate(formData: FormData): Promise<void> {
-  const parsed = z
-    .object({
-      templateId: z.uuid(),
-      isActive: z.boolean(),
-      isFeatured: z.boolean(),
-      isPremium: z.boolean(),
-      pointPrice: z.coerce.number().int().min(0).max(100000),
-    })
-    .safeParse({
-      templateId: formData.get("templateId"),
-      isActive: formData.get("isActive") === "on",
-      isFeatured: formData.get("isFeatured") === "on",
-      isPremium: formData.get("isPremium") === "on",
-      pointPrice: formData.get("pointPrice") ?? 0,
-    });
-  if (!parsed.success) back("/admin/templates", "error", "invalid");
-  const supabase = await createClient();
-  const { error } = await supabase.rpc("admin_update_template", {
-    p_template_id: parsed.data.templateId,
-    p_is_active: parsed.data.isActive,
-    p_is_featured: parsed.data.isFeatured,
-    p_is_premium: parsed.data.isPremium,
-    p_point_price: parsed.data.pointPrice,
-  });
-  revalidatePath("/", "layout");
-  if (error) back("/admin/templates", "error", "failed");
-  back("/admin/templates", "ok", "template");
-}
-
 /** Full template edit from /admin/templates/[templateId]. */
 export async function updateTemplateDetails(formData: FormData): Promise<void> {
   const templateId = String(formData.get("templateId") ?? "");

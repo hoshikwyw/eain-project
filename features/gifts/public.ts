@@ -6,7 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { signMedia } from "./media";
 import type { GiftColors, MediaItem, Opening, PublicQuestion, ResponseSubmission, Section, Sticker, ThemeVariant } from "./schemas";
 import type { GiftScene } from "./scene";
-import { colorsFromTheme, openingFromTheme, referencedMediaIds, sceneFromTheme, sectionsFromRows, stickersFromTheme, variantFromTheme } from "./sections";
+import { lookFromTheme, openingFromTheme, referencedMediaIds, sectionsFromRows } from "./sections";
 import { getTemplateStyle, type TemplateStyle } from "./templates";
 
 export type PublicGift = {
@@ -79,11 +79,8 @@ export const getPublicGift = cache(async (token: string): Promise<PublicGift | n
   return {
     templateSlug: slug,
     style,
-    variant: variantFromTheme(gift.theme),
+    ...lookFromTheme(gift.theme),
     opening: openingFromTheme(gift.theme, style.defaultOpening),
-    colors: colorsFromTheme(gift.theme),
-    stickers: stickersFromTheme(gift.theme),
-    scene: sceneFromTheme(gift.theme),
     sections,
     media: await signMedia(mediaRows ?? []),
     questions,

@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { isSupabaseConfigured } from "@/lib/env";
 import { checkRateLimit, clientKeyFromHeaders } from "@/lib/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { reportSchema, type ReportState } from "./schemas";
 
 /**
@@ -27,8 +27,7 @@ export async function submitReport(token: string, _prev: ReportState, formData: 
 
   let reporterId: string | null = null;
   try {
-    const supabase = await createClient();
-    reporterId = (await supabase.auth.getUser()).data.user?.id ?? null;
+    reporterId = (await getCurrentUser())?.id ?? null;
   } catch {
     reporterId = null;
   }

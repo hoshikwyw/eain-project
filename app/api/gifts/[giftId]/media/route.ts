@@ -10,7 +10,7 @@ import {
   sniffImageType,
 } from "@/lib/media-validate";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createClientWithUser } from "@/lib/supabase/server";
 
 type Ctx = { params: Promise<{ giftId: string }> };
 
@@ -25,10 +25,7 @@ export async function POST(request: Request, { params }: Ctx) {
   const { giftId } = await params;
   if (!z.uuid().safeParse(giftId).success) return NextResponse.json({ error: "bad-request" }, { status: 400 });
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await createClientWithUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const { data: gift } = await supabase

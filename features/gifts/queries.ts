@@ -1,9 +1,9 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createClientWithUser } from "@/lib/supabase/server";
 import type { Gift, GiftEvent, GiftMedia, GiftRecipient, Template } from "@/types/database";
 import { signMedia } from "./media";
 import type { GiftColors, MediaItem, Opening, Section, Sticker, ThemeVariant } from "./schemas";
 import type { GiftScene } from "./scene";
-import { colorsFromTheme, openingFromTheme, sceneFromTheme, sectionsFromRows, stickersFromTheme, variantFromTheme } from "./sections";
+import { lookFromTheme, openingFromTheme, sectionsFromRows } from "./sections";
 import { getTemplateStyle, type TemplateStyle } from "./templates";
 
 /** A gift with everything needed to draw a picture of it, for galleries. */
@@ -25,10 +25,7 @@ export type GiftCard = {
  * of them in a fixed number of queries; a creator has at most a handful.
  */
 export async function listMyGiftCards(limit?: number): Promise<GiftCard[]> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await createClientWithUser();
   if (!user) return [];
   let query = supabase
     .from("gifts")
@@ -55,10 +52,7 @@ export async function listMyGiftCards(limit?: number): Promise<GiftCard[]> {
     gift,
     recipient: recipientByGift.get(gift.id) ?? null,
     style: getTemplateStyle(slugById.get(gift.template_id) ?? ""),
-    variant: variantFromTheme(gift.theme),
-    colors: colorsFromTheme(gift.theme),
-    stickers: stickersFromTheme(gift.theme),
-    scene: sceneFromTheme(gift.theme),
+    ...lookFromTheme(gift.theme),
     sections: sectionsFromRows((sections ?? []).filter((s) => s.gift_id === gift.id)),
     media: Object.fromEntries((mediaRows ?? []).filter((m) => m.gift_id === gift.id && media[m.id]).map((m) => [m.id, media[m.id]!])),
   }));
@@ -85,10 +79,7 @@ export type EditorGift = {
  * but could not save or delete it here. Moderation has its own page.
  */
 export async function getEditorGift(giftId: string): Promise<EditorGift | null> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await createClientWithUser();
   if (!user) return null;
   const { data: gift } = await supabase
     .from("gifts")
@@ -113,11 +104,8 @@ export async function getEditorGift(giftId: string): Promise<EditorGift | null> 
     gift,
     template,
     style,
-    variant: variantFromTheme(gift.theme),
+    ...lookFromTheme(gift.theme),
     opening: openingFromTheme(gift.theme, style.defaultOpening),
-    colors: colorsFromTheme(gift.theme),
-    stickers: stickersFromTheme(gift.theme),
-    scene: sceneFromTheme(gift.theme),
     sections: sectionsFromRows(sections ?? []),
     recipient,
     mediaRows: mediaRows ?? [],

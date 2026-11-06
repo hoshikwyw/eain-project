@@ -212,7 +212,6 @@ export const sectionSchema = z.discriminatedUnion("type", [
   z.object({ id: z.string().max(40), type: z.literal("final_message"), content: finalMessageContentSchema }),
 ]);
 export type Section = z.infer<typeof sectionSchema>;
-export type SectionOf<T extends Section["type"]> = Extract<Section, { type: T }>;
 export type EditableSectionType = Section["type"];
 
 /** What the editor submits as one JSON payload. */

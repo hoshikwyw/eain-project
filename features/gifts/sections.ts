@@ -144,8 +144,18 @@ export function questionsFromSections(sections: Section[]) {
     .filter((q): q is NonNullable<typeof q> => q !== null);
 }
 
-/** Plain-text heading for previews and titles. */
-export function firstHeading(sections: Section[]): string {
-  const cover = sections.find((s) => s.type === "text");
-  return cover?.type === "text" ? cover.content.heading : "";
+/**
+ * The look saved with a gift: which ready-made look, the creator's own
+ * colours over it, the stickers, and what was chosen for an animated
+ * template. Every part falls back on its own, so one bad value never hides
+ * a gift. Spread it into what a gift is drawn from.
+ */
+export function lookFromTheme(theme: unknown) {
+  return {
+    variant: variantFromTheme(theme),
+    colors: colorsFromTheme(theme),
+    stickers: stickersFromTheme(theme),
+    scene: sceneFromTheme(theme),
+  };
 }
+

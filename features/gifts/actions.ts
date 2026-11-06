@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
 import { track } from "@/lib/analytics";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createClientWithUser, getCurrentUser } from "@/lib/supabase/server";
 import { MEDIA_BUCKET } from "./media";
 import { editorPayloadSchema, type SaveGiftState, type Section } from "./schemas";
 import { pruneMediaReferences, questionsFromSections, rowsFromSections, sectionsFromRows, themeFromPayload } from "./sections";
@@ -15,10 +15,7 @@ import { defaultTheme, isAvailableTemplate, templates } from "./templates";
 export async function createGiftFromTemplate(slug: string): Promise<never> {
   if (!isAvailableTemplate(slug)) redirect("/create?error=template");
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await createClientWithUser();
   if (!user) redirect(`/auth/login?next=${encodeURIComponent(`/create?template=${slug}`)}`);
 
   const { data: template } = await supabase
@@ -184,10 +181,7 @@ async function syncQuestions(
 
 /** Copies a gift, its sections, recipient name and photos into a new draft. */
 export async function duplicateGift(giftId: string): Promise<void> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await createClientWithUser();
   if (!user) redirect("/auth/login");
 
   const [{ data: source }, { data: sections }, { data: recipient }, { data: media }] = await Promise.all([
@@ -274,10 +268,7 @@ async function rpcOnGift(fn: "publish_gift" | "unpublish_gift" | "regenerate_gif
 export async function publishGift(giftId: string): Promise<void> {
   const error = await rpcOnGift("publish_gift", giftId);
   if (!error) {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
     await track("gift_published", user?.id ?? null);
   }
   redirect(error ? `/create/${giftId}?error=publish` : `/dashboard/gifts/${giftId}?published=1`);

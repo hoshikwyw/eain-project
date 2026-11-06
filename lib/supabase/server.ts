@@ -30,9 +30,18 @@ export async function createClient() {
   });
 }
 
-export async function getCurrentUser() {
+/**
+ * The server client together with who is signed in: `user` is null when
+ * nobody is. The token is checked with Supabase Auth, not just read from the
+ * cookie, so `user` can be trusted for access decisions.
+ */
+export async function createClientWithUser() {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user) return null;
-  return data.user;
+  return { supabase, user: error ? null : data.user };
+}
+
+/** Who is signed in, or null. */
+export async function getCurrentUser() {
+  return (await createClientWithUser()).user;
 }
