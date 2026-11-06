@@ -1,18 +1,35 @@
-import { Bell } from "lucide-react";
-import Link from "next/link";
-import { getFormatter, getTranslations } from "next-intl/server";
-import { PageHeader } from "@/components/dashboard/page-header";
-import { Card, CardContent } from "@/components/ui/card";
+import { CheckCheck } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import { Bird } from "@/components/brand/lovebirds";
+import { NotificationItem } from "@/components/dashboard/notification-item";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { markAllNotificationsRead } from "@/features/notifications/actions";
 import { createClient } from "@/lib/supabase/server";
-import { cn } from "@/lib/utils";
+import type { Notification } from "@/types/database";
 
-const KNOWN_TITLES = ["giftOpened", "responseReceived", "giftDisabled"] as const;
+/** One group of the inbox: a small heading and its rows in a panel. */
+function Group({ title, items }: { title: string; items: Notification[] }) {
+  if (items.length === 0) return null;
+  return (
+    <section className="flex flex-col gap-2">
+      <h2 className="px-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase my:tracking-normal my:normal-case">{title}</h2>
+      <ul className="flex flex-col divide-y divide-border rounded-3xl border border-border bg-card p-1.5 shadow-soft">
+        {items.map((n) => (
+          <li key={n.id}>
+            <NotificationItem notification={n} />
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
+/**
+ * Notifications as an inbox: what is new on top, what has been read below.
+ * A notification about a gift opens that gift.
+ */
 export default async function NotificationsPage() {
   const t = await getTranslations("dashboard");
-  const format = await getFormatter();
   const supabase = await createClient();
 
   const { data: notifications } = await supabase
@@ -22,62 +39,40 @@ export default async function NotificationsPage() {
     .limit(50);
 
   const items = notifications ?? [];
-  const hasUnread = items.some((n) => !n.read_at);
+  const unread = items.filter((n) => !n.read_at);
+  const read = items.filter((n) => n.read_at);
 
   return (
-    <div className="flex flex-col gap-6">
-      <PageHeader
-        title={t("nav.notifications")}
-        action={
-          hasUnread ? (
-            <form action={markAllNotificationsRead}>
-              <SubmitButton variant="secondary" size="sm">
-                {t("notifications.markAllRead")}
-              </SubmitButton>
-            </form>
-          ) : undefined
-        }
-      />
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="font-display text-3xl font-semibold sm:text-4xl">{t("nav.notifications")}</h1>
+          {items.length > 0 && (
+            <p className="mt-1 text-sm text-muted-foreground">
+              {unread.length > 0 ? t("notifications.unread", { count: unread.length }) : t("notifications.allRead")}
+            </p>
+          )}
+        </div>
+        {unread.length > 0 && (
+          <form action={markAllNotificationsRead}>
+            <SubmitButton variant="secondary" size="sm" className="rounded-full">
+              <CheckCheck />
+              {t("notifications.markAllRead")}
+            </SubmitButton>
+          </form>
+        )}
+      </div>
 
       {items.length === 0 ? (
-        <Card>
-          <CardContent className="p-8 text-center text-sm text-muted-foreground">{t("notificationsEmpty")}</CardContent>
-        </Card>
+        <div className="flex flex-col items-center gap-4 rounded-3xl border border-dashed border-border px-6 py-12 text-center">
+          <Bird variant="blue" className="w-20" />
+          <p className="max-w-xs text-sm text-muted-foreground">{t("notificationsEmpty")}</p>
+        </div>
       ) : (
-        <ul className="flex flex-col gap-2">
-          {items.map((n) => {
-            const key = KNOWN_TITLES.find((k) => k === n.title_key) ?? "generic";
-            const payload = (n.payload ?? {}) as { giftTitle?: string; reason?: string };
-            const inner = (
-              <Card className={cn(!n.read_at && "border-primary/40")}>
-                <CardContent className="flex items-start gap-3 p-4">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-soft text-accent-foreground dark:text-brand">
-                    <Bell className="size-4" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className={cn("text-sm", !n.read_at && "font-semibold")}>
-                      {t(`notifications.titles.${key}`, { giftTitle: payload.giftTitle ?? "" })}
-                    </p>
-                    {payload.reason && <p className="text-sm text-muted-foreground">{payload.reason}</p>}
-                    <p className="text-xs text-muted-foreground">{format.relativeTime(new Date(n.created_at))}</p>
-                  </div>
-                  {!n.read_at && <span className="mt-1.5 size-2 rounded-full bg-brand" aria-hidden="true" />}
-                </CardContent>
-              </Card>
-            );
-            return (
-              <li key={n.id}>
-                {n.gift_id ? (
-                  <Link href={`/dashboard/gifts/${n.gift_id}`} className="block rounded-2xl">
-                    {inner}
-                  </Link>
-                ) : (
-                  inner
-                )}
-              </li>
-            );
-          })}
-        </ul>
+        <>
+          <Group title={t("notifications.new")} items={unread} />
+          <Group title={t("notifications.earlier")} items={read} />
+        </>
       )}
     </div>
   );

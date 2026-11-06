@@ -1,21 +1,22 @@
-import { PageHeaderSkeleton, Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
+/** Points skeleton: the title, the wallet, three ways to earn, the history. */
 export default function PointsLoading() {
   return (
-    <div className="flex flex-col gap-6" aria-busy="true">
-      <PageHeaderSkeleton action={false} />
-      <Skeleton className="h-28 rounded-2xl" />
-      <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-5">
-        <Skeleton className="h-5 w-32" />
-        {Array.from({ length: 5 }, (_, i) => (
-          <div key={i} className="flex items-center justify-between gap-3 py-2">
-            <div className="flex flex-col gap-2">
-              <Skeleton className="h-4 w-48" />
-              <Skeleton className="h-3 w-28" />
-            </div>
-            <Skeleton className="h-6 w-14 rounded-full" />
-          </div>
-        ))}
+    <div className="flex flex-col gap-8 sm:gap-10" aria-busy="true">
+      <Skeleton className="h-10 w-64 max-w-full" />
+      <Skeleton className="h-72 rounded-4xl" />
+      <div className="flex flex-col gap-4">
+        <Skeleton className="h-7 w-40" />
+        <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
+          {Array.from({ length: 3 }, (_, i) => (
+            <Skeleton key={i} className="h-32 rounded-3xl sm:h-24" />
+          ))}
+        </div>
+      </div>
+      <div className="flex flex-col gap-4">
+        <Skeleton className="h-7 w-40" />
+        <Skeleton className="h-72 rounded-3xl" />
       </div>
     </div>
   );

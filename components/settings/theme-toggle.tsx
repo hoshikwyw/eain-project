@@ -18,6 +18,7 @@ export function ThemeToggle() {
 
   return (
     <Button
+      type="button"
       variant="ghost"
       size="icon"
       aria-label={isDark ? t("themeLight") : t("themeDark")}

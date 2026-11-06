@@ -881,6 +881,10 @@
       }
     },
     "notifications": {
+      "new": "New",
+      "earlier": "Earlier",
+      "unread": "{count} unread",
+      "allRead": "You're all caught up.",
       "markAllRead": "Mark all as read",
       "titles": {
         "giftOpened": "Your gift \"{giftTitle}\" was opened.",
@@ -908,6 +912,8 @@
       "pointsBalance": "Points Balance"
     },
     "points": {
+      "spend": "Browse templates",
+      "buySoon": "Buying points is coming soon.",
       "title": "Points & Rewards",
       "subtitle": "Points unlock premium templates and effects.",
       "dailyCap": "You can earn up to 100 points a day from activity.",
@@ -929,6 +935,7 @@
       }
     },
     "settings": {
+      "preferences": "Preferences",
       "title": "Settings",
       "profile": "Profile",
       "profileDescription": "How your name appears on the gifts you send.",

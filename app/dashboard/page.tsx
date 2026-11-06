@@ -1,7 +1,8 @@
-import { ArrowRight, Bell, Gift, Lock, MailOpen, MessageCircleHeart, Plus, ShieldAlert, Star, type LucideIcon } from "lucide-react";
+import { ArrowRight, Gift, Lock, MailOpen, MessageCircleHeart, Plus, Star } from "lucide-react";
 import Link from "next/link";
-import { getFormatter, getLocale, getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Bird, Lovebirds } from "@/components/brand/lovebirds";
+import { NotificationItem } from "@/components/dashboard/notification-item";
 import { StartTemplateButton } from "@/components/dashboard/start-template";
 import { GiftTile } from "@/components/gift/gift-tile";
 import { TemplatePreview } from "@/components/templates/template-preview";
@@ -12,18 +13,11 @@ import { loadTemplateCards } from "@/features/gifts/template-cards";
 import { isAvailableTemplate } from "@/features/gifts/templates";
 import { getCurrentProfile, getDashboardStats } from "@/features/profile/queries";
 import { createClient } from "@/lib/supabase/server";
-import { cn } from "@/lib/utils";
 
 /** How many of each thing the home screen shows before "see all". */
 const GIFTS_SHOWN = 4;
 const TEMPLATES_SHOWN = 8;
 const ACTIVITY_SHOWN = 4;
-
-const ACTIVITY: Record<string, { key: "giftOpened" | "responseReceived" | "giftDisabled"; icon: LucideIcon }> = {
-  giftOpened: { key: "giftOpened", icon: MailOpen },
-  responseReceived: { key: "responseReceived", icon: MessageCircleHeart },
-  giftDisabled: { key: "giftDisabled", icon: ShieldAlert },
-};
 
 /** A section's title, a line under it, and an optional "see all" link on the right. */
 function SectionHeading({ title, hint, href, linkLabel }: { title: string; hint?: string; href?: string; linkLabel?: string }) {
@@ -52,7 +46,6 @@ function SectionHeading({ title, hint, href, linkLabel }: { title: string; hint?
 export default async function HomePage({ searchParams }: PageProps<"/dashboard">) {
   const notice = (await searchParams).notice;
   const t = await getTranslations("dashboard");
-  const format = await getFormatter();
   const locale = (await getLocale()) === "my" ? "my" : "en";
   const profile = await getCurrentProfile();
   const supabase = await createClient();
@@ -191,36 +184,11 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
             <p className="rounded-3xl bg-secondary/60 px-5 py-6 text-sm text-muted-foreground">{t("home.latelyEmpty")}</p>
           ) : (
             <ul className="flex flex-col gap-1">
-              {activity.map((n) => {
-                const kind = ACTIVITY[n.title_key];
-                const Icon = kind?.icon ?? Bell;
-                const payload = (n.payload ?? {}) as { giftTitle?: string };
-                const row = (
-                  <span className="flex items-center gap-3.5 rounded-2xl px-3 py-3 transition-colors hover:bg-secondary/60">
-                    <span className={cn("grid size-10 shrink-0 place-items-center rounded-full", n.read_at ? "bg-secondary text-muted-foreground" : "bg-brand-soft text-accent-foreground dark:text-brand")}>
-                      <Icon className="size-5" />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className={cn("block text-sm", !n.read_at && "font-semibold")}>
-                        {t(`notifications.titles.${kind?.key ?? "generic"}`, { giftTitle: payload.giftTitle ?? "" })}
-                      </span>
-                      <span className="block text-xs text-muted-foreground">{format.relativeTime(new Date(n.created_at))}</span>
-                    </span>
-                    {!n.read_at && <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-brand" />}
-                  </span>
-                );
-                return (
-                  <li key={n.id}>
-                    {n.gift_id ? (
-                      <Link href={`/dashboard/gifts/${n.gift_id}`} className="block rounded-2xl">
-                        {row}
-                      </Link>
-                    ) : (
-                      row
-                    )}
-                  </li>
-                );
-              })}
+              {activity.map((n) => (
+                <li key={n.id}>
+                  <NotificationItem notification={n} />
+                </li>
+              ))}
             </ul>
           )}
         </section>
