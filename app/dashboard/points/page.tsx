@@ -1,13 +1,13 @@
 import { CreditCard, Gift, LockOpen, MailOpen, MessageCircleHeart, Sparkles, Star, Undo2, type LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { getFormatter, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { Bird } from "@/components/brand/lovebirds";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getCurrentProfile } from "@/features/profile/queries";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
-import type { PointTransactionType } from "@/types/database";
+import type { PointTransaction, PointTransactionType } from "@/types/database";
 
 /** What earns points, and how many. The amounts are set by the database rules. */
 const WAYS_TO_EARN = [
@@ -23,6 +23,11 @@ const TYPE_ICON: Record<PointTransactionType, LucideIcon> = {
   spend: LockOpen,
   refund: Undo2,
 };
+
+/** Kinds of entry with a fixed wording. The database stores the kind next to an English sentence; the kind is what gets translated. */
+const KNOWN_ENTRIES = ["welcome", "gift_publish", "gift_opened", "gift_responded"] as const;
+/** What the admin console writes when an adjustment is made without a note. */
+const DEFAULT_ADJUSTMENT_NOTE = "Adjustment by Eain";
 
 /**
  * Points as a wallet: the balance up front, then how to earn more, then
@@ -42,6 +47,27 @@ export default async function PointsPage() {
     .order("created_at", { ascending: false })
     .limit(50);
   const transactions = data ?? [];
+
+  // Names of the templates that were unlocked, in the reader's language.
+  const locale = (await getLocale()) === "my" ? "my" : "en";
+  const unlockedIds = [...new Set(transactions.filter((tx) => tx.reference_type === "template_unlock" && tx.reference_id).map((tx) => tx.reference_id!))];
+  const { data: unlocked } = unlockedIds.length
+    ? await supabase.from("templates").select("id, name_en, name_my").in("id", unlockedIds)
+    : { data: [] };
+  const templateName = new Map((unlocked ?? []).map((tp) => [tp.id, locale === "my" ? tp.name_my : tp.name_en]));
+
+  /** One history line in the reader's language. Anything of an unknown kind keeps the sentence it was stored with. */
+  const entryLabel = (tx: PointTransaction): string => {
+    const known = KNOWN_ENTRIES.find((k) => k === tx.reference_type);
+    if (known) return t(`points.entries.${known}`);
+    if (tx.reference_type === "template_unlock") {
+      const name = tx.reference_id ? templateName.get(tx.reference_id) : undefined;
+      return name ? t("points.entries.template_unlock", { name }) : t("points.entries.template_unlock_unknown");
+    }
+    // An adjustment shows the note the admin wrote, when there is one.
+    if (tx.reference_type === "admin_adjustment" && (!tx.description || tx.description === DEFAULT_ADJUSTMENT_NOTE)) return t("points.entries.admin_adjustment");
+    return tx.description || t(`points.types.${tx.type}`);
+  };
 
   return (
     <div className="flex flex-col gap-8 sm:gap-10">
@@ -101,7 +127,7 @@ export default async function PointsPage() {
                     <Icon className="size-5" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold">{tx.description || t(`points.types.${tx.type}`)}</p>
+                    <p className="truncate text-sm font-semibold">{entryLabel(tx)}</p>
                     <p className="text-xs text-muted-foreground">{format.dateTime(new Date(tx.created_at), { dateStyle: "medium", timeStyle: "short" })}</p>
                   </div>
                   <span className={cn("shrink-0 font-display text-lg font-semibold tabular-nums", gained ? "text-success" : "text-muted-foreground")}>

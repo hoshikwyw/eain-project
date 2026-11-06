@@ -3,8 +3,7 @@
     "name": "Eain",
     "tagline": "Digital gifts that feel like home.",
     "seoTitle": "Eain · Digital gifts and greeting cards that feel like home",
-    "seoDescription": "Make a digital gift in minutes: birthday cards, thank-you notes, love letters and animated surprises with your own words, photos and stickers. Share one private link. The person who receives it needs no account.",
-    "splashTagline": "A little gift, made with love."
+    "seoDescription": "Make a digital gift in minutes: birthday cards, thank-you notes, love letters and animated surprises with your own words, photos and stickers. Share one private link. The person who receives it needs no account."
   },
   "nav": {
     "templates": "Templates",
@@ -120,16 +119,6 @@
     "reply": "They can reply",
     "replyText": "Their answer comes back to you."
   },
-  "features": {
-    "templatesTitle": "Beautiful Templates",
-    "templatesText": "Ready-to-use templates for every occasion.",
-    "sharingTitle": "Easy Sharing",
-    "sharingText": "Share with a link or a QR code.",
-    "interactiveTitle": "Interactive Experience",
-    "interactiveText": "Add questions and messages to make it personal.",
-    "trackTitle": "Track & Connect",
-    "trackText": "See when it is opened and get a response."
-  },
   "finalCta": {
     "title": "Someone deserves something special.",
     "button": "Create Your Gift"
@@ -147,7 +136,6 @@
     "theme": "Theme",
     "themeLight": "Light",
     "themeDark": "Dark",
-    "themeSystem": "System",
     "language": "Language",
     "switchToEnglish": "English",
     "switchToBurmese": "မြန်မာ"
@@ -173,7 +161,6 @@
   "create": {
     "title": "Choose a template",
     "subtitle": "Pick a starting point. You can change every word and colour.",
-    "back": "Back",
     "free": "Free",
     "useTemplate": "Use this template",
     "creating": "Creating your gift",
@@ -503,7 +490,6 @@
   },
   "admin": {
     "badge": "Admin",
-    "backToDashboard": "Dashboard",
     "userSite": "User site",
     "signOut": "Sign out",
     "nav": {
@@ -801,10 +787,8 @@
     "welcomeSubtitle": "Create, share and make someone's day extra special.",
     "createNewGift": "Create New Gift",
     "createFirstGift": "Create your first gift",
-    "recentGifts": "Recent Gifts",
     "recentGiftsEmpty": "No gifts yet. Your first one is waiting to be made.",
     "notificationsEmpty": "Nothing here yet. You will see when a gift is opened or answered.",
-    "comingSoon": "Coming in the next part.",
     "viewAll": "View all",
     "home": {
       "yourGifts": "Your gifts",
@@ -906,13 +890,16 @@
       "create": "Create",
       "admin": "Admin"
     },
-    "stats": {
-      "giftsCreated": "Gifts Created",
-      "opened": "Opened",
-      "responses": "Responses",
-      "pointsBalance": "Points Balance"
-    },
     "points": {
+      "entries": {
+        "welcome": "Welcome to Eain",
+        "gift_publish": "Published a gift",
+        "gift_opened": "Your gift was opened",
+        "gift_responded": "Someone replied to your gift",
+        "template_unlock": "Unlocked {name}",
+        "template_unlock_unknown": "Unlocked a template",
+        "admin_adjustment": "Adjustment by Eain"
+      },
       "spend": "Browse templates",
       "buySoon": "Buying points is coming soon.",
       "title": "Points & Rewards",
@@ -920,7 +907,6 @@
       "dailyCap": "You can earn up to 100 points a day from activity.",
       "total": "Total points",
       "history": "Point history",
-      "buy": "Buy points",
       "empty": "No transactions yet.",
       "earn": {
         "create": "Create a gift",
@@ -950,8 +936,6 @@
       "invalid": "Please check the form.",
       "error": "Could not save. Please try again.",
       "account": "Account",
-      "accountHint": "Log out of Eain on this device.",
-      "deleteSoon": "Account deletion arrives in a later part.",
       "signOut": "Log out",
       "deleteTitle": "Delete account",
       "deleteHint": "Permanently deletes your account, all your gifts and photos, the replies you received, your notifications and points. Gift links you shared stop working. This cannot be undone.",

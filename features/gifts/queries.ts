@@ -6,47 +6,6 @@ import type { GiftScene } from "./scene";
 import { colorsFromTheme, openingFromTheme, sceneFromTheme, sectionsFromRows, stickersFromTheme, variantFromTheme } from "./sections";
 import { getTemplateStyle, type TemplateStyle } from "./templates";
 
-export type GiftListItem = Gift & {
-  recipient: Pick<GiftRecipient, "name" | "first_opened_at"> | null;
-  templateSlug: string;
-};
-
-/**
- * All of the signed-in creator's gifts that are not deleted. Filtered by
- * owner here and not left to RLS alone: an admin may read every gift, and
- * "my gifts" must still mean their own.
- */
-export async function listMyGifts(): Promise<GiftListItem[]> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return [];
-  const { data: gifts } = await supabase
-    .from("gifts")
-    .select("*")
-    .eq("sender_id", user.id)
-    .neq("status", "deleted")
-    .order("created_at", { ascending: false });
-
-  if (!gifts || gifts.length === 0) return [];
-
-  const ids = gifts.map((g) => g.id);
-  const [{ data: recipients }, { data: templates }] = await Promise.all([
-    supabase.from("gift_recipients").select("gift_id, name, first_opened_at").in("gift_id", ids),
-    supabase.from("templates").select("id, slug"),
-  ]);
-
-  const recipientByGift = new Map((recipients ?? []).map((r) => [r.gift_id, r]));
-  const slugById = new Map((templates ?? []).map((t) => [t.id, t.slug]));
-
-  return gifts.map((gift) => ({
-    ...gift,
-    recipient: recipientByGift.get(gift.id) ?? null,
-    templateSlug: slugById.get(gift.template_id) ?? "",
-  }));
-}
-
 /** A gift with everything needed to draw a picture of it, for galleries. */
 export type GiftCard = {
   gift: Gift;
