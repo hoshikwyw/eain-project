@@ -59,6 +59,22 @@ Changed on 2026-11-06 from the violet-on-indigo "Lovely" palette, which read as 
 
 Implementation rule: components use semantic tokens only, never raw hex. Swapping a palette must be a one-file change.
 
+### Glass
+
+Added on 2026-11-06. Surfaces are see-through panes over soft pools of the brand's colours.
+
+- **Auras.** Three fixed gradients behind every page (`body::before`): rose top left, the blue bird's colour top right, a warm light at the bottom (orchid in the dark theme). Tokens `--aura-rose`, `--aura-sky`, `--aura-warm`.
+- **Three strengths**, as utilities:
+  - `glass` for cards and panels. No blur: a card only has the page's soft colour behind it, and blur on every card is slow on small phones.
+  - `glass-bar` for bars that content scrolls under (top bar, phone tab bar, editor bar). Blurred, and opaque enough that their text keeps 4.5:1 with a white or a dark gift underneath.
+  - `glass-strong` for menus, popups and tools that float over a gift. Blurred and nearly opaque.
+- **A bar that holds a menu** gets its glass as a separate layer (`<div aria-hidden class="glass-bar absolute inset-0 -z-10">`). A blurred element stops its children from blurring the page.
+- **Small controls stay solid** (text fields, secondary buttons), so they are easy to see and press on a pane.
+- **Fallbacks.** Without backdrop blur, or with `prefers-reduced-transparency: reduce`, the glass tokens fall back to the solid surface colours. Phones use a 12px blur, wider screens 20px.
+- **Gifts are not glass.** A gift keeps its own look on every screen.
+
+Checked on 2026-11-06 by measuring screenshots, in both themes: main and secondary text keep at least 4.8:1 on glass panels, coloured cards and bars (bars measured with a white and a dark gift scrolling under them). The rose link colour keeps at least 4.6:1 where links appear. In the light theme the pink accent (`--brand`) is below 4.5:1 on every surface, so there it is for icons and decoration only, never for text.
+
 ## 4. Typography
 
 - **Display:** soft serif for the wordmark and gift headings such as "A special gift just for you". Proposed font: Fraunces.

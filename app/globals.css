@@ -30,7 +30,8 @@
   --secondary: #fff0ee;
   --secondary-foreground: #2b1f21;
   --muted: #fbeeeb;
-  --muted-foreground: #7a6568;
+  /* Deep enough to read on the pink cards too (4.8:1 on the darkest end of the hero gradient). */
+  --muted-foreground: #6e595c;
   --accent: #ffe4e8;
   --accent-foreground: #b32747;
   --destructive: #c62828;
@@ -126,7 +127,7 @@
   --aura-rose: rgb(219 51 88 / 0.28);
   --aura-sky: rgb(96 150 200 / 0.22);
   --aura-warm: rgb(170 80 170 / 0.2);
-  --glass: rgb(255 255 255 / 0.06);
+  --glass: rgb(226 190 240 / 0.075);
   --glass-bar: rgb(23 13 27 / 0.78);
   --glass-strong: rgb(43 26 54 / 0.9);
   --glass-border: rgb(255 255 255 / 0.1);
