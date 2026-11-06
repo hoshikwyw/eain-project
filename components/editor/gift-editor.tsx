@@ -1,14 +1,17 @@
 "use client";
 
-import { Eye, Flower2, Layers, Loader2, Palette, Pencil, Play, Redo2, Save, Send, Settings2, Sticker as StickerIcon, Undo2, X } from "lucide-react";
+import { ArrowLeft, Eye, Flower2, Layers, Loader2, Palette, Pencil, Play, Redo2, Save, Send, Settings2, Sticker as StickerIcon, Undo2, X } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { startTransition, useActionState, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { GiftOpening, openingDuration, type OpeningStage } from "@/components/gift/gift-opening";
+import { GiftStatusChip } from "@/components/gift/gift-status-chip";
 import type { GiftEdit } from "@/components/gift/gift-renderer";
 import { STAGE_MAX_WIDTH } from "@/components/gift/gift-stage";
 import { GiftView } from "@/components/gift/gift-view";
 import { SceneFrame } from "@/components/scene/scene-frame";
+import { LocaleToggle } from "@/components/settings/locale-toggle";
+import { ThemeToggle } from "@/components/settings/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { saveAndPublishGift, saveGift } from "@/features/gifts/actions";
 import { defaultScene, sceneConfig, type GiftScene } from "@/features/gifts/scene";
@@ -30,6 +33,7 @@ import { dropStickerAnchor, insertStickerAnchor, swapStickerAnchors } from "@/fe
 import type { StickerKind } from "@/features/gifts/stickers";
 import type { TemplateStyle } from "@/features/gifts/templates";
 import { cn } from "@/lib/utils";
+import type { GiftStatus } from "@/types/database";
 import {
   sectionSelector,
   stickerAt,
@@ -51,7 +55,9 @@ import { useHistory } from "./use-history";
 
 type Props = {
   giftId: string;
-  status: string;
+  status: GiftStatus;
+  /** The receiver has opened it at least once. */
+  opened: boolean;
   title: string;
   recipientName: string;
   variant: ThemeVariant;
@@ -581,55 +587,86 @@ export function GiftEditor(props: Props) {
   const published = props.status === "published";
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="sticky top-0 z-30 -mx-4 flex flex-col bg-background/90 px-4 backdrop-blur">
-        <div className="flex items-center gap-1.5 border-b border-border py-2.5 sm:gap-2">
-          <Button type="button" variant="ghost" size="icon" className="size-9" aria-label={t("undo")} disabled={!history.canUndo} onClick={history.undo}>
-            <Undo2 />
-          </Button>
-          <Button type="button" variant="ghost" size="icon" className="size-9" aria-label={t("redo")} disabled={!history.canRedo} onClick={history.redo}>
-            <Redo2 />
-          </Button>
-          <p role="status" className={cn("min-w-0 flex-1 truncate text-sm", status?.tone)}>
-            {status?.text}
-          </p>
-          {sceneKind ? (
-            // The card is only a summary, so "preview" plays the animation itself.
-            <Button type="button" variant="ghost" size="sm" onClick={() => setPlaying(true)}>
-              <Play />
-              <span className="max-sm:sr-only">{t("playScene")}</span>
+    <div className="flex flex-1 flex-col">
+      {/* The editor's own bar, across the whole screen; its content lines up with the page below. */}
+      <div className="sticky top-0 z-30 flex flex-col border-b border-border/50 bg-background/80 px-[max(1rem,calc(50%-35rem))] backdrop-blur-md">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 py-2 lg:h-16 lg:flex-nowrap lg:gap-x-4 lg:py-0">
+          {/* Which gift this is. Its own row on phones, the left end of the bar on wide screens. */}
+          <div className="flex min-w-0 basis-full items-center gap-2 lg:max-w-xs lg:basis-auto xl:max-w-sm">
+            <Button asChild variant="ghost" size="icon" className="size-9 shrink-0" aria-label={t("back")}>
+              <Link href="/dashboard/gifts">
+                <ArrowLeft />
+              </Link>
             </Button>
-          ) : (
-            <Button type="button" variant="ghost" size="sm" aria-pressed={previewing} onClick={() => setPreviewing((v) => !v)}>
-              {previewing ? <Pencil /> : <Eye />}
-              <span className="max-sm:sr-only">{previewing ? t("backToEdit") : t("preview")}</span>
+            <button
+              type="button"
+              title={tabLabel.details}
+              onClick={() => openTab("details")}
+              className="min-w-0 cursor-pointer truncate rounded-lg font-display text-lg font-semibold outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/60"
+            >
+              {title.trim() || tabLabel.details}
+            </button>
+            <GiftStatusChip status={props.status} opened={props.opened} />
+            <span className="ml-auto flex shrink-0 items-center gap-1 lg:hidden">
+              <LocaleToggle />
+              <ThemeToggle />
+            </span>
+          </div>
+
+          {/* What can be done with it. */}
+          <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:gap-2">
+            <Button type="button" variant="ghost" size="icon" className="size-9" aria-label={t("undo")} disabled={!history.canUndo} onClick={history.undo}>
+              <Undo2 />
             </Button>
-          )}
-          <form
-            action={formAction}
-            onSubmit={(e) => {
-              if (valid) return;
-              e.preventDefault();
-              revealInvalid();
-            }}
-          >
-            <input type="hidden" name="payload" value={payloadJson} />
-            <Button type="submit" variant="secondary" size="sm" disabled={saving || publishing} aria-busy={saving}>
-              {saving ? <Loader2 className="animate-spin" /> : <Save />}
-              <span className="max-sm:sr-only">{saving ? t("saving") : t("save")}</span>
+            <Button type="button" variant="ghost" size="icon" className="size-9" aria-label={t("redo")} disabled={!history.canRedo} onClick={history.redo}>
+              <Redo2 />
             </Button>
-          </form>
-          <Button type="button" size="sm" onClick={publish} disabled={publishing || saving} aria-busy={publishing}>
-            {publishing ? <Loader2 className="animate-spin" /> : <Send />}
-            {publishing ? (
-              t("publishing")
+            <p role="status" className={cn("min-w-0 flex-1 truncate text-sm", status?.tone)}>
+              {status?.text}
+            </p>
+            <span className="flex shrink-0 items-center gap-1 max-lg:hidden">
+              <LocaleToggle />
+              <ThemeToggle />
+            </span>
+            {sceneKind ? (
+              // The card is only a summary, so "preview" plays the animation itself.
+              <Button type="button" variant="ghost" size="sm" className="rounded-full" onClick={() => setPlaying(true)}>
+                <Play />
+                <span className="max-sm:sr-only">{t("playScene")}</span>
+              </Button>
             ) : (
-              <>
-                <span className="sm:hidden">{published ? t("republishShort") : t("publishShort")}</span>
-                <span className="max-sm:hidden">{published ? t("republish") : t("publish")}</span>
-              </>
+              <Button type="button" variant="ghost" size="sm" className="rounded-full" aria-pressed={previewing} onClick={() => setPreviewing((v) => !v)}>
+                {previewing ? <Pencil /> : <Eye />}
+                <span className="max-sm:sr-only">{previewing ? t("backToEdit") : t("preview")}</span>
+              </Button>
             )}
-          </Button>
+            <form
+              action={formAction}
+              onSubmit={(e) => {
+                if (valid) return;
+                e.preventDefault();
+                revealInvalid();
+              }}
+            >
+              <input type="hidden" name="payload" value={payloadJson} />
+              <Button type="submit" variant="secondary" size="sm" className="rounded-full" disabled={saving || publishing} aria-busy={saving}>
+                {saving ? <Loader2 className="animate-spin" /> : <Save />}
+                <span className="max-sm:sr-only">{saving ? t("saving") : t("save")}</span>
+              </Button>
+            </form>
+            <Button type="button" size="sm" className="rounded-full px-4" onClick={publish} disabled={publishing || saving} aria-busy={publishing}>
+              {publishing ? <Loader2 className="animate-spin" /> : <Send />}
+              {publishing ? (
+                t("publishing")
+              ) : (
+                <>
+                  {/* The long label only where the bar has room for it and for the save status. */}
+                  <span className="xl:hidden">{published ? t("republishShort") : t("publishShort")}</span>
+                  <span className="max-xl:hidden">{published ? t("republish") : t("publish")}</span>
+                </>
+              )}
+            </Button>
+          </div>
         </div>
         {problem && (
           <p role="alert" className="py-1.5 text-sm text-destructive">
@@ -673,7 +710,7 @@ export function GiftEditor(props: Props) {
         )}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
+      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-6 px-4 pt-4 pb-28 lg:grid-cols-[minmax(0,1fr)_400px]">
         <div className={cn("flex min-w-0 flex-col gap-4", sheetOpen && "max-lg:pb-[62svh]")}>
           {/* As wide as a gift is ever shown, so the canvas and the gift's frame are one box. */}
           <div className="mx-auto flex w-full flex-col gap-4" style={{ maxWidth: STAGE_MAX_WIDTH }}>
@@ -759,10 +796,10 @@ export function GiftEditor(props: Props) {
               )}
             </div>
 
-            <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-4">
+            <div className="flex flex-col gap-2 rounded-3xl bg-secondary/60 p-5">
               <p className="text-sm text-muted-foreground">{published ? t("publishedHint") : t("publishHint")}</p>
               <p className="text-xs text-muted-foreground">{autosave ? t("draftAutosave") : t("publishSaves")}</p>
-              <Button asChild variant="ghost" size="sm" className="self-start">
+              <Button asChild variant="secondary" size="sm" className="mt-1 self-start rounded-full">
                 <Link href={`/dashboard/gifts/${props.giftId}`}>{t("manage")}</Link>
               </Button>
             </div>
@@ -775,7 +812,7 @@ export function GiftEditor(props: Props) {
             "z-40 flex flex-col overflow-hidden border-border bg-card",
             "max-lg:fixed max-lg:inset-x-0 max-lg:bottom-[calc(3.75rem+env(safe-area-inset-bottom))] max-lg:max-h-[60svh] max-lg:rounded-t-3xl max-lg:border-t max-lg:shadow-[0_-12px_32px_rgba(0,0,0,0.16)]",
             !sheetOpen && "max-lg:hidden",
-            "lg:sticky lg:top-28 lg:max-h-[calc(100svh-8rem)] lg:self-start lg:rounded-2xl lg:border",
+            "lg:sticky lg:top-32 lg:max-h-[calc(100svh-9rem)] lg:self-start lg:rounded-3xl lg:border lg:shadow-soft",
           )}
         >
           <div role="tablist" aria-label={t("tools")} style={tabColumns} className="grid gap-1 border-b border-border p-1.5 max-lg:hidden">
