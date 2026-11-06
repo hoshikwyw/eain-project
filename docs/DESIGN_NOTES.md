@@ -38,19 +38,23 @@ The dark theme is labelled "Dark Theme (Lovely)", which suggests named themes ra
 | draft | #6B6B6B on #F1EEEE | "Draft" chip |
 | accent-blue | #6FA8C9 | Second bird, illustration accent |
 
-### Dark theme ("Lovely")
+### Dark theme ("Plum night")
+
+Changed on 2026-11-06 from the violet-on-indigo "Lovely" palette, which read as a different product next to the pink logo, birds and light theme. The dark theme now keeps the brand's rose and sets it on a dark plum.
 
 | Token | Value | Use |
 |---|---|---|
-| bg | #120E2A | Page background, deep navy purple |
-| surface | #1C1640 | Cards, sidebar |
-| surface-raised | #251D52 | Active nav item, highlighted tile |
-| border | #2F2760 | Card borders |
-| primary | #8B5CF6 | Main call-to-action, active nav |
-| accent-pink | #EC4899 | Secondary call-to-action, "Open Your Gift", hearts |
-| text | #F5F1FF | Headings and body |
-| text-muted | #A79FC7 | Secondary text |
-| success | #34D399 on translucent green | "Opened" chip |
+| bg | #170D1B | Page background, dark plum |
+| surface | #251630 | Cards and panels |
+| surface-raised | #2E1C38 | Active nav item, highlighted tile |
+| border | #3A2543 | Card borders |
+| primary | #DB3358 | Main call-to-action. Same rose as the light theme, white text |
+| primary-ink | #FF7A9C | The main colour as text or icon on the page (links, active tab) |
+| accent-pink | #FF7396 | Decoration, hearts, chips |
+| accent-blue | #7FB2D0 | Second bird, illustration accent |
+| text | #FCF2F6 | Headings and body |
+| text-muted | #BBA6BA | Secondary text |
+| success | #3DDC97 on #143A2C | "Opened" chip |
 | glow | #FCD9A8 | Moon, heart window, fireflies |
 
 Implementation rule: components use semantic tokens only, never raw hex. Swapping a palette must be a one-file change.

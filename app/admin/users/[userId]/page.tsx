@@ -88,7 +88,7 @@ export default async function AdminUserDetailPage({ params, searchParams }: Page
                 <ul className="divide-y divide-border">
                   {u.gifts.map((g) => (
                     <li key={g.id}>
-                      <Link href={`/admin/gifts/${g.id}`} className="flex items-center justify-between gap-3 py-3 hover:text-primary">
+                      <Link href={`/admin/gifts/${g.id}`} className="flex items-center justify-between gap-3 py-3 hover:text-primary-ink">
                         <div className="min-w-0">
                           <p className="truncate text-sm font-semibold">{g.title}</p>
                           <p className="text-xs text-muted-foreground">

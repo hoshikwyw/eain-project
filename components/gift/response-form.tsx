@@ -111,7 +111,7 @@ export function ResponseForm({ token, questions, sessionId, onStarted }: Props) 
         <fieldset key={q.id} className="flex flex-col gap-3">
           <legend className="font-semibold">
             {q.prompt}
-            {q.required && <span className="ml-1 text-primary">*</span>}
+            {q.required && <span className="ml-1 text-primary-ink">*</span>}
           </legend>
           <QuestionInput question={q} index={index} value={answers[q.id]} onChange={(a) => set(q.id, a)} />
         </fieldset>

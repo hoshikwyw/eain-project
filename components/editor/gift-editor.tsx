@@ -602,7 +602,7 @@ export function GiftEditor(props: Props) {
               type="button"
               title={tabLabel.details}
               onClick={() => openTab("details")}
-              className="min-w-0 cursor-pointer truncate rounded-lg font-display text-lg font-semibold outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/60"
+              className="min-w-0 cursor-pointer truncate rounded-lg font-display text-lg font-semibold outline-none hover:text-primary-ink focus-visible:ring-2 focus-visible:ring-ring/60"
             >
               {title.trim() || tabLabel.details}
             </button>

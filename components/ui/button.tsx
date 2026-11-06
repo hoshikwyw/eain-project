@@ -15,7 +15,7 @@ const buttonVariants = cva(
         ghost: "text-foreground hover:bg-secondary",
         /** Quiet, high-contrast call to action for editorial pages. Inverts in dark mode. */
         ink: "bg-foreground text-background hover:bg-foreground/85",
-        link: "text-primary underline-offset-4 hover:underline",
+        link: "text-primary-ink underline-offset-4 hover:underline",
       },
       size: {
         sm: "h-9 px-3.5",

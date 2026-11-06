@@ -97,7 +97,7 @@ export default async function HomePage() {
           <Label center>{t("home.eyebrow")}</Label>
           <h1 className="mt-8 font-display text-5xl font-light leading-[1.02] tracking-[-0.025em] text-balance sm:text-6xl md:text-7xl lg:text-[5.25rem] my:text-4xl my:leading-[1.5] md:my:text-6xl">
             {t.rich("home.headline", {
-              em: (chunks) => <em className="font-normal text-primary italic my:not-italic">{chunks}</em>,
+              em: (chunks) => <em className="font-normal text-primary-ink italic my:not-italic">{chunks}</em>,
             })}
           </h1>
           <p className="mt-7 max-w-xl text-lg text-muted-foreground md:text-xl">{t("home.subtitle")}</p>
@@ -134,7 +134,7 @@ export default async function HomePage() {
               {i > 0 && <span aria-hidden="true" className="size-1 rounded-full bg-border" />}
               <Link
                 href="/templates"
-                className="font-display text-xl font-light text-foreground/75 italic transition-colors hover:text-primary md:text-2xl my:not-italic"
+                className="font-display text-xl font-light text-foreground/75 italic transition-colors hover:text-primary-ink md:text-2xl my:not-italic"
               >
                 {t(`categories.${key}`)}
               </Link>
@@ -169,7 +169,7 @@ export default async function HomePage() {
             <p>{t("home.statement1")}</p>
             <p className="text-foreground/70">{t("home.statement2")}</p>
             <p>
-              <em className="text-primary italic my:not-italic">{t("home.statement3")}</em>
+              <em className="text-primary-ink italic my:not-italic">{t("home.statement3")}</em>
             </p>
           </div>
           <span aria-hidden="true" className="mx-auto mt-12 block h-px w-16 bg-border" />

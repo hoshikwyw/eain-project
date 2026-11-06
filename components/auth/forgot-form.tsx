@@ -21,7 +21,7 @@ export function ForgotForm({ expired }: { expired?: boolean }) {
         </span>
         <p className="font-semibold">{t("sentTitle")}</p>
         <p className="text-sm text-muted-foreground">{t("sentText")}</p>
-        <Link href="/auth/login" className="text-sm font-semibold text-primary underline-offset-4 hover:underline">
+        <Link href="/auth/login" className="text-sm font-semibold text-primary-ink underline-offset-4 hover:underline">
           {t("backToLogin")}
         </Link>
       </div>
@@ -48,7 +48,7 @@ export function ForgotForm({ expired }: { expired?: boolean }) {
         {t("send")}
       </SubmitButton>
       <p className="text-center text-xs text-muted-foreground">{t("sameDevice")}</p>
-      <Link href="/auth/login" className="text-center text-sm font-semibold text-primary underline-offset-4 hover:underline">
+      <Link href="/auth/login" className="text-center text-sm font-semibold text-primary-ink underline-offset-4 hover:underline">
         {t("backToLogin")}
       </Link>
     </form>

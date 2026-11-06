@@ -79,12 +79,12 @@ export default async function AdminOverviewPage() {
             })}
             <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
               <li>
-                <a className="text-primary underline-offset-4 hover:underline" href="https://supabase.com/dashboard/project/_/settings/billing/usage" target="_blank" rel="noreferrer">
+                <a className="text-primary-ink underline-offset-4 hover:underline" href="https://supabase.com/dashboard/project/_/settings/billing/usage" target="_blank" rel="noreferrer">
                   {t("overview.usage.supabase")}
                 </a>
               </li>
               <li>
-                <a className="text-primary underline-offset-4 hover:underline" href="https://vercel.com/dashboard/usage" target="_blank" rel="noreferrer">
+                <a className="text-primary-ink underline-offset-4 hover:underline" href="https://vercel.com/dashboard/usage" target="_blank" rel="noreferrer">
                   {t("overview.usage.vercel")}
                 </a>
               </li>

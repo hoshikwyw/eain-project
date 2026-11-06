@@ -29,7 +29,7 @@ function SectionHeading({ title, hint, href, linkLabel }: { title: string; hint?
         {hint && <p className="mt-0.5 text-sm text-muted-foreground">{hint}</p>}
       </div>
       {href && linkLabel && (
-        <Link href={href} className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary underline-offset-4 hover:underline">
+        <Link href={href} className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary-ink underline-offset-4 hover:underline">
           {linkLabel}
           <ArrowRight className="size-4" />
         </Link>

@@ -24,7 +24,7 @@ export function BottomNav({ unreadCount }: { unreadCount: number }) {
         aria-label={t(key)}
         className={cn(
           "relative flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-semibold",
-          active ? "text-primary" : "text-muted-foreground",
+          active ? "text-primary-ink" : "text-muted-foreground",
         )}
       >
         <Icon className="size-5" />

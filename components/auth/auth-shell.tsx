@@ -39,7 +39,7 @@ export async function AuthShell({ title, subtitle, reward, children }: Props) {
           <div className="max-w-md">
             <p className="font-display text-4xl leading-tight font-light text-balance xl:text-5xl my:text-3xl my:leading-[1.5] my:text-wrap">
               {t.rich("headline", {
-                em: (chunks) => <em className="font-normal text-primary italic my:not-italic">{chunks}</em>,
+                em: (chunks) => <em className="font-normal text-primary-ink italic my:not-italic">{chunks}</em>,
               })}
             </p>
             <p className="mt-4 text-lg text-muted-foreground">{t("subtitle")}</p>
