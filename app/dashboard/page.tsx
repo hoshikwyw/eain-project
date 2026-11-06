@@ -129,7 +129,7 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
         <section className="flex flex-col gap-4">
           <SectionHeading title={t("home.startNew")} hint={t("home.startNewHint")} href="/create" linkLabel={t("home.allTemplates")} />
           {/* One row that scrolls sideways; it bleeds to the screen edge on phones. */}
-          <ul className="-mx-4 flex snap-x scroll-px-4 gap-3 overflow-x-auto px-4 pt-1 pb-2 scrollbar-thin sm:gap-4">
+          <ul className="-mx-4 flex snap-x scroll-px-4 gap-3 overflow-x-auto px-4 pt-1 pb-3 sm:gap-4">
             {shelf.map((tp) => {
               const card = (
                 <>

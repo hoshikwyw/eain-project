@@ -51,6 +51,10 @@
 
   --eain-shadow-soft: 0 10px 30px -12px rgb(219 51 88 / 0.18);
   --hero-gradient: linear-gradient(160deg, #fff3ee 0%, #ffe3e3 55%, #ffd4da 100%);
+
+  /* Scrollbar thumb: the primary colour, mostly see-through, so it sits quietly on any surface. */
+  --scrollbar-thumb: color-mix(in srgb, var(--primary) 30%, transparent);
+  --scrollbar-thumb-hover: color-mix(in srgb, var(--primary) 55%, transparent);
 }
 
 .dark {
@@ -89,6 +93,9 @@
 
   --eain-shadow-soft: 0 0 0 1px rgb(167 139 250 / 0.06), 0 12px 36px -16px rgb(124 77 238 / 0.45);
   --hero-gradient: linear-gradient(160deg, #1b1442 0%, #241a57 55%, #32206a 100%);
+
+  --scrollbar-thumb: color-mix(in srgb, var(--primary) 50%, transparent);
+  --scrollbar-thumb-hover: color-mix(in srgb, var(--primary) 80%, transparent);
 }
 
 @theme inline {
@@ -148,6 +155,48 @@
 
   html {
     -webkit-text-size-adjust: 100%;
+  }
+
+  /*
+   * Scrollbars in the theme's colours: a thin rounded thumb, no track and
+   * no arrow buttons. Chromium and Safari are styled through the scrollbar
+   * parts. The standard properties are for browsers without those parts
+   * (Firefox) only: where both exist, setting the standard ones makes
+   * Chromium drop the styled parts and draw the system bar with arrows.
+   * For the same reason, do not put scrollbar-thin on an element.
+   */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  /* The see-through border makes the thumb a slim pill inside its lane. */
+  ::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background-color: var(--scrollbar-thumb);
+    background-clip: padding-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover,
+  ::-webkit-scrollbar-thumb:active {
+    background-color: var(--scrollbar-thumb-hover);
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-thumb) transparent;
+    }
   }
 
   body {
