@@ -1,19 +1,15 @@
 "use client";
 
-import { ArrowLeft, Eye, Flower2, Layers, Loader2, Palette, Pencil, Play, Redo2, Save, Send, Settings2, Sticker as StickerIcon, Undo2, X } from "lucide-react";
+import { X } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { startTransition, useActionState, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GiftOpening, openingDuration, type OpeningStage } from "@/components/gift/gift-opening";
-import { GiftStatusChip } from "@/components/gift/gift-status-chip";
 import type { GiftEdit } from "@/components/gift/gift-renderer";
 import { STAGE_MAX_WIDTH } from "@/components/gift/gift-stage";
 import { GiftView } from "@/components/gift/gift-view";
 import { SceneFrame } from "@/components/scene/scene-frame";
-import { LocaleToggle } from "@/components/settings/locale-toggle";
-import { ThemeToggle } from "@/components/settings/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { saveAndPublishGift, saveGift } from "@/features/gifts/actions";
 import { defaultScene, sceneConfig, type GiftScene } from "@/features/gifts/scene";
 import {
   MAX_SECTIONS,
@@ -25,35 +21,31 @@ import {
   type GiftColors,
   type MediaItem,
   type Opening,
-  type SaveGiftState,
   type Section,
   type Sticker,
   type ThemeVariant,
 } from "@/features/gifts/schemas";
 import { dropStickerAnchor, insertStickerAnchor, swapStickerAnchors } from "@/features/gifts/sections";
-import type { StickerKind } from "@/features/gifts/stickers";
 import type { TemplateStyle } from "@/features/gifts/templates";
 import { cn } from "@/lib/utils";
 import type { GiftStatus } from "@/types/database";
-import {
-  sectionSelector,
-  stickerAt,
-  stickerContainer,
-  stickerContainerSelector,
-  stickerOnScreen,
-  textSelector,
-  trackPointer,
-  type TextTarget,
-} from "./canvas-geometry";
+import { sectionSelector, stickerContainerSelector, textSelector, type TextTarget } from "./canvas-geometry";
 import { EditableText } from "./editable-text";
+import { EditorBar } from "./editor-bar";
 import { DetailsPanel, FlowersPanel, LookPanel, OpeningPanel, SectionsPanel, StickersPanel } from "./editor-panels";
+import { CARD_TABS, SCENE_SECTION_TYPES, SCENE_TABS, ToolTabs, type Tab } from "./editor-tabs";
+import { copyOfSection, emptySection } from "./new-section";
 import { PhotoResizeHandle } from "./photo-resize-handle";
+import { PreviewOverlay } from "./preview-overlay";
 import { SectionToolbar } from "./section-toolbar";
 import { StickerControls } from "./sticker-controls";
 import { TEXT_FIELDS, textStyle, withText, withoutTextStyle, withTextStyle } from "./text-fields";
 import { TextResizeHandle } from "./text-resize-handle";
 import { TextToolbar } from "./text-toolbar";
+import { useEditorShortcuts, useStickerKeys } from "./use-editor-keys";
+import { useGiftSave } from "./use-gift-save";
 import { useHistory } from "./use-history";
+import { useStickerActions } from "./use-sticker-actions";
 
 type Props = {
   giftId: string;
@@ -74,61 +66,6 @@ type Props = {
   senderName: string;
   publishError?: boolean;
 };
-
-type Tab = "sections" | "stickers" | "flowers" | "look" | "opening" | "details";
-const CARD_TABS: Tab[] = ["sections", "stickers", "look", "opening", "details"];
-// A scene template is an animation: it has its text and its flowers, and no
-// stickers, looks or opening of its own.
-const SCENE_TABS: Tab[] = ["sections", "flowers", "details"];
-/** A scene's text is its name and message pages, so only pages can be added. */
-const SCENE_SECTION_TYPES: EditableSectionType[] = ["message"];
-
-/** A draft saves itself this long after the last change. */
-const AUTOSAVE_MS = 3000;
-
-const TAB_ICONS: Record<Tab, React.ComponentType<{ className?: string }>> = {
-  sections: Layers,
-  stickers: StickerIcon,
-  flowers: Flower2,
-  look: Palette,
-  opening: Play,
-  details: Settings2,
-};
-
-function emptySection(type: EditableSectionType): Section {
-  const id = crypto.randomUUID();
-  switch (type) {
-    case "question":
-      return {
-        id,
-        type,
-        content: {
-          questionId: crypto.randomUUID(),
-          kind: "choice",
-          prompt: "",
-          required: false,
-          options: [
-            { id: crypto.randomUUID(), label: "" },
-            { id: crypto.randomUUID(), label: "" },
-          ],
-        },
-      };
-    case "text":
-      return { id, type, content: { heading: "", subheading: "" } };
-    case "message":
-      return { id, type, content: { text: "" } };
-    case "image":
-      return { id, type, content: { mediaId: null, caption: "" } };
-    case "photo_grid":
-      return { id, type, content: { mediaIds: [], caption: "" } };
-    case "timeline":
-      return { id, type, content: { items: [{ date: "", title: "", text: "" }] } };
-    case "quote":
-      return { id, type, content: { text: "", attribution: "" } };
-    case "final_message":
-      return { id, type, content: { text: "", signature: "" } };
-  }
-}
 
 /**
  * The gift editor. The gift itself is the workspace: texts are typed in
@@ -174,21 +111,6 @@ export function GiftEditor(props: Props) {
   );
   const payloadJson = JSON.stringify(payload);
 
-  // What the server last confirmed as saved, to show unsaved changes.
-  const [lastSaved, setLastSaved] = useState(() =>
-    JSON.stringify({
-      title: props.title,
-      recipientName: props.recipientName,
-      variant: props.variant,
-      opening: props.opening,
-      colors: props.colors,
-      stickers: props.stickers,
-      ...(props.style.scene && { scene: props.scene ?? defaultScene }),
-      sections: props.sections,
-    }),
-  );
-  const dirty = payloadJson !== lastSaved;
-
   const invalidIds = useMemo(
     () => new Set(sections.filter((s) => !sectionSchema.safeParse(s).success).map((s) => s.id)),
     [sections],
@@ -208,39 +130,27 @@ export function GiftEditor(props: Props) {
     setSections(snapshot.sections);
   });
 
-  /** The content of the last save that failed, so autosave does not keep retrying the same thing. */
-  const [failedSave, setFailedSave] = useState<string | null>(null);
-  const [state, formAction, saving] = useActionState<SaveGiftState, FormData>(async (prev, fd) => {
-    const sent = String(fd.get("payload"));
-    const result = await saveGift(props.giftId, prev, fd);
-    if (result.status === "saved") setLastSaved(sent);
-    setFailedSave(result.status === "saved" ? null : sent);
-    return result;
-  }, {});
-
-  // Publish always saves the current editor content first, so nothing typed is lost.
-  const [publishing, startPublish] = useTransition();
-  const [publishState, setPublishState] = useState<SaveGiftState["status"]>();
-
   // A draft saves itself once the creator pauses. A published gift does not:
   // a save there is live for the receiver at once, so it stays a deliberate step.
   const autosave = props.status !== "published";
-  useEffect(() => {
-    if (!autosave || !dirty || !valid || saving || publishing || payloadJson === failedSave) return;
-    const timer = window.setTimeout(() => {
-      const fd = new FormData();
-      fd.set("payload", payloadJson);
-      startTransition(() => formAction(fd));
-    }, AUTOSAVE_MS);
-    return () => window.clearTimeout(timer);
-  }, [autosave, dirty, valid, saving, publishing, payloadJson, failedSave, formAction]);
-
-  useEffect(() => {
-    if (!dirty) return;
-    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
-    window.addEventListener("beforeunload", warn);
-    return () => window.removeEventListener("beforeunload", warn);
-  }, [dirty]);
+  const { dirty, state, formAction, saving, publishing, publishState, publish, saveNow } = useGiftSave({
+    giftId: props.giftId,
+    autosave,
+    initialJson: () =>
+      JSON.stringify({
+        title: props.title,
+        recipientName: props.recipientName,
+        variant: props.variant,
+        opening: props.opening,
+        colors: props.colors,
+        stickers: props.stickers,
+        ...(props.style.scene && { scene: props.scene ?? defaultScene }),
+        sections: props.sections,
+      }),
+    payloadJson,
+    valid,
+    onInvalid: () => revealInvalid(),
+  });
 
   // Opening preview: show the closed gift for a moment, play it, then close.
   useEffect(() => {
@@ -257,33 +167,7 @@ export function GiftEditor(props: Props) {
     canvasRef.current?.querySelector(sectionSelector(scrollTo.id))?.scrollIntoView({ block: scrollTo.block, behavior: "smooth" });
   }, [scrollTo]);
 
-  // Keys for the selected sticker: Delete removes it, arrows nudge it.
-  useEffect(() => {
-    if (!selectedSticker) return;
-    const onKey = (e: KeyboardEvent) => {
-      const target = e.target;
-      if (target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))) return;
-      if (e.key === "Delete" || e.key === "Backspace") {
-        e.preventDefault();
-        setStickers((all) => all.filter((s) => s.id !== selectedSticker));
-        setSelectedSticker(null);
-      } else if (e.key === "Escape") {
-        setSelectedSticker(null);
-      } else if (e.key.startsWith("Arrow")) {
-        e.preventDefault();
-        const step = e.shiftKey ? 5 : 1;
-        const dx = e.key === "ArrowRight" ? step : e.key === "ArrowLeft" ? -step : 0;
-        const dy = e.key === "ArrowDown" ? step : e.key === "ArrowUp" ? -step : 0;
-        setStickers((all) =>
-          all.map((s) =>
-            s.id === selectedSticker ? { ...s, x: Math.min(Math.max(s.x + dx, -20), 120), y: Math.min(Math.max(s.y + dy, -50), 150) } : s,
-          ),
-        );
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [selectedSticker]);
+  useStickerKeys(selectedSticker, setStickers, setSelectedSticker);
 
   const mediaMap = useMemo(() => Object.fromEntries(media.map((m) => [m.id, m])), [media]);
 
@@ -319,23 +203,12 @@ export function GiftEditor(props: Props) {
     setScrollTo({ id: section.id, block: "center" });
   };
 
-  /** Copies a section to just below itself. A question gets ids of its own, so answers never mix. */
+  /** Copies a section to just below itself. */
   const duplicateSection = (id: string) => {
     const index = sections.findIndex((s) => s.id === id);
     const source = sections[index];
     if (!source || sections.length >= MAX_SECTIONS) return;
-    const copy: Section =
-      source.type === "question"
-        ? {
-            ...source,
-            id: crypto.randomUUID(),
-            content: {
-              ...source.content,
-              questionId: crypto.randomUUID(),
-              options: source.content.options.map((o) => ({ ...o, id: crypto.randomUUID() })),
-            },
-          }
-        : { ...source, id: crypto.randomUUID() };
+    const copy = copyOfSection(source);
     setSections([...sections.slice(0, index + 1), copy, ...sections.slice(index + 1)]);
     setStickers((all) => insertStickerAnchor(all, index + 1));
     setSelectedId(copy.id);
@@ -354,8 +227,6 @@ export function GiftEditor(props: Props) {
 
   // Stickers ------------------------------------------------------------------
 
-  const patchSticker = (id: string, next: (s: Sticker) => Sticker) => setStickers((all) => all.map((s) => (s.id === id ? next(s) : s)));
-
   const selectSticker = (id: string) => {
     setSelectedSticker(id);
     setSelectedId(null);
@@ -364,68 +235,24 @@ export function GiftEditor(props: Props) {
     if (focused instanceof HTMLElement && canvasRef.current?.contains(focused)) focused.blur();
   };
 
-  /** Puts a new sticker in the middle of the part of the gift that is on screen. */
-  const addSticker = (kind: StickerKind) => {
-    const canvas = canvasRef.current;
-    if (!canvas || stickers.length >= MAX_STICKERS) return;
-    const frame = canvas.getBoundingClientRect();
-    const top = Math.max(frame.top, 72);
-    const bottom = Math.min(frame.bottom, window.innerHeight - 72);
-    // Each new one lands a little off the last, so they do not hide each other.
-    const offset = ((stickers.length % 5) - 2) * 18;
-    const sticker = stickerAt(
-      canvas,
-      sections,
-      { id: crypto.randomUUID(), kind, rotate: 0 },
-      {
-        cx: frame.left + frame.width / 2 + offset,
-        cy: (bottom > top ? (top + bottom) / 2 : frame.top + frame.height / 2) + offset,
-        size: frame.width * 0.16,
-      },
-    );
-    setStickers([...stickers, sticker]);
-    selectSticker(sticker.id);
-    setSheetOpen(false);
+  /** Called when a drag on the gift ends: the click the browser sends right after it must pick nothing. */
+  const markDragged = () => {
+    justDragged.current = true;
+    window.setTimeout(() => {
+      justDragged.current = false;
+    }, 0);
   };
 
-  /** Drags a sticker with the pointer. On release it settles on the section under it. */
-  const dragSticker = (e: React.PointerEvent, id: string) => {
-    const canvas = canvasRef.current;
-    const sticker = stickers.find((s) => s.id === id);
-    if (!canvas || !sticker) return;
-    const start = stickerOnScreen(canvas, sections, sticker);
-    const box = stickerContainer(canvas, sections, sticker)?.getBoundingClientRect();
-    if (!start || !box) return;
-    e.preventDefault();
-    selectSticker(id);
-    const origin = { x: e.clientX, y: e.clientY };
-    let moved: { dx: number; dy: number } | null = null;
-    trackPointer(
-      (ev) => {
-        const dx = ev.clientX - origin.x;
-        const dy = ev.clientY - origin.y;
-        if (!moved && Math.hypot(dx, dy) < 4) return;
-        moved = { dx, dy };
-        patchSticker(id, (s) => ({ ...s, x: sticker.x + (dx / box.width) * 100, y: sticker.y + (dy / box.height) * 100 }));
-      },
-      () => {
-        if (!moved) return;
-        const { dx, dy } = moved;
-        patchSticker(id, (s) => stickerAt(canvas, sections, s, { cx: start.cx + dx, cy: start.cy + dy, size: start.size }));
-        justDragged.current = true;
-        window.setTimeout(() => {
-          justDragged.current = false;
-        }, 0);
-      },
-    );
-  };
-
-  const duplicateSticker = (sticker: Sticker) => {
-    if (stickers.length >= MAX_STICKERS) return;
-    const copy = { ...sticker, id: crypto.randomUUID(), x: Math.min(sticker.x + 5, 120), y: Math.min(sticker.y + 5, 150) };
-    setStickers([...stickers, copy]);
-    setSelectedSticker(copy.id);
-  };
+  const { patchSticker, addSticker, dragSticker, duplicateSticker } = useStickerActions({
+    canvasRef,
+    sections,
+    stickers,
+    setStickers,
+    select: selectSticker,
+    setSelected: setSelectedSticker,
+    onAdded: () => setSheetOpen(false),
+    onDragEnd: markDragged,
+  });
 
   // Clicks and focus on the gift pick the section they land in.
   const pickOnCanvas = (target: EventTarget, deselect: boolean) => {
@@ -487,44 +314,7 @@ export function GiftEditor(props: Props) {
     }
   };
 
-  const publish = () => {
-    if (!valid) return revealInvalid();
-    startPublish(async () => {
-      setPublishState(undefined);
-      const fd = new FormData();
-      fd.set("payload", payloadJson);
-      const result = await saveAndPublishGift(props.giftId, fd);
-      if (result) setPublishState(result.status);
-    });
-  };
-
-  /** Saves now, for the keyboard. The Save button submits its form to the same action. */
-  const saveNow = () => {
-    if (!valid) return revealInvalid();
-    if (saving || publishing) return;
-    const fd = new FormData();
-    fd.set("payload", payloadJson);
-    startTransition(() => formAction(fd));
-  };
-
-  // Ctrl or Cmd with Z, Shift+Z, Y and S. Undo is the editor's own everywhere,
-  // texts included, so one history covers typing, styling and moving.
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
-      const key = e.key.toLowerCase();
-      if (key === "z" || key === "y") {
-        e.preventDefault();
-        if (key === "y" || e.shiftKey) history.redo();
-        else history.undo();
-      } else if (key === "s") {
-        e.preventDefault();
-        saveNow();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  });
+  useEditorShortcuts({ undo: history.undo, redo: history.redo, save: saveNow });
 
   // What stops a save is spelled out in full; the rest is a short status.
   const problem =
@@ -580,7 +370,6 @@ export function GiftEditor(props: Props) {
   const stickerBox = sticker && stickerContainerSelector(sections, sticker);
   const activeSection = activeText ? sections.find((s) => s.id === activeText.sectionId) : undefined;
   const tabs = sceneKind ? SCENE_TABS : CARD_TABS;
-  const tabColumns = { gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` };
   const tabLabel: Record<Tab, string> = {
     sections: t("sections"),
     stickers: t("stickers"),
@@ -597,84 +386,27 @@ export function GiftEditor(props: Props) {
       <div className="sticky top-0 z-30 flex flex-col px-[max(1rem,calc(50%-35rem))]">
         {/* The glass is a layer of its own, so the text tools' popups can blur the gift behind them. */}
         <div aria-hidden="true" className="glass-bar absolute inset-0 -z-10 border-b" />
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 py-2 lg:h-16 lg:flex-nowrap lg:gap-x-4 lg:py-0">
-          {/* Which gift this is. Its own row on phones, the left end of the bar on wide screens. */}
-          <div className="flex min-w-0 basis-full items-center gap-2 lg:max-w-xs lg:basis-auto xl:max-w-sm">
-            <Button asChild variant="ghost" size="icon" className="size-9 shrink-0" aria-label={t("back")}>
-              <Link href="/dashboard/gifts">
-                <ArrowLeft />
-              </Link>
-            </Button>
-            <button
-              type="button"
-              title={tabLabel.details}
-              onClick={() => openTab("details")}
-              className="min-w-0 cursor-pointer truncate rounded-lg font-display text-lg font-semibold outline-none hover:text-primary-ink focus-visible:ring-2 focus-visible:ring-ring/60"
-            >
-              {title.trim() || tabLabel.details}
-            </button>
-            <GiftStatusChip status={props.status} opened={props.opened} />
-            <span className="ml-auto flex shrink-0 items-center gap-1 lg:hidden">
-              <LocaleToggle />
-              <ThemeToggle />
-            </span>
-          </div>
-
-          {/* What can be done with it. */}
-          <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:gap-2">
-            <Button type="button" variant="ghost" size="icon" className="size-9" aria-label={t("undo")} disabled={!history.canUndo} onClick={history.undo}>
-              <Undo2 />
-            </Button>
-            <Button type="button" variant="ghost" size="icon" className="size-9" aria-label={t("redo")} disabled={!history.canRedo} onClick={history.redo}>
-              <Redo2 />
-            </Button>
-            <p role="status" className={cn("min-w-0 flex-1 truncate text-sm", status?.tone)}>
-              {status?.text}
-            </p>
-            <span className="flex shrink-0 items-center gap-1 max-lg:hidden">
-              <LocaleToggle />
-              <ThemeToggle />
-            </span>
-            {sceneKind ? (
-              // The card is only a summary, so "preview" plays the animation itself.
-              <Button type="button" variant="ghost" size="sm" onClick={() => setPlaying(true)}>
-                <Play />
-                <span className="max-sm:sr-only">{t("playScene")}</span>
-              </Button>
-            ) : (
-              <Button type="button" variant="ghost" size="sm" aria-pressed={previewing} onClick={() => setPreviewing((v) => !v)}>
-                {previewing ? <Pencil /> : <Eye />}
-                <span className="max-sm:sr-only">{previewing ? t("backToEdit") : t("preview")}</span>
-              </Button>
-            )}
-            <form
-              action={formAction}
-              onSubmit={(e) => {
-                if (valid) return;
-                e.preventDefault();
-                revealInvalid();
-              }}
-            >
-              <input type="hidden" name="payload" value={payloadJson} />
-              <Button type="submit" variant="secondary" size="sm" disabled={saving || publishing} aria-busy={saving}>
-                {saving ? <Loader2 className="animate-spin" /> : <Save />}
-                <span className="max-sm:sr-only">{saving ? t("saving") : t("save")}</span>
-              </Button>
-            </form>
-            <Button type="button" size="sm" className="px-4" onClick={publish} disabled={publishing || saving} aria-busy={publishing}>
-              {publishing ? <Loader2 className="animate-spin" /> : <Send />}
-              {publishing ? (
-                t("publishing")
-              ) : (
-                <>
-                  {/* The long label only where the bar has room for it and for the save status. */}
-                  <span className="xl:hidden">{published ? t("republishShort") : t("publishShort")}</span>
-                  <span className="max-xl:hidden">{published ? t("republish") : t("publish")}</span>
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
+        <EditorBar
+          title={title}
+          detailsLabel={tabLabel.details}
+          onTitle={() => openTab("details")}
+          status={props.status}
+          opened={props.opened}
+          history={history}
+          note={status}
+          scene={Boolean(sceneKind)}
+          previewing={previewing}
+          onPreview={() => setPreviewing((v) => !v)}
+          onPlay={() => setPlaying(true)}
+          saveAction={formAction}
+          payloadJson={payloadJson}
+          valid={valid}
+          onInvalid={revealInvalid}
+          saving={saving}
+          publishing={publishing}
+          published={published}
+          onPublish={publish}
+        />
         {problem && (
           <p role="alert" className="py-1.5 text-sm text-destructive">
             {problem}
@@ -779,12 +511,7 @@ export function GiftEditor(props: Props) {
                     updateSection(selectedPhoto.type === "image" ? { ...selectedPhoto, content: { ...selectedPhoto.content, size } } : { ...selectedPhoto, content: { ...selectedPhoto.content, size } })
                   }
                   // The release is followed by a click, which would land beside the photo and clear the selection.
-                  onDone={() => {
-                    justDragged.current = true;
-                    window.setTimeout(() => {
-                      justDragged.current = false;
-                    }, 0);
-                  }}
+                  onDone={markDragged}
                   label={t("resizePhoto")}
                 />
               )}
@@ -842,11 +569,7 @@ export function GiftEditor(props: Props) {
             "lg:sticky lg:top-32 lg:max-h-[calc(100svh-9rem)] lg:self-start lg:rounded-3xl lg:border lg:shadow-soft",
           )}
         >
-          <div role="tablist" aria-label={t("tools")} style={tabColumns} className="grid gap-1 border-b border-border p-1.5 max-lg:hidden">
-            {tabs.map((name) => (
-              <TabButton key={name} name={name} label={tabLabel[name]} active={tab === name} onClick={() => setTab(name)} />
-            ))}
-          </div>
+          <ToolTabs tabs={tabs} labels={tabLabel} active={tab} onPick={setTab} label={t("tools")} className="border-b border-border p-1.5 max-lg:hidden" />
           <div className="flex items-center justify-between border-b border-border py-2 pr-2 pl-4 lg:hidden">
             <h2 className="text-sm font-semibold">{tabLabel[tab]}</h2>
             <Button type="button" variant="ghost" size="icon" className="size-9" aria-label={t("closePanel")} onClick={() => setSheetOpen(false)}>
@@ -898,34 +621,17 @@ export function GiftEditor(props: Props) {
         </aside>
       </div>
 
-      <div
-        role="tablist"
-        aria-label={t("tools")}
-        style={tabColumns}
-        className="glass-bar fixed inset-x-0 bottom-0 z-40 grid gap-1 border-t px-1.5 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] lg:hidden"
-      >
-        {tabs.map((name) => (
-          <TabButton
-            key={name}
-            name={name}
-            label={tabLabel[name]}
-            active={sheetOpen && tab === name}
-            onClick={() => (sheetOpen && tab === name ? setSheetOpen(false) : openTab(name))}
-          />
-        ))}
-      </div>
+      <ToolTabs
+        tabs={tabs}
+        labels={tabLabel}
+        active={sheetOpen ? tab : null}
+        onPick={(name) => (sheetOpen && tab === name ? setSheetOpen(false) : openTab(name))}
+        label={t("tools")}
+        className="glass-bar fixed inset-x-0 bottom-0 z-40 border-t px-1.5 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] lg:hidden"
+      />
 
       {playing && sceneKind && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={t("scenePreview")}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-scrim p-4 backdrop-blur-md"
-          onClick={() => setPlaying(false)}
-        >
-          <Button type="button" variant="ghost" size="icon" className="absolute top-4 right-4" aria-label={t("closePreview")} onClick={() => setPlaying(false)}>
-            <X />
-          </Button>
+        <PreviewOverlay label={t("scenePreview")} closeLabel={t("closePreview")} onClose={() => setPlaying(false)}>
           {/* The same phone-shaped frame the receiver sees, with what is in the editor right now. */}
           <div className="h-[min(88svh,46rem)] w-full max-w-md overflow-hidden rounded-3xl shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <SceneFrame
@@ -934,27 +640,11 @@ export function GiftEditor(props: Props) {
               config={sceneConfig(sections, scene, { recipient: recipientName, sender: senderName }, tGift("tapToBloom"))}
             />
           </div>
-        </div>
+        </PreviewOverlay>
       )}
 
       {openingPreview && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={t("openingPreview")}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-scrim p-4 backdrop-blur-md"
-          onClick={() => setOpeningPreview(null)}
-        >
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="absolute top-4 right-4"
-            aria-label={t("closePreview")}
-            onClick={() => setOpeningPreview(null)}
-          >
-            <X />
-          </Button>
+        <PreviewOverlay label={t("openingPreview")} closeLabel={t("closePreview")} onClose={() => setOpeningPreview(null)}>
           <GiftOpening
             key={opening}
             kind={opening}
@@ -963,27 +653,8 @@ export function GiftEditor(props: Props) {
             stage={openingPreview}
             label={recipientName ? tGift("forName", { name: recipientName }) : tGift("forYou")}
           />
-        </div>
+        </PreviewOverlay>
       )}
     </div>
-  );
-}
-
-function TabButton({ name, label, active, onClick }: { name: Tab; label: string; active: boolean; onClick: () => void }) {
-  const Icon = TAB_ICONS[name];
-  return (
-    <button
-      type="button"
-      role="tab"
-      aria-selected={active}
-      onClick={onClick}
-      className={cn(
-        "flex cursor-pointer flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[11px] leading-tight font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
-        active ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
-      )}
-    >
-      <Icon className="size-5" />
-      <span className="max-w-full truncate">{label}</span>
-    </button>
   );
 }
