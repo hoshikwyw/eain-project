@@ -18,7 +18,7 @@ export default async function SignupPage({ searchParams }: PageProps<"/auth/sign
   const providers = await getAuthProviders();
 
   return (
-    <AuthShell title={t("createAccount")} subtitle={t("signupSubtitle")}>
+    <AuthShell title={t("createAccount")} subtitle={t("signupSubtitle")} reward>
       <AuthForm mode="signup" next={next} configured={isSupabaseConfigured()} googleEnabled={providers.google} />
     </AuthShell>
   );

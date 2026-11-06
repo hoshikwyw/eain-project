@@ -44,7 +44,7 @@ export function ForgotForm({ expired }: { expired?: boolean }) {
           {t(`errors.${state.status}`)}
         </p>
       )}
-      <SubmitButton className="w-full" pendingLabel={t("sending")}>
+      <SubmitButton className="w-full rounded-full" pendingLabel={t("sending")}>
         {t("send")}
       </SubmitButton>
       <p className="text-center text-xs text-muted-foreground">{t("sameDevice")}</p>

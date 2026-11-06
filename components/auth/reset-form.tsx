@@ -36,7 +36,7 @@ export function ResetForm() {
           )}
         </p>
       )}
-      <SubmitButton className="w-full" pendingLabel={t("saving")}>
+      <SubmitButton className="w-full rounded-full" pendingLabel={t("saving")}>
         {t("save")}
       </SubmitButton>
     </form>

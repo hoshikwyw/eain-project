@@ -43,7 +43,7 @@ export function AuthForm({ mode, next, notice, configured, googleEnabled, allowS
         <>
           <form action={signInWithGoogle}>
             <input type="hidden" name="next" value={next} />
-            <Button type="submit" variant="secondary" className="w-full" disabled={!configured}>
+            <Button type="submit" variant="secondary" className="w-full rounded-full" disabled={!configured}>
               <GoogleMark />
               {t("continueWithGoogle")}
             </Button>
@@ -118,7 +118,7 @@ export function AuthForm({ mode, next, notice, configured, googleEnabled, allowS
           </p>
         ) : null}
 
-        <Button type="submit" className="w-full" disabled={pending || !configured}>
+        <Button type="submit" className="w-full rounded-full" disabled={pending || !configured}>
           {mode === "login" ? t("logIn") : t("createAccount")}
         </Button>
       </form>

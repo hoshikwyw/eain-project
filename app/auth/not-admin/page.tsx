@@ -18,9 +18,9 @@ export default async function NotAdminPage() {
     <AuthShell title={t("title")} subtitle={t("text")}>
       <div className="flex flex-col gap-3">
         <form action={signOut}>
-          <SubmitButton className="w-full">{t("switch")}</SubmitButton>
+          <SubmitButton className="w-full rounded-full">{t("switch")}</SubmitButton>
         </form>
-        <Button asChild variant="secondary" className="w-full">
+        <Button asChild variant="secondary" className="w-full rounded-full">
           <a href={userHref("/dashboard")}>{t("toUserSite")}</a>
         </Button>
       </div>
