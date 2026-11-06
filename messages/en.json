@@ -804,6 +804,21 @@
     "notificationsEmpty": "Nothing here yet. You will see when a gift is opened or answered.",
     "comingSoon": "Coming in the next part.",
     "viewAll": "View all",
+    "home": {
+      "yourGifts": "Your gifts",
+      "yourGiftsHint": "Pick up where you left off.",
+      "emptyTitle": "Your first gift is a few taps away",
+      "startNew": "Start something new",
+      "startNewHint": "Choose a template and make it yours.",
+      "allTemplates": "All templates",
+      "free": "Free",
+      "lately": "Lately",
+      "latelyEmpty": "When someone opens or answers one of your gifts, you'll see it here.",
+      "waysToEarn": "Ways to earn",
+      "statGifts": "{count, plural, one {# gift} other {# gifts}}",
+      "statOpened": "{count} opened",
+      "statReplies": "{count, plural, one {# reply} other {# replies}}"
+    },
     "gifts": {
       "count": "{count} of {max} gifts",
       "for": "For {name}",

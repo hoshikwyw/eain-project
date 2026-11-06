@@ -1,26 +1,28 @@
-import { PageHeaderSkeleton, Skeleton, StatTilesSkeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
-/** Dashboard home skeleton. Layout chrome stays visible. */
-export default function DashboardLoading() {
+/** Home screen skeleton: the greeting, a row of gift pictures, a shelf of templates. The top bar stays visible. */
+export default function HomeLoading() {
   return (
-    <div className="flex flex-col gap-6" aria-busy="true">
-      <PageHeaderSkeleton />
-      <StatTilesSkeleton />
-      <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-5">
-          <Skeleton className="h-5 w-32" />
-          {Array.from({ length: 3 }, (_, i) => (
-            <div key={i} className="flex items-center gap-3 rounded-xl border border-border p-3">
-              <Skeleton className="size-11 shrink-0" />
-              <div className="flex flex-1 flex-col gap-2">
-                <Skeleton className="h-4 w-1/2" />
-                <Skeleton className="h-3 w-1/3" />
-              </div>
-              <Skeleton className="h-6 w-16 rounded-full" />
+    <div className="flex flex-col gap-10 sm:gap-12" aria-busy="true">
+      <Skeleton className="h-72 rounded-[2rem] sm:h-64" />
+      <div className="flex flex-col gap-4">
+        <Skeleton className="h-7 w-40" />
+        <div className="grid grid-cols-2 gap-x-3 gap-y-5 sm:gap-x-4 md:grid-cols-4">
+          {Array.from({ length: 4 }, (_, i) => (
+            <div key={i} className="flex flex-col gap-2.5">
+              <Skeleton className="aspect-[4/5] rounded-2xl" />
+              <Skeleton className="h-4 w-2/3" />
             </div>
           ))}
         </div>
-        <Skeleton className="h-64 rounded-2xl" />
+      </div>
+      <div className="flex flex-col gap-4">
+        <Skeleton className="h-7 w-56" />
+        <div className="flex gap-3 overflow-hidden sm:gap-4">
+          {Array.from({ length: 5 }, (_, i) => (
+            <Skeleton key={i} className="aspect-[4/3] w-52 shrink-0 rounded-xl sm:w-60" />
+          ))}
+        </div>
       </div>
     </div>
   );

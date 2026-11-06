@@ -47,6 +47,64 @@ export async function listMyGifts(): Promise<GiftListItem[]> {
   }));
 }
 
+/** A gift with everything needed to draw a picture of it, for galleries. */
+export type GiftCard = {
+  gift: Gift;
+  recipient: Pick<GiftRecipient, "name" | "first_opened_at"> | null;
+  style: TemplateStyle;
+  variant: ThemeVariant;
+  colors: GiftColors;
+  stickers: Sticker[];
+  scene: GiftScene | undefined;
+  sections: Section[];
+  media: Record<string, MediaItem>;
+};
+
+/**
+ * The signed-in creator's gifts that are not deleted, most recently changed
+ * first, each with its content so it can be shown as a thumbnail. Loads all
+ * of them in a fixed number of queries; a creator has at most a handful.
+ */
+export async function listMyGiftCards(limit?: number): Promise<GiftCard[]> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+  let query = supabase
+    .from("gifts")
+    .select("*")
+    .eq("sender_id", user.id)
+    .neq("status", "deleted")
+    .order("updated_at", { ascending: false });
+  if (limit) query = query.limit(limit);
+  const { data: gifts } = await query;
+  if (!gifts || gifts.length === 0) return [];
+
+  const ids = gifts.map((g) => g.id);
+  const [{ data: recipients }, { data: templates }, { data: sections }, { data: mediaRows }] = await Promise.all([
+    supabase.from("gift_recipients").select("gift_id, name, first_opened_at").in("gift_id", ids),
+    supabase.from("templates").select("id, slug"),
+    supabase.from("gift_sections").select("id, gift_id, type, content, position").in("gift_id", ids),
+    supabase.from("gift_media").select("id, gift_id, storage_path, thumb_path, width, height").in("gift_id", ids),
+  ]);
+  const media = await signMedia(mediaRows ?? []);
+  const recipientByGift = new Map((recipients ?? []).map((r) => [r.gift_id, r]));
+  const slugById = new Map((templates ?? []).map((t) => [t.id, t.slug]));
+
+  return gifts.map((gift) => ({
+    gift,
+    recipient: recipientByGift.get(gift.id) ?? null,
+    style: getTemplateStyle(slugById.get(gift.template_id) ?? ""),
+    variant: variantFromTheme(gift.theme),
+    colors: colorsFromTheme(gift.theme),
+    stickers: stickersFromTheme(gift.theme),
+    scene: sceneFromTheme(gift.theme),
+    sections: sectionsFromRows((sections ?? []).filter((s) => s.gift_id === gift.id)),
+    media: Object.fromEntries((mediaRows ?? []).filter((m) => m.gift_id === gift.id && media[m.id]).map((m) => [m.id, media[m.id]!])),
+  }));
+}
+
 export type EditorGift = {
   gift: Gift;
   template: Pick<Template, "id" | "slug" | "name_en" | "name_my">;
