@@ -1,26 +1,20 @@
-import { GiftSkeleton, PageHeaderSkeleton, Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
+/** Gift page skeleton: the title, then the share area, the gift and the side panels in their places. */
 export default function GiftDetailLoading() {
   return (
     <div className="flex flex-col gap-6" aria-busy="true">
-      <PageHeaderSkeleton />
-      <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5">
-            <Skeleton className="h-5 w-24" />
-            <div className="grid gap-6 md:grid-cols-[1fr_auto]">
-              <div className="flex flex-col gap-3">
-                <Skeleton className="h-11 w-full" />
-                <Skeleton className="h-16 w-full" />
-              </div>
-              <Skeleton className="size-44 rounded-2xl" />
-            </div>
-          </div>
-          <GiftSkeleton compact />
-        </div>
-        <div className="flex flex-col gap-6">
-          <Skeleton className="h-64 rounded-2xl" />
-          <Skeleton className="h-56 rounded-2xl" />
+      <div className="flex flex-col gap-3">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-10 w-64 max-w-full" />
+        <Skeleton className="h-5 w-40" />
+      </div>
+      <div className="mx-auto grid w-full max-w-2xl grid-cols-1 gap-6 lg:max-w-none lg:grid-cols-[minmax(0,1fr)_380px] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-8">
+        <Skeleton className="h-80 rounded-3xl lg:col-start-2 lg:row-start-1" />
+        <Skeleton className="h-[34rem] rounded-[2rem] lg:col-start-1 lg:row-span-2 lg:row-start-1" />
+        <div className="flex flex-col gap-6 lg:col-start-2 lg:row-start-2">
+          <Skeleton className="h-64 rounded-3xl" />
+          <Skeleton className="h-56 rounded-3xl" />
         </div>
       </div>
     </div>

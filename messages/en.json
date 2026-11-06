@@ -463,6 +463,8 @@
     "nativeShare": "Share",
     "shareText": "I made something special for you.",
     "anyoneWithLink": "Anyone with this link can open the gift. Share it only with the person it is for.",
+    "qrTitle": "Or show a QR code",
+    "qrHint": "A phone camera opens the gift from it.",
     "qrAlt": "QR code for the gift link",
     "downloadQr": "Download QR"
   },
@@ -820,6 +822,18 @@
       "statReplies": "{count, plural, one {# reply} other {# replies}}"
     },
     "gifts": {
+      "filters": {
+        "label": "Filter gifts",
+        "all": "All",
+        "drafts": "Drafts",
+        "shared": "Shared",
+        "opened": "Opened",
+        "empty": {
+          "drafts": "No drafts right now.",
+          "shared": "You haven't shared a gift yet. Publish one to get its link.",
+          "opened": "No one has opened a gift yet. It shows up here as soon as they do."
+        }
+      },
       "count": "{count} of {max} gifts",
       "for": "For {name}",
       "noRecipient": "No recipient name yet",

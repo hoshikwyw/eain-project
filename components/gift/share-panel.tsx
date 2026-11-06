@@ -1,16 +1,20 @@
 "use client";
 
-import { Check, Copy, Download, Share2 } from "lucide-react";
+import { Check, Copy, Download, Lock, Share2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { markGiftShared } from "@/features/gifts/actions";
 
 type Props = { giftId: string; url: string; qrSvg: string; qrPngDataUrl: string; title: string };
 
 const neverChanges = () => () => {};
 
+/**
+ * Everything needed to pass a gift on: the link with a copy button, the
+ * phone's own share sheet where there is one, and a QR code. Laid out as
+ * one narrow column, so it reads the same in a side panel and on a phone.
+ */
 export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title }: Props) {
   const t = useTranslations("share");
   const [copied, setCopied] = useState(false);
@@ -31,7 +35,7 @@ export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title }: Props) {
       recordShared();
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Clipboard blocked: the URL is visible in the input for manual copy.
+      // Clipboard blocked: the URL is visible in the field for manual copy.
     }
   }
 
@@ -45,41 +49,57 @@ export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title }: Props) {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-[1fr_auto]">
-      <div className="flex flex-col gap-3">
-        <label htmlFor="share-url" className="text-sm font-semibold">
+    <div className="flex flex-col gap-3">
+      {/* The link and its copy button, as one pill. */}
+      <div className="flex items-center gap-2 rounded-full bg-card p-1.5 pl-4 ring-1 ring-border focus-within:ring-2 focus-within:ring-ring/60">
+        <label htmlFor="share-url" className="sr-only">
           {t("link")}
         </label>
-        <div className="flex gap-2">
-          <Input id="share-url" readOnly value={url} onFocus={(e) => e.currentTarget.select()} className="font-mono text-xs" />
-          <Button type="button" variant="secondary" onClick={copy} aria-live="polite" className="shrink-0">
-            {copied ? <Check /> : <Copy />}
-            {copied ? t("copied") : t("copy")}
-          </Button>
-        </div>
-        {canShare && (
-          <Button type="button" variant="soft" onClick={share} className="self-start">
-            <Share2 />
-            {t("nativeShare")}
-          </Button>
-        )}
-        <p className="rounded-xl bg-accent px-3.5 py-2.5 text-sm text-accent-foreground">{t("anyoneWithLink")}</p>
+        <input
+          id="share-url"
+          readOnly
+          value={url}
+          onFocus={(e) => e.currentTarget.select()}
+          className="min-w-0 flex-1 bg-transparent font-mono text-xs outline-none"
+        />
+        <Button type="button" size="sm" onClick={copy} aria-live="polite" className="rounded-full">
+          {copied ? <Check /> : <Copy />}
+          {copied ? t("copied") : t("copy")}
+        </Button>
       </div>
 
-      <div className="flex flex-col items-center gap-3">
+      {canShare && (
+        <Button type="button" variant="secondary" onClick={share} className="w-full rounded-full">
+          <Share2 />
+          {t("nativeShare")}
+        </Button>
+      )}
+
+      <div className="flex items-center gap-4 rounded-2xl bg-card p-3 ring-1 ring-border">
         <div
-          className="size-44 overflow-hidden rounded-2xl border border-border bg-white p-2 [&_svg]:size-full"
+          className="size-28 shrink-0 overflow-hidden rounded-xl bg-white p-1.5 [&_svg]:size-full"
           role="img"
           aria-label={t("qrAlt")}
           dangerouslySetInnerHTML={{ __html: qrSvg }}
         />
-        <Button asChild variant="secondary" size="sm">
-          <a href={qrPngDataUrl} download="eain-gift-qr.png" onClick={recordShared}>
-            <Download />
-            {t("downloadQr")}
-          </a>
-        </Button>
+        <div className="flex min-w-0 flex-col items-start gap-2">
+          <div>
+            <p className="text-sm font-semibold">{t("qrTitle")}</p>
+            <p className="text-xs text-muted-foreground">{t("qrHint")}</p>
+          </div>
+          <Button asChild variant="secondary" size="sm" className="rounded-full">
+            <a href={qrPngDataUrl} download="eain-gift-qr.png" onClick={recordShared}>
+              <Download />
+              {t("downloadQr")}
+            </a>
+          </Button>
+        </div>
       </div>
+
+      <p className="flex gap-2 px-1 text-xs text-muted-foreground">
+        <Lock className="mt-0.5 size-3.5 shrink-0" />
+        {t("anyoneWithLink")}
+      </p>
     </div>
   );
 }

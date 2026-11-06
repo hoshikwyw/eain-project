@@ -3,8 +3,7 @@ import Link from "next/link";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { Bird, Lovebirds } from "@/components/brand/lovebirds";
 import { StartTemplateButton } from "@/components/dashboard/start-template";
-import { GiftStatusChip } from "@/components/gift/gift-status-chip";
-import { GiftThumb } from "@/components/gift/gift-thumb";
+import { GiftTile } from "@/components/gift/gift-tile";
 import { TemplatePreview } from "@/components/templates/template-preview";
 import { Button } from "@/components/ui/button";
 import { createGift } from "@/features/gifts/actions";
@@ -127,33 +126,11 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
           </div>
         ) : (
           <ul className="grid grid-cols-2 gap-x-3 gap-y-5 sm:gap-x-4 md:grid-cols-4">
-            {cards.map((card) => {
-              const { gift, recipient } = card;
-              // A draft goes back into the editor; a shared gift goes to its page.
-              const href = gift.status === "draft" ? `/create/${gift.id}` : `/dashboard/gifts/${gift.id}`;
-              return (
-                <li key={gift.id}>
-                  <Link href={href} className="group flex flex-col gap-2.5 rounded-2xl outline-none">
-                    <GiftThumb
-                      card={card}
-                      senderName={profile.display_name}
-                      className="shadow-soft ring-1 ring-border transition-transform duration-200 group-hover:-translate-y-1 group-focus-visible:-translate-y-1 group-focus-visible:ring-2 group-focus-visible:ring-ring"
-                    />
-                    <div className="min-w-0 px-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="truncate font-semibold">{gift.title}</p>
-                        <GiftStatusChip status={gift.status} opened={Boolean(recipient?.first_opened_at)} />
-                      </div>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {recipient?.name ? t("gifts.for", { name: recipient.name }) : t("gifts.noRecipient")}
-                        {" · "}
-                        {format.relativeTime(new Date(gift.updated_at))}
-                      </p>
-                    </div>
-                  </Link>
-                </li>
-              );
-            })}
+            {cards.map((card) => (
+              <li key={card.gift.id}>
+                <GiftTile card={card} senderName={profile.display_name} />
+              </li>
+            ))}
           </ul>
         )}
       </section>
