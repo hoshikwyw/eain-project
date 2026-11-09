@@ -14,6 +14,7 @@ import type { ThemeVariant } from "@/features/gifts/schemas";
 import { unlockTemplate } from "@/features/points/actions";
 import { cn } from "@/lib/utils";
 import { TemplatePreview } from "./template-preview";
+import { TemplatePreviewDialog } from "./template-preview-dialog";
 
 export type TemplateCard = {
   id: string;
@@ -140,7 +141,19 @@ export function TemplateGrid({
                   {template.description}
                 </p>
               </div>
-              <TemplateAction template={template} mode={mode} pointsBalance={pointsBalance} />
+              <div className="flex gap-2">
+                <TemplatePreviewDialog
+                  slug={template.slug}
+                  name={template.name}
+                  locale={locale}
+                  triggerClassName="shrink-0"
+                >
+                  <TemplateAction template={template} mode={mode} pointsBalance={pointsBalance} />
+                </TemplatePreviewDialog>
+                <div className="min-w-0 flex-1">
+                  <TemplateAction template={template} mode={mode} pointsBalance={pointsBalance} />
+                </div>
+              </div>
             </article>
           ))}
         </div>

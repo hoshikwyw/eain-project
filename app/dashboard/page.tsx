@@ -7,6 +7,8 @@ import { NotificationItem } from "@/components/dashboard/notification-item";
 import { StartTemplateButton } from "@/components/dashboard/start-template";
 import { GiftTile } from "@/components/gift/gift-tile";
 import { TemplatePreview } from "@/components/templates/template-preview";
+import { TemplatePreviewDialog } from "@/components/templates/template-preview-dialog";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { createGift } from "@/features/gifts/actions";
@@ -63,6 +65,7 @@ function SectionHeading({
 export default async function HomePage({ searchParams }: PageProps<"/dashboard">) {
   const notice = (await searchParams).notice;
   const t = await getTranslations("dashboard");
+  const tCreate = await getTranslations("create");
   const locale = (await getLocale()) === "my" ? "my" : "en";
   const profile = await getCurrentProfile();
   const supabase = await createClient();
@@ -189,8 +192,29 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
               );
               const cardClass =
                 "block w-52 rounded-2xl outline-none transition-transform duration-200 hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-ring sm:w-60";
+              const action = tp.available ? (
+                <form action={createGift}>
+                  <input type="hidden" name="template" value={tp.slug} />
+                  <SubmitButton className="w-full" pendingLabel={tCreate("creating")}>
+                    {tCreate("useTemplate")}
+                  </SubmitButton>
+                </form>
+              ) : (
+                <Button asChild className="w-full">
+                  <Link href="/create">{t("home.allTemplates")}</Link>
+                </Button>
+              );
               return (
-                <li key={tp.id} className="shrink-0 snap-start">
+                <li key={tp.id} className="relative shrink-0 snap-start">
+                  <TemplatePreviewDialog
+                    slug={tp.slug}
+                    name={tp.name}
+                    locale={locale}
+                    trigger="icon"
+                    triggerClassName="absolute top-2 right-2 z-10"
+                  >
+                    {action}
+                  </TemplatePreviewDialog>
                   {tp.available ? (
                     <form action={createGift}>
                       <input type="hidden" name="template" value={tp.slug} />

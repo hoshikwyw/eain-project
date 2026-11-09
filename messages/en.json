@@ -151,6 +151,14 @@
     "home": "Back to home"
   },
   "create": {
+    "demo": {
+      "preview": "Preview",
+      "open": "Preview {template}",
+      "title": "{template}, as the receiver sees it",
+      "hint": "A sample gift from this template, with sample names and photos. Open it the way they would.",
+      "replay": "Watch again",
+      "close": "Close preview"
+    },
     "title": "Choose a template",
     "subtitle": "Pick a starting point. You can change every word and colour.",
     "free": "Free",

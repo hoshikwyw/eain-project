@@ -8,11 +8,9 @@ import { Logo } from "@/components/brand/logo";
 import { Lovebirds } from "@/components/brand/lovebirds";
 import { Button } from "@/components/ui/button";
 import type { GiftColors, Opening, PublicQuestion, ThemeVariant } from "@/features/gifts/schemas";
-import { cn } from "@/lib/utils";
-import { GiftOpening, openingDuration } from "./gift-opening";
-import { giftPalette } from "./palettes";
+import { GiftClosed } from "./gift-closed";
+import { openingDuration } from "./gift-opening";
 import { ResponseForm } from "./response-form";
-import { PageTitle } from "@/components/ui/page-title";
 
 type Stage = "closed" | "opening" | "open";
 
@@ -94,54 +92,14 @@ export function GiftReveal({
 
   if (stage !== "open") {
     return (
-      <div className="flex min-h-svh flex-col items-center justify-center gap-8 px-6 py-12 text-center">
-        <button
-          type="button"
-          onClick={open}
-          disabled={stage === "opening"}
-          tabIndex={-1}
-          className="relative flex min-h-80 w-full max-w-sm cursor-pointer items-center justify-center rounded-3xl outline-none disabled:cursor-default"
-        >
-          <span
-            aria-hidden="true"
-            className="absolute inset-6 rounded-full opacity-60 blur-3xl"
-            style={{ ...giftPalette(variant, colors), background: "var(--t-accent-soft)" }}
-          />
-          <span className="relative">
-            <GiftOpening
-              kind={opening}
-              variant={variant}
-              colors={colors}
-              stage={stage}
-              label={recipientName ? t("forName", { name: recipientName }) : t("forYou")}
-            />
-          </span>
-        </button>
-        <div
-          className={cn(
-            "flex flex-col items-center gap-3 transition-opacity duration-500",
-            stage === "opening" && "opacity-0",
-          )}
-        >
-          <p className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
-            {t("someone")}
-          </p>
-          <PageTitle className="text-balance">{t("specialForYou")}</PageTitle>
-        </div>
-        <Button
-          size="lg"
-          onClick={open}
-          disabled={stage === "opening"}
-          className={cn(
-            "min-w-52 transition-opacity duration-500",
-            stage === "opening" && "opacity-0",
-          )}
-        >
-          <Gift />
-          {t("openYourGift")}
-        </Button>
-        <p className="text-xs text-muted-foreground">{t("noAccountNeeded")}</p>
-      </div>
+      <GiftClosed
+        opening={opening}
+        variant={variant}
+        colors={colors}
+        stage={stage}
+        recipientName={recipientName}
+        onOpen={open}
+      />
     );
   }
 
