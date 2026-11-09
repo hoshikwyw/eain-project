@@ -2,6 +2,7 @@ import { ArrowRight, Gift, Lock, MailOpen, MessageCircleHeart, Plus, Star } from
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Bird, Lovebirds } from "@/components/brand/lovebirds";
+import { LeftoverDraft } from "@/components/dashboard/leftover-draft";
 import { NotificationItem } from "@/components/dashboard/notification-item";
 import { StartTemplateButton } from "@/components/dashboard/start-template";
 import { GiftTile } from "@/components/gift/gift-tile";
@@ -86,6 +87,7 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
           {t("passwordUpdated")}
         </Notice>
       )}
+      <LeftoverDraft />
 
       {/* Greeting */}
       <section className="bg-hero relative flex flex-col-reverse items-center gap-2 overflow-hidden rounded-[2rem] px-6 py-8 sm:flex-row sm:gap-8 sm:px-10 sm:py-10">

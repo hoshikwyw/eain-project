@@ -20,6 +20,7 @@
     "test:admin-users": "node --test --env-file-if-exists=.env --env-file-if-exists=.env.local supabase/tests/admin-users.test.mts",
     "test:prelaunch": "node --test --env-file-if-exists=.env --env-file-if-exists=.env.local supabase/tests/prelaunch.test.mts",
     "test:account": "node --test --env-file-if-exists=.env --env-file-if-exists=.env.local supabase/tests/account.test.mts",
+    "test:guest": "node --test --env-file-if-exists=.env --env-file-if-exists=.env.local supabase/tests/guest.test.mts",
     "test:styles": "node --test --env-file-if-exists=.env --env-file-if-exists=.env.local supabase/tests/styles.test.mts",
     "check:admin-pages": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/check-admin-pages.mjs",
     "cleanup:test-users": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/cleanup-test-users.mjs"

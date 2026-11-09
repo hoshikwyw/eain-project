@@ -1,29 +1,34 @@
 import { useEffect, useState } from "react";
+import { GUEST_DRAFT_KEY, isFreshDraft } from "@/features/gifts/guest-draft";
 import { editorPayloadSchema, type EditorPayload } from "@/features/gifts/schemas";
 
-/** Where a visitor's unsaved gift lives in their browser. One draft at a time. */
-export const GUEST_DRAFT_KEY = "eain_guest_draft";
+export { GUEST_DRAFT_KEY } from "@/features/gifts/guest-draft";
 /** A draft is written this long after the last change. */
 const WRITE_MS = 800;
 
 export type GuestDraft = { template: string; savedAt: string; payload: EditorPayload };
 
-/** The draft kept in this browser, if there is one and it is still readable. Browser only. */
+/**
+ * The draft kept in this browser, if there is one, it is still readable and
+ * it is not older than 30 days. A draft that fails those is removed, so it
+ * does not keep coming up. Browser only.
+ */
 export function readGuestDraft(): GuestDraft | null {
+  let raw: string | null = null;
   try {
-    const raw = window.localStorage.getItem(GUEST_DRAFT_KEY);
+    raw = window.localStorage.getItem(GUEST_DRAFT_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<GuestDraft>;
+    const savedAt = String(parsed.savedAt ?? "");
     const payload = editorPayloadSchema.safeParse(parsed.payload);
-    if (typeof parsed.template !== "string" || !payload.success) return null;
-    return {
-      template: parsed.template,
-      savedAt: String(parsed.savedAt ?? ""),
-      payload: payload.data,
-    };
+    if (typeof parsed.template === "string" && payload.success && isFreshDraft(savedAt)) {
+      return { template: parsed.template, savedAt, payload: payload.data };
+    }
   } catch {
-    return null;
+    // Storage blocked, or not JSON: treated like a draft that cannot be used.
   }
+  if (raw) clearGuestDraft();
+  return null;
 }
 
 export function clearGuestDraft() {

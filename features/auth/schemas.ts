@@ -23,6 +23,13 @@ export const profileUpdateSchema = z.object({
 });
 
 export type AuthFormState = {
-  error?: "invalid" | "credentials" | "exists" | "unknown" | "notConfigured" | "suspended";
+  error?:
+    | "invalid"
+    | "credentials"
+    | "exists"
+    | "rateLimited"
+    | "unknown"
+    | "notConfigured"
+    | "suspended";
   fields?: Partial<Record<"displayName" | "email" | "password", string>>;
 };

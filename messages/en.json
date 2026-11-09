@@ -807,6 +807,7 @@
       }
     },
     "errors": {
+      "rateLimited": "Too many sign-ups from here just now. Please wait a few minutes and try again.",
       "invalid": "Please check your details and try again.",
       "credentials": "That email or password is not right.",
       "exists": "An account with this email already exists. Try logging in.",
@@ -821,6 +822,11 @@
     }
   },
   "dashboard": {
+    "leftoverDraft": {
+      "text": "You made a gift before signing up, and it is still on this device.",
+      "save": "Save it to my account",
+      "discard": "Discard"
+    },
     "welcome": "Welcome back, {name}!",
     "passwordUpdated": "Your password was changed.",
     "welcomeSubtitle": "Create, share and make someone's day extra special.",

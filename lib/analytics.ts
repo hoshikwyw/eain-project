@@ -9,6 +9,7 @@ import { createHash } from "node:crypto";
  * the distinct id is a salted hash of the user id.
  */
 export type ProductEvent =
+  | "template_tried"
   | "gift_created"
   | "gift_published"
   | "gift_shared"

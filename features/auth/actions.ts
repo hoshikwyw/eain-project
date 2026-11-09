@@ -38,16 +38,23 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
 
   const supabase = await createClient();
   const locale = await getLocale();
+  const next = safeNextPath(String(formData.get("next") ?? ""));
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
-    options: { data: { display_name: parsed.data.displayName, locale } },
+    options: {
+      data: { display_name: parsed.data.displayName, locale },
+      // The confirmation link lands where the sign-up was heading, such as the guest handoff.
+      emailRedirectTo: `${await siteOrigin()}/auth/callback?next=${encodeURIComponent(next)}`,
+    },
   });
 
   if (error) {
     const exists = error.code === "user_already_exists" || /already/i.test(error.message);
+    const rateLimited =
+      error.code === "over_email_send_rate_limit" || /rate limit/i.test(error.message);
     return {
-      error: exists ? "exists" : "unknown",
+      error: exists ? "exists" : rateLimited ? "rateLimited" : "unknown",
       fields: { displayName: values.displayName, email: values.email },
     };
   }
@@ -55,7 +62,6 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
   // With email confirmation off, a session is returned and the user is in.
   // If confirmation is on in the Supabase dashboard, identities are empty
   // and we send them to login with a notice.
-  const next = safeNextPath(String(formData.get("next") ?? ""));
   if (!data.session) redirect(`/auth/login?notice=confirm&next=${encodeURIComponent(next)}`);
 
   redirect(next);
