@@ -40,6 +40,7 @@ import {
   type TextTarget,
 } from "./canvas-geometry";
 import { EditableText } from "./editable-text";
+import { AccountSheet } from "./account-sheet";
 import { EditorBar } from "./editor-bar";
 import {
   DetailsPanel,
@@ -60,11 +61,15 @@ import { TextResizeHandle } from "./text-resize-handle";
 import { TextToolbar } from "./text-toolbar";
 import { useEditorShortcuts, useStickerKeys } from "./use-editor-keys";
 import { useGiftSave } from "./use-gift-save";
+import { useGuestDraft } from "./use-guest-draft";
 import { useHistory } from "./use-history";
 import { useStickerActions } from "./use-sticker-actions";
 
 type Props = {
-  giftId: string;
+  /** The saved gift being edited. Null while a visitor tries a template without an account. */
+  giftId: string | null;
+  /** Set for a visitor without an account: which template they are trying. The gift lives in their browser. */
+  guest?: { template: string };
   status: GiftStatus;
   /** The receiver has opened it at least once. */
   opened: boolean;
@@ -145,8 +150,8 @@ export function GiftEditor(props: Props) {
   const titleInvalid = title.trim() === "";
   const valid = invalidIds.size === 0 && !titleInvalid;
 
-  // Undo and redo cover everything that is saved: texts, styles, colours, stickers and details.
-  const history = useHistory(payload, (snapshot) => {
+  /** Puts a whole payload into the editor, as undo and redo do. */
+  const applySnapshot = (snapshot: EditorPayload) => {
     setTitle(snapshot.title);
     setRecipientName(snapshot.recipientName);
     setVariant(snapshot.variant);
@@ -155,14 +160,24 @@ export function GiftEditor(props: Props) {
     setStickers(snapshot.stickers);
     if (snapshot.scene) setScene(snapshot.scene);
     setSections(snapshot.sections);
-  });
+  };
+
+  // Undo and redo cover everything that is saved: texts, styles, colours, stickers and details.
+  const history = useHistory(payload, applySnapshot);
+
+  // A visitor without an account: the gift is kept in the browser, and saving asks for an account.
+  const guest = props.guest;
+  const [accountSheet, setAccountSheet] = useState(false);
+  const askForAccount = () => setAccountSheet(true);
+  const draft = useGuestDraft(guest ? { template: guest.template, payloadJson } : null);
 
   // A draft saves itself once the creator pauses. A published gift does not:
   // a save there is live for the receiver at once, so it stays a deliberate step.
   const autosave = props.status !== "published";
   const { dirty, state, formAction, saving, publishing, publishState, publish, saveNow } =
     useGiftSave({
-      giftId: props.giftId,
+      giftId: props.giftId ?? "",
+      enabled: !guest,
       autosave,
       initialJson: () =>
         JSON.stringify({
@@ -357,7 +372,11 @@ export function GiftEditor(props: Props) {
     }
   };
 
-  useEditorShortcuts({ undo: history.undo, redo: history.redo, save: saveNow });
+  useEditorShortcuts({
+    undo: history.undo,
+    redo: history.redo,
+    save: guest ? askForAccount : saveNow,
+  });
 
   // What stops a save is spelled out in full; the rest is a short status.
   const problem =
@@ -368,15 +387,19 @@ export function GiftEditor(props: Props) {
         : state.status === "error" && dirty
           ? t("error")
           : null;
-  const status = problem
-    ? null
-    : saving
-      ? { text: t("saving"), tone: "text-muted-foreground" }
-      : dirty
-        ? { text: t("unsaved"), tone: "text-muted-foreground" }
-        : state.status === "saved"
-          ? { text: t("saved"), tone: "text-success" }
-          : null;
+  const status = guest
+    ? draft.saved
+      ? { text: t("guest.saved"), tone: "text-muted-foreground" }
+      : null
+    : problem
+      ? null
+      : saving
+        ? { text: t("saving"), tone: "text-muted-foreground" }
+        : dirty
+          ? { text: t("unsaved"), tone: "text-muted-foreground" }
+          : state.status === "saved"
+            ? { text: t("saved"), tone: "text-success" }
+            : null;
 
   // Canvas --------------------------------------------------------------------
 
@@ -440,6 +463,9 @@ export function GiftEditor(props: Props) {
           onTitle={() => openTab("details")}
           status={props.status}
           opened={props.opened}
+          guest={Boolean(guest)}
+          onGuestSave={askForAccount}
+          backHref={guest ? "/templates" : "/dashboard/gifts"}
           history={history}
           note={status}
           scene={Boolean(sceneKind)}
@@ -613,17 +639,26 @@ export function GiftEditor(props: Props) {
               )}
             </div>
 
-            <div className="flex flex-col gap-2 rounded-3xl border glass p-5">
-              <p className="text-sm text-muted-foreground">
-                {published ? t("publishedHint") : t("publishHint")}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {autosave ? t("draftAutosave") : t("publishSaves")}
-              </p>
-              <Button asChild variant="secondary" size="sm" className="mt-1 self-start">
-                <Link href={`/dashboard/gifts/${props.giftId}`}>{t("manage")}</Link>
-              </Button>
-            </div>
+            {guest ? (
+              <div className="flex flex-col gap-3 rounded-3xl border glass p-5">
+                <p className="text-sm text-muted-foreground">{t("guest.hint")}</p>
+                <Button type="button" size="sm" className="self-start" onClick={askForAccount}>
+                  {t("guest.createAccount")}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2 rounded-3xl border glass p-5">
+                <p className="text-sm text-muted-foreground">
+                  {published ? t("publishedHint") : t("publishHint")}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {autosave ? t("draftAutosave") : t("publishSaves")}
+                </p>
+                <Button asChild variant="secondary" size="sm" className="mt-1 self-start">
+                  <Link href={`/dashboard/gifts/${props.giftId}`}>{t("manage")}</Link>
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -673,7 +708,8 @@ export function GiftEditor(props: Props) {
                 onRemove={removeSection}
                 onAdd={addSection}
                 addTypes={sceneKind ? SCENE_SECTION_TYPES : undefined}
-                giftId={props.giftId}
+                giftId={props.giftId ?? ""}
+                guest={Boolean(guest)}
                 media={media}
                 onMediaChange={setMedia}
               />
@@ -725,6 +761,14 @@ export function GiftEditor(props: Props) {
         label={t("tools")}
         className="fixed inset-x-0 bottom-0 z-40 border-t glass-bar px-1.5 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] lg:hidden"
       />
+
+      {guest && (
+        <AccountSheet
+          open={accountSheet}
+          onClose={() => setAccountSheet(false)}
+          next={`/try/${guest.template}`}
+        />
+      )}
 
       {playing && sceneKind && (
         <PreviewOverlay

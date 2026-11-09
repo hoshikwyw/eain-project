@@ -179,6 +179,25 @@
     }
   },
   "editor": {
+    "guest": {
+      "pageTitle": "Try the {name} template",
+      "chip": "Trying it out",
+      "saved": "Saved on this device",
+      "hint": "You are trying this template. Everything you change is kept on this device. Create a free account when you want to save the gift and get its link.",
+      "createAccount": "Create a free account",
+      "logIn": "I already have an account",
+      "notNow": "Not now",
+      "photosLocked": "Photos can be added once you have an account. Everything else works right away.",
+      "sheetTitle": "Save this gift with a free account",
+      "sheetText": "Your gift stays on this device for now. With an account you can:",
+      "sheetNote": "Takes a minute. The gift you made comes with you.",
+      "reasons": {
+        "keep": "Keep your gifts and come back to them from any device",
+        "link": "Get a private link and QR code to share",
+        "opened": "See when it is opened and read the reply",
+        "points": "Start with 100 welcome points"
+      }
+    },
     "back": "Back",
     "title": "Gift title",
     "titleHint": "Only you see this. It helps you find the gift later.",

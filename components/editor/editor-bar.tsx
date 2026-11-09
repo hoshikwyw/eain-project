@@ -7,6 +7,7 @@ import { GiftStatusChip } from "@/components/gift/gift-status-chip";
 import { LocaleToggle } from "@/components/settings/locale-toggle";
 import { ThemeToggle } from "@/components/settings/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { Chip } from "@/components/ui/chip";
 import { cn } from "@/lib/utils";
 import type { GiftStatus } from "@/types/database";
 
@@ -20,6 +21,11 @@ type Props = {
   status: GiftStatus;
   /** The receiver has opened it at least once. */
   opened: boolean;
+  /** A visitor trying a template: no saved gift behind the editor. Save and Publish ask for an account. */
+  guest?: boolean;
+  onGuestSave?: () => void;
+  /** Where the back arrow goes. */
+  backHref: string;
   history: { canUndo: boolean; canRedo: boolean; undo: () => void; redo: () => void };
   /** The short save status ("Saving", "Unsaved changes", "Saved"), or nothing. */
   note: { text: string; tone: string } | null;
@@ -58,7 +64,7 @@ export function EditorBar(p: Props) {
           className="size-9 shrink-0"
           aria-label={t("back")}
         >
-          <Link href="/dashboard/gifts">
+          <Link href={p.backHref}>
             <ArrowLeft />
           </Link>
         </Button>
@@ -70,7 +76,11 @@ export function EditorBar(p: Props) {
         >
           {p.title.trim() || p.detailsLabel}
         </button>
-        <GiftStatusChip status={p.status} opened={p.opened} />
+        {p.guest ? (
+          <Chip tone="neutral">{t("guest.chip")}</Chip>
+        ) : (
+          <GiftStatusChip status={p.status} opened={p.opened} />
+        )}
         <span className="ml-auto flex shrink-0 items-center gap-1 lg:hidden">
           <LocaleToggle />
           <ThemeToggle />
@@ -129,6 +139,11 @@ export function EditorBar(p: Props) {
         <form
           action={p.saveAction}
           onSubmit={(e) => {
+            // A visitor has nowhere to save to yet: ask for an account instead.
+            if (p.guest) {
+              e.preventDefault();
+              return p.onGuestSave?.();
+            }
             if (p.valid) return;
             e.preventDefault();
             p.onInvalid();
@@ -151,7 +166,7 @@ export function EditorBar(p: Props) {
           type="button"
           size="sm"
           className="px-4"
-          onClick={p.onPublish}
+          onClick={p.guest ? p.onGuestSave : p.onPublish}
           disabled={p.publishing}
           aria-busy={p.publishing}
         >

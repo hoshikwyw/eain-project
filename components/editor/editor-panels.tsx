@@ -86,6 +86,8 @@ type SectionsPanelProps = {
   /** The kinds of section that can be added. Default: all of them. */
   addTypes?: EditableSectionType[];
   giftId: string;
+  /** A visitor without an account: photos cannot be added yet. */
+  guest?: boolean;
   media: MediaItem[];
   onMediaChange: (media: MediaItem[]) => void;
 };
@@ -171,6 +173,7 @@ export function SectionsPanel(p: SectionsPanelProps) {
                     section={section}
                     onChange={p.onChange}
                     giftId={p.giftId}
+                    guest={p.guest}
                     media={p.media}
                     onMediaChange={p.onMediaChange}
                   />

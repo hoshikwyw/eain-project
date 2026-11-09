@@ -170,7 +170,7 @@ function TemplateAction({
       </form>
     ) : (
       <Button asChild className="w-full">
-        <Link href={`/create?template=${template.slug}`}>{t("useTemplate")}</Link>
+        <Link href={`/try/${template.slug}`}>{t("useTemplate")}</Link>
       </Button>
     );
   }

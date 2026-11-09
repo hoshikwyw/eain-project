@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Notice } from "@/components/ui/notice";
 import {
   PHOTO_SIZE_MAX,
   PHOTO_SIZE_MIN,
@@ -23,6 +24,8 @@ type Props = {
   section: Section;
   onChange: (section: Section) => void;
   giftId: string;
+  /** A visitor without an account: photos cannot be added yet. */
+  guest?: boolean;
   media: MediaItem[];
   onMediaChange: (media: MediaItem[]) => void;
 };
@@ -31,8 +34,11 @@ const textareaClass =
   "w-full rounded-xl border border-input bg-card px-3.5 py-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40";
 
 /** Type-specific fields for one section. */
-export function SectionFields({ section, onChange, giftId, media, onMediaChange }: Props) {
+export function SectionFields({ section, onChange, giftId, guest, media, onMediaChange }: Props) {
   const t = useTranslations("editor.fields");
+  const tGuest = useTranslations("editor.guest");
+  // Uploads need a saved gift to belong to, which a visitor does not have yet.
+  const photos = guest ? <Notice>{tGuest("photosLocked")}</Notice> : null;
   const id = section.id;
 
   switch (section.type) {
@@ -88,16 +94,18 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
     case "image":
       return (
         <>
-          <PhotoPicker
-            giftId={giftId}
-            media={media}
-            onMediaChange={onMediaChange}
-            selected={section.content.mediaId ? [section.content.mediaId] : []}
-            onSelectedChange={(ids) =>
-              onChange({ ...section, content: { ...section.content, mediaId: ids[0] ?? null } })
-            }
-            max={1}
-          />
+          {photos ?? (
+            <PhotoPicker
+              giftId={giftId}
+              media={media}
+              onMediaChange={onMediaChange}
+              selected={section.content.mediaId ? [section.content.mediaId] : []}
+              onSelectedChange={(ids) =>
+                onChange({ ...section, content: { ...section.content, mediaId: ids[0] ?? null } })
+              }
+              max={1}
+            />
+          )}
           {section.content.mediaId && (
             <PhotoSizeField
               id={`${id}-size`}
@@ -121,16 +129,18 @@ export function SectionFields({ section, onChange, giftId, media, onMediaChange 
     case "photo_grid":
       return (
         <>
-          <PhotoPicker
-            giftId={giftId}
-            media={media}
-            onMediaChange={onMediaChange}
-            selected={section.content.mediaIds}
-            onSelectedChange={(ids) =>
-              onChange({ ...section, content: { ...section.content, mediaIds: ids } })
-            }
-            max={5}
-          />
+          {photos ?? (
+            <PhotoPicker
+              giftId={giftId}
+              media={media}
+              onMediaChange={onMediaChange}
+              selected={section.content.mediaIds}
+              onSelectedChange={(ids) =>
+                onChange({ ...section, content: { ...section.content, mediaIds: ids } })
+              }
+              max={5}
+            />
+          )}
           {section.content.mediaIds.length > 0 && (
             <PhotoSizeField
               id={`${id}-size`}

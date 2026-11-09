@@ -7,6 +7,8 @@ const AUTOSAVE_MS = 3000;
 
 type Options = {
   giftId: string;
+  /** False while a visitor tries a template: nothing is saved to the server and leaving is free. */
+  enabled?: boolean;
   /** Drafts save themselves; a published gift does not, since a save there is live for the receiver at once. */
   autosave: boolean;
   /** The editor's content as the server last saved it, as JSON. Read once. */
@@ -27,6 +29,7 @@ type Options = {
  */
 export function useGiftSave({
   giftId,
+  enabled = true,
   autosave,
   initialJson,
   payloadJson,
@@ -77,21 +80,30 @@ export function useGiftSave({
 
   // A draft saves itself once the creator pauses.
   useEffect(() => {
-    if (!autosave || !dirty || !valid || saving || publishing || payloadJson === failedSave) return;
+    if (
+      !enabled ||
+      !autosave ||
+      !dirty ||
+      !valid ||
+      saving ||
+      publishing ||
+      payloadJson === failedSave
+    )
+      return;
     const timer = window.setTimeout(() => {
       const fd = new FormData();
       fd.set("payload", payloadJson);
       startTransition(() => formAction(fd));
     }, AUTOSAVE_MS);
     return () => window.clearTimeout(timer);
-  }, [autosave, dirty, valid, saving, publishing, payloadJson, failedSave, formAction]);
+  }, [enabled, autosave, dirty, valid, saving, publishing, payloadJson, failedSave, formAction]);
 
   useEffect(() => {
-    if (!dirty) return;
+    if (!enabled || !dirty) return;
     const warn = (e: BeforeUnloadEvent) => e.preventDefault();
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
-  }, [dirty]);
+  }, [enabled, dirty]);
 
   const runPublish = () =>
     startPublish(async () => {
