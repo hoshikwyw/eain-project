@@ -10,6 +10,7 @@ import { createHash } from "node:crypto";
  */
 export type ProductEvent =
   | "template_tried"
+  | "template_previewed"
   | "gift_created"
   | "gift_published"
   | "gift_shared"

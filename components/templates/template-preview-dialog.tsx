@@ -4,6 +4,7 @@ import { Eye, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useId, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { trackTemplatePreviewed } from "@/features/gifts/actions";
 import { cn } from "@/lib/utils";
 import { TemplateDemo } from "./template-demo";
 
@@ -43,6 +44,10 @@ export function TemplatePreviewDialog({
     if (open && !dialog.open) dialog.showModal();
     if (!open && dialog.open) dialog.close();
   }, [open]);
+
+  useEffect(() => {
+    if (open) void trackTemplatePreviewed(slug);
+  }, [open, slug]);
 
   return (
     <>

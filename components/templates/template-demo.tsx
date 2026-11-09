@@ -1,8 +1,8 @@
 "use client";
 
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { GiftClosed } from "@/components/gift/gift-closed";
 import { openingDuration } from "@/components/gift/gift-opening";
 import { GiftView } from "@/components/gift/gift-view";
@@ -80,12 +80,49 @@ export function TemplateDemo({ slug, locale, closedClassName = "min-h-full" }: P
           questionMode="preview"
         />
       )}
+      <DemoReply />
       <div className="flex justify-center">
         <Button type="button" variant="ghost" size="sm" onClick={() => setStage("closed")}>
           <RotateCcw />
           {tDemo("replay")}
         </Button>
       </div>
+    </div>
+  );
+}
+
+/**
+ * The reply card as the receiver gets it under a gift with a question: the
+ * real one's words and shape, with a sample question and nothing wired up,
+ * so what comes back to the creator is understood before they start.
+ */
+function DemoReply() {
+  const t = useTranslations("gift.response");
+  const tDemo = useTranslations("create.demo");
+  const id = useId();
+  return (
+    <div className="flex flex-col gap-5 panel p-6 sm:p-8">
+      <div>
+        <h2 className="font-display text-2xl font-semibold">{t("title")}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">{t("subtitle")}</p>
+      </div>
+      <div className="flex flex-col gap-3">
+        <label htmlFor={id} className="font-semibold">
+          {tDemo("replyQuestion")}
+        </label>
+        <textarea
+          id={id}
+          readOnly
+          rows={3}
+          placeholder={t("textPlaceholder")}
+          className="w-full rounded-2xl border border-input bg-card px-4 py-3 text-sm outline-none"
+        />
+      </div>
+      <Button type="button" size="lg" disabled className="self-start">
+        <Send />
+        {t("send")}
+      </Button>
+      <p className="text-xs text-muted-foreground">{tDemo("replyNote")}</p>
     </div>
   );
 }

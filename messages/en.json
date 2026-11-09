@@ -152,6 +152,8 @@
   },
   "create": {
     "demo": {
+      "replyQuestion": "What did this make you think of?",
+      "replyNote": "Add a question in the editor and the receiver answers it here. The reply comes only to you.",
       "preview": "Preview",
       "open": "Preview {template}",
       "title": "{template}, as the receiver sees it",

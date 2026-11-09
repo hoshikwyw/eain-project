@@ -11,6 +11,7 @@ import { CapsLabel } from "@/components/ui/caps-label";
 import { Chip } from "@/components/ui/chip";
 import { loadTemplateCards } from "@/features/gifts/template-cards";
 import { getTemplateStyle, isAvailableTemplate, templates } from "@/features/gifts/templates";
+import { track } from "@/lib/analytics";
 import { isSupabaseConfigured } from "@/lib/env";
 
 type Props = PageProps<"/templates/[slug]">;
@@ -56,6 +57,7 @@ export default async function TemplatePage({ params }: Props) {
   const data = await loadPage(slug, locale);
   if (!data) notFound();
   const { card, others } = data;
+  await track("template_previewed", null, { template: slug, locale, from: "page" });
 
   const [t, tCreate, tDemo, tOpenings] = await Promise.all([
     getTranslations("templatePage"),

@@ -60,6 +60,23 @@ describe("template pages", () => {
     assert.ok(notFound(res, await res.text()));
   });
 
+  it("offers a preview on every card in the library", async () => {
+    const res = await fetch(`${site}/templates`);
+    assert.equal(res.status, 200);
+    const html = await res.text();
+    const { data } = await anon.from("templates").select("name_en").eq("is_active", true);
+    for (const t of data!) {
+      assert.ok(
+        html.includes(`aria-label="Preview ${t.name_en}"`),
+        `preview button for ${t.name_en}`,
+      );
+    }
+    assert.ok(html.includes("/brand/lovebirds.webp"), "sample photos in the thumbnails");
+    // The label text travels with the renderer's props and some designs draw dashed frames;
+    // the placeholder's own icon is what must be gone.
+    assert.ok(!html.includes("lucide-image-plus"), "no empty photo boxes in the thumbnails");
+  });
+
   it("lists the template pages in the sitemap", async () => {
     const res = await fetch(`${site}/sitemap.xml`);
     assert.equal(res.status, 200);

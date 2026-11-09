@@ -148,6 +148,17 @@ export async function createGiftFromDraft(
   return { giftId: gift.id };
 }
 
+/** Someone opened a template's preview from a card. The template pages count their own views. */
+export async function trackTemplatePreviewed(slug: string): Promise<void> {
+  if (!isAvailableTemplate(slug)) return;
+  const user = await getCurrentUser();
+  await track("template_previewed", user?.id ?? null, {
+    template: slug,
+    locale: await getLocale(),
+    from: "card",
+  });
+}
+
 export async function createGift(formData: FormData): Promise<void> {
   await createGiftFromTemplate(String(formData.get("template") ?? ""));
 }
