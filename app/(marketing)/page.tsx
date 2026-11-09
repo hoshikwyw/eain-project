@@ -128,7 +128,7 @@ export default async function HomePage() {
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Button asChild variant="ink" size="lg" className="px-8">
-              <Link href="/create">
+              <Link href="/templates">
                 {t("home.primaryCta")}
                 <ArrowRight />
               </Link>
@@ -320,7 +320,7 @@ export default async function HomePage() {
           {t("finalCta.title")}
         </h2>
         <Button asChild variant="ink" size="lg" className="mt-10 px-8">
-          <Link href="/create">
+          <Link href="/templates">
             {t("finalCta.button")}
             <ArrowRight />
           </Link>

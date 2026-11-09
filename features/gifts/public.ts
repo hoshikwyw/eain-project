@@ -20,6 +20,7 @@ import { getTemplateStyle, type TemplateStyle } from "./templates";
 
 export type PublicGift = {
   templateSlug: string;
+  templatePremium: boolean;
   style: TemplateStyle;
   variant: ThemeVariant;
   opening: Opening;
@@ -58,7 +59,7 @@ export const getPublicGift = cache(async (token: string): Promise<PublicGift | n
     { data: sender },
     { data: questionRows },
   ] = await Promise.all([
-    admin.from("templates").select("slug").eq("id", gift.template_id).single(),
+    admin.from("templates").select("slug, is_premium").eq("id", gift.template_id).single(),
     admin.from("gift_sections").select("id, type, content, position").eq("gift_id", gift.id),
     admin
       .from("gift_recipients")
@@ -108,6 +109,7 @@ export const getPublicGift = cache(async (token: string): Promise<PublicGift | n
   const style = getTemplateStyle(slug);
   return {
     templateSlug: slug,
+    templatePremium: template?.is_premium ?? false,
     style,
     ...lookFromTheme(gift.theme),
     opening: openingFromTheme(gift.theme, style.defaultOpening),

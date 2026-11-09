@@ -33,7 +33,7 @@ export function SiteHeader() {
             {t("login")}
           </Link>
           <Button asChild variant="ink" size="sm" className="px-5">
-            <Link href="/create">{t("createGift")}</Link>
+            <Link href="/templates">{t("createGift")}</Link>
           </Button>
         </div>
       </div>

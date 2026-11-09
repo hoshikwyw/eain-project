@@ -12,21 +12,13 @@
     "createGift": "Create a Gift",
     "menu": "Menu"
   },
-  "hero": {
-    "badge": "Free to start · 100 welcome points",
-    "title": "Digital gifts that feel like home.",
-    "subtitle": "Make something special. Give it to someone.",
-    "primaryCta": "Create a Gift",
-    "secondaryCta": "Explore Templates",
-    "note": "The person you send it to never needs an account."
-  },
   "home": {
     "eyebrow": "Eain · အိမ် · Home",
     "headline": "Digital gifts that feel like <em>home</em>.",
     "subtitle": "Make something special. Give it to someone.",
-    "primaryCta": "Create a gift",
+    "primaryCta": "Start a gift",
     "secondaryCta": "Explore templates",
-    "meta": "Free to start · 100 welcome points · No account needed to receive",
+    "meta": "Try it free, no account needed · 100 welcome points when you sign up · Nothing asked of the receiver",
     "occasionsLabel": "For every occasion",
     "howLabel": "How it works",
     "howTitle": "Five quiet steps from a thought to a reply.",
@@ -58,7 +50,7 @@
   },
   "showcase": {
     "title": "Start from a template",
-    "subtitle": "Ten looks for birthdays, thanks, memories and more. Every word and colour is yours to change.",
+    "subtitle": "Ten looks for birthdays, thanks, memories and more. Open one and start changing it, no account needed.",
     "cta": "See all templates"
   },
   "trust": {
@@ -109,9 +101,9 @@
   "howItWorks": {
     "title": "How Eain works",
     "choose": "Choose",
-    "chooseText": "Pick a template that fits the moment.",
+    "chooseText": "Pick a template that fits the moment and open it right away.",
     "create": "Create",
-    "createText": "Add your words, photos and a question.",
+    "createText": "Add your words, photos and a question. Save it with a free account when it is ready.",
     "share": "Share",
     "shareText": "Send a link or a QR code.",
     "open": "They open",
@@ -180,6 +172,7 @@
   },
   "editor": {
     "guest": {
+      "signature": "Your name",
       "continueTitle": "Saving your gift",
       "continueText": "One moment: the gift you made is being added to your account.",
       "continueFailed": "Your gift could not be saved",
@@ -471,6 +464,7 @@
     },
     "madeWith": "Made with Eain",
     "makeYourOwn": "Make your own gift",
+    "makeYourOwnHint": "Free to try, no account needed.",
     "reportThis": "Report this gift",
     "unavailableTitle": "This gift is not available",
     "unavailableText": "The link may be incomplete, or the sender may have taken the gift down.",
@@ -751,9 +745,10 @@
   "templatesPage": {
     "title": "Templates",
     "seoDescription": "Browse Eain's gift templates: birthday postcards, thank-you cards, anniversary pages, memory timelines, an animated night garden and a blank card to design yourself.",
-    "subtitle": "Start from one of these. Every word and colour is yours to change."
+    "subtitle": "Open any of these and start right away, no account needed. Every word and colour is yours to change."
   },
   "auth": {
+    "signupIntro": "An account keeps your gifts, gives each one a private link, and shows you when it is opened.",
     "guestDraftKept": "The gift you made is kept on this device. Sign in and it will be saved to your account.",
     "welcomeBack": "Welcome back",
     "loginSubtitle": "Log in to see your gifts and responses.",

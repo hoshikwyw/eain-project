@@ -416,8 +416,12 @@ export function GiftEditor(props: Props) {
             value={value}
             max={meta.max}
             multiline={meta.multiline}
-            // An empty signature falls back to the sender's name, so that is what shows.
-            placeholder={(field === "signature" && senderName) || tFields(meta.label)}
+            // An empty signature falls back to the sender's name, so that is what shows;
+            // a guest has no name yet, so they are asked for it.
+            placeholder={
+              (field === "signature" && (senderName || (guest && t("guest.signature")))) ||
+              tFields(meta.label)
+            }
             field={field}
             index={index}
             onChange={(next) => setText(section.id, field, next, index)}
@@ -425,7 +429,7 @@ export function GiftEditor(props: Props) {
         );
       },
     }),
-    [selectedId, showInvalid, invalidIds, senderName, tFields, setText],
+    [selectedId, showInvalid, invalidIds, senderName, guest, t, tFields, setText],
   );
 
   const selectedIndex = sections.findIndex((s) => s.id === selectedId);

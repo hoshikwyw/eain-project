@@ -51,6 +51,8 @@ type Props = {
   variant: ThemeVariant;
   colors?: GiftColors;
   recipientName: string;
+  /** Where "Make your own gift" goes: the same template to try, or the library. */
+  tryHref: string;
   children: React.ReactNode;
 };
 
@@ -61,6 +63,7 @@ export function GiftReveal({
   variant,
   colors,
   recipientName,
+  tryHref,
   children,
 }: Props) {
   const t = useTranslations("gift");
@@ -161,11 +164,12 @@ export function GiftReveal({
             <Logo />
           </Link>
           <Button asChild className="mt-1">
-            <Link href="/create">
+            <Link href={tryHref}>
               <Gift />
               {t("makeYourOwn")}
             </Link>
           </Button>
+          <p className="text-xs text-muted-foreground">{t("makeYourOwnHint")}</p>
         </div>
         <Link
           href={`/g/${token}/report`}

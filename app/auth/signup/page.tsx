@@ -18,7 +18,12 @@ export default async function SignupPage({ searchParams }: PageProps<"/auth/sign
   const providers = await getAuthProviders();
 
   return (
-    <AuthShell title={t("createAccount")} subtitle={t("signupSubtitle")} reward>
+    <AuthShell
+      title={t("createAccount")}
+      subtitle={t("signupSubtitle")}
+      intro={t("signupIntro")}
+      reward
+    >
       <AuthForm
         mode="signup"
         next={next}

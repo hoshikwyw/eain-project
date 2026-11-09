@@ -4,6 +4,7 @@ import { GiftReveal } from "@/components/gift/gift-reveal";
 import { GiftView } from "@/components/gift/gift-view";
 import { SceneFrame } from "@/components/scene/scene-frame";
 import { getPublicGift } from "@/features/gifts/public";
+import { isAvailableTemplate } from "@/features/gifts/templates";
 import { sceneConfig } from "@/features/gifts/scene";
 import { GiftUnavailable } from "./unavailable";
 
@@ -49,10 +50,16 @@ export default async function PublicGiftPage({ params }: PageProps<"/g/[token]">
   if (!gift) return <GiftUnavailable />;
 
   const t = await getTranslations("gift");
+  // A free template opens for them to try right away; a premium one is only shown in the library.
+  const tryHref =
+    isAvailableTemplate(gift.templateSlug) && !gift.templatePremium
+      ? `/try/${gift.templateSlug}`
+      : "/templates";
 
   return (
     <GiftReveal
       token={token}
+      tryHref={tryHref}
       questions={gift.questions}
       opening={gift.opening}
       variant={gift.variant}

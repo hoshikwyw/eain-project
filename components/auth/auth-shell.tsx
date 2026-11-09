@@ -13,6 +13,8 @@ type Props = {
   subtitle: string;
   /** The subtitle is a reward (the welcome points): show it as a highlighted pill. */
   reward?: boolean;
+  /** A sentence on what the account is for, shown under the title. */
+  intro?: string;
   children: React.ReactNode;
 };
 
@@ -22,7 +24,7 @@ type Props = {
  * the form on the right; on phones the birds sit above the form. The admin
  * site keeps a plain centred card, since it is a tool and not a welcome.
  */
-export async function AuthShell({ title, subtitle, reward, children }: Props) {
+export async function AuthShell({ title, subtitle, reward, intro, children }: Props) {
   const t = await getTranslations("home");
   const branded = appMode !== "admin";
 
@@ -93,6 +95,9 @@ export async function AuthShell({ title, subtitle, reward, children }: Props) {
                   </p>
                 ) : (
                   <p className="text-sm text-muted-foreground">{subtitle}</p>
+                )}
+                {intro && (
+                  <p className="mt-1 text-sm text-balance text-muted-foreground">{intro}</p>
                 )}
               </div>
               {children}
