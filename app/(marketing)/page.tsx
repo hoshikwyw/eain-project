@@ -238,7 +238,7 @@ export default async function HomePage() {
           </div>
           <div className="mt-14 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
             {showcase.map((tp) => (
-              <Link key={tp.id} href={`/try/${tp.slug}`} className="group block rounded-xl">
+              <Link key={tp.id} href={`/templates/${tp.slug}`} className="group block rounded-xl">
                 <div className="transition-transform duration-500 group-hover:-translate-y-1">
                   <TemplatePreview
                     slug={tp.slug}

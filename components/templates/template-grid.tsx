@@ -124,7 +124,18 @@ export function TemplateGrid({
               />
               <div className="flex flex-1 flex-col gap-1 px-1.5">
                 <div className="flex items-center justify-between gap-2">
-                  <h2 className="truncate font-semibold">{template.name}</h2>
+                  <h2 className="truncate font-semibold">
+                    {mode === "browse" ? (
+                      <Link
+                        href={`/templates/${template.slug}`}
+                        className="rounded-sm underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                      >
+                        {template.name}
+                      </Link>
+                    ) : (
+                      template.name
+                    )}
+                  </h2>
                   {template.isPremium ? (
                     <Chip tone="brand" className="shrink-0">
                       <Lock className="size-3" />

@@ -755,6 +755,25 @@
     "seoDescription": "Browse Eain's gift templates: birthday postcards, thank-you cards, anniversary pages, memory timelines, an animated night garden and a blank card to design yourself.",
     "subtitle": "Open any of these and start right away, no account needed. Every word and colour is yours to change."
   },
+  "templatePage": {
+    "pageTitle": "{name} template",
+    "back": "All templates",
+    "tryFree": "Try it free",
+    "tryNote": "Opens in the editor right away, no account needed. Save it with a free account when it is ready.",
+    "premiumNote": "A premium template. Sign in and unlock it with points; new accounts start with 100.",
+    "demoTitle": "As the receiver sees it",
+    "more": "More templates",
+    "facts": {
+      "opening": "Opens as",
+      "sections": "Starts with",
+      "sectionsCount": "{count} sections",
+      "price": "Price",
+      "free": "Free",
+      "points": "{points} points",
+      "reply": "Replies",
+      "replyText": "They can answer, no account needed"
+    }
+  },
   "auth": {
     "signupIntro": "An account keeps your gifts, gives each one a private link, and shows you when it is opened.",
     "guestDraftKept": "The gift you made is kept on this device. Sign in and it will be saved to your account.",

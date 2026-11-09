@@ -17,6 +17,8 @@ type Stage = "closed" | "opening" | "open";
 type Props = {
   slug: string;
   locale: "en" | "my";
+  /** Height of the closed stage; by default it fills its frame. */
+  closedClassName?: string;
 };
 
 /**
@@ -25,7 +27,7 @@ type Props = {
  * receiver sees it (or the animation, for a scene template). Nothing is
  * recorded; it can be watched again.
  */
-export function TemplateDemo({ slug, locale }: Props) {
+export function TemplateDemo({ slug, locale, closedClassName = "min-h-full" }: Props) {
   const t = useTranslations("gift");
   const tDemo = useTranslations("create.demo");
   const sample = useMemo(() => sampleGift(slug, locale), [slug, locale]);
@@ -50,7 +52,7 @@ export function TemplateDemo({ slug, locale }: Props) {
         stage={stage}
         recipientName={sample.recipientName}
         onOpen={open}
-        className="min-h-full"
+        className={closedClassName}
       />
     );
   }
