@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
+import { ContinueDraft } from "@/components/editor/continue-draft";
 import { GuestEditor } from "@/components/editor/guest-editor";
 import { openingFromTheme, sceneFromTheme, variantFromTheme } from "@/features/gifts/sections";
 import {
@@ -40,13 +41,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 /**
  * A template open in the real editor for someone without an account. The
  * gift is kept in their browser; an account is asked for when they want to
- * save or publish it. Signed-in creators go straight to a real gift.
+ * save or publish it. A signed-in creator gets a saved gift instead: made
+ * from their draft of this template if the browser holds one, fresh if not.
  */
 export default async function TryTemplatePage({ params }: Props) {
   const { template: slug } = await params;
   const template = await loadTemplate(slug);
   if (!template) notFound();
-  if (await getCurrentUser()) redirect(`/create?template=${slug}`);
+  if (await getCurrentUser()) return <ContinueDraft template={slug} />;
 
   const locale = (await getLocale()) === "my" ? "my" : "en";
   const style = getTemplateStyle(slug);

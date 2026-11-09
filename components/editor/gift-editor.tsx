@@ -766,7 +766,7 @@ export function GiftEditor(props: Props) {
         <AccountSheet
           open={accountSheet}
           onClose={() => setAccountSheet(false)}
-          next={`/try/${guest.template}`}
+          next="/create/continue"
         />
       )}
 

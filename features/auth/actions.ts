@@ -55,9 +55,10 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
   // With email confirmation off, a session is returned and the user is in.
   // If confirmation is on in the Supabase dashboard, identities are empty
   // and we send them to login with a notice.
-  if (!data.session) redirect("/auth/login?notice=confirm");
+  const next = safeNextPath(String(formData.get("next") ?? ""));
+  if (!data.session) redirect(`/auth/login?notice=confirm&next=${encodeURIComponent(next)}`);
 
-  redirect(safeNextPath(String(formData.get("next") ?? "")));
+  redirect(next);
 }
 
 export async function signIn(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {

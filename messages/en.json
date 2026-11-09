@@ -180,6 +180,18 @@
   },
   "editor": {
     "guest": {
+      "continueTitle": "Saving your gift",
+      "continueText": "One moment: the gift you made is being added to your account.",
+      "continueFailed": "Your gift could not be saved",
+      "continueErrors": {
+        "limit": "You already have 5 gifts, so this one could not be added. Delete one and come back. Your gift is still kept on this device.",
+        "invalid": "The gift kept on this device could not be read. Please start again from a template.",
+        "template": "That template is not available any more. Please start again from a template.",
+        "unknown": "Something went wrong while saving. Your gift is still kept on this device; please try again."
+      },
+      "continueRetry": "Try again",
+      "continuePicker": "All templates",
+      "continueGifts": "My Gifts",
       "pageTitle": "Try the {name} template",
       "chip": "Trying it out",
       "saved": "Saved on this device",
@@ -742,6 +754,7 @@
     "subtitle": "Start from one of these. Every word and colour is yours to change."
   },
   "auth": {
+    "guestDraftKept": "The gift you made is kept on this device. Sign in and it will be saved to your account.",
     "welcomeBack": "Welcome back",
     "loginSubtitle": "Log in to see your gifts and responses.",
     "signupSubtitle": "Start with 100 welcome points.",

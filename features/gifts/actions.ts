@@ -72,6 +72,82 @@ export async function createGiftFromTemplate(slug: string): Promise<never> {
   redirect(`/create/${gift.id}`);
 }
 
+export type DraftError = "signin" | "template" | "premium" | "limit" | "invalid" | "unknown";
+
+/**
+ * Turns the gift a visitor made before signing up into a saved gift of the
+ * creator who is now signed in. The payload is checked like any save; a
+ * guest cannot upload, so no photo may be referenced. Returns the new gift's
+ * id, or why it could not be made (the draft then stays in the browser).
+ */
+export async function createGiftFromDraft(
+  slug: string,
+  payloadJson: string,
+): Promise<{ giftId: string } | { error: DraftError }> {
+  if (!isAvailableTemplate(slug)) return { error: "template" };
+  let raw: unknown;
+  try {
+    raw = JSON.parse(payloadJson);
+  } catch {
+    return { error: "invalid" };
+  }
+  const parsed = editorPayloadSchema.safeParse(raw);
+  if (!parsed.success) return { error: "invalid" };
+  const v = parsed.data;
+
+  const { supabase, user } = await createClientWithUser();
+  if (!user) return { error: "signin" };
+
+  const { data: template } = await supabase
+    .from("templates")
+    .select("id, is_premium")
+    .eq("slug", slug)
+    .eq("is_active", true)
+    .maybeSingle();
+  if (!template) return { error: "template" };
+  if (template.is_premium) {
+    const { data: unlock } = await supabase
+      .from("template_unlocks")
+      .select("template_id")
+      .eq("template_id", template.id)
+      .maybeSingle();
+    if (!unlock) return { error: "premium" };
+  }
+
+  const sections = pruneMediaReferences(v.sections, new Set());
+  const { data: gift, error } = await supabase
+    .from("gifts")
+    .insert({
+      sender_id: user.id,
+      template_id: template.id,
+      title: v.title,
+      theme: themeFromPayload(v),
+    })
+    .select("id")
+    .single();
+  if (error || !gift) return { error: error?.message.includes("gift limit") ? "limit" : "unknown" };
+
+  const { error: sectionsError } = await supabase
+    .from("gift_sections")
+    .insert(rowsFromSections(gift.id, sections));
+  if (sectionsError || !(await syncQuestions(supabase, gift.id, sections))) {
+    // Half a gift helps nobody: take the row away again and let them try once more.
+    await supabase.from("gifts").delete().eq("id", gift.id);
+    return { error: "unknown" };
+  }
+  if (v.recipientName) {
+    await supabase.from("gift_recipients").insert({ gift_id: gift.id, name: v.recipientName });
+  }
+
+  await track("gift_created", user.id, {
+    template: slug,
+    locale: await getLocale(),
+    from: "guest",
+  });
+  revalidatePath("/dashboard", "layout");
+  return { giftId: gift.id };
+}
+
 export async function createGift(formData: FormData): Promise<void> {
   await createGiftFromTemplate(String(formData.get("template") ?? ""));
 }

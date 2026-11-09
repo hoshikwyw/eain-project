@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Notice } from "@/components/ui/notice";
+import { GuestDraftNotice } from "./guest-draft-notice";
 
 type Props = {
   mode: "login" | "signup";
@@ -64,6 +65,9 @@ export function AuthForm({
           </div>
         </>
       )}
+
+      {/* Arriving from the guest editor: the gift they made is waiting for this account. */}
+      {next.startsWith("/create/continue") && <GuestDraftNotice />}
 
       <form action={formAction} className="flex flex-col gap-4" noValidate>
         <input type="hidden" name="next" value={next} />
