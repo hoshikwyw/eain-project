@@ -157,8 +157,14 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
           <Heading
             style={alignStyle(st?.heading)}
             className={cn(
-              "font-display leading-tight font-semibold text-balance",
-              compact ? (isFirst ? "text-3xl" : "text-2xl") : isFirst ? "text-4xl" : "text-3xl",
+              "font-display leading-[1.12] font-semibold tracking-[-0.01em] text-balance [overflow-wrap:anywhere]",
+              compact
+                ? isFirst
+                  ? "text-3xl"
+                  : "text-2xl"
+                : isFirst
+                  ? "text-[2.5rem]"
+                  : "text-3xl",
             )}
           >
             <Styled style={st?.heading} text={section.content.heading} wrap={editing}>

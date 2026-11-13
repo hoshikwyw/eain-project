@@ -1,6 +1,13 @@
 import { flowerSwatch } from "@/features/gifts/scene";
 import { cn } from "@/lib/utils";
-import { Decorations, Eyebrow, Illustration, Pattern, partyColor } from "./gift-decorations";
+import {
+  CardMark,
+  Decorations,
+  Eyebrow,
+  Illustration,
+  Pattern,
+  partyColor,
+} from "./gift-decorations";
 import { Sections } from "./gift-sections";
 import type { Ctx } from "./gift-types";
 
@@ -120,9 +127,6 @@ function PostcardDesign(ctx: Ctx) {
               <Balloons className={cn("float-slow", compact ? "w-11" : "w-16")} />
               <div className="rounded-md border-2 border-dashed border-[color:var(--t-deco)] bg-[color:var(--t-accent-soft)]/40 p-1.5">
                 <Illustration src={style.illustration} className={compact ? "w-24" : "w-32"} />
-                <p className="mt-1 text-center font-display text-[10px] font-semibold tracking-[0.3em] text-[color:var(--t-muted)] uppercase">
-                  Eain
-                </p>
               </div>
             </div>
             <div className="mt-auto flex flex-col gap-4">
@@ -135,6 +139,7 @@ function PostcardDesign(ctx: Ctx) {
                 />
               ))}
             </div>
+            <CardMark className="self-end" />
           </aside>
         </div>
       </div>
@@ -245,6 +250,7 @@ function PlayfulDesign(ctx: Ctx) {
           className={compact ? "gap-4" : "gap-6"}
           itemClassName="[&_h1]:font-hand [&_h1]:text-5xl [&_h1]:font-bold [&_h1]:leading-none [&_h1]:text-[color:var(--t-accent)] [&_h2]:font-hand [&_h2]:text-4xl [&_p.msg]:rounded-3xl [&_p.msg]:bg-[color:var(--t-accent-soft)] [&_p.msg]:px-5 [&_p.msg]:py-4 [&_.sig]:font-hand [&_.sig]:text-3xl"
         />
+        <CardMark className="self-end" />
       </div>
     </div>
   );
@@ -272,12 +278,13 @@ function BotanicalDesign(ctx: Ctx) {
           src={style.illustration}
           className={cn("mx-auto", compact ? "max-w-56" : "max-w-sm")}
         />
+        <CardMark className="self-end" />
       </div>
     </article>
   );
 }
 
-/** Double border, small caps, a seal in the corner. */
+/** Double border, small caps, the mark at the foot. */
 function CertificateDesign(ctx: Ctx) {
   const { compact, style, eyebrow } = ctx;
   return (
@@ -294,19 +301,14 @@ function CertificateDesign(ctx: Ctx) {
           compact ? "gap-5 p-6" : "gap-7 p-8",
         )}
       >
-        <span
-          aria-hidden="true"
-          className="absolute top-4 right-4 grid size-14 place-items-center rounded-full bg-[color:var(--glow)] font-display text-[9px] font-bold tracking-[0.2em] text-[color:var(--t-fg)] shadow-md"
-        >
-          ✦ EAIN
-        </span>
         <Eyebrow text={eyebrow} className="tracking-[0.3em]" />
         <Sections
           ctx={ctx}
           className={cn("w-full items-center", compact ? "gap-5" : "gap-7")}
-          itemClassName="w-full [&_h1]:uppercase [&_h1]:tracking-wide [&_h1]:font-bold [&_h1]:after:mx-auto [&_h1]:after:mt-4 [&_h1]:after:block [&_h1]:after:h-1 [&_h1]:after:w-24 [&_h1]:after:rounded-full [&_h1]:after:bg-[color:var(--glow)] [&_h1]:after:content-[''] [&_footer]:items-center [&_footer]:border-t-0"
+          itemClassName="w-full [&_h1]:text-4xl [&_h1]:uppercase [&_h1]:tracking-wide [&_h1]:font-bold [&_h1]:after:mx-auto [&_h1]:after:mt-4 [&_h1]:after:block [&_h1]:after:h-1 [&_h1]:after:w-24 [&_h1]:after:rounded-full [&_h1]:after:bg-[color:var(--glow)] [&_h1]:after:content-[''] [&_footer]:items-center [&_footer]:border-t-0"
         />
         <Illustration src={style.illustration} className={compact ? "max-w-52" : "max-w-xs"} />
+        <CardMark />
       </div>
     </article>
   );
@@ -336,10 +338,10 @@ function LetterDesign(ctx: Ctx) {
             className={compact ? "gap-5" : "gap-7"}
             itemClassName="[&_h1]:font-hand [&_h1]:text-5xl [&_h1]:font-bold [&_h1]:leading-none [&_p.msg]:font-hand [&_p.msg]:text-2xl [&_p.msg]:leading-[2rem] [&_.sig]:font-hand [&_.sig]:text-3xl"
           />
-          <Illustration
-            src={style.illustration}
-            className={cn("ml-auto", compact ? "max-w-40" : "max-w-56")}
-          />
+          <div className="flex items-end justify-between gap-4">
+            <CardMark className="mb-1" />
+            <Illustration src={style.illustration} className={compact ? "max-w-40" : "max-w-56"} />
+          </div>
         </div>
       </div>
     </div>
@@ -358,10 +360,10 @@ function MinimalDesign(ctx: Ctx) {
     >
       <Eyebrow text={eyebrow} />
       <Sections ctx={ctx} className={compact ? "gap-5" : "gap-7"} />
-      <Illustration
-        src={style.illustration}
-        className={cn("ml-auto", compact ? "max-w-36" : "max-w-52")}
-      />
+      <div className="flex items-end justify-between gap-4">
+        <CardMark className="mb-1" />
+        <Illustration src={style.illustration} className={compact ? "max-w-36" : "max-w-52"} />
+      </div>
     </article>
   );
 }
@@ -387,6 +389,7 @@ function BlankDesign(ctx: Ctx) {
         )}
       >
         <Sections ctx={ctx} className={compact ? "gap-5" : "gap-7"} />
+        <CardMark className="mt-auto self-end pt-4" />
       </div>
     </article>
   );
@@ -536,8 +539,10 @@ function BoldDesign(ctx: Ctx) {
         <Sections
           ctx={ctx}
           className={compact ? "gap-5" : "gap-7"}
-          itemClassName="[&_h1]:font-sans [&_h1]:text-5xl [&_h1]:font-black [&_h1]:uppercase [&_h1]:leading-[0.95] [&_h1]:tracking-tight [&_h1]:text-[color:var(--t-accent)] [&_h2]:font-sans [&_h2]:font-black [&_h2]:uppercase [&_footer]:border-t-[3px] [&_footer]:border-[color:var(--t-fg)] [&_.sig]:font-sans [&_.sig]:font-black [&_.sig]:uppercase"
+          // Condensed poster type: a long word like "Congratulations" fits the card in one line.
+          itemClassName="[&_h1]:font-poster [&_h1]:text-[2.75rem] [&_h1]:font-normal [&_h1]:leading-[0.95] [&_h1]:tracking-[0.02em] [&_h1]:text-[color:var(--t-accent)] [&_h2]:font-poster [&_h2]:text-4xl [&_h2]:font-normal [&_h2]:tracking-[0.02em] [&_footer]:border-t-[3px] [&_footer]:border-[color:var(--t-fg)] [&_.sig]:font-sans [&_.sig]:font-black [&_.sig]:uppercase"
         />
+        <CardMark className="self-end" />
       </div>
     </article>
   );

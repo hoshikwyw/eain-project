@@ -25,11 +25,43 @@ export function Illustration({ src, className }: { src: string; className?: stri
   );
 }
 
+/**
+ * Eain's mark on a card, the way a printer signs the back of a greeting
+ * card: the lovebird house and the name, small, in the look's muted ink,
+ * with air around it. Decorative to assistive technology.
+ */
+export function CardMark({ className }: { className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "inline-flex items-center gap-1.5 text-[color:var(--t-muted)] opacity-80 select-none",
+        className,
+      )}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset, optimiser bypassed on purpose */}
+      <img
+        src="/brand/logo-mark.webp"
+        alt=""
+        width={379}
+        height={286}
+        loading="lazy"
+        decoding="async"
+        className="h-5 w-auto"
+        draggable={false}
+      />
+      <span className="font-display text-[11px] font-semibold tracking-[0.18em] uppercase">
+        Eain
+      </span>
+    </span>
+  );
+}
+
 export function Pattern({
   kind,
   opacity = 0.35,
 }: {
-  kind: "dots" | "stripes" | "lines" | "grid" | "rays";
+  kind: "dots" | "stripes" | "lines" | "grid" | "rays" | "paper";
   opacity?: number;
 }) {
   return (
