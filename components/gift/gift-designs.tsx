@@ -741,32 +741,46 @@ function ScrapbookDesign(ctx: Ctx) {
   );
 }
 
-/** Big type, a rays band and heavy borders. */
+/**
+ * A poster for a win: the trophy bird as the hero in a band of rays and
+ * confetti, the name in a boxed label, condensed poster type that fits the
+ * card at any length, heavy rules, and the mark at the foot.
+ */
 function BoldDesign(ctx: Ctx) {
   const { compact, style, eyebrow } = ctx;
   return (
     <article className="relative overflow-hidden rounded-3xl border-[3px] border-[color:var(--t-fg)] bg-[color:var(--t-card)]">
-      <div aria-hidden="true" className="relative h-24 overflow-hidden [background:var(--t-bg)]">
+      <div
+        aria-hidden="true"
+        className={cn(
+          "relative overflow-hidden [background:var(--t-bg)]",
+          compact ? "h-24" : "h-32",
+        )}
+      >
         <Pattern kind="rays" opacity={0.5} />
         <Decorations kind="confetti" />
       </div>
+      <Pattern kind="paper" opacity={0.1} />
       <div
-        className={cn("relative flex flex-col", compact ? "-mt-10 gap-5 p-6" : "-mt-12 gap-7 p-8")}
+        className={cn("relative flex flex-col", compact ? "-mt-16 gap-5 p-6" : "-mt-20 gap-6 p-8")}
       >
         <Illustration
           src={style.illustration}
           className={cn("mx-auto", compact ? "max-w-52" : "max-w-xs")}
         />
-        <span className="inline-flex w-fit border-2 border-[color:var(--t-fg)] px-3 py-1 text-xs font-black tracking-widest uppercase">
+        <span className="inline-flex w-fit bg-[color:var(--t-fg)] px-3 py-1 text-xs font-black tracking-widest text-[color:var(--t-card)] uppercase">
           {eyebrow}
         </span>
         <Sections
           ctx={ctx}
-          className={compact ? "gap-5" : "gap-7"}
+          className={compact ? "gap-5" : "gap-6"}
           // Condensed poster type: a long word like "Congratulations" fits the card in one line.
-          itemClassName="[&_h1]:font-poster [&_h1]:text-[2.75rem] [&_h1]:font-normal [&_h1]:leading-[0.95] [&_h1]:tracking-[0.02em] [&_h1]:text-[color:var(--t-accent)] [&_h2]:font-poster [&_h2]:text-4xl [&_h2]:font-normal [&_h2]:tracking-[0.02em] [&_footer]:border-t-[3px] [&_footer]:border-[color:var(--t-fg)] [&_.sig]:font-sans [&_.sig]:font-black [&_.sig]:uppercase"
+          itemClassName="[&_h1]:font-poster [&_h1]:text-[2.75rem] [&_h1]:font-normal [&_h1]:leading-[0.92] [&_h1]:tracking-[0.02em] [&_h1]:text-[color:var(--t-accent)] [&_h2]:font-poster [&_h2]:text-4xl [&_h2]:font-normal [&_h2]:tracking-[0.02em] [&_p.msg]:text-xl [&_p.msg]:font-medium [&_footer]:border-t-[3px] [&_footer]:border-[color:var(--t-fg)] [&_.sig]:font-poster [&_.sig]:text-3xl [&_.sig]:tracking-[0.04em]"
         />
-        <CardMark className="self-end" />
+        <div className="flex items-end justify-between gap-4 border-t-[3px] border-[color:var(--t-fg)] pt-4">
+          <span aria-hidden="true" className="pattern-stripes h-3 flex-1 opacity-70" />
+          <CardMark />
+        </div>
       </div>
     </article>
   );
