@@ -362,9 +362,56 @@ function BotanicalDesign(ctx: Ctx) {
   );
 }
 
-/** Double border, small caps, the mark at the foot. */
+/** A gold rosette with two tails, the award on a certificate. */
+function Rosette({ className }: { className?: string }) {
+  const scallops = Array.from({ length: 12 }, (_, i) => {
+    const angle = (i / 12) * Math.PI * 2;
+    return [40 + Math.cos(angle) * 22, 40 + Math.sin(angle) * 22] as const;
+  });
+  return (
+    <svg viewBox="0 0 80 110" aria-hidden="true" className={className}>
+      <path d="M26 56 L18 104 L32 94 L40 108 L50 60 Z" fill="var(--t-accent)" opacity="0.85" />
+      <path d="M54 56 L62 104 L48 94 L40 108 L30 60 Z" fill="var(--t-deco)" opacity="0.9" />
+      {scallops.map(([x, y], i) => (
+        <circle key={i} cx={x} cy={y} r="7" fill="var(--glow)" />
+      ))}
+      <circle cx="40" cy="40" r="22" fill="var(--glow)" />
+      <circle
+        cx="40"
+        cy="40"
+        r="15"
+        fill="none"
+        stroke="var(--t-accent)"
+        strokeWidth="1.5"
+        opacity="0.7"
+      />
+      <path
+        d="M40 31 l2.8 5.7 6.2 0.9 -4.5 4.4 1.1 6.2 -5.6 -2.9 -5.6 2.9 1.1 -6.2 -4.5 -4.4 6.2 -0.9 z"
+        fill="var(--t-accent)"
+        opacity="0.85"
+      />
+    </svg>
+  );
+}
+
+/** An L-shaped ornament for a certificate corner. */
+function CornerMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="none">
+      <path d="M1 23 V1 H23" stroke="var(--glow)" strokeWidth="2" strokeLinecap="square" />
+      <path d="M6 18 V6 H18" stroke="var(--glow)" strokeWidth="1" opacity="0.7" />
+    </svg>
+  );
+}
+
+/**
+ * A certificate: double rule, ornaments in the corners, a small-caps title
+ * over a gold rule, the words centred, and a rosette with the bird at the
+ * foot. The mark signs it where a printer would.
+ */
 function CertificateDesign(ctx: Ctx) {
   const { compact, style, eyebrow } = ctx;
+  const corner = compact ? "size-5" : "size-6";
   return (
     <article
       className={cn(
@@ -375,18 +422,30 @@ function CertificateDesign(ctx: Ctx) {
       <Decorations kind="sparkles" />
       <div
         className={cn(
-          "relative flex flex-col items-center rounded-lg border border-[color:var(--glow)]/60 bg-[color:var(--t-card)]/94 text-center",
-          compact ? "gap-5 p-6" : "gap-7 p-8",
+          "relative flex flex-col items-center overflow-hidden rounded-lg border border-[color:var(--glow)]/60 bg-[color:var(--t-card)]/94 text-center",
+          compact ? "gap-5 p-7" : "gap-7 p-9",
         )}
       >
-        <Eyebrow text={eyebrow} className="tracking-[0.3em]" />
+        <Pattern kind="paper" opacity={0.14} />
+        <CornerMark className={cn("absolute top-2 left-2", corner)} />
+        <CornerMark className={cn("absolute top-2 right-2 rotate-90", corner)} />
+        <CornerMark className={cn("absolute right-2 bottom-2 rotate-180", corner)} />
+        <CornerMark className={cn("absolute bottom-2 left-2 -rotate-90", corner)} />
+        <div className="relative flex w-full items-center gap-3">
+          <span aria-hidden="true" className="h-px flex-1 bg-[color:var(--glow)]/70" />
+          <Eyebrow text={eyebrow} className="tracking-[0.3em]" />
+          <span aria-hidden="true" className="h-px flex-1 bg-[color:var(--glow)]/70" />
+        </div>
         <Sections
           ctx={ctx}
-          className={cn("w-full items-center", compact ? "gap-5" : "gap-7")}
-          itemClassName="w-full [&_h1]:text-4xl [&_h1]:uppercase [&_h1]:tracking-wide [&_h1]:font-bold [&_h1]:after:mx-auto [&_h1]:after:mt-4 [&_h1]:after:block [&_h1]:after:h-1 [&_h1]:after:w-24 [&_h1]:after:rounded-full [&_h1]:after:bg-[color:var(--glow)] [&_h1]:after:content-[''] [&_footer]:items-center [&_footer]:border-t-0"
+          className={cn("relative w-full items-center", compact ? "gap-5" : "gap-7")}
+          itemClassName="w-full [&_h1]:text-[2rem] [&_h1]:leading-[1.2] [&_h1]:font-semibold [&_h1]:uppercase [&_h1]:tracking-[0.08em] [&_h1]:after:mx-auto [&_h1]:after:mt-4 [&_h1]:after:block [&_h1]:after:h-0.5 [&_h1]:after:w-20 [&_h1]:after:rounded-full [&_h1]:after:bg-[color:var(--glow)] [&_h1]:after:content-[] [&_h2]:uppercase [&_h2]:tracking-[0.06em] [&_h2]:text-2xl [&_footer]:items-center [&_footer]:border-t-0 [&_.sig]:text-2xl"
         />
-        <Illustration src={style.illustration} className={compact ? "max-w-52" : "max-w-xs"} />
-        <CardMark />
+        <div className="relative flex items-end justify-center gap-5">
+          <Rosette className={cn("mb-1", compact ? "w-10" : "w-12")} />
+          <Illustration src={style.illustration} className={compact ? "max-w-32" : "max-w-40"} />
+        </div>
+        <CardMark className="relative" />
       </div>
     </article>
   );
