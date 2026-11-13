@@ -451,33 +451,43 @@ function CertificateDesign(ctx: Ctx) {
   );
 }
 
-/** Lined paper under an envelope flap, handwritten message. */
+/**
+ * A letter pulled from its envelope: the flap and a wax seal at the top,
+ * ruled paper written by hand, the photo taped in like a polaroid, and the
+ * small bird and the mark at the foot.
+ */
 function LetterDesign(ctx: Ctx) {
   const { compact, style, eyebrow } = ctx;
   return (
     <div className="relative overflow-hidden rounded-3xl [background:var(--t-bg)]">
       <Decorations kind="stars" />
-      <div
-        aria-hidden="true"
-        className="relative h-14 bg-[color:var(--t-accent-soft)] [clip-path:polygon(0_0,100%_0,50%_100%)]"
-      />
+      <div aria-hidden="true" className="relative h-16">
+        <div className="absolute inset-x-0 top-0 h-16 bg-[color:var(--t-accent-soft)] [clip-path:polygon(0_0,100%_0,50%_100%)]" />
+        <span className="absolute top-8 left-1/2 z-10 grid size-9 -translate-x-1/2 place-items-center rounded-full bg-[color:var(--t-accent)] text-sm text-[color:var(--t-on-accent,#fff)] shadow-md ring-2 ring-[color:var(--t-card)]/40">
+          ♥
+        </span>
+      </div>
       <div
         className={cn(
-          "relative mx-2 -mt-6 mb-2 rounded-xl bg-[color:var(--t-card)]/95 shadow-md",
-          compact ? "p-6" : "p-8",
+          "relative mx-2 -mt-5 mb-2 overflow-hidden rounded-xl bg-[color:var(--t-card)]/95 shadow-md",
+          compact ? "p-6 pt-8" : "p-8 pt-10",
         )}
       >
-        <Pattern kind="lines" opacity={0.6} />
+        <Pattern kind="lines" opacity={0.5} />
+        <Pattern kind="paper" opacity={0.1} />
         <div className={cn("relative flex flex-col", compact ? "gap-5" : "gap-7")}>
-          <Eyebrow text={eyebrow} className="font-hand text-lg tracking-normal normal-case" />
+          <Eyebrow
+            text={eyebrow}
+            className="font-hand text-xl tracking-normal text-[color:var(--t-accent)] normal-case"
+          />
           <Sections
             ctx={ctx}
             className={compact ? "gap-5" : "gap-7"}
-            itemClassName="[&_h1]:font-hand [&_h1]:text-5xl [&_h1]:font-bold [&_h1]:leading-none [&_p.msg]:font-hand [&_p.msg]:text-2xl [&_p.msg]:leading-[2rem] [&_.sig]:font-hand [&_.sig]:text-3xl"
+            itemClassName="[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:font-bold [&_h1]:leading-[0.95] [&_h1]:tracking-normal [&_h2]:font-hand [&_h2]:text-4xl [&_p.msg]:font-hand [&_p.msg]:text-2xl [&_p.msg]:leading-[2rem] [&_.sig]:font-hand [&_.sig]:text-3xl [&_.sig]:text-[color:var(--t-accent)]"
           />
           <div className="flex items-end justify-between gap-4">
             <CardMark className="mb-1" />
-            <Illustration src={style.illustration} className={compact ? "max-w-40" : "max-w-56"} />
+            <Illustration src={style.illustration} className={compact ? "max-w-28" : "max-w-32"} />
           </div>
         </div>
       </div>

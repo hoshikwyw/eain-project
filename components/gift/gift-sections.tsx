@@ -201,9 +201,10 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
     case "image": {
       const item = section.content.mediaId ? media[section.content.mediaId] : undefined;
       const captionStyle = section.content.styles?.caption;
+      const polaroid = design === "scrapbook" || design === "letter";
       if (!item)
         return placeholders ? (
-          <PhotoPlaceholder label={labels.addPhoto} polaroid={design === "scrapbook"} />
+          <PhotoPlaceholder label={labels.addPhoto} polaroid={polaroid} />
         ) : null;
       const img = (
         // eslint-disable-next-line @next/next/no-img-element -- private signed URL, optimiser bypassed on purpose
@@ -216,20 +217,21 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
           decoding="async"
           className={cn(
             "w-full object-cover",
-            design === "scrapbook"
-              ? "aspect-square"
-              : design === "playful"
-                ? "rounded-3xl"
-                : "rounded-2xl",
+            polaroid ? "aspect-square" : design === "playful" ? "rounded-3xl" : "rounded-2xl",
           )}
         />
       );
-      if (design === "scrapbook") {
+      if (polaroid) {
         return (
           <figure
             data-photo=""
             style={photoWidth(section.content.size)}
-            className="mx-auto w-fit max-w-full -rotate-1 rounded-sm bg-white p-3 pb-10 shadow-lg"
+            className={cn(
+              "mx-auto w-fit max-w-full -rotate-1 rounded-sm bg-white p-3 pb-10 shadow-lg",
+              // A letter's photo is taped in.
+              design === "letter" &&
+                "relative before:absolute before:-top-2.5 before:left-1/2 before:h-5 before:w-20 before:-translate-x-1/2 before:rotate-[-4deg] before:rounded-sm before:bg-[color:var(--glow)]/60 before:content-['']",
+            )}
           >
             {img}
             {(section.content.caption || editing) && (
