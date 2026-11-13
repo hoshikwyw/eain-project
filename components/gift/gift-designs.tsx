@@ -273,29 +273,83 @@ function PlayfulDesign(ctx: Ctx) {
   );
 }
 
-/** Paper card with a leaf band and ornaments around the heading. */
+/** A sprig of leaves on a curving stem, in the look's greens. */
+function Sprig({ className }: { className?: string }) {
+  const leaves: [number, number, number][] = [
+    [26, 122, -42],
+    [46, 100, 32],
+    [56, 78, -46],
+    [74, 60, 34],
+    [82, 42, -50],
+    [98, 26, 38],
+  ];
+  return (
+    <svg viewBox="0 0 120 160" aria-hidden="true" className={className} fill="none">
+      <path
+        d="M10 152 C 30 112, 52 72, 110 12"
+        stroke="var(--t-accent)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity="0.75"
+      />
+      {leaves.map(([x, y, r], i) => (
+        <ellipse
+          key={i}
+          cx={x}
+          cy={y}
+          rx="7"
+          ry="16"
+          transform={`rotate(${r} ${x} ${y})`}
+          fill={i % 2 ? "var(--t-deco)" : "var(--t-accent)"}
+          opacity={i % 2 ? 0.85 : 0.7}
+        />
+      ))}
+    </svg>
+  );
+}
+
+/** Grained paper with leaf sprigs in two corners, an italic serif greeting and a small bird to close. */
 function BotanicalDesign(ctx: Ctx) {
   const { compact, style, eyebrow } = ctx;
   return (
     <article className="relative overflow-hidden rounded-3xl [background:var(--t-bg)]">
-      <Decorations kind="leaves" />
+      <div aria-hidden="true" className="absolute inset-0 opacity-70">
+        <Decorations kind="leaves" />
+      </div>
       <div
         className={cn(
-          "relative m-2 flex flex-col rounded-[1.25rem] border-t-8 border-[color:var(--t-deco)] bg-[color:var(--t-card)]/94",
+          "relative m-2 flex flex-col overflow-hidden rounded-[1.25rem] bg-[color:var(--t-card)]/94 ring-1 ring-[color:var(--t-accent-soft)]",
           compact ? "gap-5 p-6" : "gap-7 p-8",
         )}
       >
-        <Eyebrow text={eyebrow} />
+        <Pattern kind="paper" opacity={0.12} />
+        <Sprig
+          className={cn(
+            "absolute -top-4 -right-3 -scale-x-100 rotate-[-12deg]",
+            compact ? "w-16" : "w-20",
+          )}
+        />
+        <Sprig
+          className={cn(
+            "absolute -bottom-4 -left-3 -scale-x-100 rotate-[168deg]",
+            compact ? "w-16" : "w-20",
+          )}
+        />
+        <Eyebrow text={eyebrow} className="relative text-[color:var(--t-accent)]" />
         <Sections
           ctx={ctx}
-          className={compact ? "gap-5" : "gap-7"}
-          itemClassName="[&_h1]:before:mr-3 [&_h1]:before:text-[color:var(--t-deco)] [&_h1]:before:content-['❦'] [&_h1]:after:ml-3 [&_h1]:after:text-[color:var(--t-deco)] [&_h1]:after:content-['❦']"
+          className={cn("relative", compact ? "gap-5" : "gap-7")}
+          itemClassName="[&_h1]:font-medium [&_h1]:italic [&_h1]:tracking-normal [&_h2]:font-medium [&_h2]:italic"
         />
-        <Illustration
-          src={style.illustration}
-          className={cn("mx-auto", compact ? "max-w-56" : "max-w-sm")}
-        />
-        <CardMark className="self-end" />
+        <div
+          className={cn(
+            "relative flex items-end justify-between gap-4",
+            compact ? "pl-16" : "pl-20",
+          )}
+        >
+          <CardMark className="mb-1" />
+          <Illustration src={style.illustration} className={compact ? "max-w-28" : "max-w-36"} />
+        </div>
       </div>
     </article>
   );
