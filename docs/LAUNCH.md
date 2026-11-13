@@ -6,7 +6,7 @@ Zero-cost first launch on Vercel Hobby and Supabase Free. Work through the secti
 
 - [ ] All migrations applied (`supabase/migrations/0001` to `0009`). Check in SQL editor: `select version, name from supabase_migrations.schema_migrations order by version;`
 - [ ] Authentication → Sign In / Providers → Email: **Confirm email OFF**. The free mailer sends only a few emails per hour.
-- [ ] Authentication → Sign In / Providers → Google: enabled with the Client ID and secret from Google Cloud.
+- [ ] Authentication → Sign In / Providers → Google: enabled with the Client ID and secret from Google Cloud, the Client ID also in Authorized Client IDs, and `NEXT_PUBLIC_GOOGLE_CLIENT_ID` set in Vercel.
 - [ ] Authentication → URL Configuration: Site URL set to the production URL, and Redirect URLs contain `https://<your-domain>/**` (keep `http://localhost:5173/**` for development). The wildcard matters: Google sign-in and password-reset links return to `/auth/callback?next=…`, and an exact URL without the query string is rejected.
 - [ ] Authentication → Emails → Reset password: the template's link uses `{{ .ConfirmationURL }}`. The free mailer sends only a few emails per hour; Eain limits reset requests to 3 per device per hour.
 - [ ] Your own account promoted to admin: `update public.profiles set role = 'admin' where id = '<your-user-id>';`

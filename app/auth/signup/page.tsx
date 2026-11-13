@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { AuthForm } from "@/components/auth/auth-form";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { getAuthProviders } from "@/lib/auth/providers";
-import { isSupabaseConfigured } from "@/lib/env";
+import { isSupabaseConfigured, publicEnv } from "@/lib/env";
 import { safeNextPath } from "@/lib/auth/paths";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -28,7 +28,7 @@ export default async function SignupPage({ searchParams }: PageProps<"/auth/sign
         mode="signup"
         next={next}
         configured={isSupabaseConfigured()}
-        googleEnabled={providers.google}
+        googleClientId={providers.google ? publicEnv.NEXT_PUBLIC_GOOGLE_CLIENT_ID : undefined}
       />
     </AuthShell>
   );

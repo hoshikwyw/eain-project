@@ -4,7 +4,7 @@ import { AuthForm } from "@/components/auth/auth-form";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { appMode } from "@/lib/app-mode";
 import { getAuthProviders } from "@/lib/auth/providers";
-import { isSupabaseConfigured } from "@/lib/env";
+import { isSupabaseConfigured, publicEnv } from "@/lib/env";
 import { safeNextPath } from "@/lib/auth/paths";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -31,7 +31,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/auth/login
         next={next}
         notice={notice}
         configured={isSupabaseConfigured()}
-        googleEnabled={providers.google}
+        googleClientId={providers.google ? publicEnv.NEXT_PUBLIC_GOOGLE_CLIENT_ID : undefined}
         allowSignup={!isAdminSite}
       />
     </AuthShell>

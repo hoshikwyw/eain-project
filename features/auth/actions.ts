@@ -84,20 +84,40 @@ export async function signIn(_prev: AuthFormState, formData: FormData): Promise<
   redirect(safeNextPath(String(formData.get("next") ?? "")));
 }
 
-export async function signInWithGoogle(formData: FormData): Promise<void> {
-  if (!isSupabaseConfigured()) redirect("/auth/login?notice=notConfigured");
+export type GoogleSignInError = "google" | "suspended" | "notConfigured";
 
-  const next = safeNextPath(String(formData.get("next") ?? ""));
+/**
+ * Finishes a Google sign-in. The browser got an ID token from Google itself
+ * (components/auth/google-sign-in.tsx) and sends it here with the raw nonce
+ * whose hash is inside the token; Supabase checks both. Only our server
+ * talks to Supabase, so this works on networks that cannot reach it.
+ */
+export async function signInWithGoogleToken(input: {
+  credential: string;
+  nonce: string;
+  next: string;
+}): Promise<{ error: GoogleSignInError } | undefined> {
+  if (!isSupabaseConfigured()) return { error: "notConfigured" };
+  if (
+    typeof input.credential !== "string" ||
+    !input.credential ||
+    typeof input.nonce !== "string"
+  ) {
+    return { error: "google" };
+  }
+
   const supabase = await createClient();
-  const origin = await siteOrigin();
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
+  const { error } = await supabase.auth.signInWithIdToken({
     provider: "google",
-    options: { redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}` },
+    token: input.credential,
+    nonce: input.nonce,
   });
+  if (error) {
+    const suspended = error.code === "user_banned" || /banned/i.test(error.message);
+    return { error: suspended ? "suspended" : "google" };
+  }
 
-  if (error || !data.url) redirect("/auth/login?notice=oauthFailed");
-  redirect(data.url);
+  redirect(safeNextPath(String(input.next ?? "")));
 }
 
 export async function signOut(): Promise<void> {

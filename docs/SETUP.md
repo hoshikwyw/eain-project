@@ -79,15 +79,16 @@ A second Supabase project for production can be created later with the same step
 
 ## Part B: Google sign-in (optional but recommended)
 
-The app already contains the button and the callback route. The login page shows the Google button only once Supabase reports the provider as enabled.
+The app already contains the button. It is drawn by Google's own sign-in library: the browser gets a token from Google and our server finishes the sign-in with Supabase, so the browser never has to reach the Supabase host (some networks, Myanmar among them, cannot). The login page shows the button only once Supabase reports the provider as enabled and `NEXT_PUBLIC_GOOGLE_CLIENT_ID` is set.
 
 1. Google Cloud Console (console.cloud.google.com): create a project, then APIs & Services, then OAuth consent screen. Choose External, fill app name "Eain", your support email and developer email. Add test users while the app is in testing mode, or publish it.
 2. APIs & Services, then Credentials, then Create credentials, then OAuth client ID, type Web application.
-   - Authorized JavaScript origins: `http://localhost:5173` (add the Vercel URL later).
+   - Authorized JavaScript origins: `http://localhost:5173`, and every origin the site is served from (the Vercel URL, the admin URL, your own domain). Google's button refuses to work from an origin that is not listed.
    - Authorized redirect URI: `https://<project-ref>.supabase.co/auth/v1/callback`. The exact value is shown in Supabase under Authentication, Sign In / Providers, Google.
-3. Copy the Client ID and Client secret into that Supabase Google provider screen and turn the provider on.
+3. Copy the Client ID and Client secret into that Supabase Google provider screen, paste the same Client ID into its **Authorized Client IDs** field (that is what lets Supabase accept Google's token), and turn the provider on.
 4. Supabase, Authentication, URL Configuration: Site URL `http://localhost:5173`, and Redirect URLs must include `http://localhost:5173/auth/callback`. Without this, Supabase sends users back to the wrong address after Google.
-5. Reload the login page. The Google button appears within five minutes, or immediately after restarting `pnpm dev`.
+5. Put the Client ID in `.env.local` as `NEXT_PUBLIC_GOOGLE_CLIENT_ID`, and in the Vercel project settings.
+6. Reload the login page. The Google button appears within five minutes, or immediately after restarting `pnpm dev`.
 
 A Google sign-up creates the profile through the same trigger as email sign-up, using the Google name and picture, and grants the welcome points.
 

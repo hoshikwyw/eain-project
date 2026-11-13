@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useActionState } from "react";
-import { signIn, signInWithGoogle, signUp } from "@/features/auth/actions";
+import { signIn, signUp } from "@/features/auth/actions";
 import type { AuthFormState } from "@/features/auth/schemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Notice } from "@/components/ui/notice";
+import { GoogleSignIn } from "./google-sign-in";
 import { GuestDraftNotice } from "./guest-draft-notice";
 
 type Props = {
@@ -16,8 +17,8 @@ type Props = {
   next: string;
   notice?: string;
   configured: boolean;
-  /** Google provider is enabled in Supabase Auth. Hidden otherwise so no button is dead. */
-  googleEnabled: boolean;
+  /** Google's web client id, when the provider is on in Supabase. No button without it. */
+  googleClientId?: string;
   /** False on the admin site, which has no sign-up. */
   allowSignup?: boolean;
 };
@@ -36,7 +37,7 @@ export function AuthForm({
   next,
   notice,
   configured,
-  googleEnabled,
+  googleClientId,
   allowSignup = true,
 }: Props) {
   const t = useTranslations("auth");
@@ -48,15 +49,9 @@ export function AuthForm({
 
   return (
     <div className="flex flex-col gap-5">
-      {googleEnabled && (
+      {googleClientId && configured && (
         <>
-          <form action={signInWithGoogle}>
-            <input type="hidden" name="next" value={next} />
-            <Button type="submit" variant="secondary" className="w-full" disabled={!configured}>
-              <GoogleMark />
-              {t("continueWithGoogle")}
-            </Button>
-          </form>
+          <GoogleSignIn clientId={googleClientId} next={next} />
 
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="h-px flex-1 bg-border" />
@@ -148,16 +143,5 @@ export function AuthForm({
         </p>
       )}
     </div>
-  );
-}
-
-function GoogleMark() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4">
-      <path
-        fill="#EA4335"
-        d="M12 10.2v3.9h5.5c-.2 1.3-1.6 3.8-5.5 3.8-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.9 1.5l2.6-2.6C16.8 3.1 14.6 2 12 2 6.5 2 2 6.5 2 12s4.5 10 10 10c5.8 0 9.6-4 9.6-9.8 0-.7-.1-1.2-.2-1.7H12Z"
-      />
-    </svg>
   );
 }

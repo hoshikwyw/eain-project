@@ -785,7 +785,8 @@
     "createAccount": "Create account",
     "logIn": "Log in",
     "signUp": "Sign up",
-    "continueWithGoogle": "Continue with Google",
+    "googleWorking": "Signing you in with Google",
+    "googleUnavailable": "Google sign-in could not load here. Use your email instead.",
     "or": "or",
     "displayName": "Your name",
     "email": "Email",
@@ -836,6 +837,7 @@
       }
     },
     "errors": {
+      "google": "Google sign-in did not complete. Please try again.",
       "rateLimited": "Too many sign-ups from here just now. Please wait a few minutes and try again.",
       "invalid": "Please check your details and try again.",
       "credentials": "That email or password is not right.",
