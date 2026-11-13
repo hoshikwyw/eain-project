@@ -348,7 +348,57 @@ function LetterDesign(ctx: Ctx) {
   );
 }
 
-/** Clean white card, plenty of air, a small illustration. */
+/** A postage stamp: the illustration in a perforated frame, the holes punched in the card colour. */
+function Stamp({ src, className }: { src: string; className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "inline-block rotate-3 rounded-[3px] border-[5px] border-dotted border-[color:var(--t-card)] bg-[color:var(--t-accent-soft)] p-1 shadow-sm",
+        className,
+      )}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset, optimiser bypassed on purpose */}
+      <img
+        src={src}
+        alt=""
+        width={1200}
+        height={800}
+        loading="lazy"
+        decoding="async"
+        className="block h-auto w-full rounded-[2px] select-none"
+        draggable={false}
+      />
+    </span>
+  );
+}
+
+/** A postmark: a ring with wavy cancel lines, in the muted ink. */
+function Postmark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 120 60"
+      aria-hidden="true"
+      className={cn("text-[color:var(--t-muted)]", className)}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+    >
+      <circle cx="30" cy="30" r="24" />
+      <circle cx="30" cy="30" r="18" strokeDasharray="2 3" />
+      <path d="M62 18 q10 -6 20 0 t20 0 t12 0" />
+      <path d="M62 30 q10 -6 20 0 t20 0 t12 0" />
+      <path d="M62 42 q10 -6 20 0 t20 0 t12 0" />
+    </svg>
+  );
+}
+
+/**
+ * The back of a postcard: the stamp and postmark in the corner, the message
+ * on grained paper with plenty of air, then the address lines for the
+ * receiver, and the printer's small imprint at the foot.
+ */
 function MinimalDesign(ctx: Ctx) {
   const { compact, style, eyebrow } = ctx;
   return (
@@ -358,12 +408,28 @@ function MinimalDesign(ctx: Ctx) {
         compact ? "gap-5 p-6" : "gap-7 p-8",
       )}
     >
-      <Eyebrow text={eyebrow} />
-      <Sections ctx={ctx} className={compact ? "gap-5" : "gap-7"} />
-      <div className="flex items-end justify-between gap-4">
-        <CardMark className="mb-1" />
-        <Illustration src={style.illustration} className={compact ? "max-w-36" : "max-w-52"} />
+      <Pattern kind="paper" opacity={0.12} />
+      <div className="relative flex items-start justify-between gap-4">
+        <Eyebrow text={eyebrow} className="pt-1" />
+        <span className="relative shrink-0">
+          <Postmark
+            className={cn("absolute -top-3 -left-16 opacity-55", compact ? "w-24" : "w-28")}
+          />
+          <Stamp src={style.illustration} className={compact ? "w-20" : "w-24"} />
+        </span>
       </div>
+      <Sections ctx={ctx} className={cn("relative", compact ? "gap-5" : "gap-7")} />
+      <div
+        aria-hidden="true"
+        className={cn(
+          "relative flex flex-col border-t border-[color:var(--t-accent-soft)]",
+          compact ? "gap-5 pt-4" : "gap-6 pt-5",
+        )}
+      >
+        <span className="h-px w-full bg-[color:var(--t-accent-soft)]" />
+        <span className="h-px w-3/4 bg-[color:var(--t-accent-soft)]" />
+      </div>
+      <CardMark className="relative -mt-2 self-start" />
     </article>
   );
 }
