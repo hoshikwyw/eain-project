@@ -25,6 +25,14 @@ const giftPageHeaders = [
   { key: "X-Robots-Tag", value: "noindex, nofollow" },
 ];
 
+// Photos live in a private Supabase bucket. Browsers never fetch them from
+// the Supabase host, which some networks (Myanmar among them) cannot reach;
+// they ask this site for /media/... and the request is forwarded here. The
+// signature token travels in the query string, which a rewrite keeps, so
+// access rules are unchanged. features/gifts/media.ts writes these URLs.
+const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || "").replace(/\/$/, "");
+const mediaHeaders = [{ key: "X-Robots-Tag", value: "noindex, nofollow" }];
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   // The admin dev server (scripts/dev.mjs admin) builds into its own folder
@@ -36,7 +44,12 @@ const nextConfig: NextConfig = {
       { source: "/g/:path*", headers: giftPageHeaders },
       { source: "/r/:path*", headers: giftPageHeaders },
       { source: "/scenes/:path*", headers: scenePageHeaders },
+      { source: "/media/:path*", headers: mediaHeaders },
     ];
+  },
+  async rewrites() {
+    if (!supabaseUrl) return [];
+    return [{ source: "/media/:path*", destination: `${supabaseUrl}/storage/v1/:path*` }];
   },
 };
 

@@ -1,10 +1,26 @@
 import "server-only";
 
+import { requireSupabasePublicEnv } from "@/lib/env";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { MediaItem } from "./schemas";
 
 export const MEDIA_BUCKET = "gift-media";
 const SIGNED_URL_SECONDS = 60 * 60;
+/** Where this site serves storage objects from; next.config forwards it to Supabase. */
+export const MEDIA_PATH = "/media";
+
+/**
+ * Turns a signed storage URL into one on this site, so the browser never
+ * has to reach the Supabase host (some networks, Myanmar among them,
+ * cannot). The signature stays in the query string; only the origin and
+ * the /storage/v1 prefix change. Both sites share the rewrite in next.config.
+ */
+export function proxiedMediaUrl(signedUrl: string): string {
+  const prefix = `${requireSupabasePublicEnv().url.replace(/\/$/, "")}/storage/v1/`;
+  return signedUrl.startsWith(prefix)
+    ? `${MEDIA_PATH}/${signedUrl.slice(prefix.length)}`
+    : signedUrl;
+}
 
 type MediaRow = {
   id: string;
@@ -16,7 +32,8 @@ type MediaRow = {
 
 /**
  * Signs read URLs for a set of media rows. Storage is private, so every
- * image the editor or a receiver sees goes through a one-hour signed URL.
+ * image the editor or a receiver sees goes through a one-hour signed URL,
+ * served from this site's /media path.
  * Callers are responsible for having authorised access to these rows.
  */
 export async function signMedia(rows: MediaRow[]): Promise<Record<string, MediaItem>> {
@@ -26,7 +43,9 @@ export async function signMedia(rows: MediaRow[]): Promise<Record<string, MediaI
   const { data } = await admin.storage
     .from(MEDIA_BUCKET)
     .createSignedUrls(paths, SIGNED_URL_SECONDS);
-  const urlByPath = new Map((data ?? []).map((d) => [d.path, d.signedUrl]));
+  const urlByPath = new Map(
+    (data ?? []).map((d) => [d.path, d.signedUrl ? proxiedMediaUrl(d.signedUrl) : null]),
+  );
 
   const out: Record<string, MediaItem> = {};
   for (const r of rows) {

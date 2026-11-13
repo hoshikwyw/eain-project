@@ -61,6 +61,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Everything except Next internals and files with an extension (images, icons, robots.txt, sitemap.xml).
-  matcher: ["/((?!_next/|__nextjs|.*\\.[a-zA-Z0-9]+$).*)"],
+  // Everything except Next internals, forwarded photos (/media) and files with an extension (images, icons, robots.txt, sitemap.xml).
+  matcher: ["/((?!_next/|__nextjs|media/|.*\\.[a-zA-Z0-9]+$).*)"],
 };

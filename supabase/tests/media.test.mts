@@ -125,9 +125,16 @@ describe("photo uploads", () => {
     assert.equal(res.status, 201, text);
     const body = JSON.parse(text) as { id: string; url: string; thumbUrl: string };
     mediaId = body.id;
-    assert.ok(body.url.includes("/storage/v1/object/sign/"), "must be a signed url");
-    const img = await fetch(body.url);
+    assert.ok(
+      body.url.startsWith("/media/object/sign/"),
+      "must be a signed url served through this site",
+    );
+    assert.ok(!body.url.includes(new URL(url).host), "must not point at the Supabase host");
+    const img = await fetch(`${site}${body.url}`);
     assert.equal(img.status, 200);
+    assert.match(img.headers.get("content-type") ?? "", /^image\//);
+    const tampered = await fetch(`${site}${body.url.replace(/token=/, "token=x")}`);
+    assert.notEqual(tampered.status, 200, "a bad signature must still be refused");
 
     const { data: row } = await user
       .from("gift_media")
@@ -168,8 +175,12 @@ describe("photo uploads", () => {
     const html = await (await fetch(`${site}/g/${token}`)).text();
     assert.ok(html.includes("Our day"));
     assert.ok(
-      html.includes("/storage/v1/object/sign/"),
-      "image should be served through a signed url",
+      html.includes("/media/object/sign/"),
+      "image should be served through a signed url on this site",
+    );
+    assert.ok(
+      !html.includes(new URL(url).host),
+      "the gift page must never send the browser to the Supabase host",
     );
   });
 

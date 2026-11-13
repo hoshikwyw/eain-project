@@ -40,7 +40,7 @@ Each item has a default. Work proceeds on the default unless changed.
 
 **Templates.** Visual templates are React components in the codebase. The templates table holds metadata: slug, category, gift type, preview, free or premium, point price, default sections and default theme. Admins manage metadata, not layout code.
 
-**Images.** The browser resizes to a maximum of 1600 pixels, converts to WebP near 1 MB, and makes a 400 pixel thumbnail before upload. The server checks file signature bytes, size, dimensions and per-gift count, then issues a signed upload URL into a private bucket. Gift pages receive signed URLs valid for one hour. Supabase image transformation and Vercel image optimisation are both avoided, because both are limited or paid.
+**Images.** The browser resizes to a maximum of 1600 pixels, converts to WebP near 1 MB, and makes a 400 pixel thumbnail before upload. The server checks file signature bytes, size, dimensions and per-gift count, then issues a signed upload URL into a private bucket. Gift pages receive signed URLs valid for one hour, served through this site's `/media` path so the browser never has to reach the Supabase host (blocked on some networks, Myanmar among them). Supabase image transformation and Vercel image optimisation are both avoided, because both are limited or paid.
 
 **Points.** A ledger table is the source of truth. The cached balance on the profile changes only inside the ledger function. Users have no update right on the balance. A separate unlocks table records which premium templates a user owns.
 
