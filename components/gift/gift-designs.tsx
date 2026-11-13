@@ -369,9 +369,10 @@ function MinimalDesign(ctx: Ctx) {
 }
 
 /**
- * An empty card: the look's background as a thin frame, the card, and the
- * creator's sections. No label, illustration or decoration, so everything on
- * it is theirs. Tall enough when nearly empty to leave room for stickers.
+ * An empty card: a sheet of faintly grained paper in the look's card colour,
+ * a hairline frame a little way in from the edge, and the creator's
+ * sections. No label, illustration or decoration, so everything on it is
+ * theirs. Tall enough when nearly empty to leave room for stickers.
  */
 function BlankDesign(ctx: Ctx) {
   const { compact } = ctx;
@@ -384,12 +385,22 @@ function BlankDesign(ctx: Ctx) {
     >
       <div
         className={cn(
-          "relative flex min-h-[26rem] flex-col rounded-[1.25rem] bg-[color:var(--t-card)]",
-          compact ? "gap-5 p-6" : "gap-7 p-8",
+          "relative flex min-h-[24rem] flex-col overflow-hidden rounded-[1.25rem] bg-[color:var(--t-card)] shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]",
+          compact ? "gap-5 p-7" : "gap-7 p-9",
         )}
       >
-        <Sections ctx={ctx} className={compact ? "gap-5" : "gap-7"} />
-        <CardMark className="mt-auto self-end pt-4" />
+        <Pattern kind="paper" opacity={0.16} />
+        <span
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none absolute rounded-[0.9rem] border border-[color:var(--t-accent-soft)]",
+            compact ? "inset-2.5" : "inset-3.5",
+          )}
+        />
+        <div className={cn("relative flex flex-1 flex-col", compact ? "gap-5" : "gap-7")}>
+          <Sections ctx={ctx} className={compact ? "gap-5" : "gap-7"} />
+          <CardMark className="mt-auto self-end pt-4" />
+        </div>
       </div>
     </article>
   );
