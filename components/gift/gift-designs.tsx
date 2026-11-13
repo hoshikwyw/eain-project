@@ -103,41 +103,58 @@ function Balloons({ className }: { className?: string }) {
   );
 }
 
-/** A postcard with an airmail frame: message on the left, balloons, stamp and address lines on the right. */
+/**
+ * A birthday postcard with an airmail frame: bunting along the top, the
+ * stamp and postmark in the corner, the greeting in party colours, then the
+ * address side with the receiver's name on coloured lines and balloons.
+ */
 function PostcardDesign(ctx: Ctx) {
   const { compact, style, eyebrow } = ctx;
   return (
     <article className="relative overflow-hidden rounded-2xl p-2 shadow-[0_1px_0_rgba(0,0,0,0.06)] [background:repeating-linear-gradient(135deg,var(--t-c1,var(--t-accent))_0_14px,var(--t-card)_14px_28px,var(--t-c3,var(--t-deco))_28px_42px,var(--t-card)_42px_56px)]">
       <div className="relative overflow-hidden rounded-xl [background:var(--t-bg)]">
-        <Decorations kind={style.decoration} />
+        <div aria-hidden="true" className="absolute inset-0 opacity-60">
+          <Decorations kind={style.decoration} />
+        </div>
         <Bunting count={compact ? 11 : 15} />
         <div
           className={cn(
-            "relative m-3 grid rounded-xl bg-[color:var(--t-card)]/90 shadow-sm",
+            "relative m-3 flex flex-col overflow-hidden rounded-xl bg-[color:var(--t-card)]/92 shadow-sm",
             compact ? "gap-5 p-5" : "gap-7 p-6",
           )}
         >
+          <Pattern kind="paper" opacity={0.1} />
+          <div className="relative flex items-start justify-end">
+            <span className="relative shrink-0">
+              <Postmark
+                className={cn("absolute -top-3 -left-16 opacity-55", compact ? "w-24" : "w-28")}
+              />
+              <Stamp src={style.illustration} className={compact ? "w-20" : "w-24"} />
+            </span>
+          </div>
           <Sections
             ctx={ctx}
-            className={compact ? "gap-4" : "gap-6"}
+            className={cn("relative", compact ? "gap-4" : "gap-6")}
             itemClassName={rainbowHeading}
           />
-          <aside className="flex flex-col gap-5 border-t border-dashed border-[color:var(--t-accent-soft)] pt-5">
-            <div className="flex items-start justify-end gap-2">
-              <Balloons className={cn("float-slow", compact ? "w-11" : "w-16")} />
-              <div className="rounded-md border-2 border-dashed border-[color:var(--t-deco)] bg-[color:var(--t-accent-soft)]/40 p-1.5">
-                <Illustration src={style.illustration} className={compact ? "w-24" : "w-32"} />
+          <aside
+            className={cn(
+              "relative flex flex-col border-t border-dashed border-[color:var(--t-accent-soft)]",
+              compact ? "gap-4 pt-4" : "gap-5 pt-5",
+            )}
+          >
+            <div className="flex items-end justify-between gap-4">
+              <div className={cn("flex flex-1 flex-col", compact ? "gap-3.5" : "gap-4")}>
+                <Eyebrow text={eyebrow} className="text-[color:var(--t-accent)]" />
+                {[0, 1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="h-px w-full"
+                    style={{ background: partyColor(i + 1), opacity: 0.55 }}
+                  />
+                ))}
               </div>
-            </div>
-            <div className="mt-auto flex flex-col gap-4">
-              <Eyebrow text={eyebrow} className="text-[color:var(--t-accent)]" />
-              {[0, 1, 2].map((i) => (
-                <div
-                  key={i}
-                  className="h-px w-full"
-                  style={{ background: partyColor(i + 1), opacity: 0.45 }}
-                />
-              ))}
+              <Balloons className={cn("float-slow shrink-0", compact ? "w-11" : "w-16")} />
             </div>
             <CardMark className="self-end" />
           </aside>
