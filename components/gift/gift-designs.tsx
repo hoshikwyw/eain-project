@@ -238,7 +238,11 @@ function ElegantDesign(ctx: Ctx) {
   );
 }
 
-/** Handwritten heading, dashed sticker border, speech-bubble messages. */
+/**
+ * A sticker sheet for a friend: dashed cut line, the name on a tilted label,
+ * the birds, a big handwritten greeting, the message in a speech bubble and
+ * the quote in the same hand, so the whole card speaks in one voice.
+ */
 function PlayfulDesign(ctx: Ctx) {
   const { compact, style, eyebrow } = ctx;
   return (
@@ -251,23 +255,26 @@ function PlayfulDesign(ctx: Ctx) {
       <Decorations kind="sparkles" />
       <div
         className={cn(
-          "relative flex flex-col rounded-[1.6rem] border-[3px] border-dashed border-[color:var(--t-accent)]/60 bg-[color:var(--t-card)]/92",
-          compact ? "gap-5 p-5" : "gap-7 p-7",
+          "relative flex flex-col overflow-hidden rounded-[1.6rem] border-2 border-dashed border-[color:var(--t-accent)]/55 bg-[color:var(--t-card)]/94",
+          compact ? "gap-4 p-5" : "gap-5 p-6",
         )}
       >
-        <span className="inline-flex w-fit -rotate-2 rounded-full bg-[color:var(--t-accent)] px-3 py-1 text-xs font-bold tracking-wide text-[color:var(--t-on-accent,#fff)] uppercase">
-          {eyebrow}
-        </span>
-        <Illustration
-          src={style.illustration}
-          className={cn("mx-auto", compact ? "max-w-52" : "max-w-xs")}
-        />
+        <Pattern kind="paper" opacity={0.1} />
+        <div className="relative flex items-start justify-between gap-3">
+          <span className="inline-flex w-fit -rotate-3 rounded-full bg-[color:var(--t-accent)] px-3 py-1 text-xs font-bold tracking-wide text-[color:var(--t-on-accent,#fff)] uppercase shadow-sm">
+            {eyebrow}
+          </span>
+          <Illustration
+            src={style.illustration}
+            className={cn("-mt-1 -mr-1", compact ? "max-w-36" : "max-w-44")}
+          />
+        </div>
         <Sections
           ctx={ctx}
-          className={compact ? "gap-4" : "gap-6"}
-          itemClassName="[&_h1]:font-hand [&_h1]:text-5xl [&_h1]:font-bold [&_h1]:leading-none [&_h1]:text-[color:var(--t-accent)] [&_h2]:font-hand [&_h2]:text-4xl [&_p.msg]:rounded-3xl [&_p.msg]:bg-[color:var(--t-accent-soft)] [&_p.msg]:px-5 [&_p.msg]:py-4 [&_.sig]:font-hand [&_.sig]:text-3xl"
+          className={cn("relative", compact ? "gap-4" : "gap-5")}
+          itemClassName="[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:font-bold [&_h1]:leading-[0.95] [&_h1]:tracking-normal [&_h1]:text-[color:var(--t-accent)] [&_h2]:font-hand [&_h2]:text-4xl [&_h2]:text-[color:var(--t-accent)] [&_p.msg]:relative [&_p.msg]:rounded-3xl [&_p.msg]:rounded-bl-md [&_p.msg]:bg-[color:var(--t-accent-soft)] [&_p.msg]:px-5 [&_p.msg]:py-4 [&_blockquote]:border-l-0 [&_blockquote]:pl-0 [&_blockquote_p]:font-hand [&_blockquote_p]:text-3xl [&_blockquote_p]:leading-[1.15] [&_blockquote_p]:not-italic [&_blockquote_p]:text-[color:var(--t-fg)]/85 [&_.sig]:font-hand [&_.sig]:text-3xl [&_.sig]:text-[color:var(--t-accent)]"
         />
-        <CardMark className="self-end" />
+        <CardMark className="relative self-end" />
       </div>
     </div>
   );
