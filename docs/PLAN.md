@@ -116,7 +116,7 @@ Done when: a gift made on one phone can be opened on another phone with no accou
 ### M3. Editor, photos, templates
 
 Scope: section model with add, remove and reorder, photo upload pipeline with limits, theme and colour options, basic animations, template library with categories and search, the remaining nine templates, duplicate, delete, unpublish, regenerate link, five active gifts limit.
-Done when: all ten templates can be created, published and opened on mobile, and every upload limit is enforced on the server.
+Done when: every template can be created, published and opened on mobile, and every upload limit is enforced on the server.
 
 ### M4. Interaction
 

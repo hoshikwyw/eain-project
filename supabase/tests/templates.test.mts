@@ -77,6 +77,17 @@ describe("template pages", () => {
     assert.ok(!html.includes("lucide-image-plus"), "no empty photo boxes in the thumbnails");
   });
 
+  it("shows the invitations with their details and RSVP answers", async () => {
+    const library = await (await fetch(`${site}/templates`)).text();
+    assert.ok(library.includes("Invitations"), "the category is in the library");
+    assert.ok(library.includes("Party Invitation"), "the party invitation is listed");
+    // The preview itself is drawn in the browser; the page's facts come from the same registry.
+    const page = await (await fetch(`${site}/templates/party-invitation`)).text();
+    assert.ok(page.includes("Party Invitation"), "the template page names it");
+    assert.ok(page.includes("5 sections"), "cover, event details, message, RSVP and closing");
+    assert.ok(page.includes("Try it free"), "a free invitation can be tried");
+  });
+
   it("lists the template pages in the sitemap", async () => {
     const res = await fetch(`${site}/sitemap.xml`);
     assert.equal(res.status, 200);

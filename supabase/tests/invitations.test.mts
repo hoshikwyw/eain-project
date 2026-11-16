@@ -29,6 +29,8 @@ describe("invitation templates", () => {
         assert.ok(rsvp && rsvp.type === "question", "has an RSVP question");
         assert.equal(rsvp.content.kind, "yes_no");
         assert.equal(rsvp.content.required, true);
+        assert.equal(rsvp.content.options.length, 2, "yes and no answers");
+        assert.ok(rsvp.content.options.every((o) => o.label.trim().length > 0));
         assert.equal(sections[0]?.type, "text", "opens with a cover");
         assert.equal(sections.at(-1)?.type, "final_message", "closes with a sign-off");
       }

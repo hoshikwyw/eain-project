@@ -20,6 +20,9 @@ const KEYWORDS = [
   "animated greeting card",
   "Myanmar greeting card",
   "Burmese e-card",
+  "wedding invitation",
+  "party invitation",
+  "မင်္ဂလာဖိတ်စာ",
   "မွေးနေ့ကတ်",
   "ဒစ်ဂျစ်တယ် လက်ဆောင်",
 ];

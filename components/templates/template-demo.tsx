@@ -9,6 +9,7 @@ import { GiftView } from "@/components/gift/gift-view";
 import { SceneFrame } from "@/components/scene/scene-frame";
 import { Button } from "@/components/ui/button";
 import { sampleGift } from "@/features/gifts/sample-gift";
+import type { Section } from "@/features/gifts/schemas";
 import { defaultScene, sceneConfig } from "@/features/gifts/scene";
 import { getTemplateStyle } from "@/features/gifts/templates";
 
@@ -80,7 +81,7 @@ export function TemplateDemo({ slug, locale, closedClassName = "min-h-full" }: P
           questionMode="preview"
         />
       )}
-      <DemoReply />
+      <DemoReply question={sample.sections.find(isQuestion)?.content} />
       <div className="flex justify-center">
         <Button type="button" variant="ghost" size="sm" onClick={() => setStage("closed")}>
           <RotateCcw />
@@ -91,15 +92,22 @@ export function TemplateDemo({ slug, locale, closedClassName = "min-h-full" }: P
   );
 }
 
+type QuestionSection = Extract<Section, { type: "question" }>;
+const isQuestion = (s: Section): s is QuestionSection => s.type === "question";
+
 /**
  * The reply card as the receiver gets it under a gift with a question: the
- * real one's words and shape, with a sample question and nothing wired up,
- * so what comes back to the creator is understood before they start.
+ * real one's words and shape, nothing wired up, so what comes back to the
+ * creator is understood before they start. Shows the template's own question
+ * and answers when it starts with one (an invitation's RSVP), otherwise a
+ * sample question.
  */
-function DemoReply() {
+function DemoReply({ question }: { question?: QuestionSection["content"] }) {
   const t = useTranslations("gift.response");
   const tDemo = useTranslations("create.demo");
   const id = useId();
+  const prompt = question?.prompt || tDemo("replyQuestion");
+  const options = question?.options ?? [];
   return (
     <div className="flex flex-col gap-5 panel p-6 sm:p-8">
       <div>
@@ -108,15 +116,29 @@ function DemoReply() {
       </div>
       <div className="flex flex-col gap-3">
         <label htmlFor={id} className="font-semibold">
-          {tDemo("replyQuestion")}
+          {prompt}
         </label>
-        <textarea
-          id={id}
-          readOnly
-          rows={3}
-          placeholder={t("textPlaceholder")}
-          className="w-full rounded-2xl border border-input bg-card px-4 py-3 text-sm outline-none"
-        />
+        {options.length > 0 ? (
+          <div id={id} className="flex flex-col gap-2">
+            {options.map((o) => (
+              <span
+                key={o.id}
+                className="flex items-center gap-3 rounded-2xl border border-border px-4 py-3 text-sm"
+              >
+                <span aria-hidden="true" className="size-4 rounded-full border-2 border-primary" />
+                {o.label}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <textarea
+            id={id}
+            readOnly
+            rows={3}
+            placeholder={t("textPlaceholder")}
+            className="w-full rounded-2xl border border-input bg-card px-4 py-3 text-sm outline-none"
+          />
+        )}
       </div>
       <Button type="button" size="lg" disabled className="self-start">
         <Send />
