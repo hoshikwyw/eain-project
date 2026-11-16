@@ -206,11 +206,42 @@ function PartyDesign(ctx: Ctx) {
   );
 }
 
-/** Hairlines, centred serif and a gold inner ring. */
+/** A gold flourish: two curls meeting at a small heart. The anniversary card's divider. */
+function Flourish({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 160 20" aria-hidden="true" className={className} fill="none">
+      <path
+        d="M6 10 C 28 10, 42 3, 58 10 S 70 15, 72 10"
+        stroke="var(--glow)"
+        strokeWidth="1.1"
+        strokeLinecap="round"
+      />
+      <path
+        d="M154 10 C 132 10, 118 3, 102 10 S 90 15, 88 10"
+        stroke="var(--glow)"
+        strokeWidth="1.1"
+        strokeLinecap="round"
+      />
+      <path
+        d="M80 15.5 C 73.5 11, 74.5 5.5, 78.8 7.2 C 79.6 7.5, 80 8, 80 8.2 C 80 8, 80.4 7.5, 81.2 7.2 C 85.5 5.5, 86.5 11, 80 15.5 Z"
+        fill="var(--glow)"
+      />
+      <circle cx="6" cy="10" r="1.5" fill="var(--glow)" />
+      <circle cx="154" cy="10" r="1.5" fill="var(--glow)" />
+    </svg>
+  );
+}
+
+/**
+ * An invitation on dark card with gold foil: a double hairline frame with
+ * ornaments in the corners, the name in spaced gold caps, flourishes above
+ * and below the words, photos as framed prints, a gold timeline, and the
+ * birds in a soft glow at the foot. Premium, so no printer's mark.
+ */
 function ElegantDesign(ctx: Ctx) {
   const { compact, style, eyebrow, animate } = ctx;
   return (
-    <div
+    <article
       className={cn(
         "relative overflow-hidden rounded-3xl [background:var(--t-bg)]",
         compact ? "p-3" : "p-4",
@@ -219,22 +250,53 @@ function ElegantDesign(ctx: Ctx) {
       <Decorations kind="hearts" />
       <div
         className={cn(
-          "relative flex flex-col items-center rounded-2xl bg-[color:var(--t-card)]/92 text-center ring-1 ring-[color:var(--glow)]/70 ring-offset-4 ring-offset-[color:var(--t-card)]",
-          compact ? "gap-5 p-6" : "gap-7 p-8",
+          "relative flex flex-col items-center rounded-2xl bg-[color:var(--t-card)]/92 text-center ring-1 ring-[color:var(--glow)]/70",
+          compact ? "gap-5 px-6 pt-7 pb-6" : "gap-7 px-8 pt-9 pb-8",
         )}
       >
-        <Eyebrow text={eyebrow} className="tracking-[0.35em] text-[color:var(--glow)]" />
-        <span aria-hidden="true" className="h-px w-16 bg-[color:var(--glow)]" />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-2 rounded-xl border border-[color:var(--glow)]/35"
+        />
+        <CornerMark className="absolute top-3.5 left-3.5 size-5" />
+        <CornerMark className="absolute top-3.5 right-3.5 size-5 rotate-90" />
+        <CornerMark className="absolute right-3.5 bottom-3.5 size-5 rotate-180" />
+        <CornerMark className="absolute bottom-3.5 left-3.5 size-5 -rotate-90" />
+        <div className="flex flex-col items-center gap-3">
+          <Eyebrow text={eyebrow} className="tracking-[0.35em] text-[color:var(--glow)]" />
+          <Flourish className="w-40" />
+        </div>
         <Sections
           ctx={ctx}
           animate={animate}
           className={cn("w-full items-center text-center", compact ? "gap-5" : "gap-7")}
-          itemClassName="w-full [&_h1]:italic [&_h1]:font-medium [&_h2]:italic [&_h2]:font-medium [&_blockquote]:border-0 [&_blockquote]:pl-0 [&_footer]:items-center [&_footer]:border-t-0 [&_ol]:text-left"
+          itemClassName={cn(
+            "w-full",
+            // Headings and the signature in italic serif; the signature and captions in gold.
+            "[&_h1]:italic [&_h1]:font-medium [&_h2]:italic [&_h2]:font-medium [&_h2]:text-[color:var(--t-muted)]",
+            "[&_p.msg]:mx-auto [&_p.msg]:max-w-[32ch] [&_p.msg]:text-lg",
+            "[&_blockquote]:border-0 [&_blockquote]:pl-0 [&_blockquote_p]:font-display [&_blockquote_p]:text-xl [&_blockquote_p]:italic",
+            "[&_footer]:items-center [&_footer]:border-t-0 [&_.sig]:text-2xl [&_.sig]:font-medium [&_.sig]:italic [&_.sig]:text-[color:var(--glow)]",
+            // The timeline in gold, kept to the width of its words.
+            "[&_ol]:mx-auto [&_ol]:w-fit [&_ol]:text-left [&_ol]:border-[color:var(--glow)]/40 [&_ol_.dot]:bg-[color:var(--glow)]",
+            // Photos as framed prints: a thin gold frame around a mat of card colour.
+            "[&_.grid]:gap-5 [&_figure_img]:rounded-sm [&_figure_img]:ring-1 [&_figure_img]:ring-[color:var(--glow)]/60 [&_figure_img]:ring-offset-4 [&_figure_img]:ring-offset-[color:var(--t-card)] [&_figure]:px-1",
+            "[&_figcaption]:font-display [&_figcaption]:text-base [&_figcaption]:italic [&_figcaption]:text-[color:var(--glow)]",
+          )}
         />
-        <span aria-hidden="true" className="h-px w-16 bg-[color:var(--glow)]" />
-        <Illustration src={style.illustration} className={compact ? "max-w-56" : "max-w-sm"} />
+        <Flourish className="w-40" />
+        <div className="relative">
+          <span
+            aria-hidden="true"
+            className="absolute inset-4 rounded-full bg-[color:var(--t-accent)]/25 blur-2xl"
+          />
+          <Illustration
+            src={style.illustration}
+            className={cn("relative", compact ? "max-w-48" : "max-w-64")}
+          />
+        </div>
       </div>
-    </div>
+    </article>
   );
 }
 
