@@ -21,7 +21,7 @@ import { makeQr } from "@/lib/qr";
 import { getSiteOrigin, giftShareUrl } from "@/lib/site-url";
 import { cn } from "@/lib/utils";
 import type { GiftEventType } from "@/types/database";
-import { Notice } from "@/components/ui/notice";
+import { QueryToasts } from "@/components/ui/query-toasts";
 import { PageTitle } from "@/components/ui/page-title";
 import { CapsLabel } from "@/components/ui/caps-label";
 
@@ -44,12 +44,8 @@ const ROW = "h-12 w-full justify-start gap-3 rounded-2xl px-3";
  * creator does with it — pass it on, read the replies, see how far it has
  * travelled, and manage it. On a phone the share area comes first.
  */
-export default async function GiftDetailPage({
-  params,
-  searchParams,
-}: PageProps<"/dashboard/gifts/[giftId]">) {
+export default async function GiftDetailPage({ params }: PageProps<"/dashboard/gifts/[giftId]">) {
   const { giftId } = await params;
-  const query = await searchParams;
   const t = await getTranslations("dashboard.gifts");
   const tNav = await getTranslations("dashboard.nav");
   const format = await getFormatter();
@@ -99,13 +95,13 @@ export default async function GiftDetailPage({
         </div>
       </div>
 
-      {query.published === "1" && (
-        <Notice role="status" tone="success">
-          {t("justPublished")}
-        </Notice>
-      )}
-      {query.regenerated === "1" && <Notice role="status">{t("linkRegenerated")}</Notice>}
-      {query.error === "duplicate" && <Notice role="alert">{t("duplicateFailed")}</Notice>}
+      <QueryToasts
+        items={[
+          { param: "published", type: "success", title: t("justPublished") },
+          { param: "regenerated", type: "info", title: t("linkRegenerated") },
+          { param: "error", value: "duplicate", type: "error", title: t("duplicateFailed") },
+        ]}
+      />
 
       {/* One column on phones and tablets; from laptop width the gift sits on the left and the rest in a side column. */}
       <div className="mx-auto grid w-full max-w-2xl grid-cols-1 gap-6 lg:max-w-none lg:grid-cols-[minmax(0,1fr)_380px] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-8">

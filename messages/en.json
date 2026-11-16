@@ -308,6 +308,8 @@
     "photos": {
       "upload": "Add photo",
       "uploading": "Uploading",
+      "added": "Photo added",
+      "removed": "Photo removed",
       "delete": "Delete photo",
       "deleteConfirm": "Delete this photo from the gift?",
       "count": "{count} of {max} photos",
@@ -343,6 +345,11 @@
     "closePanel": "Close",
     "publishShort": "Publish",
     "republishShort": "Update",
+    "toasts": {
+      "retry": "Try again",
+      "sectionRemoved": "Section removed",
+      "stickerRemoved": "Sticker removed"
+    },
     "stickers": "Stickers",
     "stickersHint": "Pick a sticker to put it on your gift. Then drag it into place, pull a corner to resize it, or turn the round handle.",
     "stickerGroups": {

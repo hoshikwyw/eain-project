@@ -1,6 +1,8 @@
+import { useTranslations } from "next-intl";
 import { startTransition, useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { refreshGiftPages, saveAndPublishGift, saveGift } from "@/features/gifts/actions";
 import type { SaveGiftState } from "@/features/gifts/schemas";
+import { toast } from "@/lib/toast";
 
 /** A draft saves itself this long after the last change. */
 const AUTOSAVE_MS = 3000;
@@ -36,6 +38,7 @@ export function useGiftSave({
   valid,
   onInvalid,
 }: Options) {
+  const t = useTranslations("editor");
   // What the server last confirmed as saved, to show unsaved changes.
   const [lastSaved, setLastSaved] = useState(initialJson);
   const dirty = payloadJson !== lastSaved;
@@ -53,7 +56,10 @@ export function useGiftSave({
   /** Publish was pressed while a save was still running. It goes ahead as soon as that save ends. */
   const [publishQueued, setPublishQueued] = useState(false);
   const publishWaiting = useRef(false);
-  const latest = useRef({ publishNow: () => {} });
+  const latest = useRef({ publishNow: () => {}, saveNow: () => {} });
+  // A save the creator asked for shows its progress as a toast; autosave stays quiet unless it fails.
+  const manualToast = useRef<string | null>(null);
+  const retry = () => ({ label: t("toasts.retry"), onClick: () => latest.current.saveNow() });
 
   /** The content of the last save that failed, so autosave does not keep retrying the same thing. */
   const [failedSave, setFailedSave] = useState<string | null>(null);
@@ -65,6 +71,19 @@ export function useGiftSave({
       savedHere.current = true;
     }
     setFailedSave(result.status === "saved" ? null : sent);
+    const asked = manualToast.current;
+    manualToast.current = null;
+    if (asked) {
+      if (result.status === "saved") {
+        toast.update(asked, { type: "success", title: t("saved"), duration: 2000 });
+      } else if (result.status === "error") {
+        toast.update(asked, { type: "error", title: t("error"), duration: 0, action: retry() });
+      } else {
+        toast.dismiss(asked);
+      }
+    } else if (result.status === "error") {
+      toast.error(t("error"), { id: "autosave-failed", action: retry() });
+    }
     // Publish was pressed while this save was running: it goes ahead now, with what is in the editor now.
     if (publishWaiting.current) {
       publishWaiting.current = false;
@@ -111,7 +130,10 @@ export function useGiftSave({
       const fd = new FormData();
       fd.set("payload", payloadJson);
       const result = await saveAndPublishGift(giftId, fd);
-      if (result) setPublishState(result.status);
+      if (result) {
+        setPublishState(result.status);
+        if (result.status === "error") toast.error(t("publishError"), { action: retry() });
+      }
     });
   const publish = () => {
     if (!valid) return onInvalid();
@@ -122,24 +144,29 @@ export function useGiftSave({
     }
     runPublish();
   };
-  // The save that is running when Publish is pressed needs the editor's content as it is when the save ends.
-  useEffect(() => {
-    latest.current = { publishNow: () => (valid ? runPublish() : onInvalid()) };
-  });
-
   /** Saves now, for the keyboard. The Save button submits its form to the same action. */
   const saveNow = () => {
     if (!valid) return onInvalid();
     if (saving || publishing) return;
     const fd = new FormData();
     fd.set("payload", payloadJson);
+    manualToast.current = toast.loading(t("saving"));
     startTransition(() => formAction(fd));
   };
+  /** The Save button's form action: the same save, with its progress shown as a toast. */
+  const saveAction = (fd: FormData) => {
+    manualToast.current = toast.loading(t("saving"));
+    return formAction(fd);
+  };
+  // The save that is running when Publish is pressed, and a retry from a toast, need the editor's content as it is then.
+  useEffect(() => {
+    latest.current = { publishNow: () => (valid ? runPublish() : onInvalid()), saveNow };
+  });
 
   return {
     dirty,
     state,
-    formAction,
+    saveAction,
     saving,
     publishing: publishing || publishQueued,
     publishState,

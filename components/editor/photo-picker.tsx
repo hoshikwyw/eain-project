@@ -7,6 +7,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { MAX_PHOTOS_PER_GIFT, type MediaItem } from "@/features/gifts/schemas";
 import { processImage } from "@/lib/image-client";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -53,6 +54,11 @@ export function PhotoPicker({
   async function upload(file: File) {
     setBusy(true);
     setError(null);
+    const progress = toast.loading(t("uploading"));
+    const failed = (message: string) => {
+      setError(message);
+      toast.update(progress, { type: "error", title: message, duration: 0 });
+    };
     try {
       const processed = await processImage(file);
       const form = new FormData();
@@ -63,7 +69,7 @@ export function PhotoPicker({
       const res = await fetch(`/api/gifts/${giftId}/media`, { method: "POST", body: form });
       if (!res.ok) {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
-        setError(
+        failed(
           body.error === "limit"
             ? t("errors.limit")
             : body.error === "not-image"
@@ -75,9 +81,10 @@ export function PhotoPicker({
       const item = (await res.json()) as MediaItem;
       onMediaChange([...media, item]);
       toggle(item.id);
+      toast.update(progress, { type: "success", title: t("added"), duration: 2000 });
     } catch (e) {
       const code = e instanceof Error ? e.message : "";
-      setError(
+      failed(
         code === "too-large"
           ? t("errors.tooLarge")
           : code === "not-image"
@@ -104,7 +111,12 @@ export function PhotoPicker({
       if (res.ok) {
         onMediaChange(media.filter((m) => m.id !== id));
         onSelectedChange(selected.filter((s) => s !== id));
+        toast.success(t("removed"), { duration: 2000 });
+      } else {
+        toast.error(t("errors.failed"));
       }
+    } catch {
+      toast.error(t("errors.failed"));
     } finally {
       setRemoving(null);
     }

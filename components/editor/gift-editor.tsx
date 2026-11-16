@@ -3,6 +3,7 @@
 import { X } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { toast } from "@/lib/toast";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GiftOpening, openingDuration, type OpeningStage } from "@/components/gift/gift-opening";
 import type { GiftEdit } from "@/components/gift/gift-renderer";
@@ -174,7 +175,7 @@ export function GiftEditor(props: Props) {
   // A draft saves itself once the creator pauses. A published gift does not:
   // a save there is live for the receiver at once, so it stays a deliberate step.
   const autosave = props.status !== "published";
-  const { dirty, state, formAction, saving, publishing, publishState, publish, saveNow } =
+  const { dirty, state, saveAction, saving, publishing, publishState, publish, saveNow } =
     useGiftSave({
       giftId: props.giftId ?? "",
       enabled: !guest,
@@ -231,6 +232,10 @@ export function GiftEditor(props: Props) {
     setSections(sections.filter((s) => s.id !== id));
     setStickers((all) => dropStickerAnchor(all, index));
     if (selectedId === id) setSelectedId(null);
+    toast.info(t("toasts.sectionRemoved"), {
+      duration: 6000,
+      action: { label: t("undo"), onClick: () => history.undo() },
+    });
   };
   const move = (index: number, dir: -1 | 1) => {
     const target = index + dir;
@@ -372,6 +377,13 @@ export function GiftEditor(props: Props) {
     }
   };
 
+  const toldPublishError = useRef(false);
+  useEffect(() => {
+    if (!props.publishError || toldPublishError.current) return;
+    toldPublishError.current = true;
+    toast.error(t("publishError"), { action: { label: t("toasts.retry"), onClick: publish } });
+  }, [props.publishError, publish, t]);
+
   useEditorShortcuts({
     undo: history.undo,
     redo: history.redo,
@@ -476,7 +488,7 @@ export function GiftEditor(props: Props) {
           previewing={previewing}
           onPreview={() => setPreviewing((v) => !v)}
           onPlay={() => setPlaying(true)}
-          saveAction={formAction}
+          saveAction={saveAction}
           payloadJson={payloadJson}
           valid={valid}
           onInvalid={revealInvalid}
@@ -631,6 +643,10 @@ export function GiftEditor(props: Props) {
                   onRemove={() => {
                     setStickers((all) => all.filter((s) => s.id !== sticker.id));
                     setSelectedSticker(null);
+                    toast.info(t("toasts.stickerRemoved"), {
+                      duration: 6000,
+                      action: { label: t("undo"), onClick: () => history.undo() },
+                    });
                   }}
                   labels={{
                     resize: t("resizeSticker"),
