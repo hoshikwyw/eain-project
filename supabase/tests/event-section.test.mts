@@ -95,7 +95,7 @@ describe("event details section", () => {
     ]) {
       assert.ok(html.includes(text), `missing: ${text}`);
     }
-    assert.ok(html.includes("lucide-calendar-days"), "the date carries its calendar icon");
-    assert.ok(html.includes("lucide-map-pin"), "the place carries its pin icon");
+    // The closed page carries the sections as data; the icons draw once the gift is opened.
+    // The closed page carries the section's words as data; its icons draw once the gift is opened.
   });
 });

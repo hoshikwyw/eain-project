@@ -121,7 +121,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
   switch (section.type) {
     case "question":
       return (
-        <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-[color:var(--t-accent-soft)] p-4 text-left">
+        <div className="question flex flex-col gap-3 rounded-2xl border border-dashed border-[color:var(--t-accent-soft)] p-4 text-left">
           <p className="flex items-center gap-2 text-xs font-semibold tracking-wide text-[color:var(--t-muted)] uppercase">
             <MessageCircleQuestion className="size-4" />
             {labels.questionNote}

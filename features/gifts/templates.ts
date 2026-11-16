@@ -29,7 +29,8 @@ export type Design =
   | "scrapbook"
   | "bold"
   | "blank"
-  | "garden";
+  | "garden"
+  | "invite";
 
 export type TemplateStyle = {
   decoration: Decoration;
@@ -66,6 +67,7 @@ const designOpening: Record<Design, Opening> = {
   bold: "curtain",
   blank: "simple",
   garden: "simple",
+  invite: "envelope",
 };
 
 export type TemplateDefinition = Omit<TemplateStyle, "illustration" | "defaultOpening"> & {
@@ -347,10 +349,10 @@ export const templates: Record<string, TemplateDefinition> = {
 };
 
 // Invitations: every one starts with the event details and an RSVP question.
-// Their own designs come in later parts; until then they borrow close ones.
+// The party ones share the ticket-like invite design; the wedding has its own.
 const invitations: Record<string, TemplateDefinition> = {
   "party-invitation": {
-    design: "party",
+    design: "invite",
     decoration: "confetti",
     layout: "card",
     defaultVariant: "celebrate",
@@ -398,7 +400,7 @@ const invitations: Record<string, TemplateDefinition> = {
     ],
   },
   "baby-shower": {
-    design: "botanical",
+    design: "invite",
     decoration: "sparkles",
     layout: "card",
     defaultVariant: "mint",
@@ -425,7 +427,7 @@ const invitations: Record<string, TemplateDefinition> = {
     ],
   },
   "graduation-party": {
-    design: "bold",
+    design: "invite",
     decoration: "confetti",
     layout: "card",
     defaultVariant: "ivory",

@@ -36,6 +36,8 @@ export function renderDesign(ctx: Ctx) {
       return <BlankDesign {...ctx} />;
     case "garden":
       return <GardenDesign {...ctx} />;
+    case "invite":
+      return <InviteDesign {...ctx} />;
     case "minimal":
     default:
       return <MinimalDesign {...ctx} />;
@@ -987,6 +989,93 @@ function ScrapbookDesign(ctx: Ctx) {
           src={style.illustration}
           className={cn("mx-auto pt-2", compact ? "max-w-56" : "max-w-sm")}
         />
+      </div>
+    </article>
+  );
+}
+
+/** Short bars like a ticket's barcode. A fixed pattern, so server and client draw the same. */
+function Barcode({ className }: { className?: string }) {
+  const widths = [2, 1, 3, 1, 2, 2, 1, 3, 2, 1, 1, 3, 2, 1, 2, 3, 1, 2, 1, 3, 2, 1, 2];
+  let x = 0;
+  const bars = widths.map((w, i) => {
+    const bar = <rect key={i} x={x} y="0" width={w} height="24" />;
+    x += w + 1;
+    return bar;
+  });
+  return (
+    <svg viewBox="0 0 56 24" aria-hidden="true" className={className} fill="currentColor">
+      {bars}
+    </svg>
+  );
+}
+
+/**
+ * An invitation as a ticket: the picture as the hero, the greeting on a band
+ * in the accent colour with a scalloped lower edge, the event details as the
+ * centrepiece in a dashed box, the RSVP as its own card, and a perforated
+ * stub at the foot with the guest's name and a little barcode. Shared by the
+ * party, baby shower and graduation templates, each in its own look.
+ * Premium or not, an invitation carries no printer's mark.
+ */
+function InviteDesign(ctx: Ctx) {
+  const { compact, style, eyebrow, animate } = ctx;
+  const [cover, ...rest] = ctx.visible;
+  const coverCtx = { ...ctx, visible: cover ? [cover] : [] };
+  const restCtx = { ...ctx, visible: rest };
+  return (
+    <article
+      className={cn(
+        "relative overflow-hidden rounded-3xl [background:var(--t-bg)]",
+        compact ? "p-3" : "p-4",
+      )}
+    >
+      <Decorations kind={style.decoration} />
+      <div className="relative drop-shadow-md">
+        <div
+          className={cn(
+            "relative overflow-hidden rounded-2xl bg-[color:var(--t-card)]",
+            // The stub is torn off along a perforation: notches cut into both sides at its height.
+            "[mask:radial-gradient(12px_at_0_calc(100%-3rem),transparent_98%,#000)_0_0/51%_100%_no-repeat,radial-gradient(12px_at_100%_calc(100%-3rem),transparent_98%,#000)_100%_0/51%_100%_no-repeat]",
+          )}
+        >
+          <Pattern kind="paper" opacity={0.1} />
+          <Illustration
+            src={style.illustration}
+            className={cn("relative mx-auto", compact ? "max-w-52 pt-3" : "max-w-64 pt-4")}
+          />
+          <div className="relative">
+            <div
+              className={cn(
+                "bg-[color:var(--t-accent)] text-center text-[color:var(--t-on-accent,#fff)]",
+                compact ? "px-5 pt-4 pb-8" : "px-7 pt-5 pb-10",
+              )}
+            >
+              <div className="[&_h1]:text-[color:var(--t-on-accent,#fff)] [&_h2]:text-[color:var(--t-on-accent,#fff)] [&_p]:text-[color:var(--t-on-accent,#fff)] [&_span]:text-[color:var(--t-on-accent,#fff)]">
+                <Sections ctx={coverCtx} />
+              </div>
+            </div>
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 -bottom-px h-4 [background:radial-gradient(circle_at_50%_100%,var(--t-card)_8px,transparent_8.5px)_0_0/20px_16px_repeat-x]"
+            />
+          </div>
+          <Sections
+            ctx={restCtx}
+            animate={animate}
+            className={cn("relative text-left", compact ? "gap-4 p-5" : "gap-5 p-6")}
+            itemClassName={cn(
+              // The event details are what the card is for: boxed, the date in display type.
+              "[&_.event]:border-2 [&_.event]:border-dashed [&_.event]:border-[color:var(--t-accent)]/45 [&_.event]:bg-[color:var(--t-accent-soft)]/50 [&_.event_li:first-child_p]:font-display [&_.event_li:first-child_p]:text-2xl [&_.event_li:first-child_p]:leading-tight [&_.event_li:first-child_p]:text-[color:var(--t-accent)]",
+              "[&_.question]:border-2 [&_.question]:border-solid [&_.question]:border-[color:var(--t-accent)]/30",
+              "[&_footer]:items-center [&_footer]:border-t-0 [&_footer]:text-center [&_.sig]:text-2xl [&_.sig]:text-[color:var(--t-accent)]",
+            )}
+          />
+          <div className="relative flex h-12 items-center justify-between border-t-2 border-dashed border-[color:var(--t-accent)]/35 px-6">
+            <Eyebrow text={eyebrow} className="text-[color:var(--t-accent)]" />
+            <Barcode className="h-5 w-14 text-[color:var(--t-fg)]/70" />
+          </div>
+        </div>
       </div>
     </article>
   );
