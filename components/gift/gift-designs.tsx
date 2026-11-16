@@ -352,7 +352,7 @@ function PlayfulDesign(ctx: Ctx) {
         <Sections
           ctx={ctx}
           className={cn("relative", compact ? "gap-4" : "gap-5")}
-          itemClassName="[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:font-bold [&_h1]:leading-[0.95] [&_h1]:tracking-normal [&_h1]:text-[color:var(--t-accent)] [&_h2]:font-hand [&_h2]:text-4xl [&_h2]:text-[color:var(--t-accent)] [&_p.msg]:relative [&_p.msg]:rounded-3xl [&_p.msg]:rounded-bl-md [&_p.msg]:bg-[color:var(--t-accent-soft)] [&_p.msg]:px-5 [&_p.msg]:py-4 [&_blockquote]:border-l-0 [&_blockquote]:pl-0 [&_blockquote_p]:font-hand [&_blockquote_p]:text-3xl [&_blockquote_p]:leading-[1.15] [&_blockquote_p]:not-italic [&_blockquote_p]:text-[color:var(--t-fg)]/85 [&_.sig]:font-hand [&_.sig]:text-3xl [&_.sig]:text-[color:var(--t-accent)]"
+          itemClassName="[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:font-bold [&_h1]:leading-[0.95] [&_h1]:tracking-normal [&_h1]:text-[color:var(--t-accent)] [&_h1:has([data-burmese])]:text-4xl [&_h2]:font-hand [&_h2]:text-4xl [&_h2]:text-[color:var(--t-accent)] [&_h2:has([data-burmese])]:text-2xl [&_p.msg]:relative [&_p.msg]:rounded-3xl [&_p.msg]:rounded-bl-md [&_p.msg]:bg-[color:var(--t-accent-soft)] [&_p.msg]:px-5 [&_p.msg]:py-4 [&_blockquote]:border-l-0 [&_blockquote]:pl-0 [&_blockquote_p]:font-hand [&_blockquote_p]:text-3xl [&_blockquote_p]:leading-[1.15] [&_blockquote_p]:not-italic [&_blockquote_p]:text-[color:var(--t-fg)]/85 [&_blockquote_p:has([data-burmese])]:text-xl [&_blockquote_p:has([data-burmese])]:leading-normal [&_.sig]:font-hand [&_.sig]:text-3xl [&_.sig]:text-[color:var(--t-accent)] [&_.sig:has([data-burmese])]:text-2xl"
         />
         <CardMark className="relative self-end" />
       </div>
@@ -563,7 +563,7 @@ function LetterDesign(ctx: Ctx) {
           <Sections
             ctx={ctx}
             className={compact ? "gap-5" : "gap-7"}
-            itemClassName="[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:font-bold [&_h1]:leading-[0.95] [&_h1]:tracking-normal [&_h2]:font-hand [&_h2]:text-4xl [&_p.msg]:font-hand [&_p.msg]:text-2xl [&_p.msg]:leading-[2rem] [&_.sig]:font-hand [&_.sig]:text-3xl [&_.sig]:text-[color:var(--t-accent)]"
+            itemClassName="[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:font-bold [&_h1]:leading-[0.95] [&_h1]:tracking-normal [&_h1:has([data-burmese])]:text-4xl [&_h2]:font-hand [&_h2]:text-4xl [&_h2:has([data-burmese])]:text-2xl [&_p.msg]:font-hand [&_p.msg]:text-2xl [&_p.msg]:leading-[2rem] [&_p.msg:has([data-burmese])]:text-lg [&_.sig]:font-hand [&_.sig]:text-3xl [&_.sig]:text-[color:var(--t-accent)] [&_.sig:has([data-burmese])]:text-2xl"
           />
           <div className="flex items-end justify-between gap-4">
             <CardMark className="mb-1" />
@@ -880,8 +880,8 @@ function GardenDesign(ctx: Ctx) {
           className={cn("w-full items-center", compact ? "gap-3" : "gap-4")}
           itemClassName={cn(
             "w-full text-[#fff6ec]",
-            "[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:leading-none [&_h1]:font-bold [&_h1]:[text-shadow:0_0_22px_rgba(255,143,177,0.75)] [&_h1]:after:ml-2 [&_h1]:after:align-middle [&_h1]:after:text-4xl [&_h1]:after:font-normal [&_h1]:after:text-[#ff8fb1] [&_h1]:after:content-['♡']",
-            "[&_h2]:font-hand [&_h2]:text-4xl [&_h2]:text-[#fff6ec]/90 [&_p.msg]:text-[#fff6ec]/95 [&_p.msg]:[text-shadow:0_1px_12px_rgba(47,37,96,0.7)]",
+            "[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:leading-none [&_h1]:font-bold [&_h1:has([data-burmese])]:text-4xl [&_h1]:[text-shadow:0_0_22px_rgba(255,143,177,0.75)] [&_h1]:after:ml-2 [&_h1]:after:align-middle [&_h1]:after:text-4xl [&_h1]:after:font-normal [&_h1]:after:text-[#ff8fb1] [&_h1]:after:content-['♡']",
+            "[&_h2]:font-hand [&_h2]:text-4xl [&_h2:has([data-burmese])]:text-2xl [&_h2]:text-[#fff6ec]/90 [&_p.msg]:text-[#fff6ec]/95 [&_p.msg]:[text-shadow:0_1px_12px_rgba(47,37,96,0.7)]",
             "[&_footer]:items-center [&_footer]:border-t-0 [&_.sig]:font-hand [&_.sig]:text-3xl",
           )}
         />
@@ -977,9 +977,9 @@ function ScrapbookDesign(ctx: Ctx) {
             "relative rounded-sm bg-[color:var(--t-card)] text-[color:var(--t-fg)] shadow-md [--t-card:#fbf6ec] [--t-fg:#3b2f2a] [--t-muted:#7d6b63] odd:rotate-[-0.6deg] even:rotate-[0.6deg]",
             // Washi tape over the top edge, gold on one page and the accent on the next.
             "before:absolute before:-top-2.5 before:left-1/2 before:h-5 before:w-24 before:-translate-x-1/2 before:rounded-sm before:content-[''] odd:before:rotate-[-3deg] odd:before:bg-[color:var(--glow)]/85 even:before:rotate-[3deg] even:before:bg-[color:var(--t-accent)]/60",
-            "[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:leading-none [&_h1]:font-bold [&_h2]:font-hand [&_h2]:text-3xl",
+            "[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:leading-none [&_h1]:font-bold [&_h1:has([data-burmese])]:text-4xl [&_h2]:font-hand [&_h2]:text-3xl [&_h2:has([data-burmese])]:text-2xl",
             "[&_ol]:border-l-2 [&_ol]:border-dotted [&_ol]:border-[color:var(--t-accent)] [&_ol_.dot]:bg-[color:var(--glow)] [&_ol_.dot]:ring-[#fbf6ec]",
-            "[&_footer]:border-[color:var(--t-accent)]/30 [&_.sig]:font-hand [&_.sig]:text-3xl [&_.sig]:font-bold",
+            "[&_footer]:border-[color:var(--t-accent)]/30 [&_.sig]:font-hand [&_.sig]:text-3xl [&_.sig]:font-bold [&_.sig:has([data-burmese])]:text-2xl",
             compact ? "p-5" : "p-6",
           )}
         />
