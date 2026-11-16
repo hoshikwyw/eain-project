@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/button";
 import { markGiftShared } from "@/features/gifts/actions";
+import { toast } from "@/lib/toast";
 
 type Props = { giftId: string; url: string; qrSvg: string; qrPngDataUrl: string; title: string };
 
@@ -33,9 +34,11 @@ export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title }: Props) {
       await navigator.clipboard.writeText(url);
       setCopied(true);
       recordShared();
+      toast.success(t("copiedToast"), { duration: 2500 });
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Clipboard blocked: the URL is visible in the field for manual copy.
+      // Clipboard blocked: the URL stays visible in the field for manual copy.
+      toast.error(t("copyFailed"));
     }
   }
 

@@ -138,6 +138,10 @@
     "loading": "Loading",
     "skipToContent": "Skip to content"
   },
+  "toast": {
+    "region": "Notifications",
+    "dismiss": "Dismiss"
+  },
   "errorPage": {
     "title": "Something went wrong",
     "text": "Your gifts are safe. Try again, or head back home.",
@@ -492,7 +496,9 @@
     "qrTitle": "Or show a QR code",
     "qrHint": "A phone camera opens the gift from it.",
     "qrAlt": "QR code for the gift link",
-    "downloadQr": "Download QR"
+    "downloadQr": "Download QR",
+    "copiedToast": "Link copied",
+    "copyFailed": "Could not copy. Select the link and copy it yourself."
   },
   "accountDeleted": {
     "title": "Your account was deleted",

@@ -425,6 +425,25 @@
 }
 
 /*
+ * Toasts (@yusufceng1z/ding), mounted by components/ui/app-toaster.tsx. The
+ * library injects its own stylesheet and reads these variables, so the pill
+ * takes the app's colours, type and dark mode instead of its defaults.
+ */
+.tst-viewport {
+  font-family: var(--font-sans);
+  --tst-bg: var(--popover);
+  --tst-fg: var(--popover-foreground);
+  --tst-success: var(--success);
+  --tst-error: var(--destructive);
+  --tst-info: var(--brand);
+  --tst-warning: #d98a1f;
+  --tst-shadow: 0 12px 32px rgba(43, 31, 33, 0.18);
+}
+.dark .tst-viewport {
+  --tst-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+/*
  * Gift editor canvas, see components/editor/gift-editor.tsx.
  * Marks what can be clicked on the gift. The blue is fixed, not a theme
  * colour, so it reads on every gift look.

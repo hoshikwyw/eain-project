@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { SkipLink } from "@/components/layout/skip-link";
 import { StalePageRecovery } from "@/components/layout/stale-page-recovery";
 import { ThemeProvider } from "@/components/settings/theme-provider";
+import { AppToaster } from "@/components/ui/app-toaster";
 import { appMode } from "@/lib/app-mode";
 import { fontVariables } from "@/lib/fonts";
 import "./globals.css";
@@ -82,6 +83,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             <SkipLink />
             <StalePageRecovery />
             {children}
+            <AppToaster />
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>
