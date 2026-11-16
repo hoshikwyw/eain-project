@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 import Link from "next/link";
+import { useFormatter } from "next-intl";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -13,10 +14,12 @@ type Props = {
 
 /** The points balance as a small pill with a star. Pressing it opens the points page. */
 export function PointsPill({ balance, label, tone = "brand", className }: Props) {
+  // The reader's digits: Myanmar numerals in Burmese.
+  const shown = useFormatter().number(balance, "digits");
   return (
     <Link
       href="/dashboard/points"
-      aria-label={`${label}: ${balance}`}
+      aria-label={`${label}: ${shown}`}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full text-sm font-bold transition",
         tone === "brand"
@@ -26,7 +29,7 @@ export function PointsPill({ balance, label, tone = "brand", className }: Props)
       )}
     >
       <Star className={cn("size-4 fill-current", tone === "plain" && "text-brand")} />
-      {balance}
+      {shown}
     </Link>
   );
 }

@@ -3,7 +3,7 @@
 import { Bell, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { LinkPending } from "@/components/ui/link-pending";
@@ -30,6 +30,7 @@ type Props = {
 export function AppHeader({ displayName, email, pointsBalance, unreadCount, isAdmin }: Props) {
   const pathname = usePathname();
   const t = useTranslations("dashboard");
+  const format = useFormatter();
   const links = topNavKeys.map((key) => navItems.find((item) => item.key === key)!);
   const onNotifications = isActivePath(pathname, "/dashboard/notifications");
 
@@ -77,7 +78,9 @@ export function AppHeader({ displayName, email, pointsBalance, unreadCount, isAd
           <Link
             href="/dashboard/notifications"
             aria-label={
-              unreadCount > 0 ? `${t("nav.notifications")}: ${unreadCount}` : t("nav.notifications")
+              unreadCount > 0
+                ? `${t("nav.notifications")}: ${format.number(unreadCount, "digits")}`
+                : t("nav.notifications")
             }
             aria-current={onNotifications ? "page" : undefined}
             className={cn(

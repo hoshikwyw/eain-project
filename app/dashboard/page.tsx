@@ -1,6 +1,6 @@
 import { ArrowRight, Gift, Lock, MailOpen, MessageCircleHeart, Plus, Star } from "lucide-react";
 import Link from "next/link";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { Bird, Lovebirds } from "@/components/brand/lovebirds";
 import { LeftoverDraft } from "@/components/dashboard/leftover-draft";
 import { NotificationItem } from "@/components/dashboard/notification-item";
@@ -66,6 +66,7 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
   const notice = (await searchParams).notice;
   const t = await getTranslations("dashboard");
   const tCreate = await getTranslations("create");
+  const format = await getFormatter();
   const locale = (await getLocale()) === "my" ? "my" : "en";
   const profile = await getCurrentProfile();
   const supabase = await createClient();
@@ -178,7 +179,7 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
                     {tp.isPremium && !tp.unlocked ? (
                       <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-brand-soft px-2 py-0.5 text-xs font-bold text-accent-foreground dark:text-brand">
                         <Lock className="size-3" />
-                        {tp.pointPrice}
+                        {format.number(tp.pointPrice, "digits")}
                       </span>
                     ) : (
                       !tp.isPremium && (
@@ -261,7 +262,7 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
               <p className="text-sm font-semibold text-muted-foreground">{t("points.total")}</p>
               <p className="flex items-center gap-2 font-display text-4xl font-semibold">
                 <Star className="size-7 fill-current text-brand" />
-                {profile.points_balance}
+                {format.number(profile.points_balance, "digits")}
               </p>
             </div>
             <Bird variant="blue" className="w-16" />
@@ -281,7 +282,7 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
                   className="flex items-center justify-between gap-3 rounded-xl bg-background/60 px-3 py-2"
                 >
                   <span>{label}</span>
-                  <span className="font-bold text-success">+{amount}</span>
+                  <span className="font-bold text-success">+{format.number(amount, "digits")}</span>
                 </li>
               ))}
             </ul>

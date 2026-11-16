@@ -18,5 +18,14 @@ export default getRequestConfig(async () => {
   return {
     locale,
     messages: (await import(`../messages/${locale}.json`)).default,
+    formats: {
+      number: {
+        // Numbers the app prints: Myanmar numerals in Burmese. The numbering
+        // system is named outright because many browsers ship no Burmese
+        // locale data and would otherwise fall back to Latin digits on the
+        // client while the server had sent Myanmar ones.
+        digits: locale === "my" ? { numberingSystem: "mymr" } : {},
+      },
+    },
   };
 });

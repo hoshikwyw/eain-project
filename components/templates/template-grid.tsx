@@ -2,7 +2,7 @@
 
 import { Lock, Search } from "lucide-react";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
@@ -55,6 +55,7 @@ export function TemplateGrid({
   locale,
 }: Props) {
   const t = useTranslations("create");
+  const format = useFormatter();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
 
@@ -139,7 +140,7 @@ export function TemplateGrid({
                   {template.isPremium ? (
                     <Chip tone="brand" className="shrink-0">
                       <Lock className="size-3" />
-                      {template.pointPrice}
+                      {format.number(template.pointPrice, "digits")}
                     </Chip>
                   ) : (
                     <Chip tone="success" className="shrink-0">

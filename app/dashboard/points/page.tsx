@@ -104,7 +104,7 @@ export default async function PointsPage() {
           <p className="text-sm font-semibold text-muted-foreground">{t("points.total")}</p>
           <p className="flex items-center gap-3 font-display text-6xl font-semibold tabular-nums sm:text-7xl">
             <Star className="size-10 shrink-0 fill-current text-brand sm:size-12" />
-            {profile.points_balance}
+            {format.number(profile.points_balance, "digits")}
           </p>
           <p className="mt-2 max-w-md text-muted-foreground">{t("points.subtitle")}</p>
           <Button asChild className="mt-4">
@@ -132,7 +132,7 @@ export default async function PointsPage() {
               </span>
               <span className="min-w-0 sm:flex-1">
                 <span className="block font-display text-2xl font-semibold text-success">
-                  +{amount}
+                  +{format.number(amount, "digits")}
                 </span>
                 <span className="block text-xs text-muted-foreground sm:text-sm">
                   {t(`points.earn.${key}`)}
@@ -180,7 +180,9 @@ export default async function PointsPage() {
                       gained ? "text-success" : "text-muted-foreground",
                     )}
                   >
-                    {gained ? `+${tx.amount}` : tx.amount}
+                    {gained
+                      ? `+${format.number(tx.amount, "digits")}`
+                      : format.number(tx.amount, "digits")}
                   </span>
                 </li>
               );

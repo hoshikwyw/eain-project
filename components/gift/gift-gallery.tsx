@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
@@ -29,6 +29,7 @@ type Props = {
  */
 export function GiftGallery({ items, initial, tail }: Props) {
   const t = useTranslations("dashboard.gifts.filters");
+  const format = useFormatter();
   const [filter, setFilter] = useState<GalleryFilter>(initial);
 
   const shown = filter === "all" ? items : items.filter((item) => item.groups.includes(filter));
@@ -75,7 +76,7 @@ export function GiftGallery({ items, initial, tail }: Props) {
                     active ? "text-muted-foreground" : "opacity-70",
                   )}
                 >
-                  {countOf(key)}
+                  {format.number(countOf(key), "digits")}
                 </span>
               </button>
             );

@@ -2,7 +2,7 @@ import { ArrowLeft, ArrowRight, Lock } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { cache } from "react";
 import { TemplateDemo } from "@/components/templates/template-demo";
 import { TemplatePreview } from "@/components/templates/template-preview";
@@ -52,6 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  * lands on the gift itself rather than a thumbnail.
  */
 export default async function TemplatePage({ params }: Props) {
+  const format = await getFormatter();
   const { slug } = await params;
   const locale = await pageLocale();
   const data = await loadPage(slug, locale);
@@ -174,7 +175,7 @@ export default async function TemplatePage({ params }: Props) {
                     {o.isPremium ? (
                       <Chip tone="brand" className="shrink-0">
                         <Lock className="size-3" />
-                        {o.pointPrice}
+                        {format.number(o.pointPrice, "digits")}
                       </Chip>
                     ) : (
                       <Chip tone="success" className="shrink-0">

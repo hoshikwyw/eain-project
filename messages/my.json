@@ -170,8 +170,8 @@
     "creating": "လက်ဆောင် ဖန်တီးနေသည်",
     "unlocking": "ဖွင့်နေသည်",
     "comingSoon": "မကြာမီ လာမည်",
-    "unlockFor": "ပွိုင့် {points} နဲ့ ဖွင့်မယ်",
-    "needMorePoints": "ပွိုင့် {points} ထပ်လိုပါသည်",
+    "unlockFor": "ပွိုင့် {points, number, digits} နဲ့ ဖွင့်မယ်",
+    "needMorePoints": "ပွိုင့် {points, number, digits} ထပ်လိုပါသည်",
     "searchPlaceholder": "ပုံစံများ ရှာရန်",
     "allCategories": "အားလုံး",
     "noResults": "ကိုက်ညီတဲ့ ပုံစံ မရှိပါ။ အခြားစကားလုံး ဒါမှမဟုတ် အမျိုးအစား စမ်းကြည့်ပါ။",
@@ -239,7 +239,7 @@
     "variants": {
       "blossom": "ပန်းပွင့်နေ့",
       "night": "ချစ်ဖွယ်ည",
-      "mint": "စိမ်းလန်းမင့်",
+      "mint": "လန်းဆန်းစိမ်း",
       "sunset": "နွေးထွေးနေဝင်ချိန်",
       "celebrate": "မွေးနေ့ပွဲ",
       "ocean": "ပင်လယ်လေညင်း",
@@ -266,7 +266,7 @@
     "moveUp": "အပေါ်သို့ ရွှေ့",
     "moveDown": "အောက်သို့ ရွှေ့",
     "removeSection": "အပိုင်း ဖယ်ရှား",
-    "sectionCount": "အပိုင်း {count} / {max}",
+    "sectionCount": "အပိုင်း {count, number, digits} / {max, number, digits}",
     "fields": {
       "heading": "ခေါင်းစီး",
       "subheading": "အောက်က စာကြောင်းငယ်",
@@ -281,7 +281,7 @@
       "quote": "ကိုးကားချက်",
       "attribution": "ဘယ်သူ ပြောခဲ့လဲ",
       "closingLine": "နိဂုံးစာကြောင်း",
-      "signature": "လက်မှတ်",
+      "signature": "ထိုးမည့် နာမည်",
       "signatureHint": "ဗလာထားပါက သင့်နာမည်ကို သုံးပါမည်။",
       "prompt": "သင့်မေးခွန်း",
       "promptPlaceholder": "ကျွန်တော်တို့အကြောင်း အကြိုက်ဆုံး အမှတ်တရက ဘာလဲ?",
@@ -294,7 +294,7 @@
         "rating": "အဆင့် ၁ မှ ၅"
       },
       "options": "ရွေးချယ်စရာများ",
-      "optionLabel": "ရွေးချယ်စရာ {n}",
+      "optionLabel": "ရွေးချယ်စရာ {n, number, digits}",
       "addOption": "ရွေးချယ်စရာ ထည့်ရန်",
       "removeOption": "ရွေးချယ်စရာ ဖယ်ရှား",
       "yes": "ဟုတ်တယ်",
@@ -306,8 +306,8 @@
       "uploading": "တင်နေသည်",
       "delete": "ဓာတ်ပုံ ဖျက်ရန်",
       "deleteConfirm": "ဒီဓာတ်ပုံကို လက်ဆောင်ထဲက ဖျက်မလား?",
-      "count": "ဓာတ်ပုံ {count} / {max}",
-      "selectUpTo": "အများဆုံး {max} ပုံ ရွေးပါ",
+      "count": "ဓာတ်ပုံ {count, number, digits} / {max, number, digits}",
+      "selectUpTo": "အများဆုံး {max, number, digits} ပုံ ရွေးပါ",
       "limitReached": "ဓာတ်ပုံ ကန့်သတ်ချက် ပြည့်ပါပြီ",
       "errors": {
         "limit": "ဒီလက်ဆောင်မှာ ဓာတ်ပုံ အများဆုံး ရောက်နေပါပြီ။",
@@ -347,7 +347,7 @@
       "nature": "သဘာဝ",
       "cute": "ချစ်စရာ"
     },
-    "stickerLimit": "ဒီလက်ဆောင်မှာ စတစ်ကာ အများဆုံး ({max}) ရောက်နေပါပြီ။",
+    "stickerLimit": "ဒီလက်ဆောင်မှာ စတစ်ကာ အများဆုံး ({max, number, digits}) ရောက်နေပါပြီ။",
     "stickerNames": {
       "heart": "အနီရောင် နှလုံးသား",
       "pink-heart": "တောက်ပသော နှလုံးသား",
@@ -359,8 +359,8 @@
       "rose": "နှင်းဆီ",
       "bouquet": "ပန်းစည်း",
       "balloon": "ပူဖောင်း",
-      "party": "ပါတီ ပေါ့ပါ",
-      "confetti": "စက္ကူပန်း ဘောလုံး",
+      "party": "ပွဲလမ်း ပေါက်ကွဲပြွန်",
+      "confetti": "စက္ကူပန်း လုံး",
       "cake": "မွေးနေ့ကိတ်",
       "cupcake": "ကပ်ကိတ်",
       "gift": "လက်ဆောင်",
@@ -390,10 +390,10 @@
       "hug": "ပွေ့ဖက်",
       "star-eyes": "ကြယ်မျက်လုံး",
       "blow-kiss": "အနမ်းပေး",
-      "angel": "နတ်သမီး",
+      "angel": "ကောင်းကင်တမန်",
       "cool": "မိုက်တယ်"
     },
-    "stickerCount": "စတစ်ကာ {count} / {max}",
+    "stickerCount": "စတစ်ကာ {count, number, digits} / {max, number, digits}",
     "resizeSticker": "အရွယ်အစား ပြောင်းရန်",
     "resizePhoto": "ဆွဲပြီး ဓာတ်ပုံအရွယ်အစား ပြောင်းပါ",
     "rotateSticker": "လှည့်ရန်",
@@ -506,7 +506,7 @@
     "reason": "ဘာပြဿနာလဲ?",
     "reasons": {
       "harassment": "နှောင့်ယှက်ခြင်း ဒါမှမဟုတ် အနိုင်ကျင့်ခြင်း",
-      "spam": "စပမ်",
+      "spam": "မလိုလားအပ်သော စာ",
       "scam": "လိမ်လည်မှု",
       "inappropriate": "မသင့်လျော်သော အကြောင်းအရာ",
       "copyright": "မူပိုင်ခွင့် ချိုးဖောက်မှု",
@@ -574,7 +574,7 @@
       "publishedWeek": "၇ ရက်အတွင်း ထုတ်ဝေမှု",
       "points": "လက်ကျန် ပွိုင့် စုစုပေါင်း",
       "photos": "သိမ်းထားသော ဓာတ်ပုံ",
-      "openReports": "မဖြေရှင်းရသေးသော တိုင်ကြားမှု {count}",
+      "openReports": "မဖြေရှင်းရသေးသော တိုင်ကြားမှု {count, number, digits}",
       "reportsHint": "လက်ခံသူများမှ လက်ဆောင်အကြောင်းအရာ တိုင်ကြားမှုများ။",
       "review": "စစ်ဆေးရန်",
       "usageTitle": "အခမဲ့အဆင့် အသုံးပြုမှု",
@@ -590,7 +590,7 @@
     "users": {
       "subtitle": "အကောင့်တိုင်း၊ ဝင်ရောက်ပုံနဲ့ ဖန်တီးထားသမျှ။ စီမံရန် တစ်ခုကို ဖွင့်ပါ။",
       "search": "နာမည် ဒါမှမဟုတ် အီးမေးလ်ဖြင့် ရှာရန်",
-      "count": "အကောင့် {count}",
+      "count": "အကောင့် {count, number, digits}",
       "unnamed": "နာမည်မဲ့",
       "you": "သင်",
       "active": "အသုံးပြုနေ",
@@ -600,7 +600,7 @@
       "providers": { "email": "အီးမေးလ်", "google": "Google" },
       "lastSeen": "နောက်ဆုံးဝင်ခဲ့ {when}",
       "neverSignedIn": "တစ်ခါမှ မဝင်ရသေး",
-      "giftsCount": "လက်ဆောင် {count}",
+      "giftsCount": "လက်ဆောင် {count, number, digits}",
       "reason": "အကြောင်းပြချက်",
       "adjust": "ပွိုင့် ပြင်ရန်",
       "role": "အခန်းကဏ္ဍ",
@@ -618,9 +618,9 @@
         "language": "ဘာသာ",
         "points": "ပွိုင့်",
         "gifts": "လက်ဆောင်",
-        "giftsSummary": "စုစုပေါင်း {total}၊ ရောက်ရှိနေ {published}",
+        "giftsSummary": "စုစုပေါင်း {total, number, digits}၊ ရောက်ရှိနေ {published, number, digits}",
         "storage": "ဓာတ်ပုံ သိုလှောင်မှု",
-        "giftsTitle": "လက်ဆောင် ({count})",
+        "giftsTitle": "လက်ဆောင် ({count, number, digits})",
         "giftsHint": "စစ်ဆေးရန် ဒါမှမဟုတ် ပိတ်ရန် လက်ဆောင်ကို ဖွင့်ပါ။",
         "noGifts": "လက်ဆောင် မရှိသေးပါ။",
         "pointsTitle": "ပွိုင့် မှတ်တမ်း",
@@ -635,8 +635,8 @@
         "suspendConfirm": "ဒီအကောင့်ကို ဆိုင်းငံ့မလား? ဝင်ရောက်၍ မရတော့ပါ။",
         "unsuspend": "အကောင့် ပြန်ဖွင့်ရန်",
         "offlineReason": "သူတို့ကို ပြမည့် အကြောင်းပြချက်",
-        "offline": "ရောက်ရှိနေသော လက်ဆောင် {count} ခု ပိတ်ရန်",
-        "offlineConfirm": "ရောက်ရှိနေသော လက်ဆောင် {count} ခုကို ပိတ်မလား? လင့်ခ်များ ရပ်ပြီး အသိပေးပါမည်။",
+        "offline": "ရောက်ရှိနေသော လက်ဆောင် {count, number, digits} ခု ပိတ်ရန်",
+        "offlineConfirm": "ရောက်ရှိနေသော လက်ဆောင် {count, number, digits} ခုကို ပိတ်မလား? လင့်ခ်များ ရပ်ပြီး အသိပေးပါမည်။",
         "deleteTitle": "အကောင့် ဖျက်ရန်",
         "deleteHint": "အကောင့်၊ လက်ဆောင်၊ ဓာတ်ပုံ၊ အဖြေ၊ အသိပေးချက်နဲ့ ပွိုင့်များကို အပြီးအပိုင် ဖယ်ရှားပါမည်။ ပြန်ပြင်၍ မရပါ။",
         "typeEmail": "အတည်ပြုရန် {email} ကို ရိုက်ထည့်ပါ",
@@ -720,7 +720,7 @@
       },
       "reasons": {
         "harassment": "နှောင့်ယှက်မှု",
-        "spam": "စပမ်",
+        "spam": "မလိုလားအပ်သော စာ",
         "scam": "လိမ်လည်မှု",
         "inappropriate": "မသင့်လျော်",
         "copyright": "မူပိုင်ခွင့်",
@@ -731,7 +731,7 @@
     "gift": {
       "by": "{name} မှ",
       "backToReports": "တိုင်ကြားမှုများ",
-      "reports": "တိုင်ကြားမှု ({count})",
+      "reports": "တိုင်ကြားမှု ({count, number, digits})",
       "noReports": "ဒီလက်ဆောင်အတွက် တိုင်ကြားမှု မရှိပါ။",
       "actions": "လုပ်ဆောင်ချက်",
       "disableHint": "လက်ဆောင်ကို ပိတ်ပါက ပိုင်ရှင်၏ အကြောင်းအရာ ရှိနေဆဲဖြစ်သော်လည်း လင့်ခ် ရပ်သွားပါမည်။ ပိုင်ရှင်ကို အကြောင်းပြချက်နဲ့ အသိပေးပါမည်။",
@@ -770,10 +770,10 @@
     "facts": {
       "opening": "ဖွင့်ပုံ",
       "sections": "စတင်ပါဝင်သည်",
-      "sectionsCount": "အပိုင်း {count} ခု",
+      "sectionsCount": "အပိုင်း {count, number, digits} ခု",
       "price": "စျေးနှုန်း",
       "free": "အခမဲ့",
-      "points": "ပွိုင့် {points}",
+      "points": "ပွိုင့် {points, number, digits}",
       "reply": "ပြန်ဖြေခြင်း",
       "replyText": "အကောင့် မလိုဘဲ ပြန်ဖြေနိုင်ပါတယ်"
     }
@@ -880,9 +880,9 @@
       "lately": "လတ်တလော",
       "latelyEmpty": "တစ်ယောက်ယောက်က သင့်လက်ဆောင်ကို ဖွင့်တာ၊ ပြန်ဖြေတာရှိရင် ဒီမှာ မြင်ရပါမယ်။",
       "waysToEarn": "ပွိုင့်ရနိုင်တဲ့ နည်းလမ်းများ",
-      "statGifts": "လက်ဆောင် {count} ခု",
-      "statOpened": "ဖွင့်ပြီး {count} ခု",
-      "statReplies": "အဖြေ {count} ခု"
+      "statGifts": "လက်ဆောင် {count, number, digits} ခု",
+      "statOpened": "ဖွင့်ပြီး {count, number, digits} ခု",
+      "statReplies": "အဖြေ {count, number, digits} ခု"
     },
     "gifts": {
       "filters": {
@@ -897,7 +897,7 @@
           "opened": "လက်ဆောင်ကို မည်သူမှ မဖွင့်ကြည့်ရသေးပါ။ ဖွင့်ကြည့်သည်နှင့် ဒီမှာ ပေါ်လာပါမယ်။"
         }
       },
-      "count": "လက်ဆောင် {count} / {max}",
+      "count": "လက်ဆောင် {count, number, digits} / {max, number, digits}",
       "for": "{name} အတွက်",
       "noRecipient": "လက်ခံသူ နာမည် မထည့်ရသေးပါ",
       "limitReached": "လက်ဆောင် ၅ ခု ကန့်သတ်ချက် ပြည့်သွားပါပြီ။ တစ်ခုဖျက်ပြီး နေရာလွတ်ယူပါ။",
@@ -924,7 +924,7 @@
       "duplicate": "ပွားရန်",
       "duplicateFailed": "လက်ဆောင်ကို ပွားမရပါ။ ထပ်ကြိုးစားပါ။",
       "responses": {
-        "title": "အဖြေများ ({count})",
+        "title": "အဖြေများ ({count, number, digits})",
         "empty": "အဖြေ မရသေးပါ။ တစ်စုံတစ်ယောက် ဖြေလိုက်တာနဲ့ ဒီမှာ ပေါ်ပါမယ်။",
         "description": "သင်တစ်ဦးတည်းသာ မြင်ရပါမယ်။"
       },
@@ -946,7 +946,7 @@
     "notifications": {
       "new": "အသစ်",
       "earlier": "ယခင်",
-      "unread": "မဖတ်ရသေး {count} ခု",
+      "unread": "မဖတ်ရသေး {count, number, digits} ခု",
       "allRead": "အားလုံး ဖတ်ပြီးပါပြီ။",
       "markAllRead": "အားလုံး ဖတ်ပြီးအဖြစ် မှတ်ရန်",
       "titles": {
