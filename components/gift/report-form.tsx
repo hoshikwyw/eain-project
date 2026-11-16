@@ -2,17 +2,22 @@
 
 import { Check } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { submitReport } from "@/features/reports/actions";
 import { REPORT_REASONS, type ReportState } from "@/features/reports/schemas";
 import { Notice } from "@/components/ui/notice";
+import { toast } from "@/lib/toast";
 
 export function ReportForm({ token }: { token: string }) {
   const t = useTranslations("report");
   const action = submitReport.bind(null, token);
   const [state, formAction, pending] = useActionState<ReportState, FormData>(action, {});
+  useEffect(() => {
+    if (state.status === "sent") toast.success(t("sentTitle"), { description: t("sentText") });
+    else if (state.status) toast.error(t(`errors.${state.status}`));
+  }, [state, t]);
 
   if (state.status === "sent") {
     return (

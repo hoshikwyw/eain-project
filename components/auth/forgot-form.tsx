@@ -3,16 +3,21 @@
 import { Check } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { requestPasswordReset, type ForgotState } from "@/features/auth/password";
 import { Notice } from "@/components/ui/notice";
+import { toast } from "@/lib/toast";
 
 export function ForgotForm({ expired }: { expired?: boolean }) {
   const t = useTranslations("auth.forgot");
   const [state, formAction] = useActionState<ForgotState, FormData>(requestPasswordReset, {});
+  useEffect(() => {
+    if (state.status === "sent") toast.success(t("sentTitle"), { description: t("sentText") });
+    else if (state.status && state.status !== "invalid") toast.error(t(`errors.${state.status}`));
+  }, [state, t]);
 
   if (state.status === "sent") {
     return (

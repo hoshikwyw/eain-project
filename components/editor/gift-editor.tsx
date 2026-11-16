@@ -171,6 +171,18 @@ export function GiftEditor(props: Props) {
   const [accountSheet, setAccountSheet] = useState(false);
   const askForAccount = () => setAccountSheet(true);
   const draft = useGuestDraft(guest ? { template: guest.template, payloadJson } : null);
+  // The first template a visitor opens in this tab: a word on where their work lives.
+  const isGuest = Boolean(guest);
+  useEffect(() => {
+    if (!isGuest) return;
+    try {
+      if (sessionStorage.getItem("eain_guest_toast")) return;
+      sessionStorage.setItem("eain_guest_toast", "1");
+    } catch {
+      return;
+    }
+    toast.info(t("guest.chip"), { description: t("guest.toastText"), duration: 7000 });
+  }, [isGuest, t]);
 
   // A draft saves itself once the creator pauses. A published gift does not:
   // a save there is live for the receiver at once, so it stays a deliberate step.

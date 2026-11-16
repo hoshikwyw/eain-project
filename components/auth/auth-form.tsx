@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { signIn, signUp } from "@/features/auth/actions";
 import type { AuthFormState } from "@/features/auth/schemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Notice } from "@/components/ui/notice";
+import { toast } from "@/lib/toast";
 import { GoogleSignIn } from "./google-sign-in";
 import { GuestDraftNotice } from "./guest-draft-notice";
 
@@ -46,6 +47,16 @@ export function AuthForm({
 
   const errorKey = !configured ? "notConfigured" : state.error;
   const noticeKey = asNotice(notice);
+  // Outcomes also arrive as toasts; what the person typed wrong stays inline only.
+  useEffect(() => {
+    if (state.error && state.error !== "invalid") toast.error(t(`errors.${state.error}`));
+  }, [state, t]);
+  const toldNotice = useRef(false);
+  useEffect(() => {
+    if (!noticeKey || toldNotice.current) return;
+    toldNotice.current = true;
+    toast[noticeKey === "confirm" ? "success" : "warning"](t(`notices.${noticeKey}`));
+  }, [noticeKey, t]);
 
   return (
     <div className="flex flex-col gap-5">

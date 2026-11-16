@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Notice } from "@/components/ui/notice";
 import { Skeleton } from "@/components/ui/skeleton";
 import { signInWithGoogleToken, type GoogleSignInError } from "@/features/auth/actions";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
 type GoogleIdentity = {
@@ -74,7 +75,10 @@ export function GoogleSignIn({ clientId, next }: Props) {
           setError(null);
           startTransition(async () => {
             const result = await signInWithGoogleToken({ credential, nonce: raw, next });
-            if (result?.error) setError(result.error);
+            if (result?.error) {
+              setError(result.error);
+              toast.error(t(`errors.${result.error}`));
+            }
           });
         },
       });
@@ -90,7 +94,7 @@ export function GoogleSignIn({ clientId, next }: Props) {
       locale,
     });
     setStatus("ready");
-  }, [clientId, next, locale, resolvedTheme]);
+  }, [clientId, next, locale, resolvedTheme, t]);
 
   // The script is shared between the login and sign-up pages, so it may be
   // there already when this page draws; and the button is painted again when
@@ -105,7 +109,10 @@ export function GoogleSignIn({ clientId, next }: Props) {
         src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
         onLoad={() => void draw()}
-        onError={() => setStatus("failed")}
+        onError={() => {
+          setStatus("failed");
+          toast.warning(t("googleUnavailable"));
+        }}
       />
       {status !== "failed" && (
         <div className="relative min-h-11">

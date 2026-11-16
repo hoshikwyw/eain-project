@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import type { PublicQuestion } from "@/features/gifts/schemas";
 import { cn } from "@/lib/utils";
 import { Notice } from "@/components/ui/notice";
+import { toast } from "@/lib/toast";
 
 type Answer = { optionId?: string; text?: string; number?: number };
 
@@ -81,13 +82,17 @@ export function ResponseForm({ token, questions, sessionId, onStarted }: Props) 
           // ignore
         }
         setState(res.ok ? "sent" : "duplicate");
+        if (res.ok) toast.success(t("sentTitle"), { description: t("sentText") });
+        else toast.info(t("alreadyText"));
       } else if (res.status === 400) {
         setState("invalid");
       } else {
         setState("error");
+        toast.error(t("error"));
       }
     } catch {
       setState("error");
+      toast.error(t("error"));
     }
   }
 
