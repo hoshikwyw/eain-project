@@ -38,6 +38,8 @@ export function renderDesign(ctx: Ctx) {
       return <GardenDesign {...ctx} />;
     case "invite":
       return <InviteDesign {...ctx} />;
+    case "wedding":
+      return <WeddingDesign {...ctx} />;
     case "minimal":
     default:
       return <MinimalDesign {...ctx} />;
@@ -1076,6 +1078,66 @@ function InviteDesign(ctx: Ctx) {
             <Barcode className="h-5 w-14 text-[color:var(--t-fg)]/70" />
           </div>
         </div>
+      </div>
+    </article>
+  );
+}
+
+/**
+ * A wedding invitation: an ivory card inside a double gold hairline with
+ * ornaments in the corners, the couple at the top, the words centred in
+ * italic serif, the event details between two gold rules with each line on
+ * its own, the RSVP as a quiet card, and the sign-off in the accent. The
+ * champagne look by default; any look keeps the structure. No printer's mark.
+ */
+function WeddingDesign(ctx: Ctx) {
+  const { compact, style, eyebrow, animate } = ctx;
+  return (
+    <article
+      className={cn(
+        "relative overflow-hidden rounded-3xl [background:var(--t-bg)]",
+        compact ? "p-3" : "p-4",
+      )}
+    >
+      <Decorations kind={style.decoration} />
+      <div
+        className={cn(
+          "relative flex flex-col items-center overflow-hidden rounded-2xl bg-[color:var(--t-card)] text-center ring-1 ring-[color:var(--glow)]/80",
+          compact ? "gap-5 px-6 pt-5 pb-6" : "gap-6 px-8 pt-6 pb-8",
+        )}
+      >
+        <Pattern kind="paper" opacity={0.12} />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-2 rounded-xl border border-[color:var(--glow)]/45"
+        />
+        <CornerMark className="absolute top-3.5 left-3.5 size-5" />
+        <CornerMark className="absolute top-3.5 right-3.5 size-5 rotate-90" />
+        <CornerMark className="absolute right-3.5 bottom-3.5 size-5 rotate-180" />
+        <CornerMark className="absolute bottom-3.5 left-3.5 size-5 -rotate-90" />
+        <Illustration
+          src={style.illustration}
+          className={cn("relative", compact ? "max-w-48" : "max-w-60")}
+        />
+        <div className="relative flex flex-col items-center gap-3">
+          <Eyebrow text={eyebrow} className="tracking-[0.35em] text-[color:var(--t-accent)]" />
+          <Flourish className="w-36" />
+        </div>
+        <Sections
+          ctx={ctx}
+          animate={animate}
+          className={cn("relative w-full items-center text-center", compact ? "gap-5" : "gap-6")}
+          itemClassName={cn(
+            "w-full",
+            "[&_h1]:font-display [&_h1]:font-medium [&_h1]:text-[color:var(--t-accent)] [&_h1]:italic [&_h2]:text-[color:var(--t-muted)] [&_h2]:italic",
+            "[&_p.msg]:mx-auto [&_p.msg]:max-w-[30ch] [&_p.msg]:font-display [&_p.msg]:text-lg [&_p.msg]:italic",
+            // Event details between two gold rules, each line on its own, icons in gold.
+            "[&_.event]:items-center [&_.event]:gap-2 [&_.event]:rounded-none [&_.event]:border-x-0 [&_.event]:border-y [&_.event]:border-[color:var(--glow)] [&_.event]:px-2 [&_.event]:py-5 [&_.event]:text-center [&_.event_li]:flex-col [&_.event_li]:items-center [&_.event_li]:gap-1 [&_.event_p]:text-center [&_.event_svg]:text-[color:var(--glow)] [&_.event_li:first-child_p]:font-display [&_.event_li:first-child_p]:text-2xl [&_.event_li:first-child_p]:font-medium [&_.event_li:first-child_p]:text-[color:var(--t-accent)] [&_.event_li:first-child_p]:italic",
+            "[&_.question]:items-center [&_.question]:border-solid [&_.question]:border-[color:var(--glow)]/70 [&_.question]:text-center [&_.question_p]:justify-center",
+            "[&_footer]:items-center [&_footer]:border-t-0 [&_.sig]:font-display [&_.sig]:text-2xl [&_.sig]:font-medium [&_.sig]:text-[color:var(--t-accent)] [&_.sig]:italic",
+          )}
+        />
+        <Flourish className="relative w-36" />
       </div>
     </article>
   );

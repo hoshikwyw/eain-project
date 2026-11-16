@@ -30,7 +30,8 @@ export type Design =
   | "bold"
   | "blank"
   | "garden"
-  | "invite";
+  | "invite"
+  | "wedding";
 
 export type TemplateStyle = {
   decoration: Decoration;
@@ -68,6 +69,7 @@ const designOpening: Record<Design, Opening> = {
   blank: "simple",
   garden: "simple",
   invite: "envelope",
+  wedding: "envelope",
 };
 
 export type TemplateDefinition = Omit<TemplateStyle, "illustration" | "defaultOpening"> & {
@@ -373,7 +375,7 @@ const invitations: Record<string, TemplateDefinition> = {
     ],
   },
   "wedding-invitation": {
-    design: "elegant",
+    design: "wedding",
     decoration: "hearts",
     layout: "scroll",
     defaultVariant: "champagne",
