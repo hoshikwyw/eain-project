@@ -789,11 +789,17 @@ function GardenDesign(ctx: Ctx) {
   );
 }
 
-/** Grid paper, polaroid photos with tape, golden timeline dots. */
+/**
+ * A scrapbook open under the night sky: cream pages tilted a little in turn,
+ * each held down by a strip of washi tape (gold, then the accent), the name
+ * on a label sticker, a handwritten title, photos as polaroids with corner
+ * mounts, the timeline as a dotted string, and the birds under the moon at
+ * the foot. Premium, so no printer's mark.
+ */
 function ScrapbookDesign(ctx: Ctx) {
   const { compact, style, eyebrow, animate } = ctx;
   return (
-    <div
+    <article
       className={cn(
         "relative overflow-hidden rounded-3xl [background:var(--t-bg)]",
         compact ? "p-3" : "p-4",
@@ -801,14 +807,22 @@ function ScrapbookDesign(ctx: Ctx) {
     >
       <Pattern kind="grid" opacity={0.5} />
       <Decorations kind="stars" />
-      <div className="relative flex flex-col gap-4">
-        <Eyebrow text={eyebrow} className="px-2 pt-1" />
+      <div className="relative flex flex-col gap-5">
+        <span className="ml-2 w-fit -rotate-2 rounded-md bg-[color:var(--glow)] px-3 py-1 shadow-sm">
+          <Eyebrow text={eyebrow} className="text-[#3b2f2a]" />
+        </span>
         <Sections
           ctx={ctx}
           animate={animate}
-          className={compact ? "gap-4" : "gap-5"}
+          className={compact ? "gap-5" : "gap-6"}
           itemClassName={cn(
-            "relative rounded-lg bg-[color:var(--t-card)]/95 shadow-md before:absolute before:-top-2 before:left-1/2 before:h-5 before:w-20 before:-translate-x-1/2 before:rotate-[-3deg] before:rounded-sm before:bg-[color:var(--glow)]/70 before:content-[''] [&_ol]:border-[color:var(--glow)]/60 [&_ol_.dot]:bg-[color:var(--glow)]",
+            // Cream pages with their own ink, whatever the look around them.
+            "relative rounded-sm bg-[color:var(--t-card)] text-[color:var(--t-fg)] shadow-md [--t-card:#fbf6ec] [--t-fg:#3b2f2a] [--t-muted:#7d6b63] odd:rotate-[-0.6deg] even:rotate-[0.6deg]",
+            // Washi tape over the top edge, gold on one page and the accent on the next.
+            "before:absolute before:-top-2.5 before:left-1/2 before:h-5 before:w-24 before:-translate-x-1/2 before:rounded-sm before:content-[''] odd:before:rotate-[-3deg] odd:before:bg-[color:var(--glow)]/85 even:before:rotate-[3deg] even:before:bg-[color:var(--t-accent)]/60",
+            "[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:leading-none [&_h1]:font-bold [&_h2]:font-hand [&_h2]:text-3xl",
+            "[&_ol]:border-l-2 [&_ol]:border-dotted [&_ol]:border-[color:var(--t-accent)] [&_ol_.dot]:bg-[color:var(--glow)] [&_ol_.dot]:ring-[#fbf6ec]",
+            "[&_footer]:border-[color:var(--t-accent)]/30 [&_.sig]:font-hand [&_.sig]:text-3xl [&_.sig]:font-bold",
             compact ? "p-5" : "p-6",
           )}
         />
@@ -817,7 +831,7 @@ function ScrapbookDesign(ctx: Ctx) {
           className={cn("mx-auto pt-2", compact ? "max-w-56" : "max-w-sm")}
         />
       </div>
-    </div>
+    </article>
   );
 }
 

@@ -111,6 +111,10 @@ function txt(ctx: Ctx, section: Section, field: string, value: string, index?: n
   return ctx.edit ? ctx.edit.text({ section, field, index, value }) : value;
 }
 
+/** Two corner mounts, top-left and bottom-right, holding a scrapbook photo to its page. */
+const PHOTO_CORNERS =
+  "relative before:absolute before:top-0 before:left-0 before:size-3.5 before:bg-[color:var(--t-fg)]/75 before:[clip-path:polygon(0_0,100%_0,0_100%)] before:content-[''] after:absolute after:right-0 after:bottom-0 after:size-3.5 after:bg-[color:var(--t-fg)]/75 after:[clip-path:polygon(100%_100%,100%_0,0_100%)] after:content-['']";
+
 function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; isFirst: boolean }) {
   const { media, senderName, compact, placeholders, labels, design } = ctx;
   const editing = Boolean(ctx.edit);
@@ -231,6 +235,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
               // A letter's or a party card's photo is taped in.
               (design === "letter" || design === "party") &&
                 "relative before:absolute before:-top-2.5 before:left-1/2 before:h-5 before:w-20 before:-translate-x-1/2 before:rotate-[-4deg] before:rounded-sm before:bg-[color:var(--glow)]/60 before:content-['']",
+              design === "scrapbook" && PHOTO_CORNERS,
             )}
           >
             {img}
@@ -287,6 +292,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
                   key={item.id}
                   className={cn(
                     "w-[44%] rounded-sm bg-white p-2 pb-6 shadow-md",
+                    PHOTO_CORNERS,
                     i % 2 ? "rotate-2" : "-rotate-2",
                   )}
                 >
