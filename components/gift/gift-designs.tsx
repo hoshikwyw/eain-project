@@ -164,32 +164,46 @@ function PostcardDesign(ctx: Ctx) {
   );
 }
 
-/** Streamers, a banner heading and stacked party cards. */
+/**
+ * A party invitation: bunting across the top, the bird with the cake as the
+ * hero, the greeting on a ticket with notched sides and a perforated edge,
+ * then the words on stacked cards, each with its own party colour along the
+ * top and a slight tilt, the photo taped in, and a striped foot. Premium, so
+ * no printer's mark.
+ */
 function PartyDesign(ctx: Ctx) {
   const { compact, style, eyebrow, animate } = ctx;
   const [cover, ...rest] = ctx.visible;
   const coverCtx = { ...ctx, visible: cover ? [cover] : [] };
   const restCtx = { ...ctx, visible: rest };
   return (
-    <div className="relative overflow-hidden rounded-3xl [background:var(--t-bg)]">
-      <div aria-hidden="true" className="pattern-stripes h-4 w-full opacity-70" />
+    <article className="relative overflow-hidden rounded-3xl [background:var(--t-bg)]">
       <Decorations kind="confetti" />
+      <Bunting count={compact ? 8 : 10} />
       <div
         className={cn(
           "relative flex flex-col items-center text-center",
-          compact ? "gap-4 px-4 pt-4 pb-5" : "gap-6 px-5 pt-6 pb-8",
+          compact ? "gap-4 px-4 pt-3 pb-5" : "gap-6 px-5 pt-4 pb-8",
         )}
       >
-        <Illustration src={style.illustration} className={compact ? "max-w-56" : "max-w-sm"} />
-        <div
-          className={cn(
-            "w-full rounded-2xl bg-[color:var(--t-accent)] text-[color:var(--t-on-accent,#fff)] shadow-lg",
-            compact ? "px-5 py-4" : "px-7 py-6",
-          )}
-        >
-          <Eyebrow text={eyebrow} className="text-[color:var(--t-on-accent,#fff)] opacity-80" />
-          <div className="mt-1 [&_h1]:text-[color:var(--t-on-accent,#fff)] [&_h2]:text-[color:var(--t-on-accent,#fff)] [&_p]:text-[color:var(--t-on-accent,#fff)] [&_span]:text-[color:var(--t-on-accent,#fff)]">
-            <Sections ctx={coverCtx} />
+        <Illustration src={style.illustration} className={compact ? "max-w-52" : "max-w-72"} />
+        <div className="w-full drop-shadow-lg">
+          <div
+            className={cn(
+              "relative w-full rounded-2xl bg-[color:var(--t-accent)] text-[color:var(--t-on-accent,#fff)]",
+              // Notches cut into both sides, like a ticket torn off its stub.
+              "[mask:radial-gradient(12px_at_0_50%,transparent_98%,#000)_0_0/51%_100%_no-repeat,radial-gradient(12px_at_100%_50%,transparent_98%,#000)_100%_0/51%_100%_no-repeat]",
+              compact ? "px-7 py-4" : "px-9 py-6",
+            )}
+          >
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-2 rounded-xl border border-dashed border-[color:var(--t-on-accent,#fff)]/45"
+            />
+            <Eyebrow text={eyebrow} className="text-[color:var(--t-on-accent,#fff)] opacity-85" />
+            <div className="mt-1 [&_h1]:text-[color:var(--t-on-accent,#fff)] [&_h2]:text-[color:var(--t-on-accent,#fff)] [&_p]:text-[color:var(--t-on-accent,#fff)] [&_span]:text-[color:var(--t-on-accent,#fff)]">
+              <Sections ctx={coverCtx} />
+            </div>
           </div>
         </div>
         <Sections
@@ -197,12 +211,16 @@ function PartyDesign(ctx: Ctx) {
           animate={animate}
           className={cn("w-full text-left", compact ? "gap-3" : "gap-4")}
           itemClassName={cn(
-            "rounded-2xl border-l-[6px] border-[color:var(--t-accent)] bg-[color:var(--t-card)] shadow-sm",
+            "rounded-2xl border-t-[6px] bg-[color:var(--t-card)] shadow-sm odd:rotate-[0.6deg] even:-rotate-[0.6deg]",
+            // Each card takes the next party colour.
+            "[&:nth-child(5n+1)]:border-[color:var(--t-c1,var(--t-accent))] [&:nth-child(5n+2)]:border-[color:var(--t-c2,var(--t-accent))] [&:nth-child(5n+3)]:border-[color:var(--t-c3,var(--t-accent))] [&:nth-child(5n+4)]:border-[color:var(--t-c4,var(--t-accent))] [&:nth-child(5n+5)]:border-[color:var(--t-c5,var(--t-accent))]",
+            "[&_.sig]:text-2xl [&_.sig]:text-[color:var(--t-accent)]",
             compact ? "p-4" : "p-5",
           )}
         />
       </div>
-    </div>
+      <div aria-hidden="true" className="pattern-stripes h-3 w-full opacity-70" />
+    </article>
   );
 }
 
