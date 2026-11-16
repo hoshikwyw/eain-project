@@ -815,7 +815,7 @@
       "sentText": "If an account exists for that address, a reset link is on its way. It can take a few minutes.",
       "sameDevice": "The link works once, on any device.",
       "backToLogin": "Back to log in",
-      "expired": "That reset link has expired or was opened on another device. Request a new one below.",
+      "expired": "That reset link has expired or was already used. Request a new one below.",
       "errors": {
         "invalid": "Please enter a valid email address.",
         "rate-limited": "Too many requests from this device. Please try again in an hour.",
