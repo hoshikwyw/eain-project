@@ -21,10 +21,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/admin
   return (
     <div className="flex flex-col gap-6">
       <PageHeader title={t("nav.users")} subtitle={t("users.subtitle")} />
-      <AdminFlash
-        ok={typeof params.ok === "string" ? params.ok : undefined}
-        error={typeof params.error === "string" ? params.error : undefined}
-      />
+      <AdminFlash />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <form className="relative w-full max-w-sm" role="search">

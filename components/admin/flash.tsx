@@ -1,43 +1,52 @@
+"use client";
+
 import { useTranslations } from "next-intl";
-import { Notice } from "@/components/ui/notice";
+import { QueryToasts } from "@/components/ui/query-toasts";
 
-type Props = { ok?: string; error?: string };
+const OK_KEYS = [
+  "role",
+  "points",
+  "template",
+  "report",
+  "disabled",
+  "suspended",
+  "unsuspended",
+  "deleted",
+  "giftsOffline",
+] as const;
+const ERROR_KEYS = [
+  "invalid",
+  "failed",
+  "ownRole",
+  "insufficient",
+  "premiumPrice",
+  "self",
+  "confirmEmail",
+  "deleteFailed",
+] as const;
 
-/** One-line result banner for admin actions, driven by ?ok= and ?error=. */
-export function AdminFlash({ ok, error }: Props) {
+/**
+ * The result of an admin action, which its redirect carries as `?ok=` or
+ * `?error=`, shown as a toast once and then taken off the address.
+ */
+export function AdminFlash() {
   const t = useTranslations("admin.flash");
-  const okKeys = [
-    "role",
-    "points",
-    "template",
-    "report",
-    "disabled",
-    "suspended",
-    "unsuspended",
-    "deleted",
-    "giftsOffline",
-  ] as const;
-  const errorKeys = [
-    "invalid",
-    "failed",
-    "ownRole",
-    "insufficient",
-    "premiumPrice",
-    "self",
-    "confirmEmail",
-    "deleteFailed",
-  ] as const;
-  const okKey = okKeys.find((k) => k === ok);
-  const errorKey = errorKeys.find((k) => k === error);
-  if (okKey) {
-    return (
-      <Notice role="status" tone="success">
-        {t(`ok.${okKey}`)}
-      </Notice>
-    );
-  }
-  if (errorKey) {
-    return <Notice role="alert">{t(`error.${errorKey}`)}</Notice>;
-  }
-  return null;
+  return (
+    <QueryToasts
+      items={[
+        ...OK_KEYS.map((k) => ({
+          param: "ok",
+          value: k,
+          type: "success" as const,
+          title: t(`ok.${k}`),
+        })),
+        ...ERROR_KEYS.map((k) => ({
+          param: "error",
+          value: k,
+          type: "error" as const,
+          title: t(`error.${k}`),
+        })),
+      ]}
+    />
+  );
 }

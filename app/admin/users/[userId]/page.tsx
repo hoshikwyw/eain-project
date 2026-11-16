@@ -25,13 +25,9 @@ import { Notice } from "@/components/ui/notice";
 const selectClass =
   "h-11 rounded-xl border border-input bg-card px-3.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/40";
 
-export default async function AdminUserDetailPage({
-  params,
-  searchParams,
-}: PageProps<"/admin/users/[userId]">) {
+export default async function AdminUserDetailPage({ params }: PageProps<"/admin/users/[userId]">) {
   const me = await requireAdmin();
   const { userId } = await params;
-  const query = await searchParams;
   const t = await getTranslations("admin");
   const format = await getFormatter();
   const u = await getUserAdmin(userId);
@@ -56,10 +52,7 @@ export default async function AdminUserDetailPage({
           </Button>
         }
       />
-      <AdminFlash
-        ok={typeof query.ok === "string" ? query.ok : undefined}
-        error={typeof query.error === "string" ? query.error : undefined}
-      />
+      <AdminFlash />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         <div className="flex flex-col gap-6">

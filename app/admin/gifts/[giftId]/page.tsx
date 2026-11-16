@@ -14,13 +14,9 @@ import { disableGift } from "@/features/admin/actions";
 import { getGiftForModeration, requireAdmin } from "@/features/admin/queries";
 
 /** Moderation view. Admin read of another user's gift is logged by the action taken, not the view. */
-export default async function AdminGiftPage({
-  params,
-  searchParams,
-}: PageProps<"/admin/gifts/[giftId]">) {
+export default async function AdminGiftPage({ params }: PageProps<"/admin/gifts/[giftId]">) {
   await requireAdmin();
   const { giftId } = await params;
-  const query = await searchParams;
   const t = await getTranslations("admin");
   const format = await getFormatter();
   const data = await getGiftForModeration(giftId);
@@ -40,10 +36,7 @@ export default async function AdminGiftPage({
           </div>
         }
       />
-      <AdminFlash
-        ok={typeof query.ok === "string" ? query.ok : undefined}
-        error={typeof query.error === "string" ? query.error : undefined}
-      />
+      <AdminFlash />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
         <GiftView

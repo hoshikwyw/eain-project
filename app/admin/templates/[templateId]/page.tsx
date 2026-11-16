@@ -22,11 +22,9 @@ const selectClass =
 
 export default async function AdminTemplateEditPage({
   params,
-  searchParams,
 }: PageProps<"/admin/templates/[templateId]">) {
   await requireAdmin();
   const { templateId } = await params;
-  const query = await searchParams;
   const t = await getTranslations("admin");
   const [tp, categories] = await Promise.all([getTemplateAdmin(templateId), listCategoriesAdmin()]);
   if (!tp) notFound();
@@ -47,10 +45,7 @@ export default async function AdminTemplateEditPage({
           </Button>
         }
       />
-      <AdminFlash
-        ok={typeof query.ok === "string" ? query.ok : undefined}
-        error={typeof query.error === "string" ? query.error : undefined}
-      />
+      <AdminFlash />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <Card>

@@ -10,19 +10,15 @@ import { Chip } from "@/components/ui/chip";
 import { listTemplatesAdmin, requireAdmin } from "@/features/admin/queries";
 import { getTemplateStyle, isAvailableTemplate } from "@/features/gifts/templates";
 
-export default async function AdminTemplatesPage({ searchParams }: PageProps<"/admin/templates">) {
+export default async function AdminTemplatesPage() {
   await requireAdmin();
-  const params = await searchParams;
   const t = await getTranslations("admin");
   const templates = await listTemplatesAdmin();
 
   return (
     <div className="flex flex-col gap-6">
       <PageHeader title={t("nav.templates")} subtitle={t("templates.subtitle")} />
-      <AdminFlash
-        ok={typeof params.ok === "string" ? params.ok : undefined}
-        error={typeof params.error === "string" ? params.error : undefined}
-      />
+      <AdminFlash />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {templates.map((tp) => (

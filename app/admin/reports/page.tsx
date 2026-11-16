@@ -33,10 +33,7 @@ export default async function AdminReportsPage({ searchParams }: PageProps<"/adm
           </div>
         }
       />
-      <AdminFlash
-        ok={typeof params.ok === "string" ? params.ok : undefined}
-        error={typeof params.error === "string" ? params.error : undefined}
-      />
+      <AdminFlash />
 
       {reports.length === 0 ? (
         <Card>
