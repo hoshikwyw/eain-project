@@ -530,6 +530,148 @@ const scenes = {
     };
   },
   // Blue bird with a trophy, party poppers, bunting and a confetti burst.
+  // Party invitation: the pink bird in a party hat, balloons behind her, gifts and a popper, bunting above.
+  "party-invitation": async () => {
+    const b = await bird("bird-pink", 500);
+    const x = Math.round((W - b.w) / 2 - 60);
+    const y = H - b.h - 30;
+    const colors = ["#f0417f", "#ffac1c", "#1fb5c9", "#8a63f5", "#3ec27a"];
+    const props =
+      bunting(colors) +
+      balloonCluster(x + b.w * 0.45, y + b.h * 0.62, [
+        [x - 130, 250, 112, "#1fb5c9"],
+        [x - 30, 185, 120, "#ffac1c"],
+        [x + 70, 285, 100, "#8a63f5"],
+      ]) +
+      giftBox(960, H - 40, 160, "#f0417f", "#ffd24d") +
+      giftBox(1095, H - 40, 110, "#3ec27a", "#f0417f") +
+      popper(1110, 390, 110, -30, "#ffac1c");
+    const hat = partyHat(x + b.w * 0.5, y + b.h * 0.1, 92, 10, {
+      body: "#8a63f5",
+      stripe: "#ffd24d",
+      brim: "#f0417f",
+      pom: "#1fb5c9",
+    });
+    return {
+      under: svg(
+        shadow(x + b.w / 2, H - 30, b.w) +
+          props +
+          scatter("confetti", 36, colors, 201, {
+            band: [140, 560],
+            size: [16, 32],
+            opacity: [0.55, 0.95],
+            keepOut: [x + 30, y + 30, x + b.w - 30, H],
+          }),
+      ),
+      layers: [{ input: b.buf, left: x, top: y }],
+      over: svg(hat),
+    };
+  },
+  // Wedding: the couple under two gold rings, hearts drifting, a little sparkle.
+  "wedding-invitation": async () => {
+    const couple = await bird("lovebirds", 540);
+    const x = Math.round((W - couple.w) / 2);
+    const y = H - couple.h - 30;
+    const rings =
+      `<g fill="none" stroke="#e2b25a" stroke-width="14" stroke-linecap="round">` +
+      `<circle cx="${W / 2 - 46}" cy="185" r="68"/><circle cx="${W / 2 + 46}" cy="185" r="68"/></g>` +
+      `<circle cx="${W / 2 - 46}" cy="115" r="13" fill="#fff" stroke="#e2b25a" stroke-width="4"/>`;
+    return {
+      under: svg(
+        shadow(x + couple.w / 2, H - 30, couple.w) +
+          rings +
+          scatter("heart", 26, ["#f4a3b5", "#e8476c", "#fcd9a8"], 301, {
+            band: [100, 600],
+            size: [18, 44],
+            opacity: [0.45, 0.9],
+            keepOut: [x + 20, y + 20, x + couple.w - 20, H],
+          }) +
+          scatter("sparkle", 12, ["#ffd27a"], 302, {
+            band: [80, 420],
+            size: [22, 42],
+            opacity: [0.7, 1],
+          }),
+      ),
+      layers: [{ input: couple.buf, left: x, top: y }],
+      over: svg(""),
+    };
+  },
+  // Baby shower: a big bird and a small one, pastel balloons, soft dots, one gift.
+  "baby-shower": async () => {
+    const big = await bird("bird-pink", 480);
+    const small = await bird("bird-blue", 300, { flop: true });
+    const bx = Math.round(W / 2 - big.w - 10);
+    const by = H - big.h - 30;
+    const sx = Math.round(W / 2 + 30);
+    const sy = H - small.h - 30;
+    const pastel = ["#8fd6b4", "#bfe3f5", "#f4c6d2", "#fde9a0", "#ded1fa"];
+    const props =
+      balloonCluster(sx + small.w * 0.5, sy + small.h * 0.5, [
+        [sx + small.w + 70, 255, 110, "#8fd6b4"],
+        [sx + small.w + 180, 195, 118, "#bfe3f5"],
+        [sx + small.w + 130, 345, 96, "#f4c6d2"],
+      ]) + giftBox(150, H - 40, 130, "#bfe3f5", "#f4c6d2");
+    return {
+      under: svg(
+        shadow(bx + big.w / 2, H - 30, big.w) +
+          shadow(sx + small.w / 2, H - 30, small.w) +
+          props +
+          scatter("dot", 40, pastel, 401, {
+            band: [80, 560],
+            size: [10, 26],
+            opacity: [0.5, 0.9],
+          }) +
+          scatter("sparkle", 8, ["#fde9a0"], 402, {
+            band: [100, 300],
+            size: [20, 36],
+            opacity: [0.7, 1],
+          }),
+      ),
+      layers: [
+        { input: big.buf, left: bx, top: by },
+        { input: small.buf, left: sx, top: sy },
+      ],
+      over: svg(""),
+    };
+  },
+  // Graduation: the blue bird in a mortarboard, a rolled diploma, gold and navy confetti.
+  "graduation-party": async () => {
+    const b = await bird("bird-blue", 520);
+    const x = Math.round((W - b.w) / 2 + 20);
+    const y = H - b.h - 30;
+    const cx = x + b.w * 0.53;
+    const cy = y + b.h * 0.13;
+    const cap =
+      `<g><ellipse cx="${cx}" cy="${cy + 28}" rx="64" ry="36" fill="#2b2430"/>` +
+      `<polygon points="${cx - 150},${cy} ${cx},${cy - 60} ${cx + 150},${cy} ${cx},${cy + 60}" fill="#3a3142"/>` +
+      `<polygon points="${cx - 150},${cy} ${cx},${cy - 60} ${cx + 150},${cy} ${cx},${cy + 36}" fill="#4a4056"/>` +
+      `<path d="M${cx} ${cy} L${cx + 118} ${cy + 12} L${cx + 124} ${cy + 112}" stroke="#ffd27a" stroke-width="6" fill="none" stroke-linecap="round"/>` +
+      `<circle cx="${cx + 124}" cy="${cy + 120}" r="12" fill="#ffd27a"/></g>`;
+    const diploma =
+      `<g transform="translate(170 ${H - 118})"><rect x="0" y="0" width="190" height="70" rx="35" fill="#fff3e8" stroke="#e9d2bd" stroke-width="4"/>` +
+      `<rect x="70" y="-8" width="50" height="86" rx="10" fill="#e8476c"/></g>`;
+    const colors = ["#ffd27a", "#7fb2d0", "#2b2430", "#e8476c"];
+    return {
+      under: svg(
+        shadow(x + b.w / 2, H - 30, b.w) +
+          bunting(["#ffd27a", "#7fb2d0", "#e8476c", "#2b2430", "#8fd6b4"]) +
+          diploma +
+          scatter("confetti", 34, colors, 501, {
+            band: [140, 560],
+            size: [16, 32],
+            opacity: [0.55, 0.95],
+            keepOut: [x + 30, y + 30, x + b.w - 30, H],
+          }) +
+          scatter("sparkle", 10, ["#ffd27a"], 502, {
+            band: [120, 380],
+            size: [22, 40],
+            opacity: [0.7, 1],
+          }),
+      ),
+      layers: [{ input: b.buf, left: x, top: y }],
+      over: svg(cap),
+    };
+  },
   congratulations: async () => {
     const b = await bird("bird-blue", 520);
     const x = Math.round((W - b.w) / 2 + 30);

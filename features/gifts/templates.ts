@@ -103,6 +103,18 @@ const final = (text: string, signature = ""): Section => ({
   type: "final_message",
   content: { text, signature },
 });
+/** When and where. All free text; see eventContentSchema. */
+const event = (details: { date: string; time: string; place: string; note: string }): Section => ({
+  id: sid(),
+  type: "event",
+  content: details,
+});
+/** A yes-or-no question the guest must answer: the RSVP. */
+const rsvp = (prompt: string): Section => ({
+  id: sid(),
+  type: "question",
+  content: { questionId: crypto.randomUUID(), kind: "yes_no", prompt, required: true, options: [] },
+});
 const timeline = (items: { date: string; title: string; text: string }[]): Section => ({
   id: sid(),
   type: "timeline",
@@ -333,6 +345,118 @@ export const templates: Record<string, TemplateDefinition> = {
     ],
   },
 };
+
+// Invitations: every one starts with the event details and an RSVP question.
+// Their own designs come in later parts; until then they borrow close ones.
+const invitations: Record<string, TemplateDefinition> = {
+  "party-invitation": {
+    design: "party",
+    decoration: "confetti",
+    layout: "card",
+    defaultVariant: "celebrate",
+    defaultSections: (l) => [
+      cover(
+        my(l, "You're invited!", "ဖိတ်ကြားပါတယ်!"),
+        my(l, "Come celebrate with us.", "အတူတူ ပျော်ရွှင်ကြရအောင်။"),
+      ),
+      event({
+        date: my(l, "Saturday 21 December", "ဒီဇင်ဘာ ၂၁ ရက်၊ စနေနေ့"),
+        time: my(l, "7 pm until late", "ညနေ ၇ နာရီမှ"),
+        place: my(l, "Our place", "ကျွန်တော်တို့အိမ်"),
+        note: my(l, "Bring your dancing shoes.", "ကခုန်ဖို့ အဆင်သင့် ပြင်လာပါ။"),
+      }),
+      message(my(l, "It would not be the same without you.", "သင်မပါရင် ဒီပွဲ မပြည့်စုံပါဘူး။")),
+      rsvp(my(l, "Can you make it?", "လာနိုင်မလား?")),
+      final(my(l, "See you there,", "ပွဲမှာ တွေ့မယ်")),
+    ],
+  },
+  "wedding-invitation": {
+    design: "elegant",
+    decoration: "hearts",
+    layout: "scroll",
+    defaultVariant: "champagne",
+    defaultSections: (l) => [
+      cover(
+        my(l, "We're getting married", "ကျွန်တော်တို့ လက်ထပ်ပါတော့မယ်"),
+        my(l, "and we would love to have you there.", "သင့်ကို လေးလေးစားစား ဖိတ်ကြားအပ်ပါတယ်။"),
+      ),
+      event({
+        date: my(l, "Sunday 15 February", "ဖေဖော်ဝါရီ ၁၅ ရက်၊ တနင်္ဂနွေနေ့"),
+        time: my(l, "4 pm", "ညနေ ၄ နာရီ"),
+        place: my(l, "Garden Hall, Yangon", "ဂါးဒင်းခန်းမ၊ ရန်ကုန်"),
+        note: my(l, "Dress in soft colours.", "အရောင်နုနု ဝတ်ဆင်လာပါ။"),
+      }),
+      message(
+        my(
+          l,
+          "Your presence is the greatest gift we could ask for.",
+          "သင်ရှိနေခြင်းက ကျွန်တော်တို့အတွက် အကြီးမားဆုံး လက်ဆောင်ပါ။",
+        ),
+      ),
+      rsvp(my(l, "Will you join us?", "လာရောက်ချီးမြှင့်နိုင်မလား?")),
+      final(my(l, "With love,", "မေတ္တာဖြင့်")),
+    ],
+  },
+  "baby-shower": {
+    design: "botanical",
+    decoration: "sparkles",
+    layout: "card",
+    defaultVariant: "mint",
+    defaultSections: (l) => [
+      cover(
+        my(l, "A little one is on the way", "ကလေးငယ်တစ်ယောက် ရောက်လာတော့မယ်"),
+        my(l, "Join us for a baby shower.", "ကလေးကြိုဆိုပွဲကို လာရောက်ပါ။"),
+      ),
+      event({
+        date: my(l, "Sunday 2 March", "မတ် ၂ ရက်၊ တနင်္ဂနွေနေ့"),
+        time: my(l, "2 pm", "နေ့လယ် ၂ နာရီ"),
+        place: my(l, "At home", "အိမ်မှာ"),
+        note: my(l, "Tea, cake and a few games.", "လက်ဖက်ရည်၊ ကိတ်နဲ့ ဂိမ်းလေးတွေ ပါမယ်။"),
+      }),
+      message(
+        my(
+          l,
+          "Come share the joy before the big arrival.",
+          "ရောက်မလာခင် ပျော်ရွှင်မှုကို အတူ မျှဝေရအောင်။",
+        ),
+      ),
+      rsvp(my(l, "Will you come?", "လာမလား?")),
+      final(my(l, "Can't wait to see you,", "တွေ့ရဖို့ စောင့်နေမယ်")),
+    ],
+  },
+  "graduation-party": {
+    design: "bold",
+    decoration: "confetti",
+    layout: "card",
+    defaultVariant: "ivory",
+    defaultSections: (l) => [
+      cover(
+        my(l, "Graduation party!", "ဘွဲ့ရပွဲ!"),
+        my(
+          l,
+          "The hard part is done. Come celebrate.",
+          "ခက်ခဲတာတွေ ပြီးသွားပြီ။ လာပြီး အတူ ဂုဏ်ပြုကြရအောင်။",
+        ),
+      ),
+      event({
+        date: my(l, "Friday 9 January", "ဇန်နဝါရီ ၉ ရက်၊ သောကြာနေ့"),
+        time: my(l, "6 pm", "ညနေ ၆ နာရီ"),
+        place: my(l, "The rooftop", "အမိုးပေါ်"),
+        note: my(l, "Caps optional.", "ဦးထုပ် ပါပါ မပါပါ ရပါတယ်။"),
+      }),
+      message(
+        my(
+          l,
+          "Cheer with us for everything that got us here.",
+          "ဒီအထိ ရောက်အောင် ပို့ဆောင်ပေးခဲ့သမျှအတွက် အတူ ဂုဏ်ပြုကြရအောင်။",
+        ),
+      ),
+      rsvp(my(l, "Are you coming?", "လာမလား?")),
+      final(my(l, "Proudly,", "ဂုဏ်ယူစွာဖြင့်")),
+    ],
+  },
+};
+Object.assign(templates, invitations);
 
 export const fallbackStyle: TemplateStyle = {
   decoration: "petals",

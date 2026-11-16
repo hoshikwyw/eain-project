@@ -11,7 +11,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
-    "test": "node --test --test-concurrency=1 --env-file-if-exists=.env --env-file-if-exists=.env.local \"supabase/tests/*.test.mts\"",
+    "test": "node --import ./supabase/tests/ts-resolve.mjs --test --test-concurrency=1 --env-file-if-exists=.env --env-file-if-exists=.env.local \"supabase/tests/*.test.mts\"",
     "test:rls": "node --test --env-file-if-exists=.env --env-file-if-exists=.env.local supabase/tests/rls.test.mts",
     "test:core": "node --test --env-file-if-exists=.env --env-file-if-exists=.env.local supabase/tests/core-loop.test.mts",
     "test:media": "node --test --env-file-if-exists=.env --env-file-if-exists=.env.local supabase/tests/media.test.mts",
@@ -27,6 +27,7 @@
     "test:reachability": "node --test --env-file-if-exists=.env --env-file-if-exists=.env.local supabase/tests/reachability.test.mts",
     "test:stale-page": "node --test supabase/tests/stale-page.test.mts",
     "test:event": "node --test --env-file-if-exists=.env --env-file-if-exists=.env.local supabase/tests/event-section.test.mts",
+    "test:invitations": "node --import ./supabase/tests/ts-resolve.mjs --test supabase/tests/invitations.test.mts",
     "check:admin-pages": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/check-admin-pages.mjs",
     "cleanup:test-users": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/cleanup-test-users.mjs"
   },
