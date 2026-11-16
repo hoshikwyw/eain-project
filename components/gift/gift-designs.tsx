@@ -699,89 +699,246 @@ function BlankDesign(ctx: Ctx) {
   );
 }
 
+/** A fluffy pastel cloud from the Night Garden scene: white puffs over a pink underside. */
+function Cloud({ className }: { className?: string }) {
+  const puffs: [number, number, number][] = [
+    [38, 52, 23],
+    [70, 38, 29],
+    [105, 42, 25],
+    [132, 54, 19],
+  ];
+  const layer = (dy: number, fill: string) => (
+    <g fill={fill}>
+      {puffs.map(([cx, cy, r]) => (
+        <circle key={cx} cx={cx} cy={cy + dy} r={r} />
+      ))}
+      <rect x="30" y={50 + dy} width="110" height="24" rx="12" />
+    </g>
+  );
+  return (
+    <svg viewBox="0 0 170 80" aria-hidden="true" className={className}>
+      {layer(5, "#f2a9cc")}
+      {layer(0, "#fff2f8")}
+    </svg>
+  );
+}
+
+/** The scene's sleepy, blushing moon with its halo. */
+function Moon({ className }: { className?: string }) {
+  return (
+    <span aria-hidden="true" className={cn("block aspect-square", className)}>
+      <span className="absolute -inset-[90%] rounded-full [background:radial-gradient(circle,rgba(255,214,230,0.45)_0%,transparent_65%)]" />
+      <span className="absolute inset-0 rounded-full shadow-[inset_-6px_-4px_12px_rgba(214,140,160,0.35),0_0_24px_6px_rgba(255,214,230,0.45)] [background:radial-gradient(circle_at_35%_35%,#fffdf6_0%,#fff0d9_55%,#f6d2c6_100%)]" />
+      <svg
+        viewBox="-50 -50 100 100"
+        className="absolute inset-0 size-full overflow-visible"
+        fill="none"
+        stroke="#9a6a5a"
+        strokeWidth="3"
+        strokeLinecap="round"
+      >
+        <ellipse cx="-25" cy="10" rx="9" ry="5.5" fill="#ff9fbf" stroke="none" opacity="0.6" />
+        <ellipse cx="25" cy="10" rx="9" ry="5.5" fill="#ff9fbf" stroke="none" opacity="0.6" />
+        <path d="M-23 -3 Q -16 4 -9 -3" />
+        <path d="M9 -3 Q 16 4 23 -3" />
+        <path d="M-5 13 Q 0 17 5 13" />
+      </svg>
+    </span>
+  );
+}
+
+/** One of the scene's flowers: five petals round a golden centre with a sleeping face. */
+function GardenFlower({
+  x,
+  stem,
+  r,
+  petal,
+  edge,
+}: {
+  x: number;
+  stem: number;
+  r: number;
+  petal: string;
+  edge: string;
+}) {
+  return (
+    <g transform={`translate(${x} ${130 - stem})`}>
+      <path d={`M0 0 L0 ${stem}`} stroke="#3d5a2a" strokeWidth="2.5" strokeLinecap="round" />
+      <ellipse
+        cx={-r * 0.9}
+        cy={stem * 0.55}
+        rx={r * 0.7}
+        ry={r * 0.26}
+        fill="#2f6b3a"
+        transform={`rotate(-24 ${-r * 0.9} ${stem * 0.55})`}
+      />
+      <ellipse
+        cx={r * 0.9}
+        cy={stem * 0.4}
+        rx={r * 0.7}
+        ry={r * 0.26}
+        fill="#2f6b3a"
+        transform={`rotate(24 ${r * 0.9} ${stem * 0.4})`}
+      />
+      {[0, 72, 144, 216, 288].map((angle) => (
+        <ellipse
+          key={angle}
+          cx="0"
+          cy={-r * 0.6}
+          rx={r * 0.42}
+          ry={r * 0.68}
+          fill={petal}
+          stroke={edge}
+          strokeWidth="1"
+          transform={`rotate(${angle})`}
+        />
+      ))}
+      <circle r={r * 0.46} fill="#ffd75a" stroke="#e9a21f" strokeWidth="0.8" />
+      <g fill="none" stroke="#7a4a3a" strokeWidth="1" strokeLinecap="round">
+        <ellipse
+          cx={-r * 0.22}
+          cy={r * 0.1}
+          rx={r * 0.09}
+          ry={r * 0.06}
+          fill="#ff8fb1"
+          stroke="none"
+          opacity="0.85"
+        />
+        <ellipse
+          cx={r * 0.22}
+          cy={r * 0.1}
+          rx={r * 0.09}
+          ry={r * 0.06}
+          fill="#ff8fb1"
+          stroke="none"
+          opacity="0.85"
+        />
+        <path
+          d={`M${-r * 0.26} ${-r * 0.06} Q ${-r * 0.18} ${r * 0.03} ${-r * 0.1} ${-r * 0.06}`}
+        />
+        <path d={`M${r * 0.1} ${-r * 0.06} Q ${r * 0.18} ${r * 0.03} ${r * 0.26} ${-r * 0.06}`} />
+        <path d={`M${-r * 0.05} ${r * 0.17} Q 0 ${r * 0.23} ${r * 0.05} ${r * 0.17}`} />
+      </g>
+    </g>
+  );
+}
+
 /**
- * Summary card of the Night Garden animation: the same twilight sky, the name
- * in script, the message pages one under the other, and a row of flowers in
- * the colour the creator picked. The receiver sees the animation itself
- * (public/scenes/night-garden); this is its still picture.
+ * Summary card of the Night Garden animation, drawn with the scene's own
+ * parts: its twilight sky and horizon glow, the sleepy moon, pastel clouds,
+ * fireflies, the name in glowing script with a heart, the message, and the
+ * three hills with blooming flowers in the colour the creator picked. The
+ * receiver sees the animation itself (public/scenes/night-garden); this is
+ * its still picture. Premium, so no printer's mark.
  */
 function GardenDesign(ctx: Ctx) {
   const { compact } = ctx;
   const { petal, edge } = flowerSwatch[ctx.scene?.flower ?? "white"];
   // [x, height of the stem, size of the bloom]
   const flowers: [number, number, number][] = [
-    [48, 46, 15],
-    [118, 70, 19],
-    [200, 88, 22],
-    [282, 66, 19],
-    [352, 44, 15],
+    [46, 48, 17],
+    [118, 74, 22],
+    [200, 92, 26],
+    [284, 70, 22],
+    [354, 46, 17],
+  ];
+  const sprouts = [22, 78, 150, 240, 316, 378];
+  const fireflies: [string, string][] = [
+    ["9%", "52%"],
+    ["24%", "61%"],
+    ["55%", "56%"],
+    ["78%", "64%"],
+    ["90%", "47%"],
   ];
   return (
-    <article className="relative overflow-hidden rounded-3xl [background:linear-gradient(to_bottom,#2f2560_0%,#4b3b8a_30%,#7d63b8_56%,#e59ac4_82%,#ffc9b5_100%)]">
-      <Decorations kind="stars" />
+    <article className="relative overflow-hidden rounded-3xl [background:linear-gradient(to_bottom,#2f2560_0%,#4b3b8a_28%,#7d63b8_52%,#e59ac4_74%,#ffc9b5_92%)]">
       <span
         aria-hidden="true"
-        className="absolute top-5 left-6 size-11 rounded-full bg-[#fff1d6] shadow-[0_0_30px_rgba(255,214,230,0.75)]"
+        className="pointer-events-none absolute inset-0 [background:radial-gradient(120%_40%_at_50%_85%,rgba(255,170,200,0.45),transparent_70%),radial-gradient(70%_28%_at_18%_80%,rgba(255,214,150,0.35),transparent_70%)]"
       />
+      <Decorations kind="stars" />
+      <Moon className={cn("absolute left-7", compact ? "top-5 w-12" : "top-6 w-16")} />
+      <Cloud className="absolute top-5 right-6 w-24 drop-shadow-[0_0_10px_rgba(255,200,225,0.45)]" />
+      <Cloud className="absolute top-[58%] -left-8 w-40 opacity-90 drop-shadow-[0_0_10px_rgba(255,200,225,0.45)]" />
+      <Cloud className="absolute top-[63%] -right-4 w-28 opacity-85 drop-shadow-[0_0_10px_rgba(255,200,225,0.45)]" />
+      {fireflies.map(([left, top]) => (
+        <span
+          key={left}
+          aria-hidden="true"
+          style={{ left, top }}
+          className="absolute size-1.5 rounded-full bg-[#ffe27a] shadow-[0_0_8px_3px_rgba(255,226,122,0.55)]"
+        />
+      ))}
       <div
         className={cn(
           "relative flex flex-col items-center text-center",
-          compact ? "px-6 pt-14" : "px-7 pt-16",
+          compact ? "px-6 pt-20" : "px-7 pt-24",
         )}
       >
         <Sections
           ctx={ctx}
           className={cn("w-full items-center", compact ? "gap-3" : "gap-4")}
-          itemClassName="w-full [&_h1]:font-hand [&_h1]:text-6xl [&_h1]:font-bold [&_h1]:leading-none [&_h1]:[text-shadow:0_0_22px_rgba(255,143,177,0.75)] [&_h2]:font-hand [&_h2]:text-4xl [&_footer]:items-center [&_footer]:border-t-0"
+          itemClassName={cn(
+            "w-full text-[#fff6ec]",
+            "[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:leading-none [&_h1]:font-bold [&_h1]:[text-shadow:0_0_22px_rgba(255,143,177,0.75)] [&_h1]:after:ml-2 [&_h1]:after:align-middle [&_h1]:after:text-4xl [&_h1]:after:font-normal [&_h1]:after:text-[#ff8fb1] [&_h1]:after:content-['♡']",
+            "[&_h2]:font-hand [&_h2]:text-4xl [&_h2]:text-[#fff6ec]/90 [&_p.msg]:text-[#fff6ec]/95 [&_p.msg]:[text-shadow:0_1px_12px_rgba(47,37,96,0.7)]",
+            "[&_footer]:items-center [&_footer]:border-t-0 [&_.sig]:font-hand [&_.sig]:text-3xl",
+          )}
         />
       </div>
-      <svg aria-hidden="true" viewBox="0 0 400 150" className="relative mt-4 block w-full">
+      <svg aria-hidden="true" viewBox="0 0 400 160" className="relative mt-4 block w-full">
+        <defs>
+          <linearGradient id="ng-far" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#f3a6c8" />
+            <stop offset="100%" stopColor="#c98bc0" />
+          </linearGradient>
+          <linearGradient id="ng-back" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#a985cf" />
+            <stop offset="100%" stopColor="#7c62ad" />
+          </linearGradient>
+          <linearGradient id="ng-front" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#5d4a96" />
+            <stop offset="100%" stopColor="#3a2d6b" />
+          </linearGradient>
+        </defs>
         <path
-          d="M0 62 C 50 40, 110 44, 160 56 S 290 28, 400 52 L 400 150 L 0 150 Z"
-          fill="#c98bc0"
+          d="M0 52 C 50 30, 110 34, 160 46 S 290 18, 400 42 L 400 160 L 0 160 Z"
+          fill="url(#ng-far)"
           opacity="0.85"
         />
         <path
-          d="M0 84 C 60 56, 120 62, 180 78 S 300 48, 400 72 L 400 150 L 0 150 Z"
-          fill="#8f72bd"
+          d="M0 70 C 60 40, 120 45, 180 62 S 300 30, 400 55 L 400 160 L 0 160 Z"
+          fill="url(#ng-back)"
         />
         <path
-          d="M0 116 C 70 98, 140 108, 210 112 S 330 96, 400 110 L 400 150 L 0 150 Z"
-          fill="#4a3a80"
+          d="M0 105 C 70 85, 140 95, 210 100 S 330 82, 400 98 L 400 160 L 0 160 Z"
+          fill="url(#ng-front)"
         />
         {flowers.map(([x, stem, r]) => (
-          <g key={x} transform={`translate(${x} ${120 - stem})`}>
-            <path d={`M0 0 L0 ${stem}`} stroke="#3d5a2a" strokeWidth="2.5" strokeLinecap="round" />
-            <ellipse
-              cx={-r * 0.9}
-              cy={stem * 0.55}
-              rx={r * 0.7}
-              ry={r * 0.26}
-              fill="#2f6b3a"
-              transform={`rotate(-24 ${-r * 0.9} ${stem * 0.55})`}
+          <GardenFlower key={x} x={x} stem={stem} r={r} petal={petal} edge={edge} />
+        ))}
+        {/* Grass tufts with small blooms along the front hill. */}
+        {sprouts.map((x, i) => (
+          <g key={x} transform={`translate(${x} 142)`}>
+            <path
+              d="M-6 0 Q -5 -8 -2 -12 M0 0 Q 0 -10 1 -15 M6 0 Q 5 -8 3 -11"
+              fill="none"
+              stroke="#4f8a3f"
+              strokeWidth="1.5"
+              strokeLinecap="round"
             />
-            <ellipse
-              cx={r * 0.9}
-              cy={stem * 0.4}
-              rx={r * 0.7}
-              ry={r * 0.26}
-              fill="#2f6b3a"
-              transform={`rotate(24 ${r * 0.9} ${stem * 0.4})`}
-            />
-            {[0, 90, 180, 270].map((angle) => (
-              <ellipse
-                key={angle}
-                cx="0"
-                cy={-r * 0.62}
-                rx={r * 0.5}
-                ry={r * 0.66}
-                fill={petal}
-                stroke={edge}
-                strokeWidth="1"
-                transform={`rotate(${angle})`}
-              />
-            ))}
-            <circle r={r * 0.32} fill="#ffd75a" stroke="#e9a21f" strokeWidth="0.8" />
+            <g transform="translate(1 -16)">
+              {[0, 90, 180, 270].map((a) => (
+                <circle
+                  key={a}
+                  cx={Math.cos((a * Math.PI) / 180) * 2.8}
+                  cy={Math.sin((a * Math.PI) / 180) * 2.8}
+                  r="2"
+                  fill={i % 2 ? petal : "#fffdf7"}
+                />
+              ))}
+              <circle r="1.5" fill="#ffd75a" />
+            </g>
           </g>
         ))}
       </svg>
