@@ -19,7 +19,8 @@ export type SectionType =
   | "question"
   | "choice"
   | "reaction"
-  | "final_message";
+  | "final_message"
+  | "event";
 export type GiftEventType =
   | "created"
   | "published"

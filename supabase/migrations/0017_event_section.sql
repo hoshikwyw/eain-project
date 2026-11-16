@@ -1,0 +1,11 @@
+-- 0017 Event details section.
+--
+-- Invitations need a place to say when and where. The "event" section holds
+-- a date, a time, a place and a note (dress code, RSVP by), all free text so
+-- Burmese dates and informal times read naturally. Its shape is
+-- eventContentSchema in features/gifts/schemas.ts; the editor and the gift
+-- page know how to show it.
+--
+-- Run this before deploying code that uses the section: a gift saved with an
+-- event section is rejected by the database until the value exists.
+alter type public.section_type add value if not exists 'event';

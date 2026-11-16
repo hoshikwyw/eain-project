@@ -51,6 +51,7 @@ const SECTION_TYPES: EditableSectionType[] = [
   "image",
   "photo_grid",
   "timeline",
+  "event",
   "quote",
   "question",
   "final_message",

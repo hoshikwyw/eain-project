@@ -185,6 +185,19 @@ export const timelineContentSchema = z.object({
   styles: stylesFor(["date", "title", "text"]),
 });
 
+/**
+ * When and where: an invitation's details. Free text throughout, so
+ * "Saturday 7 pm" and a Burmese date both read naturally. Only the date is
+ * required; the rest shows when filled in.
+ */
+export const eventContentSchema = z.object({
+  date: z.string().trim().min(1).max(60),
+  time: shortText(40).default(""),
+  place: shortText(120).default(""),
+  note: shortText(160).default(""),
+  styles: stylesFor(["date", "time", "place", "note"]),
+});
+
 export const quoteContentSchema = z.object({
   text: z.string().trim().min(1).max(300),
   attribution: shortText(80).default(""),
@@ -233,6 +246,7 @@ export const sectionSchema = z.discriminatedUnion("type", [
     content: photoGridContentSchema,
   }),
   z.object({ id: z.string().max(40), type: z.literal("timeline"), content: timelineContentSchema }),
+  z.object({ id: z.string().max(40), type: z.literal("event"), content: eventContentSchema }),
   z.object({ id: z.string().max(40), type: z.literal("quote"), content: quoteContentSchema }),
   z.object({
     id: z.string().max(40),

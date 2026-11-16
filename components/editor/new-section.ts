@@ -29,6 +29,8 @@ export function emptySection(type: EditableSectionType): Section {
       return { id, type, content: { mediaIds: [], caption: "" } };
     case "timeline":
       return { id, type, content: { items: [{ date: "", title: "", text: "" }] } };
+    case "event":
+      return { id, type, content: { date: "", time: "", place: "", note: "" } };
     case "quote":
       return { id, type, content: { text: "", attribution: "" } };
     case "final_message":

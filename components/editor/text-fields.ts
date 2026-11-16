@@ -11,7 +11,11 @@ type FieldLabel =
   | "quote"
   | "attribution"
   | "closingLine"
-  | "signature";
+  | "signature"
+  | "eventDate"
+  | "eventTime"
+  | "eventPlace"
+  | "eventNote";
 
 /**
  * Texts that can be edited on the gift itself, keyed by section type and
@@ -28,6 +32,10 @@ export const TEXT_FIELDS: Record<string, { max: number; multiline?: boolean; lab
     "timeline.date": { max: 40, label: "date" },
     "timeline.title": { max: 80, label: "momentTitle" },
     "timeline.text": { max: 300, label: "momentText" },
+    "event.date": { max: 60, label: "eventDate" },
+    "event.time": { max: 40, label: "eventTime" },
+    "event.place": { max: 120, label: "eventPlace" },
+    "event.note": { max: 160, label: "eventNote" },
     "quote.text": { max: 300, label: "quote" },
     "quote.attribution": { max: 80, label: "attribution" },
     "final_message.text": { max: 300, label: "closingLine" },
@@ -99,6 +107,8 @@ export function sectionSummary(section: Section): string {
         .map((i) => i.title)
         .filter(Boolean)
         .join(", ");
+    case "event":
+      return [section.content.date, section.content.place].filter(Boolean).join(" · ");
     case "question":
       return section.content.prompt;
     case "final_message":

@@ -1,4 +1,4 @@
-import { ImagePlus, MessageCircleQuestion } from "lucide-react";
+import { CalendarDays, Clock, ImagePlus, Info, MapPin, MessageCircleQuestion } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 import type { MediaItem, Section, TextStyle } from "@/features/gifts/schemas";
 import { cn } from "@/lib/utils";
@@ -390,6 +390,34 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
             </li>
           ))}
         </ol>
+      );
+    }
+    case "event": {
+      const st = section.content.styles;
+      const rows = [
+        ["date", CalendarDays, section.content.date, "text-lg font-semibold"],
+        ["time", Clock, section.content.time, ""],
+        ["place", MapPin, section.content.place, ""],
+        ["note", Info, section.content.note, "text-sm text-[color:var(--t-muted)]"],
+      ] as const;
+      return (
+        <ul className="event flex flex-col gap-2.5 rounded-2xl border border-[color:var(--t-accent-soft)] px-5 py-4 text-left">
+          {rows.map(([field, Icon, value, look]) =>
+            value || editing ? (
+              <li key={field} className="flex items-start gap-3">
+                <Icon
+                  aria-hidden="true"
+                  className="mt-1 size-4 shrink-0 text-[color:var(--t-accent)]"
+                />
+                <p style={alignStyle(st?.[field])} className={cn("min-w-0 flex-1", look)}>
+                  <Styled style={st?.[field]} text={value} wrap={editing}>
+                    {txt(ctx, section, field, value)}
+                  </Styled>
+                </p>
+              </li>
+            ) : null,
+          )}
+        </ul>
       );
     }
     case "quote": {

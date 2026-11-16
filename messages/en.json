@@ -264,7 +264,8 @@
       "timeline": "Timeline",
       "quote": "Quote",
       "question": "Question",
-      "final_message": "Closing"
+      "final_message": "Closing",
+      "event": "Event details"
     },
     "addSection": "Add a section",
     "cancel": "Cancel",
@@ -283,6 +284,10 @@
       "momentText": "A few words about it",
       "addMoment": "Add a moment",
       "removeMoment": "Remove",
+      "eventDate": "Date",
+      "eventTime": "Time",
+      "eventPlace": "Place",
+      "eventNote": "Note (dress code, RSVP by…)",
       "quote": "Quote",
       "attribution": "Who said it",
       "closingLine": "Closing line",

@@ -161,6 +161,29 @@ export function SectionFields({ section, onChange, giftId, guest, media, onMedia
           </Field>
         </>
       );
+    case "event": {
+      const content = section.content;
+      const field = (key: "date" | "time" | "place" | "note", label: string, max: number) => (
+        <Input
+          aria-label={label}
+          placeholder={label}
+          value={content[key]}
+          maxLength={max}
+          required={key === "date"}
+          onChange={(e) => onChange({ ...section, content: { ...content, [key]: e.target.value } })}
+        />
+      );
+      return (
+        <div className="flex flex-col gap-2">
+          <div className="grid gap-2 sm:grid-cols-2">
+            {field("date", t("eventDate"), 60)}
+            {field("time", t("eventTime"), 40)}
+          </div>
+          {field("place", t("eventPlace"), 120)}
+          {field("note", t("eventNote"), 160)}
+        </div>
+      );
+    }
     case "timeline": {
       const items = section.content.items;
       const setItems = (next: typeof items) =>
