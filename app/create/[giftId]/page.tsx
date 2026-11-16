@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { QueryToasts } from "@/components/ui/query-toasts";
 import { GiftEditor } from "@/components/editor/gift-editor";
 import { getEditorGift } from "@/features/gifts/queries";
 import { getCurrentProfile } from "@/features/profile/queries";
@@ -17,9 +19,17 @@ export default async function EditGiftPage({
 
   const [data, profile] = await Promise.all([getEditorGift(giftId), getCurrentProfile()]);
   if (!data) notFound();
+  const t = await getTranslations("editor.toasts");
 
   return (
     <main className="flex flex-1 flex-col">
+      <QueryToasts
+        items={[
+          { param: "unlocked", type: "success", title: t("unlocked") },
+          { param: "duplicated", type: "info", title: t("duplicated") },
+          { param: "restored", type: "success", title: t("restored") },
+        ]}
+      />
       <GiftEditor
         giftId={data.gift.id}
         status={data.gift.status}

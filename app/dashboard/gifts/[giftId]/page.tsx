@@ -99,6 +99,7 @@ export default async function GiftDetailPage({ params }: PageProps<"/dashboard/g
         items={[
           { param: "published", type: "success", title: t("justPublished") },
           { param: "regenerated", type: "info", title: t("linkRegenerated") },
+          { param: "unpublished", type: "info", title: t("unpublishedToast") },
           { param: "error", value: "duplicate", type: "error", title: t("duplicateFailed") },
         ]}
       />

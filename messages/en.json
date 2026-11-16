@@ -348,7 +348,10 @@
     "toasts": {
       "retry": "Try again",
       "sectionRemoved": "Section removed",
-      "stickerRemoved": "Sticker removed"
+      "stickerRemoved": "Sticker removed",
+      "unlocked": "Template unlocked. It is yours to use from now on.",
+      "duplicated": "Copy created. You are editing the copy.",
+      "restored": "Your gift is now in your account."
     },
     "stickers": "Stickers",
     "stickersHint": "Pick a sticker to put it on your gift. Then drag it into place, pull a corner to resize it, or turn the round handle.",
@@ -872,7 +875,8 @@
     "leftoverDraft": {
       "text": "You made a gift before signing up, and it is still on this device.",
       "save": "Save it to my account",
-      "discard": "Discard"
+      "discard": "Discard",
+      "discarded": "Draft discarded."
     },
     "welcome": "Welcome back, {name}!",
     "passwordUpdated": "Your password was changed.",
@@ -916,6 +920,7 @@
       "limitReached": "You have reached the limit of 5 gifts. Delete one to make room.",
       "deleted": "The gift was deleted. Its link no longer works.",
       "deleteFailed": "Could not delete the gift. Please try again.",
+      "unpublishedToast": "Gift taken offline. Its link stops working until you publish again.",
       "edit": "Edit",
       "share": "Share",
       "shareDescription": "Send the link or QR code to the person this is for.",

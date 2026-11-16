@@ -1,13 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { ThemeToggle } from "@/components/settings/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateProfile, type ProfileFormState } from "@/features/profile/actions";
 import type { Profile } from "@/types/database";
+import { toast } from "@/lib/toast";
 import { SettingsGroup, settingsRow } from "./settings-group";
 
 const LANGUAGES = [
@@ -44,6 +45,11 @@ export function ProfileForm({ profile }: { profile: Profile }) {
     updateProfile,
     {},
   );
+  // Each save answers with a fresh state object, so this runs once per save.
+  useEffect(() => {
+    if (state.status === "saved") toast.success(t("saved"), { duration: 2500 });
+    else if (state.status === "error") toast.error(t("error"));
+  }, [state, t]);
 
   return (
     <form action={formAction} className="flex flex-col gap-6">
@@ -107,7 +113,6 @@ export function ProfileForm({ profile }: { profile: Profile }) {
           {t("save")}
         </Button>
         <span role="status" className="text-sm">
-          {state.status === "saved" && <span className="text-success">{t("saved")}</span>}
           {state.status === "invalid" && <span className="text-destructive">{t("invalid")}</span>}
           {state.status === "error" && <span className="text-destructive">{t("error")}</span>}
         </span>

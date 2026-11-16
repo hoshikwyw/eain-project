@@ -17,7 +17,7 @@ import { loadTemplateCards } from "@/features/gifts/template-cards";
 import { isAvailableTemplate } from "@/features/gifts/templates";
 import { getCurrentProfile, getDashboardStats } from "@/features/profile/queries";
 import { createClient } from "@/lib/supabase/server";
-import { Notice } from "@/components/ui/notice";
+import { QueryToasts } from "@/components/ui/query-toasts";
 import { CapsLabel } from "@/components/ui/caps-label";
 
 /** How many of each thing the home screen shows before "see all". */
@@ -62,8 +62,7 @@ function SectionHeading({
  * has happened lately. Numbers are a small line under the greeting, not the
  * headline: this is a place to make gifts, not to read a report.
  */
-export default async function HomePage({ searchParams }: PageProps<"/dashboard">) {
-  const notice = (await searchParams).notice;
+export default async function HomePage() {
   const t = await getTranslations("dashboard");
   const tCreate = await getTranslations("create");
   const format = await getFormatter();
@@ -86,11 +85,16 @@ export default async function HomePage({ searchParams }: PageProps<"/dashboard">
 
   return (
     <div className="flex flex-col gap-10 sm:gap-12">
-      {notice === "passwordUpdated" && (
-        <Notice role="status" tone="success">
-          {t("passwordUpdated")}
-        </Notice>
-      )}
+      <QueryToasts
+        items={[
+          {
+            param: "notice",
+            value: "passwordUpdated",
+            type: "success",
+            title: t("passwordUpdated"),
+          },
+        ]}
+      />
       <LeftoverDraft />
 
       {/* Greeting */}

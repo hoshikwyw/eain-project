@@ -4,7 +4,7 @@ import { createGiftFromTemplate } from "@/features/gifts/actions";
 import { loadTemplateCards } from "@/features/gifts/template-cards";
 import { isAvailableTemplate } from "@/features/gifts/templates";
 import { getCurrentProfile } from "@/features/profile/queries";
-import { Notice } from "@/components/ui/notice";
+import { QueryToasts } from "@/components/ui/query-toasts";
 import { PageTitle } from "@/components/ui/page-title";
 import { PointsPill } from "@/components/dashboard/points-pill";
 
@@ -19,7 +19,7 @@ export default async function CreatePage({ searchParams }: PageProps<"/create">)
   // Deep link from the public library: start the gift right away. A premium
   // template that is not unlocked comes back here with error=premium.
   if (requested && isAvailableTemplate(requested) && !error) {
-    await createGiftFromTemplate(requested);
+    await createGiftFromTemplate(requested, params.unlocked === "1");
   }
 
   const t = await getTranslations("create");
@@ -45,7 +45,14 @@ export default async function CreatePage({ searchParams }: PageProps<"/create">)
         />
       </div>
 
-      {error && <Notice role="alert">{t(`errors.${error}`)}</Notice>}
+      <QueryToasts
+        items={ERRORS.map((e) => ({
+          param: "error",
+          value: e,
+          type: "error" as const,
+          title: t(`errors.${e}`),
+        }))}
+      />
 
       <TemplateGrid
         templates={templates}

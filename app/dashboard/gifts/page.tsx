@@ -10,7 +10,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { deleteGift } from "@/features/gifts/actions";
 import { listMyGiftCards } from "@/features/gifts/queries";
 import { getCurrentProfile } from "@/features/profile/queries";
-import { Notice } from "@/components/ui/notice";
+import { QueryToasts } from "@/components/ui/query-toasts";
 import { PageTitle } from "@/components/ui/page-title";
 
 /** The free limit, enforced by the database. Shown here so the count makes sense. */
@@ -21,8 +21,8 @@ const GIFT_LIMIT = 5;
  * tile opens the gift and carries its own edit and delete buttons.
  */
 export default async function GiftsPage({ searchParams }: PageProps<"/dashboard/gifts">) {
-  const t = await getTranslations("dashboard");
   const params = await searchParams;
+  const t = await getTranslations("dashboard");
   const [cards, profile] = await Promise.all([listMyGiftCards(), getCurrentProfile()]);
   const full = cards.length >= GIFT_LIMIT;
 
@@ -87,9 +87,13 @@ export default async function GiftsPage({ searchParams }: PageProps<"/dashboard/
         </p>
       </div>
 
-      {params.error === "limit" && <Notice role="alert">{t("gifts.limitReached")}</Notice>}
-      {params.error === "delete" && <Notice role="alert">{t("gifts.deleteFailed")}</Notice>}
-      {params.deleted === "1" && <Notice role="status">{t("gifts.deleted")}</Notice>}
+      <QueryToasts
+        items={[
+          { param: "error", value: "limit", type: "error", title: t("gifts.limitReached") },
+          { param: "error", value: "delete", type: "error", title: t("gifts.deleteFailed") },
+          { param: "deleted", type: "info", title: t("gifts.deleted") },
+        ]}
+      />
 
       {cards.length === 0 ? (
         <EmptyState bird="pair" title={t("home.emptyTitle")} text={t("recentGiftsEmpty")}>

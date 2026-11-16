@@ -1,9 +1,7 @@
-import { CheckCheck } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { NotificationItem } from "@/components/dashboard/notification-item";
 import { EmptyState } from "@/components/ui/empty-state";
-import { SubmitButton } from "@/components/ui/submit-button";
-import { markAllNotificationsRead } from "@/features/notifications/actions";
+import { MarkAllRead } from "@/components/dashboard/mark-all-read";
 import { createClient } from "@/lib/supabase/server";
 import type { Notification } from "@/types/database";
 import { PageTitle } from "@/components/ui/page-title";
@@ -60,12 +58,7 @@ export default async function NotificationsPage() {
           )}
         </div>
         {unread.length > 0 && (
-          <form action={markAllNotificationsRead}>
-            <SubmitButton variant="secondary" size="sm">
-              <CheckCheck />
-              {t("notifications.markAllRead")}
-            </SubmitButton>
-          </form>
+          <MarkAllRead label={t("notifications.markAllRead")} done={t("notifications.allRead")} />
         )}
       </div>
 

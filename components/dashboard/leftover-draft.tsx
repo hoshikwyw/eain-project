@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState, useSyncExternalStore } from "react";
 import { clearGuestDraft, readGuestDraft } from "@/components/editor/use-guest-draft";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/lib/toast";
 
 const neverChanges = () => () => {};
 
@@ -41,6 +42,7 @@ export function LeftoverDraft() {
           onClick={() => {
             clearGuestDraft();
             setDismissed(true);
+            toast.info(t("discarded"), { duration: 2500 });
           }}
         >
           {t("discard")}

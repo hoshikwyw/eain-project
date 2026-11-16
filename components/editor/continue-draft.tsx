@@ -44,7 +44,7 @@ export function ContinueDraft({ template }: Props) {
       .then((result) => {
         if ("giftId" in result) {
           clearGuestDraft();
-          router.replace(`/create/${result.giftId}`);
+          router.replace(`/create/${result.giftId}?restored=1`);
         } else if (result.error === "signin") {
           router.replace(`/auth/login?next=${encodeURIComponent("/create/continue")}`);
         } else if (result.error === "premium") {

@@ -17,8 +17,8 @@ import {
 } from "./sections";
 import { defaultTheme, isAvailableTemplate, templates } from "./templates";
 
-/** Creates a draft from a template and opens the editor. */
-export async function createGiftFromTemplate(slug: string): Promise<never> {
+/** Creates a draft from a template and opens the editor. `unlocked` says the template was just paid for, so the editor can say so. */
+export async function createGiftFromTemplate(slug: string, unlocked = false): Promise<never> {
   if (!isAvailableTemplate(slug)) redirect("/create?error=template");
 
   const { supabase, user } = await createClientWithUser();
@@ -69,7 +69,7 @@ export async function createGiftFromTemplate(slug: string): Promise<never> {
   if (sectionsError) redirect("/create?error=unknown");
 
   await track("gift_created", user.id, { template: slug, locale });
-  redirect(`/create/${gift.id}`);
+  redirect(unlocked ? `/create/${gift.id}?unlocked=1` : `/create/${gift.id}`);
 }
 
 export type DraftError = "signin" | "template" | "premium" | "limit" | "invalid" | "unknown";
@@ -419,7 +419,7 @@ export async function duplicateGift(giftId: string): Promise<void> {
     await supabase.from("gift_recipients").insert({ gift_id: copy.id, name: recipient.name });
 
   revalidatePath("/dashboard", "layout");
-  redirect(`/create/${copy.id}`);
+  redirect(`/create/${copy.id}?duplicated=1`);
 }
 
 async function rpcOnGift(
@@ -462,7 +462,7 @@ export async function markGiftShared(giftId: string): Promise<void> {
 
 export async function unpublishGift(giftId: string): Promise<void> {
   await rpcOnGift("unpublish_gift", giftId);
-  redirect(`/dashboard/gifts/${giftId}`);
+  redirect(`/dashboard/gifts/${giftId}?unpublished=1`);
 }
 
 export async function regenerateGiftLink(giftId: string): Promise<void> {
