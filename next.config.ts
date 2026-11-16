@@ -35,6 +35,12 @@ const mediaHeaders = [{ key: "X-Robots-Tag", value: "noindex, nofollow" }];
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Every deploy gets its own id. A tab still showing an older deploy then
+  // notices the mismatch on its next navigation and reloads itself, instead
+  // of calling server actions the new deploy does not know. Vercel sets
+  // NEXT_DEPLOYMENT_ID itself when Skew Protection is on (Pro plans); the
+  // Hobby plan gets the same effect from VERCEL_DEPLOYMENT_ID.
+  deploymentId: process.env.NEXT_DEPLOYMENT_ID || process.env.VERCEL_DEPLOYMENT_ID || undefined,
   // The admin dev server (scripts/dev.mjs admin) builds into its own folder
   // so it can run beside the user site without sharing a cache.
   distDir: process.env.EAIN_DIST_DIR || ".next",

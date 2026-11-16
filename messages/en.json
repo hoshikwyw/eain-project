@@ -143,7 +143,9 @@
     "text": "Your gifts are safe. Try again, or head back home.",
     "retry": "Try again",
     "home": "Home",
-    "reference": "Reference {id}"
+    "reference": "Reference {id}",
+    "refreshingTitle": "A newer Eain is live",
+    "refreshingText": "This page is from before the last update. Refreshing it now."
   },
   "notFound": {
     "title": "This page is not here",

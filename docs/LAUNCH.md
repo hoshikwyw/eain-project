@@ -31,6 +31,7 @@ Zero-cost first launch on Vercel Hobby and Supabase Free. Work through the secti
   - `NEXT_PUBLIC_CONTACT_EMAIL` (optional)
   - `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST` (optional; leave unset to keep analytics off)
 - [ ] First deploy succeeds. Open the URL on a phone.
+- [ ] After every later deploy, a tab that was already open may show "A newer Eain is live" once and reload itself: that is the stale-page recovery (`lib/stale-page.ts`), not a bug. Vercel's Skew Protection would avoid even that, but it is Pro-only.
 - [ ] Cron: Settings → Cron Jobs shows `/api/cron/keepalive` daily. Trigger it once and confirm `{ "ok": true }` in the logs. This keeps the free Supabase project from pausing.
 - [ ] Hobby plan is for non-commercial use. Payments are off, so this is fine for the validation launch. Move to Pro before real payments.
 

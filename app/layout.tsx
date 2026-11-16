@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { SkipLink } from "@/components/layout/skip-link";
+import { StalePageRecovery } from "@/components/layout/stale-page-recovery";
 import { ThemeProvider } from "@/components/settings/theme-provider";
 import { appMode } from "@/lib/app-mode";
 import { fontVariables } from "@/lib/fonts";
@@ -79,6 +80,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <NextIntlClientProvider>
           <ThemeProvider>
             <SkipLink />
+            <StalePageRecovery />
             {children}
           </ThemeProvider>
         </NextIntlClientProvider>
