@@ -130,6 +130,17 @@ Reset password:
 
 `{{ .SiteURL }}` is the Site URL under URL Configuration, so emails sent while you develop locally open the production site. To exercise the flow locally without any email, run `pnpm test:email-links`: it makes the same token hashes through the admin API. The older `{{ .ConfirmationURL }}` links still work through `/auth/callback`, but only in the browser that asked for them and only where the Supabase host is reachable. Magic Link, Invite and Change Email are not used.
 
+## Working where Supabase is blocked (Myanmar)
+
+On some networks, Myanmar among them, `*.supabase.co` times out unless the person uses a VPN. Eain is built so that the browser never needs that host; only our server talks to Supabase:
+
+- Pages, sign-in, data and uploads go through this site (server components, server actions and `/api` routes). There is no browser-side Supabase client.
+- "Continue with Google" uses Google's own sign-in library and an ID token; the server finishes the sign-in. No redirect through Supabase.
+- Photos are signed on the server and served from `/media/...` on this site; `next.config.ts` forwards those requests to Supabase storage.
+- The links in confirmation and reset emails open `/auth/confirm` on this site (templates above). This needs custom SMTP, because the default templates link to the Supabase host.
+
+`pnpm test:reachability` renders the public, creator and receiver pages and the scripts they load, and fails on any mention of the Supabase host. Run it against production too (see LAUNCH.md). If someone still reports a timeout, ask for the exact address in the error: anything ending in `supabase.co` is a gap to close here; anything else is their connection.
+
 ## Deploy to Vercel
 
 The full pre-launch list, including Supabase settings, environment variables, the keep-alive cron and the production smoke test, is in [LAUNCH.md](LAUNCH.md). Short version:

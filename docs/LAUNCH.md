@@ -48,6 +48,7 @@ Run through with two devices, or one browser plus a private window.
 - [ ] Report a gift from the public page. In /admin/reports it appears. Take it offline; owner gets a notification; audit log has the entry.
 - [ ] Switch to Burmese on a phone. Check line heights on the gift page and the editor.
 - [ ] Turn on airplane-mode throttling in DevTools (Slow 3G). The gift page reaches "Open your gift" in under a few seconds and images load lazily.
+- [ ] From a Myanmar connection without VPN: sign up with email and confirm from the email, sign in with Google, reset a password, open a gift with a photo. In DevTools, Network, no request goes to `*.supabase.co`.
 
 ## 5. Automated checks against production
 
@@ -59,9 +60,11 @@ NEXT_PUBLIC_SITE_URL=https://<your-domain>
 pnpm test:rls
 pnpm test:core
 pnpm test:responses
+pnpm test:reachability
+pnpm test:email-links
 ```
 
-The RLS test uses the same Supabase project either way. The core and responses tests need `NEXT_PUBLIC_SITE_URL` to point at the deployed site. They create and delete throwaway users.
+The RLS test uses the same Supabase project either way. The others need `NEXT_PUBLIC_SITE_URL` to point at the deployed site. They create and delete throwaway users. The reachability test is the one that proves the deployed pages never send the browser to the Supabase host, which is blocked on some networks in Myanmar.
 
 ## 6. Legal and content
 

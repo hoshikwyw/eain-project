@@ -145,15 +145,16 @@ Done when: the gift page is fast on a mid-range Android phone over 3G and the co
 
 ## 6. Free-tier risks
 
-| Risk                                                          | Handling                                                                                        |
-| ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Supabase storage and egress are the first limits to hit       | Browser-side compression, thumbnails, photo and gift limits, lazy loading, one-hour signed URLs |
-| Supabase pauses free projects after a week without activity   | A daily scheduled request from Vercel keeps it awake                                            |
-| Supabase built-in email is limited to a few messages per hour | Sign-in methods that need no email confirmation                                                 |
-| The Vercel free plan is for non-commercial use                | Acceptable while payments are off. Move to a paid plan before real payments.                    |
-| Vercel image optimisation has a small free quota              | Serve our own pre-sized images and bypass the optimiser for gift media                          |
-| One user consuming everything                                 | Per-user and per-gift limits, rate limits on every public write                                 |
-| Free limits change over time                                  | Re-check current limits at M0 and again before launch                                           |
+| Risk                                                          | Handling                                                                                                                                                        |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Supabase storage and egress are the first limits to hit       | Browser-side compression, thumbnails, photo and gift limits, lazy loading, one-hour signed URLs                                                                 |
+| The Supabase host is blocked on some Myanmar networks         | The browser only talks to this site: server-side data access, Google ID-token sign-in, photos through /media, email links to /auth/confirm, a reachability test |
+| Supabase pauses free projects after a week without activity   | A daily scheduled request from Vercel keeps it awake                                                                                                            |
+| Supabase built-in email is limited to a few messages per hour | Sign-in methods that need no email confirmation                                                                                                                 |
+| The Vercel free plan is for non-commercial use                | Acceptable while payments are off. Move to a paid plan before real payments.                                                                                    |
+| Vercel image optimisation has a small free quota              | Serve our own pre-sized images and bypass the optimiser for gift media                                                                                          |
+| One user consuming everything                                 | Per-user and per-gift limits, rate limits on every public write                                                                                                 |
+| Free limits change over time                                  | Re-check current limits at M0 and again before launch                                                                                                           |
 
 ## 7. Not in V1
 
