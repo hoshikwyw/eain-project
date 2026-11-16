@@ -811,7 +811,7 @@
       "sending": "Sending",
       "sentTitle": "Check your email",
       "sentText": "If an account exists for that address, a reset link is on its way. It can take a few minutes.",
-      "sameDevice": "Open the link on this same device and browser.",
+      "sameDevice": "The link works once, on any device.",
       "backToLogin": "Back to log in",
       "expired": "That reset link has expired or was opened on another device. Request a new one below.",
       "errors": {
@@ -848,6 +848,7 @@
     },
     "notices": {
       "confirm": "Check your email to confirm your account, then log in.",
+      "linkExpired": "That link has expired or was already used. Log in, or sign up again to get a new one.",
       "oauthFailed": "Google sign-in did not complete. Please try again.",
       "notConfigured": "Accounts are not set up on this server yet."
     }

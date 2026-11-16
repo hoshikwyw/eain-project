@@ -34,8 +34,8 @@ Not needed: Docker, a custom domain, an email provider, a payment provider.
    - Project URL → `NEXT_PUBLIC_SUPABASE_URL`
    - anon public key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - service_role key → `SUPABASE_SERVICE_ROLE_KEY` (server only, never sent to the browser)
-4. In Authentication, then Providers, then Email: turn **off** "Confirm email". The free built-in mailer allows only a few emails per hour, so V1 does not depend on it.
-5. In Authentication, then URL Configuration: set Site URL to `http://localhost:5173` and add `http://localhost:5173/auth/callback` to Redirect URLs. Add the Vercel URL later.
+4. In Authentication, then Providers, then Email: decide whether "Confirm email" is on. The production project has it on. The free built-in mailer allows only a few emails per hour, and Eain shows a friendly message when that limit is hit. Either way, set the two email templates as described in "Email links" below, so the links open on this site.
+5. In Authentication, then URL Configuration: set Site URL (email links are built from it, so once deployed this is the production URL) and add `http://localhost:5173/**` to Redirect URLs. Add the Vercel URL with `/**` later.
 6. Apply the migrations in `supabase/migrations` with the Supabase CLI. No Docker is needed for these commands:
 
 ```
@@ -86,13 +86,49 @@ The app already contains the button. It is drawn by Google's own sign-in library
    - Authorized JavaScript origins: `http://localhost:5173`, and every origin the site is served from (the Vercel URL, the admin URL, your own domain). Google's button refuses to work from an origin that is not listed.
    - Authorized redirect URI: `https://<project-ref>.supabase.co/auth/v1/callback`. The exact value is shown in Supabase under Authentication, Sign In / Providers, Google.
 3. Copy the Client ID and Client secret into that Supabase Google provider screen, paste the same Client ID into its **Authorized Client IDs** field (that is what lets Supabase accept Google's token), and turn the provider on.
-4. Supabase, Authentication, URL Configuration: Site URL `http://localhost:5173`, and Redirect URLs must include `http://localhost:5173/auth/callback`. Without this, Supabase sends users back to the wrong address after Google.
+4. Nothing in URL Configuration is needed for Google: the token flow has no redirect.
 5. Put the Client ID in `.env.local` as `NEXT_PUBLIC_GOOGLE_CLIENT_ID`, and in the Vercel project settings.
 6. Reload the login page. The Google button appears within five minutes, or immediately after restarting `pnpm dev`.
 
 A Google sign-up creates the profile through the same trigger as email sign-up, using the Google name and picture, and grants the welcome points.
 
 Facebook sign-in is deferred. It needs Meta business verification.
+
+## Email links (confirmation and password reset)
+
+Supabase's default email templates link to the Supabase host first, which some networks (Myanmar among them) cannot reach, so the link times out. Point the links at this site instead: the server checks the token with Supabase and signs the person in. These links work once, on any device, and need nothing in Redirect URLs.
+
+Supabase only lets you edit templates once a custom SMTP provider is set (the built-in mailer always uses the default templates, which link to the Supabase host). A free provider is enough:
+
+1. Make a free account at brevo.com (300 emails a day). Under Senders, add and verify the address the emails will come from (a Gmail address works). Under SMTP & API, create an SMTP key.
+2. In Supabase, Authentication, Emails, SMTP Settings: turn on custom SMTP. Sender email: the verified address. Sender name: Eain. Host `smtp-relay.brevo.com`, port `587`, username: your Brevo login email, password: the SMTP key. Save.
+3. Authentication, Rate Limits: custom SMTP starts at 30 emails an hour; raise it if needed.
+
+Then, in Authentication, Emails, Templates, replace the link in these two templates. The wording around it is yours to change.
+
+Confirm signup:
+
+```html
+<h2>Confirm your email</h2>
+<p>Tap the link below to confirm your Eain account.</p>
+<p>
+  <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email">Confirm my email</a>
+</p>
+```
+
+Reset password:
+
+```html
+<h2>Reset your password</h2>
+<p>Tap the link below to choose a new password for your Eain account.</p>
+<p>
+  <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery"
+    >Choose a new password</a
+  >
+</p>
+```
+
+`{{ .SiteURL }}` is the Site URL under URL Configuration, so emails sent while you develop locally open the production site. To exercise the flow locally without any email, run `pnpm test:email-links`: it makes the same token hashes through the admin API. The older `{{ .ConfirmationURL }}` links still work through `/auth/callback`, but only in the browser that asked for them and only where the Supabase host is reachable. Magic Link, Invite and Change Email are not used.
 
 ## Deploy to Vercel
 

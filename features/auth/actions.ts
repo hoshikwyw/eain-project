@@ -1,12 +1,12 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
 import { adminSiteUrl, appMode } from "@/lib/app-mode";
 import { isSupabaseConfigured, publicEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
-import { safeNextPath } from "@/lib/auth/paths";
+import { AFTER_CONFIRM_COOKIE, AFTER_CONFIRM_MAX_AGE, safeNextPath } from "@/lib/auth/paths";
 import { signInSchema, signUpSchema, type AuthFormState } from "./schemas";
 
 /** Where Google sign-in returns to: the admin site when signing in there. */
@@ -44,7 +44,8 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
     password: parsed.data.password,
     options: {
       data: { display_name: parsed.data.displayName, locale },
-      // The confirmation link lands where the sign-up was heading, such as the guest handoff.
+      // Only for the older {{ .ConfirmationURL }} email template; the current
+      // templates link to /auth/confirm, which reads the cookie set below.
       emailRedirectTo: `${await siteOrigin()}/auth/callback?next=${encodeURIComponent(next)}`,
     },
   });
@@ -61,8 +62,20 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
 
   // With email confirmation off, a session is returned and the user is in.
   // If confirmation is on in the Supabase dashboard, identities are empty
-  // and we send them to login with a notice.
-  if (!data.session) redirect(`/auth/login?notice=confirm&next=${encodeURIComponent(next)}`);
+  // and we send them to login with a notice. The confirmation link then
+  // lands where the sign-up was heading, such as the guest handoff.
+  if (!data.session) {
+    if (next !== "/dashboard") {
+      (await cookies()).set(AFTER_CONFIRM_COOKIE, next, {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: AFTER_CONFIRM_MAX_AGE,
+        secure: process.env.NODE_ENV === "production",
+      });
+    }
+    redirect(`/auth/login?notice=confirm&next=${encodeURIComponent(next)}`);
+  }
 
   redirect(next);
 }

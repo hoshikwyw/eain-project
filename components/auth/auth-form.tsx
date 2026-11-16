@@ -25,7 +25,7 @@ type Props = {
 
 const initialState: AuthFormState = {};
 
-const NOTICES = ["confirm", "oauthFailed", "notConfigured"] as const;
+const NOTICES = ["confirm", "linkExpired", "oauthFailed", "notConfigured"] as const;
 type Notice = (typeof NOTICES)[number];
 
 function asNotice(value: string | undefined): Notice | undefined {

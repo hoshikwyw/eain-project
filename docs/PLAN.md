@@ -85,7 +85,7 @@ Every table has row level security enabled. Administrator access is checked thro
 | Area         | Routes                                                                                                              | Sign-in    |
 | ------------ | ------------------------------------------------------------------------------------------------------------------- | ---------- |
 | Marketing    | /, /templates, /privacy, /terms, /security, /cookies, /report, /contact                                             | No         |
-| Auth         | /auth/login, /auth/signup, /auth/callback                                                                           | No         |
+| Auth         | /auth/login, /auth/signup, /auth/forgot, /auth/reset, /auth/confirm (email links), /auth/callback (older links)     | No         |
 | Create       | /create for template choice, /create/giftId for the editor and preview                                              | Yes        |
 | Dashboard    | /dashboard, /dashboard/gifts, /dashboard/gifts/id, /dashboard/notifications, /dashboard/points, /dashboard/settings | Yes        |
 | Receiver     | /g/token, and later /r/token                                                                                        | No         |
