@@ -9,6 +9,7 @@ import {
   partyColor,
 } from "./gift-decorations";
 import { Sections } from "./gift-sections";
+import { InvitationMotif } from "./motifs";
 import type { Ctx } from "./gift-types";
 
 /** The design a template asks for, drawn around the gift's sections. */
@@ -1051,10 +1052,17 @@ function InviteDesign(ctx: Ctx) {
           aria-hidden="true"
           className="pointer-events-none absolute inset-2 rounded-lg border border-[color:var(--t-fg)]/10"
         />
-        <Illustration
-          src={style.illustration}
-          className={cn("relative", compact ? "max-w-24" : "max-w-32")}
-        />
+        {style.motif ? (
+          <InvitationMotif
+            kind={style.motif}
+            className={cn("relative text-[color:var(--t-accent)]", compact ? "size-12" : "size-16")}
+          />
+        ) : (
+          <Illustration
+            src={style.illustration}
+            className={cn("relative", compact ? "max-w-24" : "max-w-32")}
+          />
+        )}
         <div className="relative flex flex-col items-center gap-3">
           <Eyebrow text={eyebrow} className="tracking-[0.32em]" />
           <Rule />
@@ -1100,10 +1108,17 @@ function WeddingDesign(ctx: Ctx) {
         <CornerMark className="absolute top-3.5 right-3.5 size-5 rotate-90" />
         <CornerMark className="absolute right-3.5 bottom-3.5 size-5 rotate-180" />
         <CornerMark className="absolute bottom-3.5 left-3.5 size-5 -rotate-90" />
-        <Illustration
-          src={style.illustration}
-          className={cn("relative", compact ? "max-w-28" : "max-w-36")}
-        />
+        {style.motif ? (
+          <InvitationMotif
+            kind={style.motif}
+            className={cn("relative text-[color:var(--glow)]", compact ? "size-12" : "size-16")}
+          />
+        ) : (
+          <Illustration
+            src={style.illustration}
+            className={cn("relative", compact ? "max-w-28" : "max-w-36")}
+          />
+        )}
         <div className="relative flex flex-col items-center gap-3">
           <Eyebrow text={eyebrow} className="tracking-[0.32em] text-[color:var(--t-accent)]" />
           <Flourish className="w-32" />

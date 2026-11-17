@@ -48,7 +48,16 @@ export type TemplateStyle = {
    * still picture of the gift is needed (editor, dashboard, thumbnails).
    */
   scene?: SceneKind;
+  /**
+   * Set on invitations: a small line drawing for the head of the card,
+   * drawn in the look's accent (components/gift/motifs.tsx), in place of the
+   * illustration. The illustration still stands for the template elsewhere.
+   */
+  motif?: Motif;
 };
+
+/** The line drawings an invitation can carry at its head. */
+export type Motif = "rings" | "glasses" | "rattle" | "cap" | "house" | "plane";
 
 const illustrationFor = (slug: string) => `/brand/illustrations/${slug}.webp`;
 
@@ -376,6 +385,7 @@ export const templates: Record<string, TemplateDefinition> = {
 const invitations: Record<string, TemplateDefinition> = {
   "party-invitation": {
     design: "invite",
+    motif: "glasses",
     decoration: "confetti",
     layout: "card",
     defaultVariant: "noir",
@@ -398,6 +408,7 @@ const invitations: Record<string, TemplateDefinition> = {
   },
   "wedding-invitation": {
     design: "wedding",
+    motif: "rings",
     decoration: "hearts",
     layout: "scroll",
     defaultVariant: "champagne",
@@ -426,6 +437,7 @@ const invitations: Record<string, TemplateDefinition> = {
   },
   "baby-shower": {
     design: "invite",
+    motif: "rattle",
     decoration: "sparkles",
     layout: "card",
     defaultVariant: "mint",
@@ -454,6 +466,7 @@ const invitations: Record<string, TemplateDefinition> = {
   },
   "graduation-party": {
     design: "invite",
+    motif: "cap",
     decoration: "confetti",
     layout: "card",
     defaultVariant: "ivory",
@@ -486,6 +499,7 @@ const invitations: Record<string, TemplateDefinition> = {
   },
   housewarming: {
     design: "invite",
+    motif: "house",
     decoration: "sparkles",
     layout: "card",
     defaultVariant: "champagne",
@@ -514,6 +528,7 @@ const invitations: Record<string, TemplateDefinition> = {
   },
   "engagement-party": {
     design: "wedding",
+    motif: "rings",
     decoration: "hearts",
     layout: "scroll",
     defaultVariant: "ivory",
@@ -536,6 +551,7 @@ const invitations: Record<string, TemplateDefinition> = {
   },
   "farewell-party": {
     design: "invite",
+    motif: "plane",
     decoration: "confetti",
     layout: "card",
     defaultVariant: "forest",
@@ -589,6 +605,7 @@ export function getTemplateStyle(slug: string): TemplateStyle {
         defaultOpening: designOpening[t.design],
         illustration: illustrationFor(slug),
         scene: t.scene,
+        motif: t.motif,
       }
     : fallbackStyle;
 }
