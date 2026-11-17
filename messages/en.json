@@ -497,6 +497,13 @@
       "send": "Send your reply",
       "sending": "Sending",
       "invalid": "Please answer the questions marked with a star.",
+      "rsvp": {
+        "title": "Will you come?",
+        "subtitle": "Your answer goes only to the host.",
+        "send": "Send my RSVP",
+        "sentTitle": "Your RSVP has been sent.",
+        "sentText": "Thank you. The host has your answer."
+      },
       "error": "Could not send. Please try again.",
       "sentTitle": "Your reply has been sent.",
       "sentText": "Thank you. They will see it on their side.",
@@ -965,7 +972,9 @@
         "summary": "At a glance",
         "download": "Download as spreadsheet",
         "dateColumn": "Replied",
-        "downloaded": "Replies downloaded."
+        "downloaded": "Replies downloaded.",
+        "guestList": "Guest list ({count})",
+        "noRsvps": "No RSVPs yet. Guests appear here as soon as they answer."
       },
       "status": {
         "draft": "Draft",

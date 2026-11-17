@@ -17,14 +17,18 @@ type Props = {
   questions: PublicQuestion[];
   sessionId: () => string;
   onStarted: () => void;
+  /** An invitation: the form is the RSVP. */
+  invitation?: boolean;
 };
 
 const textareaClass =
   "w-full rounded-2xl border border-input bg-card px-4 py-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40";
 
 /** The receiver's reply. No account, one submission per browser session. */
-export function ResponseForm({ token, questions, sessionId, onStarted }: Props) {
+export function ResponseForm({ token, questions, sessionId, onStarted, invitation }: Props) {
   const t = useTranslations("gift.response");
+  const w = (key: "title" | "subtitle" | "send" | "sentTitle" | "sentText") =>
+    invitation ? t(`rsvp.${key}`) : t(key);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const doneKey = `eain_responded_${token}`;
   // This form mounts only after the receiver taps "open", so it never renders
@@ -82,7 +86,7 @@ export function ResponseForm({ token, questions, sessionId, onStarted }: Props) 
           // ignore
         }
         setState(res.ok ? "sent" : "duplicate");
-        if (res.ok) toast.success(t("sentTitle"), { description: t("sentText") });
+        if (res.ok) toast.success(w("sentTitle"), { description: w("sentText") });
         else toast.info(t("alreadyText"));
       } else if (res.status === 400) {
         setState("invalid");
@@ -102,9 +106,9 @@ export function ResponseForm({ token, questions, sessionId, onStarted }: Props) 
     return (
       <div role="status" className="flex flex-col items-center gap-3 panel p-8 text-center">
         <Bird variant="pink" className="w-20" />
-        <p className="font-display text-xl font-semibold">{t("sentTitle")}</p>
+        <p className="font-display text-xl font-semibold">{w("sentTitle")}</p>
         <p className="text-sm text-muted-foreground">
-          {state === "sent" ? t("sentText") : t("alreadyText")}
+          {state === "sent" ? w("sentText") : t("alreadyText")}
         </p>
       </div>
     );
@@ -113,8 +117,8 @@ export function ResponseForm({ token, questions, sessionId, onStarted }: Props) 
   return (
     <form onSubmit={submit} className="flex flex-col gap-6 panel p-6 sm:p-8">
       <div>
-        <h2 className="font-display text-2xl font-semibold">{t("title")}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t("subtitle")}</p>
+        <h2 className="font-display text-2xl font-semibold">{w("title")}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">{w("subtitle")}</p>
       </div>
 
       {questions.map((q, index) => (
@@ -137,7 +141,7 @@ export function ResponseForm({ token, questions, sessionId, onStarted }: Props) 
 
       <Button type="submit" size="lg" disabled={state === "sending"} className="self-start">
         <Send />
-        {state === "sending" ? t("sending") : t("send")}
+        {state === "sending" ? t("sending") : w("send")}
       </Button>
       <p className="text-xs text-muted-foreground">{t("privacy")}</p>
     </form>

@@ -82,7 +82,10 @@ export function TemplateDemo({ slug, locale, closedClassName = "min-h-full" }: P
           questionMode="preview"
         />
       )}
-      <DemoReply questions={sample.sections.filter(isQuestion).map((q) => q.content)} />
+      <DemoReply
+        questions={sample.sections.filter(isQuestion).map((q) => q.content)}
+        invitation={isInvitationDesign(getTemplateStyle(slug).design)}
+      />
       <div className="flex justify-center">
         <Button type="button" variant="ghost" size="sm" onClick={() => setStage("closed")}>
           <RotateCcw />
@@ -103,8 +106,15 @@ const isQuestion = (s: Section): s is QuestionSection => s.type === "question";
  * questions when it starts with some (an invitation's name and RSVP),
  * otherwise one sample question.
  */
-function DemoReply({ questions }: { questions: QuestionSection["content"][] }) {
+function DemoReply({
+  questions,
+  invitation,
+}: {
+  questions: QuestionSection["content"][];
+  invitation: boolean;
+}) {
   const t = useTranslations("gift.response");
+  const w = (key: "title" | "subtitle" | "send") => (invitation ? t(`rsvp.${key}`) : t(key));
   const tDemo = useTranslations("create.demo");
   const id = useId();
   const shown =
@@ -112,8 +122,8 @@ function DemoReply({ questions }: { questions: QuestionSection["content"][] }) {
   return (
     <div className="flex flex-col gap-5 panel p-6 sm:p-8">
       <div>
-        <h2 className="font-display text-2xl font-semibold">{t("title")}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t("subtitle")}</p>
+        <h2 className="font-display text-2xl font-semibold">{w("title")}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">{w("subtitle")}</p>
       </div>
       {shown.map((q, i) => (
         <div key={`${id}-${i}`} className="flex flex-col gap-3">
@@ -148,7 +158,7 @@ function DemoReply({ questions }: { questions: QuestionSection["content"][] }) {
       ))}
       <Button type="button" size="lg" disabled className="self-start">
         <Send />
-        {t("send")}
+        {w("send")}
       </Button>
       <p className="text-xs text-muted-foreground">{tDemo("replyNote")}</p>
     </div>

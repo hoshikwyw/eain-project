@@ -113,6 +113,7 @@ export function GiftReveal({
       <ResponseForm
         token={token}
         questions={questions}
+        invitation={invitation}
         sessionId={getSessionId}
         onStarted={() => void sendEvent(token, "response_started")}
       />
