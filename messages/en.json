@@ -954,7 +954,10 @@
         "title": "Responses ({count})",
         "empty": "No replies yet. They appear here as soon as someone answers.",
         "description": "Only you can see these.",
-        "summary": "At a glance"
+        "summary": "At a glance",
+        "download": "Download as spreadsheet",
+        "dateColumn": "Replied",
+        "downloaded": "Replies downloaded."
       },
       "status": {
         "draft": "Draft",

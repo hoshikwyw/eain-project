@@ -21,6 +21,7 @@ import { makeQr } from "@/lib/qr";
 import { getSiteOrigin, giftShareUrl } from "@/lib/site-url";
 import { cn } from "@/lib/utils";
 import type { GiftEventType } from "@/types/database";
+import { DownloadReplies } from "@/components/dashboard/download-replies";
 import { QueryToasts } from "@/components/ui/query-toasts";
 import { PageTitle } from "@/components/ui/page-title";
 import { CapsLabel } from "@/components/ui/caps-label";
@@ -157,12 +158,27 @@ export default async function GiftDetailPage({ params }: PageProps<"/dashboard/g
         <div className="flex flex-col gap-6 lg:col-start-2 lg:row-start-2">
           {(hasQuestions || responses.length > 0) && (
             <section className={PANEL}>
-              <h2 className="font-display text-lg font-semibold">
-                {t("responses.title", { count: responses.length })}
-              </h2>
-              <p className="mt-0.5 text-sm text-muted-foreground">
-                {responses.length === 0 ? t("responses.empty") : t("responses.description")}
-              </p>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="font-display text-lg font-semibold">
+                    {t("responses.title", { count: responses.length })}
+                  </h2>
+                  <p className="mt-0.5 text-sm text-muted-foreground">
+                    {responses.length === 0 ? t("responses.empty") : t("responses.description")}
+                  </p>
+                </div>
+                {responses.length > 0 && (
+                  <DownloadReplies
+                    responses={responses}
+                    title={gift.title}
+                    labels={{
+                      button: t("responses.download"),
+                      dateColumn: t("responses.dateColumn"),
+                      downloaded: t("responses.downloaded"),
+                    }}
+                  />
+                )}
+              </div>
               {tallies.some((tally) => tally.total > 0) && (
                 <div className="mt-4 flex flex-col gap-3">
                   <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
