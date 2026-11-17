@@ -952,7 +952,8 @@
       "responses": {
         "title": "Responses ({count})",
         "empty": "No replies yet. They appear here as soon as someone answers.",
-        "description": "Only you can see these."
+        "description": "Only you can see these.",
+        "summary": "At a glance"
       },
       "status": {
         "draft": "Draft",

@@ -15,7 +15,7 @@ import {
   regenerateGiftLink,
   unpublishGift,
 } from "@/features/gifts/actions";
-import { getGiftDetail, getGiftResponses } from "@/features/gifts/queries";
+import { getGiftDetail, getGiftResponses, getResponseTallies } from "@/features/gifts/queries";
 import { getCurrentProfile } from "@/features/profile/queries";
 import { makeQr } from "@/lib/qr";
 import { getSiteOrigin, giftShareUrl } from "@/lib/site-url";
@@ -50,10 +50,11 @@ export default async function GiftDetailPage({ params }: PageProps<"/dashboard/g
   const tNav = await getTranslations("dashboard.nav");
   const format = await getFormatter();
 
-  const [data, profile, responses] = await Promise.all([
+  const [data, profile, responses, tallies] = await Promise.all([
     getGiftDetail(giftId),
     getCurrentProfile(),
     getGiftResponses(giftId),
+    getResponseTallies(giftId),
   ]);
   if (!data) notFound();
   const hasQuestions = data.sections.some((s) => s.type === "question");
@@ -162,6 +163,39 @@ export default async function GiftDetailPage({ params }: PageProps<"/dashboard/g
               <p className="mt-0.5 text-sm text-muted-foreground">
                 {responses.length === 0 ? t("responses.empty") : t("responses.description")}
               </p>
+              {tallies.some((tally) => tally.total > 0) && (
+                <div className="mt-4 flex flex-col gap-3">
+                  <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                    {t("responses.summary")}
+                  </h3>
+                  {tallies
+                    .filter((tally) => tally.total > 0)
+                    .map((tally) => (
+                      <div key={tally.prompt} className="rounded-2xl border border-border p-4">
+                        <p className="text-sm font-semibold">{tally.prompt}</p>
+                        <ul className="mt-2.5 flex flex-col gap-2">
+                          {tally.options.map((o) => (
+                            <li key={o.label} className="flex items-center gap-3 text-sm">
+                              <span className="min-w-0 flex-1 truncate">{o.label}</span>
+                              <span
+                                aria-hidden="true"
+                                className="h-2 w-24 shrink-0 overflow-hidden rounded-full bg-secondary"
+                              >
+                                <span
+                                  className="block h-full rounded-full bg-primary"
+                                  style={{ width: `${Math.round((o.count / tally.total) * 100)}%` }}
+                                />
+                              </span>
+                              <span className="w-8 shrink-0 text-right font-semibold tabular-nums">
+                                {format.number(o.count, "digits")}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                </div>
+              )}
               {responses.length > 0 && (
                 <ul className="mt-4 flex flex-col gap-3">
                   {responses.map((r) => (

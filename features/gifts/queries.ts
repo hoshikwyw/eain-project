@@ -181,6 +181,74 @@ export async function getGiftResponses(giftId: string): Promise<ResponseView[]> 
   }));
 }
 
+export type AnswerTally = {
+  prompt: string;
+  /** Replies that answered this question. */
+  total: number;
+  options: { label: string; count: number }[];
+};
+
+/**
+ * For questions answered by picking an option (yes or no, a choice, a
+ * reaction): how many replies chose each one. Options nobody picked are
+ * listed too, so an RSVP reads "Sorry, I can't make it: 0" rather than
+ * nothing. An option deleted since still counts under the label the answer
+ * kept.
+ */
+export async function getResponseTallies(giftId: string): Promise<AnswerTally[]> {
+  const supabase = await createClient();
+  const { data: questions } = await supabase
+    .from("gift_questions")
+    .select("id, prompt, position, type")
+    .eq("gift_id", giftId)
+    .in("type", ["yes_no", "choice", "reaction"])
+    .order("position");
+  if (!questions || questions.length === 0) return [];
+
+  const [{ data: options }, { data: responses }] = await Promise.all([
+    supabase
+      .from("gift_question_options")
+      .select("id, question_id, label, position")
+      .in(
+        "question_id",
+        questions.map((q) => q.id),
+      )
+      .order("position"),
+    supabase.from("gift_responses").select("id").eq("gift_id", giftId),
+  ]);
+  const responseIds = (responses ?? []).map((r) => r.id);
+  const { data: answers } =
+    responseIds.length > 0
+      ? await supabase
+          .from("gift_answers")
+          .select("question_id, option_id, answer_text")
+          .in("response_id", responseIds)
+      : { data: [] };
+
+  return questions.map((q) => {
+    const picks = (answers ?? []).filter((a) => a.question_id === q.id);
+    const rows = (options ?? [])
+      .filter((o) => o.question_id === q.id)
+      .map((o) => ({ id: o.id, label: o.label, count: 0 }));
+    for (const a of picks) {
+      const row =
+        rows.find((r) => r.id === a.option_id) ?? rows.find((r) => r.label === a.answer_text);
+      if (row) row.count += 1;
+      else
+        rows.push({
+          id: a.option_id ?? a.answer_text ?? "?",
+          label: a.answer_text ?? "?",
+          count: 1,
+        });
+    }
+    return {
+      prompt: q.prompt,
+      total: picks.length,
+      options: rows.map(({ label, count }) => ({ label, count })),
+    };
+  });
+}
+
 export type GiftDetail = EditorGift & { events: GiftEvent[] };
 
 export async function getGiftDetail(giftId: string): Promise<GiftDetail | null> {
