@@ -9,7 +9,14 @@ import type {
 } from "@/features/gifts/schemas";
 import type { Design, TemplateStyle } from "@/features/gifts/templates";
 
-export type Labels = { forName: string; forYou: string; addPhoto: string; questionNote: string };
+export type Labels = {
+  forName: string;
+  forYou: string;
+  addPhoto: string;
+  questionNote: string;
+  /** Title of the link that opens an event's place in a maps app. */
+  openInMaps: string;
+};
 
 /**
  * What the editor plugs in to make the gift editable in place. The renderer

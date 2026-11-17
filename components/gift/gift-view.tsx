@@ -14,6 +14,7 @@ export function GiftView(props: Props) {
         forYou: t("forYou"),
         addPhoto: t("addPhoto"),
         questionNote: t("questionNote"),
+        openInMaps: t("openInMaps"),
       }}
     />
   );

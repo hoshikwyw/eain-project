@@ -410,9 +410,24 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
                   className="mt-1 size-4 shrink-0 text-[color:var(--t-accent)]"
                 />
                 <p style={alignStyle(st?.[field])} className={cn("min-w-0 flex-1", look)}>
-                  <Styled style={st?.[field]} text={value} wrap={editing}>
-                    {txt(ctx, section, field, value)}
-                  </Styled>
+                  {field === "place" && !editing ? (
+                    // The place opens in the phone's maps app; the words stay the creator's.
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(value)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={labels.openInMaps}
+                      className="underline decoration-dotted underline-offset-4 hover:decoration-solid"
+                    >
+                      <Styled style={st?.[field]} text={value}>
+                        {value}
+                      </Styled>
+                    </a>
+                  ) : (
+                    <Styled style={st?.[field]} text={value} wrap={editing}>
+                      {txt(ctx, section, field, value)}
+                    </Styled>
+                  )}
                 </p>
               </li>
             ) : null,
