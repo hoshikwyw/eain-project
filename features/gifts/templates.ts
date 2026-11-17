@@ -378,7 +378,7 @@ const invitations: Record<string, TemplateDefinition> = {
     design: "invite",
     decoration: "confetti",
     layout: "card",
-    defaultVariant: "celebrate",
+    defaultVariant: "noir",
     defaultSections: (l) => [
       cover(
         my(l, "You're invited!", "ဖိတ်ကြားပါတယ်!"),
@@ -488,7 +488,7 @@ const invitations: Record<string, TemplateDefinition> = {
     design: "invite",
     decoration: "sparkles",
     layout: "card",
-    defaultVariant: "ocean",
+    defaultVariant: "champagne",
     defaultSections: (l) => [
       cover(
         my(l, "We've moved in!", "ကျွန်တော်တို့ အိမ်သစ် ပြောင်းပြီးပါပြီ!"),
@@ -516,7 +516,7 @@ const invitations: Record<string, TemplateDefinition> = {
     design: "wedding",
     decoration: "hearts",
     layout: "scroll",
-    defaultVariant: "blossom",
+    defaultVariant: "ivory",
     defaultSections: (l) => [
       cover(
         my(l, "We said yes", "ကျွန်တော်တို့ စေ့စပ်ပါပြီ"),
@@ -538,7 +538,7 @@ const invitations: Record<string, TemplateDefinition> = {
     design: "invite",
     decoration: "confetti",
     layout: "card",
-    defaultVariant: "lavender",
+    defaultVariant: "forest",
     defaultSections: (l) => [
       cover(
         my(l, "Farewell party", "နှုတ်ဆက်ပွဲ"),

@@ -996,35 +996,43 @@ function ScrapbookDesign(ctx: Ctx) {
   );
 }
 
-/** Short bars like a ticket's barcode. A fixed pattern, so server and client draw the same. */
-function Barcode({ className }: { className?: string }) {
-  const widths = [2, 1, 3, 1, 2, 2, 1, 3, 2, 1, 1, 3, 2, 1, 2, 3, 1, 2, 1, 3, 2, 1, 2];
-  let x = 0;
-  const bars = widths.map((w, i) => {
-    const bar = <rect key={i} x={x} y="0" width={w} height="24" />;
-    x += w + 1;
-    return bar;
-  });
+/** The type that makes an invitation read as stationery, shared by the two invitation designs. */
+const STATIONERY_TYPE = cn(
+  "w-full",
+  // Headline in the display face at a medium weight, never bold; the second line quiet and italic.
+  "[&_h1]:font-display [&_h1]:text-[2.25rem] [&_h1]:leading-[1.15] [&_h1]:font-medium [&_h1]:tracking-[-0.01em] [&_h2]:text-base [&_h2]:text-[color:var(--t-muted)] [&_h2]:italic",
+  "[&_p.msg]:mx-auto [&_p.msg]:max-w-[34ch] [&_p.msg]:leading-relaxed",
+  // Event details as a typographic block between two hairlines: the date large, the rest in spaced small caps.
+  "[&_.event]:items-center [&_.event]:gap-3 [&_.event]:rounded-none [&_.event]:border-x-0 [&_.event]:border-y [&_.event]:border-[color:var(--t-fg)]/12 [&_.event]:px-0 [&_.event]:py-6 [&_.event]:text-center [&_.event_svg]:hidden [&_.event_li]:justify-center [&_.event_p]:text-center",
+  "[&_.event_li:first-child_p]:font-display [&_.event_li:first-child_p]:text-2xl [&_.event_li:first-child_p]:font-medium [&_.event_li:first-child_p]:text-[color:var(--t-accent)]",
+  "[&_.event_li:nth-child(2)_p]:text-xs [&_.event_li:nth-child(2)_p]:font-semibold [&_.event_li:nth-child(2)_p]:tracking-[0.2em] [&_.event_li:nth-child(2)_p]:uppercase",
+  "[&_.event_li:nth-child(3)_p]:text-xs [&_.event_li:nth-child(3)_p]:font-semibold [&_.event_li:nth-child(3)_p]:tracking-[0.2em] [&_.event_li:nth-child(3)_p]:uppercase",
+  "[&_.event_li:nth-child(4)_p]:text-sm [&_.event_li:nth-child(4)_p]:text-[color:var(--t-muted)] [&_.event_li:nth-child(4)_p]:italic",
+  // The RSVP as a quiet framed line; the sign-off in the display face.
+  "[&_.question]:items-center [&_.question]:rounded-none [&_.question]:border-solid [&_.question]:border-[color:var(--t-fg)]/12 [&_.question]:text-center [&_.question_p]:justify-center",
+  "[&_footer]:items-center [&_footer]:border-t-0 [&_footer]:text-center [&_.sig]:font-display [&_.sig]:text-xl [&_.sig]:font-medium [&_.sig]:text-[color:var(--t-accent)] [&_.sig]:italic",
+);
+
+/** A short rule in the accent, the one ornament a formal card allows itself. */
+function Rule({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 56 24" aria-hidden="true" className={className} fill="currentColor">
-      {bars}
-    </svg>
+    <span
+      aria-hidden="true"
+      className={cn("block h-px w-10 bg-[color:var(--t-accent)]", className)}
+    />
   );
 }
 
 /**
- * An invitation as a ticket: the picture as the hero, the greeting on a band
- * in the accent colour with a scalloped lower edge, the event details as the
- * centrepiece in a dashed box, the RSVP as its own card, and a perforated
- * stub at the foot with the guest's name and a little barcode. Shared by the
- * party, baby shower and graduation templates, each in its own look.
- * Premium or not, an invitation carries no printer's mark.
+ * An invitation as printed stationery: a plain card inside a hairline, a
+ * small crest, the guest's name in spaced capitals, the headline in the
+ * display face, the event details as a typographic block between two rules,
+ * the RSVP as a quiet framed line. No band, no confetti, no ticket stub:
+ * the looks carry the colour. Shared by the party, baby shower, graduation,
+ * housewarming and farewell templates. No printer's mark.
  */
 function InviteDesign(ctx: Ctx) {
   const { compact, style, eyebrow, animate } = ctx;
-  const [cover, ...rest] = ctx.visible;
-  const coverCtx = { ...ctx, visible: cover ? [cover] : [] };
-  const restCtx = { ...ctx, visible: rest };
   return (
     <article
       className={cn(
@@ -1032,63 +1040,41 @@ function InviteDesign(ctx: Ctx) {
         compact ? "p-3" : "p-4",
       )}
     >
-      <Decorations kind={style.decoration} />
-      <div className="relative drop-shadow-md">
-        <div
-          className={cn(
-            "relative overflow-hidden rounded-2xl bg-[color:var(--t-card)]",
-            // The stub is torn off along a perforation: notches cut into both sides at its height.
-            "[mask:radial-gradient(12px_at_0_calc(100%-3rem),transparent_98%,#000)_0_0/51%_100%_no-repeat,radial-gradient(12px_at_100%_calc(100%-3rem),transparent_98%,#000)_100%_0/51%_100%_no-repeat]",
-          )}
-        >
-          <Pattern kind="paper" opacity={0.1} />
-          <Illustration
-            src={style.illustration}
-            className={cn("relative mx-auto", compact ? "max-w-52 pt-3" : "max-w-64 pt-4")}
-          />
-          <div className="relative">
-            <div
-              className={cn(
-                "bg-[color:var(--t-accent)] text-center text-[color:var(--t-on-accent,#fff)]",
-                compact ? "px-5 pt-4 pb-8" : "px-7 pt-5 pb-10",
-              )}
-            >
-              <div className="[&_h1]:text-[color:var(--t-on-accent,#fff)] [&_h2]:text-[color:var(--t-on-accent,#fff)] [&_p]:text-[color:var(--t-on-accent,#fff)] [&_span]:text-[color:var(--t-on-accent,#fff)]">
-                <Sections ctx={coverCtx} />
-              </div>
-            </div>
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 -bottom-px h-4 [background:radial-gradient(circle_at_50%_100%,var(--t-card)_8px,transparent_8.5px)_0_0/20px_16px_repeat-x]"
-            />
-          </div>
-          <Sections
-            ctx={restCtx}
-            animate={animate}
-            className={cn("relative text-left", compact ? "gap-4 p-5" : "gap-5 p-6")}
-            itemClassName={cn(
-              // The event details are what the card is for: boxed, the date in display type.
-              "[&_.event]:border-2 [&_.event]:border-dashed [&_.event]:border-[color:var(--t-accent)]/45 [&_.event]:bg-[color:var(--t-accent-soft)]/50 [&_.event_li:first-child_p]:font-display [&_.event_li:first-child_p]:text-2xl [&_.event_li:first-child_p]:leading-tight [&_.event_li:first-child_p]:text-[color:var(--t-accent)]",
-              "[&_.question]:border-2 [&_.question]:border-solid [&_.question]:border-[color:var(--t-accent)]/30",
-              "[&_footer]:items-center [&_footer]:border-t-0 [&_footer]:text-center [&_.sig]:text-2xl [&_.sig]:text-[color:var(--t-accent)]",
-            )}
-          />
-          <div className="relative flex h-12 items-center justify-between border-t-2 border-dashed border-[color:var(--t-accent)]/35 px-6">
-            <Eyebrow text={eyebrow} className="text-[color:var(--t-accent)]" />
-            <Barcode className="h-5 w-14 text-[color:var(--t-fg)]/70" />
-          </div>
+      <div
+        className={cn(
+          "relative flex flex-col items-center overflow-hidden rounded-xl bg-[color:var(--t-card)] text-center ring-1 ring-[color:var(--t-fg)]/15",
+          compact ? "gap-5 px-6 py-7" : "gap-7 px-9 py-10",
+        )}
+      >
+        <Pattern kind="paper" opacity={0.08} />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-2 rounded-lg border border-[color:var(--t-fg)]/10"
+        />
+        <Illustration
+          src={style.illustration}
+          className={cn("relative", compact ? "max-w-24" : "max-w-32")}
+        />
+        <div className="relative flex flex-col items-center gap-3">
+          <Eyebrow text={eyebrow} className="tracking-[0.32em]" />
+          <Rule />
         </div>
+        <Sections
+          ctx={ctx}
+          animate={animate}
+          className={cn("relative w-full items-center text-center", compact ? "gap-5" : "gap-7")}
+          itemClassName={STATIONERY_TYPE}
+        />
+        <Rule className="relative" />
       </div>
     </article>
   );
 }
 
 /**
- * A wedding invitation: an ivory card inside a double gold hairline with
- * ornaments in the corners, the couple at the top, the words centred in
- * italic serif, the event details between two gold rules with each line on
- * its own, the RSVP as a quiet card, and the sign-off in the accent. The
- * champagne look by default; any look keeps the structure. No printer's mark.
+ * A wedding or engagement invitation: the same stationery, with a double
+ * gold hairline, ornaments in the corners, a flourish under the name and an
+ * italic headline. The champagne and ivory looks by default. No printer's mark.
  */
 function WeddingDesign(ctx: Ctx) {
   const { compact, style, eyebrow, animate } = ctx;
@@ -1099,17 +1085,16 @@ function WeddingDesign(ctx: Ctx) {
         compact ? "p-3" : "p-4",
       )}
     >
-      <Decorations kind={style.decoration} />
       <div
         className={cn(
-          "relative flex flex-col items-center overflow-hidden rounded-2xl bg-[color:var(--t-card)] text-center ring-1 ring-[color:var(--glow)]/80",
-          compact ? "gap-5 px-6 pt-5 pb-6" : "gap-6 px-8 pt-6 pb-8",
+          "relative flex flex-col items-center overflow-hidden rounded-xl bg-[color:var(--t-card)] text-center ring-1 ring-[color:var(--glow)]/80",
+          compact ? "gap-5 px-6 py-7" : "gap-7 px-9 py-10",
         )}
       >
-        <Pattern kind="paper" opacity={0.12} />
+        <Pattern kind="paper" opacity={0.1} />
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-2 rounded-xl border border-[color:var(--glow)]/45"
+          className="pointer-events-none absolute inset-2 rounded-lg border border-[color:var(--glow)]/45"
         />
         <CornerMark className="absolute top-3.5 left-3.5 size-5" />
         <CornerMark className="absolute top-3.5 right-3.5 size-5 rotate-90" />
@@ -1117,27 +1102,23 @@ function WeddingDesign(ctx: Ctx) {
         <CornerMark className="absolute bottom-3.5 left-3.5 size-5 -rotate-90" />
         <Illustration
           src={style.illustration}
-          className={cn("relative", compact ? "max-w-48" : "max-w-60")}
+          className={cn("relative", compact ? "max-w-28" : "max-w-36")}
         />
         <div className="relative flex flex-col items-center gap-3">
-          <Eyebrow text={eyebrow} className="tracking-[0.35em] text-[color:var(--t-accent)]" />
-          <Flourish className="w-36" />
+          <Eyebrow text={eyebrow} className="tracking-[0.32em] text-[color:var(--t-accent)]" />
+          <Flourish className="w-32" />
         </div>
         <Sections
           ctx={ctx}
           animate={animate}
-          className={cn("relative w-full items-center text-center", compact ? "gap-5" : "gap-6")}
+          className={cn("relative w-full items-center text-center", compact ? "gap-5" : "gap-7")}
           itemClassName={cn(
-            "w-full",
-            "[&_h1]:font-display [&_h1]:font-medium [&_h1]:text-[color:var(--t-accent)] [&_h1]:italic [&_h2]:text-[color:var(--t-muted)] [&_h2]:italic",
-            "[&_p.msg]:mx-auto [&_p.msg]:max-w-[30ch] [&_p.msg]:font-display [&_p.msg]:text-lg [&_p.msg]:italic",
-            // Event details between two gold rules, each line on its own, icons in gold.
-            "[&_.event]:items-center [&_.event]:gap-2 [&_.event]:rounded-none [&_.event]:border-x-0 [&_.event]:border-y [&_.event]:border-[color:var(--glow)] [&_.event]:px-2 [&_.event]:py-5 [&_.event]:text-center [&_.event_li]:flex-col [&_.event_li]:items-center [&_.event_li]:gap-1 [&_.event_p]:text-center [&_.event_svg]:text-[color:var(--glow)] [&_.event_li:first-child_p]:font-display [&_.event_li:first-child_p]:text-2xl [&_.event_li:first-child_p]:font-medium [&_.event_li:first-child_p]:text-[color:var(--t-accent)] [&_.event_li:first-child_p]:italic",
-            "[&_.question]:items-center [&_.question]:border-solid [&_.question]:border-[color:var(--glow)]/70 [&_.question]:text-center [&_.question_p]:justify-center",
-            "[&_footer]:items-center [&_footer]:border-t-0 [&_.sig]:font-display [&_.sig]:text-2xl [&_.sig]:font-medium [&_.sig]:text-[color:var(--t-accent)] [&_.sig]:italic",
+            STATIONERY_TYPE,
+            "[&_h1]:text-[color:var(--t-accent)] [&_h1]:italic [&_p.msg]:font-display [&_p.msg]:text-lg [&_p.msg]:italic",
+            "[&_.event]:border-[color:var(--glow)] [&_.question]:border-[color:var(--glow)]/70",
           )}
         />
-        <Flourish className="relative w-36" />
+        <Flourish className="relative w-32" />
       </div>
     </article>
   );
