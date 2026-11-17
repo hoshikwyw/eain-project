@@ -33,7 +33,15 @@ describe("invitation templates", () => {
         }
         const event = sections.find((s) => s.type === "event");
         assert.ok(event, "has event details");
-        const rsvp = sections.find((s) => s.type === "question");
+        const questions = sections.filter((s) => s.type === "question");
+        assert.equal(questions.length, 2, "a name question and the RSVP");
+        const name = questions[0];
+        assert.ok(
+          name && name.type === "question" && name.content.kind === "short_text",
+          "guests leave their name first",
+        );
+        assert.equal(name.content.required, true);
+        const rsvp = questions[1];
         assert.ok(rsvp && rsvp.type === "question", "has an RSVP question");
         assert.equal(rsvp.content.kind, "yes_no");
         assert.equal(rsvp.content.required, true);

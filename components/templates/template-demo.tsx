@@ -81,7 +81,7 @@ export function TemplateDemo({ slug, locale, closedClassName = "min-h-full" }: P
           questionMode="preview"
         />
       )}
-      <DemoReply question={sample.sections.find(isQuestion)?.content} />
+      <DemoReply questions={sample.sections.filter(isQuestion).map((q) => q.content)} />
       <div className="flex justify-center">
         <Button type="button" variant="ghost" size="sm" onClick={() => setStage("closed")}>
           <RotateCcw />
@@ -98,48 +98,53 @@ const isQuestion = (s: Section): s is QuestionSection => s.type === "question";
 /**
  * The reply card as the receiver gets it under a gift with a question: the
  * real one's words and shape, nothing wired up, so what comes back to the
- * creator is understood before they start. Shows the template's own question
- * and answers when it starts with one (an invitation's RSVP), otherwise a
- * sample question.
+ * creator is understood before they start. Shows the template's own
+ * questions when it starts with some (an invitation's name and RSVP),
+ * otherwise one sample question.
  */
-function DemoReply({ question }: { question?: QuestionSection["content"] }) {
+function DemoReply({ questions }: { questions: QuestionSection["content"][] }) {
   const t = useTranslations("gift.response");
   const tDemo = useTranslations("create.demo");
   const id = useId();
-  const prompt = question?.prompt || tDemo("replyQuestion");
-  const options = question?.options ?? [];
+  const shown =
+    questions.length > 0 ? questions : [{ prompt: tDemo("replyQuestion"), options: [] }];
   return (
     <div className="flex flex-col gap-5 panel p-6 sm:p-8">
       <div>
         <h2 className="font-display text-2xl font-semibold">{t("title")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
-      <div className="flex flex-col gap-3">
-        <label htmlFor={id} className="font-semibold">
-          {prompt}
-        </label>
-        {options.length > 0 ? (
-          <div id={id} className="flex flex-col gap-2">
-            {options.map((o) => (
-              <span
-                key={o.id}
-                className="flex items-center gap-3 rounded-2xl border border-border px-4 py-3 text-sm"
-              >
-                <span aria-hidden="true" className="size-4 rounded-full border-2 border-primary" />
-                {o.label}
-              </span>
-            ))}
-          </div>
-        ) : (
-          <textarea
-            id={id}
-            readOnly
-            rows={3}
-            placeholder={t("textPlaceholder")}
-            className="w-full rounded-2xl border border-input bg-card px-4 py-3 text-sm outline-none"
-          />
-        )}
-      </div>
+      {shown.map((q, i) => (
+        <div key={`${id}-${i}`} className="flex flex-col gap-3">
+          <label htmlFor={`${id}-${i}`} className="font-semibold">
+            {q.prompt}
+          </label>
+          {q.options.length > 0 ? (
+            <div id={`${id}-${i}`} className="flex flex-col gap-2">
+              {q.options.map((o) => (
+                <span
+                  key={o.id}
+                  className="flex items-center gap-3 rounded-2xl border border-border px-4 py-3 text-sm"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="size-4 rounded-full border-2 border-primary"
+                  />
+                  {o.label}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <textarea
+              id={`${id}-${i}`}
+              readOnly
+              rows={i === 0 && shown.length > 1 ? 1 : 3}
+              placeholder={t("textPlaceholder")}
+              className="w-full rounded-2xl border border-input bg-card px-4 py-3 text-sm outline-none"
+            />
+          )}
+        </div>
+      ))}
       <Button type="button" size="lg" disabled className="self-start">
         <Send />
         {t("send")}

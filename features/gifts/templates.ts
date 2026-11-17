@@ -113,6 +113,18 @@ const event = (details: { date: string; time: string; place: string; note: strin
   type: "event",
   content: details,
 });
+/** Who is replying. One invitation link goes to many guests, so the host needs the name with the answer. */
+const guestName = (l: Locale): Section => ({
+  id: sid(),
+  type: "question",
+  content: {
+    questionId: crypto.randomUUID(),
+    kind: "short_text",
+    prompt: my(l, "Your name", "သင့်နာမည်"),
+    required: true,
+    options: [],
+  },
+});
 /** A yes-or-no question the guest must answer: the RSVP, with its two answers in the guest's words. */
 const rsvp = (l: Locale, prompt: string): Section => ({
   id: sid(),
@@ -379,6 +391,7 @@ const invitations: Record<string, TemplateDefinition> = {
         note: my(l, "Bring your dancing shoes.", "ကခုန်ဖို့ အဆင်သင့် ပြင်လာပါ။"),
       }),
       message(my(l, "It would not be the same without you.", "သင်မပါရင် ဒီပွဲ မပြည့်စုံပါဘူး။")),
+      guestName(l),
       rsvp(l, my(l, "Can you make it?", "လာနိုင်မလား?")),
       final(my(l, "See you there,", "ပွဲမှာ တွေ့မယ်")),
     ],
@@ -406,6 +419,7 @@ const invitations: Record<string, TemplateDefinition> = {
           "သင်ရှိနေခြင်းက ကျွန်တော်တို့အတွက် အကြီးမားဆုံး လက်ဆောင်ပါ။",
         ),
       ),
+      guestName(l),
       rsvp(l, my(l, "Will you join us?", "လာရောက်ချီးမြှင့်နိုင်မလား?")),
       final(my(l, "With love,", "မေတ္တာဖြင့်")),
     ],
@@ -433,6 +447,7 @@ const invitations: Record<string, TemplateDefinition> = {
           "ရောက်မလာခင် ပျော်ရွှင်မှုကို အတူ မျှဝေရအောင်။",
         ),
       ),
+      guestName(l),
       rsvp(l, my(l, "Will you come?", "လာမလား?")),
       final(my(l, "Can't wait to see you,", "တွေ့ရဖို့ စောင့်နေမယ်")),
     ],
@@ -464,6 +479,7 @@ const invitations: Record<string, TemplateDefinition> = {
           "ဒီအထိ ရောက်အောင် ပို့ဆောင်ပေးခဲ့သမျှအတွက် အတူ ဂုဏ်ပြုကြရအောင်။",
         ),
       ),
+      guestName(l),
       rsvp(l, my(l, "Are you coming?", "လာမလား?")),
       final(my(l, "Proudly,", "ဂုဏ်ယူစွာဖြင့်")),
     ],
@@ -491,6 +507,7 @@ const invitations: Record<string, TemplateDefinition> = {
           "လိပ်စာသစ်ပါ၊ ဖွင့်ထားတဲ့တံခါးကတော့ အတူတူပါပဲ။",
         ),
       ),
+      guestName(l),
       rsvp(l, my(l, "Can you drop by?", "လာလည်နိုင်မလား?")),
       final(my(l, "Warmly,", "နွေးထွေးစွာဖြင့်")),
     ],
@@ -512,6 +529,7 @@ const invitations: Record<string, TemplateDefinition> = {
         note: my(l, "Dinner and dancing.", "ညစာနဲ့ ကခုန်ခြင်း ပါမယ်။"),
       }),
       message(my(l, "Two families, one happy evening.", "မိသားစုနှစ်စု၊ ပျော်ရွှင်တဲ့ ညနေတစ်ခု။")),
+      guestName(l),
       rsvp(l, my(l, "Will you celebrate with us?", "အတူ ဂုဏ်ပြုပေးမလား?")),
       final(my(l, "With love,", "မေတ္တာဖြင့်")),
     ],
@@ -543,6 +561,7 @@ const invitations: Record<string, TemplateDefinition> = {
           "နှုတ်ဆက်ဖို့ မဟုတ်ဘဲ မကြာခင် ပြန်တွေ့မယ်လို့ ပြောဖို့ လာပါ။",
         ),
       ),
+      guestName(l),
       rsvp(l, my(l, "Can you come?", "လာနိုင်မလား?")),
       final(my(l, "See you soon,", "မကြာခင် ပြန်တွေ့မယ်")),
     ],
