@@ -672,6 +672,112 @@ const scenes = {
       over: svg(cap),
     };
   },
+  // Housewarming: the couple beside a small house with heart-shaped smoke, sparkles around.
+  housewarming: async () => {
+    const couple = await bird("lovebirds", 480);
+    const x = Math.round(W / 2 - couple.w - 20);
+    const y = H - couple.h - 30;
+    const hx = Math.round(W / 2 + 90);
+    const house =
+      `<g transform="translate(${hx} ${H - 40})">` +
+      `<rect x="0" y="-250" width="280" height="250" rx="10" fill="#fde9c8" stroke="#e9c79a" stroke-width="4"/>` +
+      `<polygon points="-24,-250 140,-380 304,-250" fill="#e8476c"/>` +
+      `<rect x="200" y="-350" width="34" height="70" rx="4" fill="#9a7b6a"/>` +
+      `<rect x="108" y="-150" width="64" height="150" rx="8" fill="#9a7b6a"/>` +
+      `<circle cx="160" cy="-78" r="5" fill="#ffd27a"/>` +
+      `<rect x="28" y="-200" width="60" height="60" rx="6" fill="#bfe3f5" stroke="#9fcde8" stroke-width="3"/>` +
+      `<rect x="192" y="-200" width="60" height="60" rx="6" fill="#bfe3f5" stroke="#9fcde8" stroke-width="3"/>` +
+      `<path d="M58 -200 V-140 M28 -170 H88 M222 -200 V-140 M192 -170 H252" stroke="#9fcde8" stroke-width="3"/>` +
+      `</g>` +
+      shapes.heart(hx + 206, H - 420, 34, "#f4a3b5", 0.9) +
+      shapes.heart(hx + 236, H - 470, 26, "#f4a3b5", 0.7) +
+      shapes.heart(hx + 262, H - 515, 20, "#f4a3b5", 0.5);
+    return {
+      under: svg(
+        shadow(x + couple.w / 2, H - 30, couple.w) +
+          house +
+          scatter("sparkle", 12, ["#ffd27a", "#7fb2d0"], 601, {
+            band: [100, 420],
+            size: [20, 40],
+            opacity: [0.6, 1],
+            keepOut: [hx - 40, H - 400, hx + 320, H],
+          }),
+      ),
+      layers: [{ input: couple.buf, left: x, top: y }],
+      over: svg(""),
+    };
+  },
+  // Engagement: the couple under one ring with a gem, hearts and sparkles.
+  "engagement-party": async () => {
+    const couple = await bird("lovebirds", 540);
+    const x = Math.round((W - couple.w) / 2);
+    const y = H - couple.h - 30;
+    const ring =
+      `<circle cx="${W / 2}" cy="190" r="72" fill="none" stroke="#e2b25a" stroke-width="14"/>` +
+      `<polygon points="${W / 2 - 26},108 ${W / 2},78 ${W / 2 + 26},108 ${W / 2},138" fill="#bfe3f5" stroke="#8fc4e6" stroke-width="4"/>` +
+      `<polygon points="${W / 2 - 26},108 ${W / 2 + 26},108 ${W / 2},138" fill="#dff2fb" opacity="0.8"/>`;
+    return {
+      under: svg(
+        shadow(x + couple.w / 2, H - 30, couple.w) +
+          ring +
+          scatter("heart", 22, ["#f4a3b5", "#e8476c"], 701, {
+            band: [100, 600],
+            size: [18, 40],
+            opacity: [0.45, 0.9],
+            keepOut: [x + 20, y + 20, x + couple.w - 20, H],
+          }) +
+          scatter("sparkle", 14, ["#ffd27a"], 702, {
+            band: [60, 420],
+            size: [22, 44],
+            opacity: [0.7, 1],
+          }),
+      ),
+      layers: [{ input: couple.buf, left: x, top: y }],
+      over: svg(""),
+    };
+  },
+  // Farewell: the two birds, a suitcase, a paper plane and soft bunting.
+  "farewell-party": async () => {
+    const pink = await bird("bird-pink", 460);
+    const blue = await bird("bird-blue", 420, { flop: true });
+    const px = Math.round(W / 2 - pink.w - 20);
+    const py = H - pink.h - 30;
+    const bx = Math.round(W / 2 + 40);
+    const by = H - blue.h - 30;
+    const suitcase =
+      `<g transform="translate(120 ${H - 40})">` +
+      `<rect x="0" y="-150" width="190" height="150" rx="16" fill="#c98bc0" stroke="#a66fa0" stroke-width="4"/>` +
+      `<rect x="60" y="-186" width="70" height="40" rx="10" fill="none" stroke="#a66fa0" stroke-width="8"/>` +
+      `<rect x="0" y="-100" width="190" height="14" fill="#a66fa0"/>` +
+      `<rect x="78" y="-112" width="34" height="38" rx="6" fill="#ffd27a"/>` +
+      `</g>`;
+    const plane =
+      `<g transform="translate(980 220) rotate(-18)">` +
+      `<polygon points="0,0 150,-40 60,20" fill="#fff3e8" stroke="#c9b8a8" stroke-width="3"/>` +
+      `<polygon points="60,20 150,-40 70,60" fill="#e9dccd" stroke="#c9b8a8" stroke-width="3"/>` +
+      `</g>` +
+      `<path d="M700 300 Q 800 260, 960 236" stroke="#c9b8a8" stroke-width="3" fill="none" stroke-dasharray="10 12"/>`;
+    return {
+      under: svg(
+        shadow(px + pink.w / 2, H - 30, pink.w) +
+          shadow(bx + blue.w / 2, H - 30, blue.w) +
+          bunting(["#c98bc0", "#ffd27a", "#7fb2d0", "#f4a3b5", "#8fd6b4"]) +
+          suitcase +
+          plane +
+          scatter("confetti", 26, ["#c98bc0", "#ffd27a", "#7fb2d0", "#f4a3b5"], 801, {
+            band: [140, 560],
+            size: [14, 28],
+            opacity: [0.5, 0.9],
+            keepOut: [px + 20, py + 20, bx + blue.w - 20, H],
+          }),
+      ),
+      layers: [
+        { input: pink.buf, left: px, top: py },
+        { input: blue.buf, left: bx, top: by },
+      ],
+      over: svg(""),
+    };
+  },
   congratulations: async () => {
     const b = await bird("bird-blue", 520);
     const x = Math.round((W - b.w) / 2 + 30);

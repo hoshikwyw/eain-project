@@ -468,6 +468,85 @@ const invitations: Record<string, TemplateDefinition> = {
       final(my(l, "Proudly,", "ဂုဏ်ယူစွာဖြင့်")),
     ],
   },
+  housewarming: {
+    design: "invite",
+    decoration: "sparkles",
+    layout: "card",
+    defaultVariant: "ocean",
+    defaultSections: (l) => [
+      cover(
+        my(l, "We've moved in!", "ကျွန်တော်တို့ အိမ်သစ် ပြောင်းပြီးပါပြီ!"),
+        my(l, "Come see our new home.", "ကျွန်တော်တို့ အိမ်သစ်ကို လာကြည့်ပါ။"),
+      ),
+      event({
+        date: my(l, "Saturday 8 March", "မတ် ၈ ရက်၊ စနေနေ့"),
+        time: my(l, "5 pm", "ညနေ ၅ နာရီ"),
+        place: my(l, "Our new home, Yangon", "ကျွန်တော်တို့ အိမ်သစ်၊ ရန်ကုန်"),
+        note: my(l, "Bring nothing but yourselves.", "ဘာမှ ယူမလာပါနဲ့၊ ကိုယ်တိုင်ပဲ လာပါ။"),
+      }),
+      message(
+        my(
+          l,
+          "A new address, the same open door.",
+          "လိပ်စာသစ်ပါ၊ ဖွင့်ထားတဲ့တံခါးကတော့ အတူတူပါပဲ။",
+        ),
+      ),
+      rsvp(l, my(l, "Can you drop by?", "လာလည်နိုင်မလား?")),
+      final(my(l, "Warmly,", "နွေးထွေးစွာဖြင့်")),
+    ],
+  },
+  "engagement-party": {
+    design: "wedding",
+    decoration: "hearts",
+    layout: "scroll",
+    defaultVariant: "blossom",
+    defaultSections: (l) => [
+      cover(
+        my(l, "We said yes", "ကျွန်တော်တို့ စေ့စပ်ပါပြီ"),
+        my(l, "Join us to celebrate our engagement.", "စေ့စပ်ပွဲကို လာရောက် ဂုဏ်ပြုပေးပါ။"),
+      ),
+      event({
+        date: my(l, "Saturday 24 January", "ဇန်နဝါရီ ၂၄ ရက်၊ စနေနေ့"),
+        time: my(l, "6 pm", "ညနေ ၆ နာရီ"),
+        place: my(l, "Lotus Garden, Mandalay", "ကြာပန်းဥယျာဉ်၊ မန္တလေး"),
+        note: my(l, "Dinner and dancing.", "ညစာနဲ့ ကခုန်ခြင်း ပါမယ်။"),
+      }),
+      message(my(l, "Two families, one happy evening.", "မိသားစုနှစ်စု၊ ပျော်ရွှင်တဲ့ ညနေတစ်ခု။")),
+      rsvp(l, my(l, "Will you celebrate with us?", "အတူ ဂုဏ်ပြုပေးမလား?")),
+      final(my(l, "With love,", "မေတ္တာဖြင့်")),
+    ],
+  },
+  "farewell-party": {
+    design: "invite",
+    decoration: "confetti",
+    layout: "card",
+    defaultVariant: "lavender",
+    defaultSections: (l) => [
+      cover(
+        my(l, "Farewell party", "နှုတ်ဆက်ပွဲ"),
+        my(
+          l,
+          "One last evening together before the next chapter.",
+          "နောက်အခန်းမစခင် နောက်ဆုံး ညနေတစ်ခု အတူတူ။",
+        ),
+      ),
+      event({
+        date: my(l, "Friday 30 May", "မေ ၃၀ ရက်၊ သောကြာနေ့"),
+        time: my(l, "7 pm", "ညနေ ၇ နာရီ"),
+        place: my(l, "The usual place", "အမြဲတမ်း နေရာ"),
+        note: my(l, "Stories welcome, tears allowed.", "ပုံပြင်တွေ ယူလာပါ၊ မျက်ရည်လည်း ရပါတယ်။"),
+      }),
+      message(
+        my(
+          l,
+          "Come say see you soon, not goodbye.",
+          "နှုတ်ဆက်ဖို့ မဟုတ်ဘဲ မကြာခင် ပြန်တွေ့မယ်လို့ ပြောဖို့ လာပါ။",
+        ),
+      ),
+      rsvp(l, my(l, "Can you come?", "လာနိုင်မလား?")),
+      final(my(l, "See you soon,", "မကြာခင် ပြန်တွေ့မယ်")),
+    ],
+  },
 };
 Object.assign(templates, invitations);
 

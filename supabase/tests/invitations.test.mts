@@ -10,7 +10,15 @@ import { describe, it } from "node:test";
 import { sectionSchema } from "../../features/gifts/schemas.ts";
 import { getTemplateStyle, templates } from "../../features/gifts/templates.ts";
 
-const INVITATIONS = ["party-invitation", "wedding-invitation", "baby-shower", "graduation-party"];
+const INVITATIONS = [
+  "party-invitation",
+  "wedding-invitation",
+  "baby-shower",
+  "graduation-party",
+  "housewarming",
+  "engagement-party",
+  "farewell-party",
+];
 
 describe("invitation templates", () => {
   for (const slug of INVITATIONS) {
