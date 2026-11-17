@@ -41,6 +41,8 @@ export function renderDesign(ctx: Ctx) {
       return <InviteDesign {...ctx} />;
     case "wedding":
       return <WeddingDesign {...ctx} />;
+    case "journey":
+      return <JourneyDesign {...ctx} />;
     case "minimal":
     default:
       return <MinimalDesign {...ctx} />;
@@ -1134,6 +1136,88 @@ function WeddingDesign(ctx: Ctx) {
           )}
         />
         <Flourish className="relative w-32" />
+      </div>
+    </article>
+  );
+}
+
+/** A compass rose in the accent, the corner mark of a map. */
+function Compass({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 48 48"
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+    >
+      <circle cx="24" cy="24" r="18" opacity="0.5" />
+      <path d="M24 6 L28 24 L24 42 L20 24 Z" fill="currentColor" opacity="0.85" />
+      <path d="M6 24 L24 20 L42 24 L24 28 Z" fill="currentColor" opacity="0.35" />
+      <circle cx="24" cy="24" r="2.5" fill="var(--t-card)" />
+    </svg>
+  );
+}
+
+/**
+ * A map of the two of you: a watercolour wash, the title in script, and the
+ * timeline drawn as a road down the middle with a stop on alternate sides,
+ * each marked by a pin. Photos are polaroids with corner mounts, as on a
+ * pinboard. Premium, so no printer's mark.
+ */
+function JourneyDesign(ctx: Ctx) {
+  const { compact, style, eyebrow, animate } = ctx;
+  return (
+    <article
+      className={cn(
+        "relative overflow-hidden rounded-3xl [background:var(--t-bg)]",
+        compact ? "p-3" : "p-4",
+      )}
+    >
+      <Decorations kind={style.decoration} />
+      <div
+        className={cn(
+          "relative flex flex-col overflow-hidden rounded-2xl bg-[color:var(--t-card)] shadow-sm",
+          compact ? "gap-5 px-5 py-6" : "gap-7 px-6 py-8",
+        )}
+      >
+        {/* Two soft washes, as on a watercolour map. */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-20 -left-16 size-72 rounded-full bg-[color:var(--t-accent)]/15 blur-3xl"
+        />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-20 -bottom-24 size-80 rounded-full bg-[color:var(--glow)]/35 blur-3xl"
+        />
+        <Pattern kind="paper" opacity={0.1} />
+        <Compass className="absolute top-4 right-4 size-10 text-[color:var(--t-accent)]" />
+        <Eyebrow text={eyebrow} className="relative" />
+        <Sections
+          ctx={ctx}
+          animate={animate}
+          className={cn("relative", compact ? "gap-5" : "gap-7")}
+          itemClassName={cn(
+            // The title in script, the second line in the muted ink.
+            "[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:leading-none [&_h1]:font-bold [&_h1]:text-[color:var(--t-accent)] [&_h1:has([data-burmese])]:text-4xl [&_h2]:text-base [&_h2]:tracking-[0.12em] [&_h2]:uppercase",
+            // The road: a grey band down the middle with a dashed centre line, stops on alternate sides.
+            "[&_ol]:relative [&_ol]:mx-0 [&_ol]:gap-7 [&_ol]:border-l-0 [&_ol]:py-4 [&_ol]:pl-0",
+            "[&_ol]:before:absolute [&_ol]:before:inset-y-0 [&_ol]:before:left-1/2 [&_ol]:before:w-3.5 [&_ol]:before:-translate-x-1/2 [&_ol]:before:rounded-full [&_ol]:before:bg-[#67758a] [&_ol]:before:content-['']",
+            "[&_ol]:after:absolute [&_ol]:after:inset-y-3 [&_ol]:after:left-1/2 [&_ol]:after:w-0 [&_ol]:after:-translate-x-1/2 [&_ol]:after:border-l-2 [&_ol]:after:border-dashed [&_ol]:after:border-white/85 [&_ol]:after:content-['']",
+            "[&_ol>li]:w-[44%] [&_ol>li:nth-child(even)]:self-end [&_ol>li:nth-child(even)]:text-right",
+            // Pins sit on the road: a ring in the accent with a pale centre.
+            "[&_ol_.dot]:top-1 [&_ol_.dot]:size-4 [&_ol_.dot]:bg-[color:var(--t-card)] [&_ol_.dot]:ring-[3px] [&_ol_.dot]:ring-[color:var(--t-accent)]",
+            "[&_ol>li:nth-child(odd)_.dot]:left-auto [&_ol>li:nth-child(odd)_.dot]:right-[calc(-13.6%-0.5rem)] [&_ol>li:nth-child(even)_.dot]:left-[calc(-13.6%-0.5rem)]",
+            "[&_ol_li_p.uppercase]:text-[color:var(--t-accent)] [&_ol_li_p.font-semibold:not(.uppercase)]:font-display [&_ol_li_p.font-semibold:not(.uppercase)]:text-lg",
+            "[&_figcaption]:font-hand [&_figcaption]:text-2xl [&_figcaption]:text-[color:var(--t-accent)]",
+            "[&_footer]:items-center [&_footer]:border-t-0 [&_footer]:text-center [&_.sig]:font-hand [&_.sig]:text-3xl [&_.sig]:text-[color:var(--t-accent)]",
+          )}
+        />
+        <Illustration
+          src={style.illustration}
+          className={cn("relative mx-auto", compact ? "max-w-48" : "max-w-64")}
+        />
       </div>
     </article>
   );

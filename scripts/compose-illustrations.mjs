@@ -778,6 +778,36 @@ const scenes = {
       over: svg(""),
     };
   },
+  // Places we've been: the couple at the end of a dashed route that loops between three map pins.
+  "places-weve-been": async () => {
+    const couple = await bird("lovebirds", 480);
+    const x = Math.round(W / 2 - couple.w / 2 + 160);
+    const y = H - couple.h - 30;
+    const pin = (px, py, c) =>
+      `<path d="M${px} ${py} c -26 -34 -26 -62 0 -62 c 26 0 26 28 0 62 z" fill="${c}" stroke="#fff" stroke-width="4"/><circle cx="${px}" cy="${py - 40}" r="9" fill="#fff"/>`;
+    const route =
+      `<path d="M80 700 C 180 560, 120 420, 260 380 S 520 420, 540 300 S 760 200, 820 330" stroke="#67758a" stroke-width="10" fill="none" stroke-linecap="round" opacity="0.9"/>` +
+      `<path d="M80 700 C 180 560, 120 420, 260 380 S 520 420, 540 300 S 760 200, 820 330" stroke="#fff" stroke-width="2.5" fill="none" stroke-dasharray="12 14" opacity="0.9"/>`;
+    const plane = `<g transform="translate(900 150) rotate(-14)"><polygon points="0,0 130,-36 52,18" fill="#fff3e8" stroke="#c9b8a8" stroke-width="3"/><polygon points="52,18 130,-36 60,52" fill="#e9dccd" stroke="#c9b8a8" stroke-width="3"/></g>`;
+    return {
+      under: svg(
+        shadow(x + couple.w / 2, H - 30, couple.w) +
+          route +
+          pin(80, 690, "#e8476c") +
+          pin(260, 372, "#7fb2d0") +
+          pin(540, 292, "#ffd27a") +
+          plane +
+          scatter("heart", 14, ["#f4a3b5", "#fcd9a8"], 901, {
+            band: [80, 560],
+            size: [16, 32],
+            opacity: [0.4, 0.8],
+            keepOut: [x + 20, y + 20, x + couple.w - 20, H],
+          }),
+      ),
+      layers: [{ input: couple.buf, left: x, top: y }],
+      over: svg(""),
+    };
+  },
   congratulations: async () => {
     const b = await bird("bird-blue", 520);
     const x = Math.round((W - b.w) / 2 + 30);

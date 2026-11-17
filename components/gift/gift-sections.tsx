@@ -205,7 +205,8 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
     case "image": {
       const item = section.content.mediaId ? media[section.content.mediaId] : undefined;
       const captionStyle = section.content.styles?.caption;
-      const polaroid = design === "scrapbook" || design === "letter" || design === "party";
+      const polaroid =
+        design === "scrapbook" || design === "letter" || design === "party" || design === "journey";
       if (!item)
         return placeholders ? (
           <PhotoPlaceholder label={labels.addPhoto} polaroid={polaroid} />
@@ -235,7 +236,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
               // A letter's or a party card's photo is taped in.
               (design === "letter" || design === "party") &&
                 "relative before:absolute before:-top-2.5 before:left-1/2 before:h-5 before:w-20 before:-translate-x-1/2 before:rotate-[-4deg] before:rounded-sm before:bg-[color:var(--glow)]/60 before:content-['']",
-              design === "scrapbook" && PHOTO_CORNERS,
+              (design === "scrapbook" || design === "journey") && PHOTO_CORNERS,
             )}
           >
             {img}
@@ -277,9 +278,12 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
       const captionStyle = section.content.styles?.caption;
       if (items.length === 0)
         return placeholders ? (
-          <PhotoPlaceholder label={labels.addPhoto} polaroid={design === "scrapbook"} />
+          <PhotoPlaceholder
+            label={labels.addPhoto}
+            polaroid={design === "scrapbook" || design === "journey"}
+          />
         ) : null;
-      if (design === "scrapbook") {
+      if (design === "scrapbook" || design === "journey") {
         return (
           <figure className="flex flex-col gap-3">
             <div

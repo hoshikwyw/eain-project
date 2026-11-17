@@ -31,7 +31,8 @@ export type Design =
   | "blank"
   | "garden"
   | "invite"
-  | "wedding";
+  | "wedding"
+  | "journey";
 
 export type TemplateStyle = {
   decoration: Decoration;
@@ -79,6 +80,7 @@ const designOpening: Record<Design, Opening> = {
   garden: "simple",
   invite: "envelope",
   wedding: "envelope",
+  journey: "book",
 };
 
 export type TemplateDefinition = Omit<TemplateStyle, "illustration" | "defaultOpening"> & {
@@ -359,6 +361,35 @@ export const templates: Record<string, TemplateDefinition> = {
       ]),
       grid(),
       final(my(l, "To many more,", "နောက်ထပ်အမှတ်တရများအတွက်")),
+    ],
+  },
+  "places-weve-been": {
+    design: "journey",
+    decoration: "hearts",
+    layout: "scroll",
+    defaultVariant: "blossom",
+    defaultSections: (l) => [
+      cover(
+        my(l, "Places we've been", "ကျွန်တော်တို့ ရောက်ခဲ့တဲ့ နေရာများ"),
+        my(l, "A map of us, one stop at a time.", "တစ်နေရာချင်း ကျွန်တော်တို့ရဲ့ မြေပုံ။"),
+      ),
+      timeline([
+        {
+          date: "2019",
+          title: my(l, "Where it started", "စတင်ခဲ့သည့်နေရာ"),
+          text: my(l, "The first trip, the first photo.", "ပထမဆုံး ခရီး၊ ပထမဆုံး ဓာတ်ပုံ။"),
+        },
+        { date: "2020", title: my(l, "The beach", "ကမ်းခြေ"), text: "" },
+        { date: "2021", title: my(l, "The mountains", "တောင်တန်းများ"), text: "" },
+        { date: "2023", title: my(l, "The city", "မြို့"), text: "" },
+        {
+          date: my(l, "Next", "နောက်တစ်ခု"),
+          title: my(l, "The adventure continues…", "ခရီးက ဆက်သွားဦးမယ်…"),
+          text: "",
+        },
+      ]),
+      grid(my(l, "A few of the stops", "ရောက်ခဲ့တဲ့ နေရာအချို့")),
+      final(my(l, "Here's to the next one,", "နောက်တစ်ခုအတွက်")),
     ],
   },
   congratulations: {
