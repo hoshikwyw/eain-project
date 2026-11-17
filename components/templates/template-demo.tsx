@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { sampleGift } from "@/features/gifts/sample-gift";
 import type { Section } from "@/features/gifts/schemas";
 import { defaultScene, sceneConfig } from "@/features/gifts/scene";
-import { getTemplateStyle } from "@/features/gifts/templates";
+import { getTemplateStyle, isInvitationDesign } from "@/features/gifts/templates";
 
 type Stage = "closed" | "opening" | "open";
 
@@ -52,6 +52,7 @@ export function TemplateDemo({ slug, locale, closedClassName = "min-h-full" }: P
         variant={sample.variant}
         stage={stage}
         recipientName={sample.recipientName}
+        invitation={isInvitationDesign(getTemplateStyle(slug).design)}
         onOpen={open}
         className={closedClassName}
       />

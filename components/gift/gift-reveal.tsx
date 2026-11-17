@@ -49,6 +49,8 @@ type Props = {
   variant: ThemeVariant;
   colors?: GiftColors;
   recipientName: string;
+  /** An invitation: the closed stage asks them to come, not to open a gift. */
+  invitation?: boolean;
   /** Where "Make your own gift" goes: the same template to try, or the library. */
   tryHref: string;
   children: React.ReactNode;
@@ -61,6 +63,7 @@ export function GiftReveal({
   variant,
   colors,
   recipientName,
+  invitation = false,
   tryHref,
   children,
 }: Props) {
@@ -98,6 +101,7 @@ export function GiftReveal({
         colors={colors}
         stage={stage}
         recipientName={recipientName}
+        invitation={invitation}
         onOpen={open}
       />
     );

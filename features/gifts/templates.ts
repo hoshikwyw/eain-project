@@ -610,6 +610,11 @@ export function getTemplateStyle(slug: string): TemplateStyle {
     : fallbackStyle;
 }
 
+/** Whether a design is an invitation: the receiver is asked to come, not given a gift. */
+export function isInvitationDesign(design: Design): boolean {
+  return design === "invite" || design === "wedding";
+}
+
 export function isAvailableTemplate(slug: string): boolean {
   return slug in templates;
 }

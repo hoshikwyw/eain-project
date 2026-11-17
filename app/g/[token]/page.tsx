@@ -4,7 +4,7 @@ import { GiftReveal } from "@/components/gift/gift-reveal";
 import { GiftView } from "@/components/gift/gift-view";
 import { SceneFrame } from "@/components/scene/scene-frame";
 import { getPublicGift } from "@/features/gifts/public";
-import { isAvailableTemplate } from "@/features/gifts/templates";
+import { isAvailableTemplate, isInvitationDesign } from "@/features/gifts/templates";
 import { sceneConfig } from "@/features/gifts/scene";
 import { GiftUnavailable } from "./unavailable";
 
@@ -16,12 +16,16 @@ const PREVIEW_IMAGE = "/brand/gift-preview.png";
  * the preview must never reveal the message, names or photos. Every gift
  * link shows the same title, line and picture of a present.
  */
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/g/[token]">): Promise<Metadata> {
+  const { token } = await params;
   const t = await getTranslations("gift");
-  const title = t("previewShare");
-  const description = t("previewDescription");
+  // The same cached read the page makes. Only the kind of card reaches the preview, never its words.
+  const gift = await getPublicGift(token);
+  const invitation = Boolean(gift && isInvitationDesign(gift.style.design));
+  const title = invitation ? t("invitation.share") : t("previewShare");
+  const description = invitation ? t("invitation.shareDescription") : t("previewDescription");
   return {
-    title: t("previewTitle"),
+    title: invitation ? t("invitation.previewTitle") : t("previewTitle"),
     description,
     robots: { index: false, follow: false },
     openGraph: {
@@ -65,6 +69,7 @@ export default async function PublicGiftPage({ params }: PageProps<"/g/[token]">
       variant={gift.variant}
       colors={gift.colors}
       recipientName={gift.recipientName}
+      invitation={isInvitationDesign(gift.style.design)}
     >
       {gift.style.scene ? (
         // A scene template: the animation plays in a tall, phone-shaped frame.

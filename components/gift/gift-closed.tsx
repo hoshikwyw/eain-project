@@ -1,6 +1,6 @@
 "use client";
 
-import { Gift } from "lucide-react";
+import { Gift, Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/page-title";
@@ -15,6 +15,8 @@ type Props = {
   colors?: GiftColors;
   stage: OpeningStage;
   recipientName: string;
+  /** An invitation: the words ask them to come, not to open a gift. */
+  invitation?: boolean;
   onOpen: () => void;
   /** Replaces the full-screen height, for a preview inside a smaller frame. */
   className?: string;
@@ -31,6 +33,7 @@ export function GiftClosed({
   colors,
   stage,
   recipientName,
+  invitation = false,
   onOpen,
   className,
 }: Props) {
@@ -71,9 +74,11 @@ export function GiftClosed({
         )}
       >
         <p className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
-          {t("someone")}
+          {invitation ? t("invitation.someone") : t("someone")}
         </p>
-        <PageTitle className="text-balance">{t("specialForYou")}</PageTitle>
+        <PageTitle className="text-balance">
+          {invitation ? t("invitation.title") : t("specialForYou")}
+        </PageTitle>
       </div>
       <Button
         size="lg"
@@ -84,8 +89,8 @@ export function GiftClosed({
           stage === "opening" && "opacity-0",
         )}
       >
-        <Gift />
-        {t("openYourGift")}
+        {invitation ? <Mail /> : <Gift />}
+        {invitation ? t("invitation.open") : t("openYourGift")}
       </Button>
       <p className="text-xs text-muted-foreground">{t("noAccountNeeded")}</p>
     </div>

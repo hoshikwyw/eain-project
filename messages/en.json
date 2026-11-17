@@ -476,6 +476,14 @@
     "someone": "Someone made something special for you.",
     "specialForYou": "A special gift, just for you",
     "openYourGift": "Open Your Gift",
+    "invitation": {
+      "someone": "Someone is inviting you.",
+      "title": "You're invited",
+      "open": "Open the invitation",
+      "share": "✉️ You're invited",
+      "shareDescription": "Someone sent you an invitation. Tap to see when and where.",
+      "previewTitle": "An invitation for you"
+    },
     "noAccountNeeded": "No account needed.",
     "forName": "For {name}",
     "forYou": "For you",
