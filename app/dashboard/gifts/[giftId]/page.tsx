@@ -23,6 +23,7 @@ import { getSiteOrigin, giftShareUrl } from "@/lib/site-url";
 import { cn } from "@/lib/utils";
 import type { GiftEventType } from "@/types/database";
 import { DownloadReplies } from "@/components/dashboard/download-replies";
+import { GuestList } from "@/components/dashboard/guest-list";
 import { QueryToasts } from "@/components/ui/query-toasts";
 import { PageTitle } from "@/components/ui/page-title";
 import { CapsLabel } from "@/components/ui/caps-label";
@@ -49,6 +50,7 @@ const ROW = "h-12 w-full justify-start gap-3 rounded-2xl px-3";
 export default async function GiftDetailPage({ params }: PageProps<"/dashboard/gifts/[giftId]">) {
   const { giftId } = await params;
   const t = await getTranslations("dashboard.gifts");
+  const tc = await getTranslations("common");
   const tNav = await getTranslations("dashboard.nav");
   const format = await getFormatter();
 
@@ -226,28 +228,21 @@ export default async function GiftDetailPage({ params }: PageProps<"/dashboard/g
                 </div>
               )}
               {responses.length > 0 && (
-                <ul className="mt-4 flex flex-col gap-3">
-                  {responses.map((r) => (
-                    <li key={r.id} className="rounded-2xl bg-secondary/60 p-4">
-                      <p className="mb-2 text-xs text-muted-foreground">
-                        {format.dateTime(new Date(r.createdAt), {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })}
-                      </p>
-                      <dl className="flex flex-col gap-2">
-                        {r.answers.map((a, i) => (
-                          <div key={i}>
-                            <dt className="text-xs font-semibold text-muted-foreground">
-                              {a.prompt}
-                            </dt>
-                            <dd className="text-sm break-words whitespace-pre-line">{a.value}</dd>
-                          </div>
-                        ))}
-                      </dl>
-                    </li>
-                  ))}
-                </ul>
+                <GuestList
+                  giftId={gift.id}
+                  responses={responses}
+                  labels={{
+                    all: t("responses.all"),
+                    coming: t("responses.coming"),
+                    notComing: t("responses.notComing"),
+                    guest: t("responses.guest"),
+                    remove: t("responses.remove"),
+                    removeConfirm: t("responses.removeConfirm"),
+                    removed: t("responses.removed"),
+                    removeFailed: t("responses.removeFailed"),
+                    cancel: tc("cancel"),
+                  }}
+                />
               )}
             </section>
           )}

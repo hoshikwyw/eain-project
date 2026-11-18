@@ -1,7 +1,15 @@
 import { createClient, createClientWithUser } from "@/lib/supabase/server";
 import type { Gift, GiftEvent, GiftMedia, GiftRecipient, Template } from "@/types/database";
 import { signMedia } from "./media";
-import type { GiftColors, MediaItem, Opening, Section, Sticker, ThemeVariant } from "./schemas";
+import type {
+  GiftColors,
+  MediaItem,
+  Opening,
+  QuestionKind,
+  Section,
+  Sticker,
+  ThemeVariant,
+} from "./schemas";
 import type { GiftScene } from "./scene";
 import { lookFromTheme, openingFromTheme, sectionsFromRows } from "./sections";
 import { getTemplateStyle, type TemplateStyle } from "./templates";
@@ -150,7 +158,13 @@ export async function getEditorGift(giftId: string): Promise<EditorGift | null> 
 export type ResponseView = {
   id: string;
   createdAt: string;
-  answers: { prompt: string; value: string }[];
+  answers: {
+    prompt: string;
+    value: string;
+    kind: QuestionKind;
+    /** For a yes/no question: which way the guest answered. Its first option is the yes. */
+    pick: "yes" | "no" | null;
+  }[];
 };
 
 /** Responses to one gift, readable only by its creator through RLS. */
@@ -161,7 +175,7 @@ export async function getGiftResponses(giftId: string): Promise<ResponseView[]> 
     .select("id, created_at")
     .eq("gift_id", giftId)
     .order("created_at", { ascending: false })
-    .limit(100);
+    .limit(300);
   if (!responses || responses.length === 0) return [];
 
   const [{ data: answers }, { data: questions }] = await Promise.all([
@@ -172,9 +186,30 @@ export async function getGiftResponses(giftId: string): Promise<ResponseView[]> 
         "response_id",
         responses.map((r) => r.id),
       ),
-    supabase.from("gift_questions").select("id, prompt, position").eq("gift_id", giftId),
+    supabase.from("gift_questions").select("id, prompt, position, type").eq("gift_id", giftId),
   ]);
-  const promptById = new Map((questions ?? []).map((q) => [q.id, q]));
+  const questionById = new Map((questions ?? []).map((q) => [q.id, q]));
+
+  // The yes/no questions' options, so each answer can say which way it went.
+  const yesNoIds = (questions ?? []).filter((q) => q.type === "yes_no").map((q) => q.id);
+  const { data: options } =
+    yesNoIds.length > 0
+      ? await supabase
+          .from("gift_question_options")
+          .select("id, question_id, label, position")
+          .in("question_id", yesNoIds)
+      : { data: [] };
+  const pickOf = (a: {
+    question_id: string;
+    option_id: string | null;
+    answer_text: string | null;
+  }) => {
+    if (!yesNoIds.includes(a.question_id)) return null;
+    const option =
+      (options ?? []).find((o) => o.id === a.option_id) ??
+      (options ?? []).find((o) => o.question_id === a.question_id && o.label === a.answer_text);
+    return option ? (option.position === 0 ? ("yes" as const) : ("no" as const)) : null;
+  };
 
   return responses.map((r) => ({
     id: r.id,
@@ -183,12 +218,14 @@ export async function getGiftResponses(giftId: string): Promise<ResponseView[]> 
       .filter((a) => a.response_id === r.id)
       .sort(
         (a, b) =>
-          (promptById.get(a.question_id)?.position ?? 0) -
-          (promptById.get(b.question_id)?.position ?? 0),
+          (questionById.get(a.question_id)?.position ?? 0) -
+          (questionById.get(b.question_id)?.position ?? 0),
       )
       .map((a) => ({
-        prompt: promptById.get(a.question_id)?.prompt ?? "",
+        prompt: questionById.get(a.question_id)?.prompt ?? "",
         value: a.answer_text ?? (a.answer_number !== null ? `${a.answer_number}/5` : ""),
+        kind: questionById.get(a.question_id)?.type ?? "short_text",
+        pick: pickOf(a),
       })),
   }));
 }

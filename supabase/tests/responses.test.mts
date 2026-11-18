@@ -280,6 +280,27 @@ describe("responses and premium unlock", () => {
     assert.equal((ans ?? []).length, 0);
   });
 
+  it("the creator can remove a reply; nobody else can", async () => {
+    const { data: rows } = await user
+      .from("gift_responses")
+      .select("id")
+      .eq("gift_id", giftId)
+      .order("created_at", { ascending: false });
+    const victim = rows![0].id;
+    const anon = createClient(url, anonKey, { auth: { persistSession: false } });
+    await anon.from("gift_responses").delete().eq("id", victim);
+    const still = await user.from("gift_responses").select("id").eq("id", victim);
+    assert.equal(still.data?.length, 1, "anon cannot delete");
+    const del = await user.from("gift_responses").delete({ count: "exact" }).eq("id", victim);
+    assert.equal(del.error, null, del.error?.message);
+    assert.equal(del.count, 1);
+    const { data: answers } = await admin
+      .from("gift_answers")
+      .select("id")
+      .eq("response_id", victim);
+    assert.equal(answers?.length, 0, "its answers go with it");
+  });
+
   it("premium unlock spends points once and enables the template", async () => {
     const { data: premium } = await user
       .from("templates")

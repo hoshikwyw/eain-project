@@ -996,7 +996,15 @@
         "dateColumn": "Replied",
         "downloaded": "Replies downloaded.",
         "guestList": "Guest list ({count})",
-        "noRsvps": "No RSVPs yet. Guests appear here as soon as they answer."
+        "noRsvps": "No RSVPs yet. Guests appear here as soon as they answer.",
+        "all": "All",
+        "coming": "Coming",
+        "notComing": "Not coming",
+        "guest": "Guest",
+        "remove": "Remove reply",
+        "removeConfirm": "Remove this reply? It cannot be undone. The guest can answer again.",
+        "removed": "Reply removed.",
+        "removeFailed": "Could not remove the reply."
       },
       "status": {
         "draft": "Draft",

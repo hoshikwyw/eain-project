@@ -471,6 +471,22 @@ export async function markGiftShared(giftId: string): Promise<void> {
   await supabase.rpc("record_gift_shared", { p_gift_id: giftId });
 }
 
+/**
+ * Removes one reply to the creator's own gift (row level security decides),
+ * answers with it. The guest's browser then finds no reply and may answer again.
+ */
+export async function deleteResponse(giftId: string, responseId: string): Promise<boolean> {
+  const supabase = await createClient();
+  const { error, count } = await supabase
+    .from("gift_responses")
+    .delete({ count: "exact" })
+    .eq("id", responseId)
+    .eq("gift_id", giftId);
+  if (error || !count) return false;
+  revalidatePath(`/dashboard/gifts/${giftId}`);
+  return true;
+}
+
 export async function unpublishGift(giftId: string): Promise<void> {
   await rpcOnGift("unpublish_gift", giftId);
   redirect(`/dashboard/gifts/${giftId}?unpublished=1`);
