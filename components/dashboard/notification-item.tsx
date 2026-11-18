@@ -30,7 +30,9 @@ export async function NotificationItem({ notification: n }: { notification: Noti
   const format = await getFormatter();
   const kind = KINDS[n.title_key];
   const Icon = kind?.icon ?? Bell;
-  const payload = (n.payload ?? {}) as { giftTitle?: string; reason?: string };
+  const payload = (n.payload ?? {}) as { giftTitle?: string; reason?: string; summary?: string };
+  // A reply's answers in a few words (migration 0021); a moderation reason otherwise.
+  const detail = payload.summary || payload.reason;
   const unread = !n.read_at;
 
   const row = (
@@ -54,8 +56,10 @@ export async function NotificationItem({ notification: n }: { notification: Noti
         <span className={cn("block text-sm", unread && "font-semibold")}>
           {t(`titles.${kind?.key ?? "generic"}`, { giftTitle: payload.giftTitle ?? "" })}
         </span>
-        {payload.reason && (
-          <span className="block text-sm text-muted-foreground">{payload.reason}</span>
+        {detail && (
+          <span className="block truncate text-sm text-muted-foreground" title={detail}>
+            {detail}
+          </span>
         )}
         <span className="block text-xs text-muted-foreground">
           {format.relativeTime(new Date(n.created_at))}

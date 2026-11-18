@@ -192,11 +192,21 @@ describe("responses and premium unlock", () => {
       .eq("gift_id", giftId)
       .eq("event_type", "responded");
     assert.equal(events?.length, 1);
-    const { data: notes } = await user.from("notifications").select("type").eq("gift_id", giftId);
+    const { data: notes } = await user
+      .from("notifications")
+      .select("type, payload")
+      .eq("gift_id", giftId);
     assert.deepEqual(
       notes?.map((n) => n.type),
       ["response_received"],
     );
+    // With migration 0021 the notification says what was answered; before it, only the title.
+    const summary = (notes?.[0]?.payload as { summary?: string } | null)?.summary;
+    if (summary === undefined)
+      console.log(
+        "  ⚠ migration 0021 is not applied; the reply summary is missing from notifications",
+      );
+    else assert.ok(summary.includes("The trip") && summary.includes("Miss you!"), summary);
 
     const after = await user.from("profiles").select("points_balance").single();
     assert.equal(after.data!.points_balance, before.data!.points_balance + 20);
