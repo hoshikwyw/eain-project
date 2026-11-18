@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import type { GiftCard } from "@/features/gifts/queries";
+import { isInvitationDesign } from "@/features/gifts/templates";
 import { GiftStatusChip } from "./gift-status-chip";
 import { GiftThumb } from "./gift-thumb";
 
@@ -20,6 +21,7 @@ export async function GiftTile({ card, senderName, actions }: Props) {
   const t = await getTranslations("dashboard.gifts");
   const format = await getFormatter();
   const { gift, recipient } = card;
+  const invitation = isInvitationDesign(card.style.design);
   const href = gift.status === "draft" ? `/create/${gift.id}` : `/dashboard/gifts/${gift.id}`;
 
   return (
@@ -36,7 +38,14 @@ export async function GiftTile({ card, senderName, actions }: Props) {
             <GiftStatusChip status={gift.status} opened={Boolean(recipient?.first_opened_at)} />
           </div>
           <p className="truncate text-xs text-muted-foreground">
-            {recipient?.name ? t("for", { name: recipient.name }) : t("noRecipient")}
+            {invitation
+              ? t("rsvpCount", { count: card.responses })
+              : recipient?.name
+                ? t("for", { name: recipient.name })
+                : t("noRecipient")}
+            {!invitation &&
+              card.responses > 0 &&
+              ` · ${t("replyCount", { count: card.responses })}`}
             {" · "}
             {format.relativeTime(new Date(gift.updated_at))}
           </p>

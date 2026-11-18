@@ -948,6 +948,8 @@
       "count": "{count} of {max} gifts",
       "for": "For {name}",
       "noRecipient": "No recipient name yet",
+      "rsvpCount": "{count, plural, =0 {No RSVPs yet} one {# RSVP} other {# RSVPs}}",
+      "replyCount": "{count, plural, one {# reply} other {# replies}}",
       "limitReached": "You have reached the limit of 5 gifts. Delete one to make room.",
       "deleted": "The gift was deleted. Its link no longer works.",
       "deleteFailed": "Could not delete the gift. Please try again.",

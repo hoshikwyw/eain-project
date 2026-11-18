@@ -17,6 +17,8 @@ export type GiftCard = {
   scene: GiftScene | undefined;
   sections: Section[];
   media: Record<string, MediaItem>;
+  /** Replies so far; for an invitation, the RSVPs. */
+  responses: number;
 };
 
 /**
@@ -38,20 +40,29 @@ export async function listMyGiftCards(limit?: number): Promise<GiftCard[]> {
   if (!gifts || gifts.length === 0) return [];
 
   const ids = gifts.map((g) => g.id);
-  const [{ data: recipients }, { data: templates }, { data: sections }, { data: mediaRows }] =
-    await Promise.all([
-      supabase.from("gift_recipients").select("gift_id, name, first_opened_at").in("gift_id", ids),
-      supabase.from("templates").select("id, slug"),
-      supabase
-        .from("gift_sections")
-        .select("id, gift_id, type, content, position")
-        .in("gift_id", ids),
-      supabase
-        .from("gift_media")
-        .select("id, gift_id, storage_path, thumb_path, width, height")
-        .in("gift_id", ids),
-    ]);
+  const [
+    { data: recipients },
+    { data: templates },
+    { data: sections },
+    { data: mediaRows },
+    { data: responseRows },
+  ] = await Promise.all([
+    supabase.from("gift_recipients").select("gift_id, name, first_opened_at").in("gift_id", ids),
+    supabase.from("templates").select("id, slug"),
+    supabase
+      .from("gift_sections")
+      .select("id, gift_id, type, content, position")
+      .in("gift_id", ids),
+    supabase
+      .from("gift_media")
+      .select("id, gift_id, storage_path, thumb_path, width, height")
+      .in("gift_id", ids),
+    supabase.from("gift_responses").select("gift_id").in("gift_id", ids),
+  ]);
   const media = await signMedia(mediaRows ?? []);
+  const responsesByGift = new Map<string, number>();
+  for (const r of responseRows ?? [])
+    responsesByGift.set(r.gift_id, (responsesByGift.get(r.gift_id) ?? 0) + 1);
   const recipientByGift = new Map((recipients ?? []).map((r) => [r.gift_id, r]));
   const slugById = new Map((templates ?? []).map((t) => [t.id, t.slug]));
 
@@ -66,6 +77,7 @@ export async function listMyGiftCards(limit?: number): Promise<GiftCard[]> {
         .filter((m) => m.gift_id === gift.id && media[m.id])
         .map((m) => [m.id, media[m.id]!]),
     ),
+    responses: responsesByGift.get(gift.id) ?? 0,
   }));
 }
 

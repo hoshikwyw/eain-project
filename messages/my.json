@@ -948,6 +948,8 @@
       "count": "လက်ဆောင် {count, number, digits} / {max, number, digits}",
       "for": "{name} အတွက်",
       "noRecipient": "လက်ခံသူ နာမည် မထည့်ရသေးပါ",
+      "rsvpCount": "{count, plural, =0 {အကြောင်းပြန်ချက် မရသေးပါ} other {အကြောင်းပြန်ချက် {count, number, digits} ခု}}",
+      "replyCount": "အဖြေ {count, number, digits} ခု",
       "limitReached": "လက်ဆောင် ၅ ခု ကန့်သတ်ချက် ပြည့်သွားပါပြီ။ တစ်ခုဖျက်ပြီး နေရာလွတ်ယူပါ။",
       "deleted": "လက်ဆောင်ကို ဖျက်လိုက်ပါပြီ။ လင့်ခ် အလုပ်မလုပ်တော့ပါ။",
       "deleteFailed": "လက်ဆောင်ကို ဖျက်မရပါ။ ထပ်ကြိုးစားပါ။",
