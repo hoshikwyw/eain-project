@@ -41,6 +41,7 @@ export function TemplatePreview({ slug, variant, locale, name }: Props) {
             recipientName=""
             senderName=""
             compact
+            inert
           />
         </div>
       </div>

@@ -56,6 +56,12 @@ export type GiftRendererProps = {
   senderName: string;
   /** Smaller type and spacing, for template thumbnails. */
   compact?: boolean;
+  /**
+   * A picture of a gift (thumbnails in galleries and the template library): no links
+   * and no live controls, because the picture usually sits inside a link itself and a
+   * link within a link breaks hydration.
+   */
+  inert?: boolean;
   /** Show dashed boxes where photos are missing. Editor only. */
   placeholders?: boolean;
   /** Staggered entrance animation for the receiver page. */

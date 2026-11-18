@@ -31,6 +31,7 @@ export function GiftThumb({ card, senderName, className }: Props) {
           style={card.style}
           recipientName={card.recipient?.name ?? ""}
           senderName={senderName}
+          inert
         />
       </div>
     </div>
