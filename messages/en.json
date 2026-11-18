@@ -542,6 +542,7 @@
       "privacy": "No account needed. Only the sender sees your reply.",
       "change": "Change my answer",
       "closed": "Replies closed on {date}.",
+      "noHeadcount": "No need, since you can't make it.",
       "closedShort": "Replies are closed."
     },
     "madeWith": "Made with Eain",

@@ -36,6 +36,8 @@ type Store = {
   demo: boolean;
   /** The RSVP deadline, when it has passed: the card shows it and takes nothing. */
   closedOn?: string;
+  /** The guest picked the "no" of a yes/no question: a headcount is not asked. */
+  declined: boolean;
 };
 
 const AnswerContext = createContext<Store | null>(null);
@@ -141,11 +143,16 @@ export function AnswerProvider(props: ProviderProps) {
     if (state === "invalid" || state === "error") setState("idle");
   }
 
+  // A "no" on a yes/no question (its second option) makes a headcount pointless.
+  const declined = hasDeclined(questions, answers);
+  // The questions a reply is made of: a headcount stays out once the guest said no.
+  const asked = declined ? questions.filter((q) => q.kind !== "count") : questions;
+
   async function submit() {
     if (props.closedOn || state === "closed") return;
     if (state === "sending" || state === "sent" || state === "duplicate") return;
-    const missing = questions.some((q) => q.required && !isAnswered(q, answers[q.id]));
-    const payload = questions
+    const missing = asked.some((q) => q.required && !isAnswered(q, answers[q.id]));
+    const payload = asked
       .filter((q) => isAnswered(q, answers[q.id]))
       .map((q) => ({
         questionId: q.id,
@@ -209,10 +216,17 @@ export function AnswerProvider(props: ProviderProps) {
         invitation,
         demo: Boolean(props.demo),
         closedOn: props.closedOn,
+        declined,
       }}
     >
       {children}
     </AnswerContext.Provider>
+  );
+}
+
+function hasDeclined(questions: PublicQuestion[], answers: Record<string, Answer>): boolean {
+  return questions.some(
+    (q) => q.kind === "yes_no" && Boolean(q.options[1]) && answers[q.id]?.optionId === q.options[1].id,
   );
 }
 
@@ -258,6 +272,8 @@ export function QuestionSlot({
   const { state, invitation } = store;
   const done = state === "sent" || state === "duplicate";
   const closed = Boolean(store.closedOn) || state === "closed";
+  // "How many of you?" is not asked of someone who cannot come.
+  const skipped = q.kind === "count" && store.declined;
   const w = (
     key: "send" | "sentTitle" | "sentText" | "change" | "closed" | "closedShort",
     values?: Record<string, string>,
@@ -273,18 +289,22 @@ export function QuestionSlot({
     <div className="question flex flex-col gap-3 rounded-2xl border border-[color:var(--t-accent-soft)] p-4 text-left">
       <p className="font-semibold">
         {prompt}
-        {required && !done && !closed && (
+        {required && !done && !closed && !skipped && (
           <span aria-hidden="true" className="ml-1 text-[color:var(--t-accent)]">
             *
           </span>
         )}
       </p>
-      <QuestionInput
-        question={q}
-        value={value}
-        disabled={done || closed || state === "sending"}
-        onChange={(a) => store.set(q.id, a)}
-      />
+      {skipped ? (
+        <p className="text-sm text-[color:var(--t-muted)]">{t("noHeadcount")}</p>
+      ) : (
+        <QuestionInput
+          question={q}
+          value={value}
+          disabled={done || closed || state === "sending"}
+          onChange={(a) => store.set(q.id, a)}
+        />
+      )}
       {last && (
         <div className="mt-1 flex flex-col gap-2">
           {state === "invalid" && (
