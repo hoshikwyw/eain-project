@@ -939,10 +939,14 @@
         "drafts": "Drafts",
         "shared": "Shared",
         "opened": "Opened",
+        "answered": "Answered",
+        "invitations": "Invitations",
         "empty": {
           "drafts": "No drafts right now.",
           "shared": "You haven't shared a gift yet. Publish one to get its link.",
-          "opened": "No one has opened a gift yet. It shows up here as soon as they do."
+          "opened": "No one has opened a gift yet. It shows up here as soon as they do.",
+          "answered": "No replies yet. A gift moves here as soon as someone answers its question.",
+          "invitations": "No invitations yet. Start one from the Invitations templates."
         }
       },
       "count": "{count} of {max} gifts",
