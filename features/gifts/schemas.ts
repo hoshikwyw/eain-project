@@ -307,6 +307,8 @@ export const answerSchema = z.object({
 export const responseSubmissionSchema = z.object({
   sessionId: sessionIdSchema,
   answers: z.array(answerSchema).min(1).max(20),
+  /** The same browser answering again: its earlier reply is replaced, not refused. */
+  replace: z.boolean().optional(),
 });
 export type ResponseSubmission = z.infer<typeof responseSubmissionSchema>;
 

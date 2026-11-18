@@ -151,6 +151,23 @@ export async function submitResponse(
   submission: ResponseSubmission,
 ): Promise<SubmitResult> {
   const admin = createAdminClient();
+  if (submission.replace) {
+    // A change of mind: the earlier reply from this browser goes, answers with it, and the
+    // new one is stored as usual. The creator is told again, with the new answer.
+    const { data: gift } = await admin
+      .from("gifts")
+      .select("id")
+      .eq("share_token", token)
+      .eq("status", "published")
+      .maybeSingle();
+    if (gift) {
+      await admin
+        .from("gift_responses")
+        .delete()
+        .eq("gift_id", gift.id)
+        .eq("session_id", submission.sessionId);
+    }
+  }
   const { error } = await admin.rpc("submit_gift_response", {
     p_share_token: token,
     p_session_id: submission.sessionId,

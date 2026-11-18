@@ -23,6 +23,8 @@ type Store = {
   set: (questionId: string, answer: Answer) => void;
   state: State;
   submit: () => void;
+  /** Unlocks the card so the same browser can answer again. */
+  change: () => void;
   invitation: boolean;
   demo: boolean;
 };
@@ -66,6 +68,14 @@ export function AnswerProvider(props: ProviderProps) {
     }
   });
   const started = useRef(false);
+  // True once the guest asked to change an answer already sent: the next send replaces it.
+  const replacing = useRef(false);
+
+  function change() {
+    replacing.current = true;
+    setAnswers({});
+    setState("idle");
+  }
 
   function set(questionId: string, answer: Answer) {
     if (state === "sent" || state === "duplicate" || state === "sending") return;
@@ -101,7 +111,11 @@ export function AnswerProvider(props: ProviderProps) {
       const res = await fetch(`/api/g/${props.token}/responses`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId: props.sessionId(), answers: payload }),
+        body: JSON.stringify({
+          sessionId: props.sessionId(),
+          answers: payload,
+          ...(replacing.current && { replace: true }),
+        }),
       });
       if (res.ok || res.status === 409) {
         try {
@@ -109,6 +123,7 @@ export function AnswerProvider(props: ProviderProps) {
         } catch {
           // ignore
         }
+        if (res.ok) replacing.current = false;
         setState(res.ok ? "sent" : "duplicate");
         if (res.ok) toast.success(w("sentTitle"), { description: w("sentText") });
         else toast.info(t("alreadyText"));
@@ -126,7 +141,16 @@ export function AnswerProvider(props: ProviderProps) {
 
   return (
     <AnswerContext.Provider
-      value={{ questions, answers, set, state, submit, invitation, demo: Boolean(props.demo) }}
+      value={{
+        questions,
+        answers,
+        set,
+        state,
+        submit,
+        change,
+        invitation,
+        demo: Boolean(props.demo),
+      }}
     >
       {children}
     </AnswerContext.Provider>
@@ -169,7 +193,8 @@ export function QuestionSlot({
   if (!q) return null;
   const { state, invitation } = store;
   const done = state === "sent" || state === "duplicate";
-  const w = (key: "send" | "sentTitle" | "sentText") => (invitation ? t(`rsvp.${key}`) : t(key));
+  const w = (key: "send" | "sentTitle" | "sentText" | "change") =>
+    invitation ? t(`rsvp.${key}`) : t(key);
   const value = store.answers[q.id];
 
   return (
@@ -207,7 +232,19 @@ export function QuestionSlot({
                 <span className="font-semibold">{w("sentTitle")}</span>{" "}
                 <span className="text-[color:var(--t-muted)]">
                   {state === "sent" ? w("sentText") : t("alreadyText")}
-                </span>
+                </span>{" "}
+                {!store.demo && (
+                  <button
+                    type="button"
+                    onClick={store.change}
+                    className={cn(
+                      "rounded font-semibold text-[color:var(--t-accent)] underline decoration-dotted underline-offset-4 hover:decoration-solid",
+                      focus,
+                    )}
+                  >
+                    {w("change")}
+                  </button>
+                )}
               </span>
             </p>
           ) : (

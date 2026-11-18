@@ -220,6 +220,29 @@ describe("responses and premium unlock", () => {
     assert.equal(res.status, 409);
   });
 
+  it("the same session can change its answer", async () => {
+    const res = await post(`/api/g/${token}/responses`, {
+      sessionId: session,
+      answers: [{ questionId: choiceQ, optionId: optionB }],
+      replace: true,
+    });
+    assert.equal(res.status, 200);
+    const { data: rows } = await admin
+      .from("gift_responses")
+      .select("id, gift_answers(question_id, option_id)")
+      .eq("gift_id", giftId)
+      .eq("session_id", session);
+    assert.equal(rows?.length, 1, "still one reply for this session");
+    const answers = (
+      rows?.[0] as { gift_answers: { question_id: string; option_id: string | null }[] }
+    ).gift_answers;
+    assert.deepEqual(
+      answers.map((a) => a.option_id),
+      [optionB],
+      "the earlier answers are gone",
+    );
+  });
+
   it("a second session responds but does not pay again", async () => {
     const before = await user.from("profiles").select("points_balance").single();
     const res = await post(`/api/g/${token}/responses`, {

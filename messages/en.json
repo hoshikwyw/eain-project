@@ -504,13 +504,15 @@
         "subtitle": "Your answer goes only to the host.",
         "send": "Send my RSVP",
         "sentTitle": "Your RSVP has been sent.",
-        "sentText": "Thank you. The host has your answer."
+        "sentText": "Thank you. The host has your answer.",
+        "change": "Change my RSVP"
       },
       "error": "Could not send. Please try again.",
       "sentTitle": "Your reply has been sent.",
       "sentText": "Thank you. They will see it on their side.",
       "alreadyText": "You have already replied from this device.",
-      "privacy": "No account needed. Only the sender sees your reply."
+      "privacy": "No account needed. Only the sender sees your reply.",
+      "change": "Change my answer"
     },
     "madeWith": "Made with Eain",
     "makeYourOwn": "Make your own gift",
