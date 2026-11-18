@@ -29,6 +29,8 @@ export type TemplateCard = {
   unlocked: boolean;
   /** Has a layout in code and is unlocked. */
   available: boolean;
+  /** Picked by the admin for the home page. */
+  featured: boolean;
   variant: ThemeVariant;
 };
 

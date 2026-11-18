@@ -7,6 +7,7 @@ import { Bird, Lovebirds } from "@/components/brand/lovebirds";
 import { TemplatePreview } from "@/components/templates/template-preview";
 import { Button } from "@/components/ui/button";
 import { loadTemplateCards } from "@/features/gifts/template-cards";
+import { isAvailableTemplate } from "@/features/gifts/templates";
 import { isSupabaseConfigured, publicEnv } from "@/lib/env";
 import { cn } from "@/lib/utils";
 
@@ -101,8 +102,12 @@ export default async function HomePage() {
   const t = await getTranslations();
   const jsonLd = structuredData(t("brand.seoDescription"));
   const locale = (await getLocale()) === "my" ? "my" : "en";
+  // The admin's featured picks, premium ones included; the first eight with a layout in code.
   const showcase = isSupabaseConfigured()
-    ? (await loadTemplateCards(locale)).templates.filter((x) => x.available).slice(0, 4)
+    ? (await loadTemplateCards(locale)).templates
+        .filter((x) => isAvailableTemplate(x.slug))
+        .sort((a, b) => Number(b.featured) - Number(a.featured))
+        .slice(0, 8)
     : [];
 
   return (
@@ -249,8 +254,14 @@ export default async function HomePage() {
                 </div>
                 <div className="mt-4 flex items-baseline justify-between gap-3">
                   <span className="font-display text-lg">{tp.name}</span>
-                  <span className="text-[11px] tracking-[0.2em] text-muted-foreground uppercase my:text-xs my:tracking-normal my:normal-case">
+                  <span className="flex items-center gap-2 text-[11px] tracking-[0.2em] text-muted-foreground uppercase my:text-xs my:tracking-normal my:normal-case">
                     {tp.category}
+                    {tp.isPremium && (
+                      <Lock
+                        aria-label={t("templatePage.facts.points", { points: tp.pointPrice })}
+                        className="size-3 text-brand"
+                      />
+                    )}
                   </span>
                 </div>
               </Link>

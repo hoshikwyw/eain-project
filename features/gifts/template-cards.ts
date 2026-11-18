@@ -15,7 +15,7 @@ export async function loadTemplateCards(locale: "en" | "my"): Promise<{
     supabase
       .from("templates")
       .select(
-        "id, slug, category_id, name_en, name_my, description_en, description_my, is_premium, point_price",
+        "id, slug, category_id, name_en, name_my, description_en, description_my, is_premium, point_price, is_featured",
       )
       .eq("is_active", true)
       .order("sort_order")
@@ -50,6 +50,7 @@ export async function loadTemplateCards(locale: "en" | "my"): Promise<{
         pointPrice: r.point_price,
         unlocked: isUnlocked,
         available: isAvailableTemplate(r.slug) && isUnlocked,
+        featured: r.is_featured,
         variant: getTemplateStyle(r.slug).defaultVariant,
       };
     }),
