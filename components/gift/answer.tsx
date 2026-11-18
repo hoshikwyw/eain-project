@@ -428,62 +428,43 @@ function QuestionInput({
         />
       );
     case "rating":
-    case "count":
+    case "count": {
+      const numbers = q.kind === "count" ? COUNTS : RATINGS;
+      const any = typeof value?.number === "number";
       return (
-        <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={q.prompt}>
-          {(q.kind === "count" ? COUNTS : RATINGS).map((n) => (
-            <button
-              key={n}
-              type="button"
-              role="radio"
-              aria-checked={value?.number === n}
-              aria-label={String(n)}
-              disabled={disabled}
-              onClick={() => onChange({ number: n })}
-              className={cn(
-                "size-10 rounded-full border text-base font-semibold",
-                control,
-                focus,
-                value?.number === n && chosen,
-                disabled && value?.number !== n && "opacity-50",
-              )}
-            >
-              {n}
-            </button>
-          ))}
-        </div>
+        <Radios label={q.prompt} className="flex flex-wrap gap-2">
+          {numbers.map((n, i) => {
+            const picked = value?.number === n;
+            return (
+              <button
+                key={n}
+                type="button"
+                role="radio"
+                aria-checked={picked}
+                aria-label={String(n)}
+                tabIndex={rovingTab(picked, any, i)}
+                disabled={disabled}
+                onClick={() => onChange({ number: n })}
+                className={cn(
+                  "size-10 rounded-full border text-base font-semibold",
+                  control,
+                  focus,
+                  picked && chosen,
+                  disabled && !picked && "opacity-50",
+                )}
+              >
+                {n}
+              </button>
+            );
+          })}
+        </Radios>
       );
-    case "reaction":
+    }
+    case "reaction": {
+      const any = Boolean(value?.optionId);
       return (
-        <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={q.prompt}>
-          {q.options.map((o) => (
-            <button
-              key={o.id}
-              type="button"
-              role="radio"
-              aria-checked={value?.optionId === o.id}
-              aria-label={o.label}
-              disabled={disabled}
-              onClick={() => onChange({ optionId: o.id })}
-              className={cn(
-                "grid size-11 place-items-center rounded-full border text-xl transition-transform",
-                control,
-                focus,
-                value?.optionId === o.id && cn(chosen, "scale-110"),
-                disabled && value?.optionId !== o.id && "opacity-50",
-              )}
-            >
-              {o.label}
-            </button>
-          ))}
-        </div>
-      );
-    case "choice":
-    case "yes_no":
-    default:
-      return (
-        <div className="flex flex-col gap-2" role="radiogroup" aria-label={q.prompt}>
-          {q.options.map((o) => {
+        <Radios label={q.prompt} className="flex flex-wrap gap-2">
+          {q.options.map((o, i) => {
             const picked = value?.optionId === o.id;
             return (
               <button
@@ -491,6 +472,40 @@ function QuestionInput({
                 type="button"
                 role="radio"
                 aria-checked={picked}
+                aria-label={o.label}
+                tabIndex={rovingTab(picked, any, i)}
+                disabled={disabled}
+                onClick={() => onChange({ optionId: o.id })}
+                className={cn(
+                  "grid size-11 place-items-center rounded-full border text-xl transition-transform",
+                  control,
+                  focus,
+                  picked && cn(chosen, "scale-110"),
+                  disabled && !picked && "opacity-50",
+                )}
+              >
+                {o.label}
+              </button>
+            );
+          })}
+        </Radios>
+      );
+    }
+    case "choice":
+    case "yes_no":
+    default: {
+      const any = Boolean(value?.optionId);
+      return (
+        <Radios label={q.prompt} className="flex flex-col gap-2">
+          {q.options.map((o, i) => {
+            const picked = value?.optionId === o.id;
+            return (
+              <button
+                key={o.id}
+                type="button"
+                role="radio"
+                aria-checked={picked}
+                tabIndex={rovingTab(picked, any, i)}
                 disabled={disabled}
                 onClick={() => onChange({ optionId: o.id })}
                 className={cn(
@@ -514,7 +529,50 @@ function QuestionInput({
               </button>
             );
           })}
-        </div>
+        </Radios>
       );
+    }
   }
 }
+
+/**
+ * One tab stop per group, like native radios: the chosen option is the stop,
+ * or the first option while nothing is chosen.
+ */
+const rovingTab = (picked: boolean, anyPicked: boolean, index: number) =>
+  picked || (!anyPicked && index === 0) ? 0 : -1;
+
+/**
+ * A radio group made of buttons, with the keyboard behaviour of real radios:
+ * arrow keys move between the options and choose as they go, wrapping at the
+ * ends. Tab leaves the group.
+ */
+function Radios({
+  label,
+  className,
+  children,
+}: {
+  label: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  function onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    const step = STEPS[e.key];
+    if (!step || !ref.current) return;
+    const items = [...ref.current.querySelectorAll<HTMLButtonElement>("[role=radio]:enabled")];
+    const at = items.indexOf(document.activeElement as HTMLButtonElement);
+    if (at < 0) return;
+    e.preventDefault();
+    const next = items[(at + step + items.length) % items.length];
+    next.focus();
+    next.click();
+  }
+  return (
+    <div ref={ref} role="radiogroup" aria-label={label} className={className} onKeyDown={onKeyDown}>
+      {children}
+    </div>
+  );
+}
+
+const STEPS: Record<string, number> = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
