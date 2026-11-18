@@ -11,6 +11,8 @@ import { GiftUnavailable } from "./unavailable";
 
 /** The same picture for every gift: a wrapped present, made by scripts/compose-gift-preview.mjs. */
 const PREVIEW_IMAGE = "/brand/gift-preview.png";
+/** And for every invitation: an envelope, made by scripts/compose-invitation-preview.mjs. */
+const INVITATION_IMAGE = "/brand/invitation-preview.png";
 
 /**
  * Generic metadata on purpose: chat apps fetch this for link previews, and
@@ -25,6 +27,7 @@ export async function generateMetadata({ params }: PageProps<"/g/[token]">): Pro
   const invitation = Boolean(gift && isInvitationDesign(gift.style.design));
   const title = invitation ? t("invitation.share") : t("previewShare");
   const description = invitation ? t("invitation.shareDescription") : t("previewDescription");
+  const image = invitation ? INVITATION_IMAGE : PREVIEW_IMAGE;
   return {
     title: invitation ? t("invitation.previewTitle") : t("previewTitle"),
     description,
@@ -36,15 +39,15 @@ export async function generateMetadata({ params }: PageProps<"/g/[token]">): Pro
       type: "website",
       images: [
         {
-          url: PREVIEW_IMAGE,
+          url: image,
           width: 1200,
           height: 630,
           type: "image/png",
-          alt: t("previewImageAlt"),
+          alt: invitation ? t("invitation.previewImageAlt") : t("previewImageAlt"),
         },
       ],
     },
-    twitter: { card: "summary_large_image", title, description, images: [PREVIEW_IMAGE] },
+    twitter: { card: "summary_large_image", title, description, images: [image] },
   };
 }
 

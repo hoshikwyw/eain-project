@@ -505,7 +505,8 @@
       "share": "✉️ You're invited",
       "shareDescription": "Someone sent you an invitation. Tap to see when and where.",
       "previewTitle": "An invitation for you",
-      "makeYourOwn": "Make your own invitation"
+      "makeYourOwn": "Make your own invitation",
+      "previewImageAlt": "A sealed envelope with the words: You are invited"
     },
     "noAccountNeeded": "No account needed.",
     "forName": "For {name}",
