@@ -28,7 +28,7 @@ export function emptySection(type: EditableSectionType): Section {
     case "photo_grid":
       return { id, type, content: { mediaIds: [], caption: "" } };
     case "timeline":
-      return { id, type, content: { items: [{ date: "", title: "", text: "" }] } };
+      return { id, type, content: { items: [{ date: "", title: "", text: "", mediaId: null }] } };
     case "event":
       return { id, type, content: { date: "", time: "", place: "", note: "" } };
     case "quote":

@@ -388,6 +388,17 @@ export async function duplicateGift(giftId: string): Promise<void> {
   // has its own question rows and answers never cross between gifts.
   const remap = (content: unknown): unknown => {
     const c = (content ?? {}) as Record<string, unknown>;
+    if (Array.isArray(c.items)) {
+      return {
+        ...c,
+        items: c.items.map((item) => {
+          const it = item as Record<string, unknown>;
+          return typeof it.mediaId === "string"
+            ? { ...it, mediaId: idMap.get(it.mediaId) ?? null }
+            : it;
+        }),
+      };
+    }
     if (typeof c.mediaId === "string") return { ...c, mediaId: idMap.get(c.mediaId) ?? null };
     if (Array.isArray(c.mediaIds)) {
       return { ...c, mediaIds: c.mediaIds.map((id) => idMap.get(String(id))).filter(Boolean) };

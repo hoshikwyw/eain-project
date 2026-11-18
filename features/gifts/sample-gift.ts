@@ -55,6 +55,13 @@ export function sampleGift(slug: string, locale: "en" | "my"): SampleGift | null
     if (section.type === "photo_grid") {
       return { ...section, content: { ...section.content, mediaIds: PHOTOS.map((p) => p.id) } };
     }
+    // The journey pins a photo at its first stops; other timelines stay as text.
+    if (section.type === "timeline" && style.design === "journey") {
+      const items = section.content.items.map((item, i) =>
+        i < PHOTOS.length ? { ...item, mediaId: PHOTOS[i]!.id } : item,
+      );
+      return { ...section, content: { ...section.content, items } };
+    }
     return section;
   });
   return {

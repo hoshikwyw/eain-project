@@ -366,6 +366,28 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
                 aria-hidden="true"
                 className="dot absolute top-1.5 -left-[1.6rem] size-3 rounded-full bg-[color:var(--t-accent)] ring-4 ring-[color:var(--t-card)]"
               />
+              {item.mediaId && media[item.mediaId] && (
+                <span
+                  className={cn(
+                    "stop-photo mb-2 block w-full",
+                    design === "journey" || design === "scrapbook"
+                      ? cn(
+                          "rounded-sm bg-white p-1.5 pb-4 shadow-md",
+                          i % 2 ? "rotate-2" : "-rotate-2",
+                        )
+                      : "overflow-hidden rounded-xl",
+                  )}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element -- private signed URL, optimiser bypassed on purpose */}
+                  <img
+                    src={media[item.mediaId]!.thumbUrl}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="aspect-[4/3] w-full object-cover"
+                  />
+                </span>
+              )}
               {(item.date || editing) && (
                 <p
                   style={alignStyle(st?.date)}

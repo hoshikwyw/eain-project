@@ -135,6 +135,8 @@ export function referencedMediaIds(sections: Section[]): string[] {
   for (const s of sections) {
     if (s.type === "image" && s.content.mediaId) ids.add(s.content.mediaId);
     if (s.type === "photo_grid") s.content.mediaIds.forEach((id) => ids.add(id));
+    if (s.type === "timeline")
+      for (const item of s.content.items) if (item.mediaId) ids.add(item.mediaId);
   }
   return [...ids];
 }

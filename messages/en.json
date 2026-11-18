@@ -283,6 +283,8 @@
       "momentTitle": "What happened",
       "momentText": "A few words about it",
       "addMoment": "Add a moment",
+      "stopPhoto": "Photo for this moment",
+      "stopPhotoSet": "Added",
       "removeMoment": "Remove",
       "eventDate": "Date",
       "eventTime": "Time",

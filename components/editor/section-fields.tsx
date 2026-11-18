@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
+import { Image as ImageIcon, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -226,6 +226,36 @@ export function SectionFields({ section, onChange, giftId, guest, media, onMedia
                   setItems(items.map((it, j) => (j === i ? { ...it, text: e.target.value } : it)))
                 }
               />
+              {!guest && (
+                <details
+                  className="group rounded-lg border border-dashed border-border px-3 py-2"
+                  open={Boolean(item.mediaId)}
+                >
+                  <summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold">
+                    <ImageIcon className="size-4 text-muted-foreground" />
+                    {t("stopPhoto")}
+                    {item.mediaId && (
+                      <span className="ml-auto text-xs font-normal text-muted-foreground">
+                        {t("stopPhotoSet")}
+                      </span>
+                    )}
+                  </summary>
+                  <div className="pt-3">
+                    <PhotoPicker
+                      giftId={giftId}
+                      media={media}
+                      onMediaChange={onMediaChange}
+                      selected={item.mediaId ? [item.mediaId] : []}
+                      onSelectedChange={(ids) =>
+                        setItems(
+                          items.map((it, j) => (j === i ? { ...it, mediaId: ids[0] ?? null } : it)),
+                        )
+                      }
+                      max={1}
+                    />
+                  </div>
+                </details>
+              )}
               {items.length > 1 && (
                 <Button
                   type="button"
@@ -246,7 +276,7 @@ export function SectionFields({ section, onChange, giftId, guest, media, onMedia
               variant="secondary"
               size="sm"
               className="self-start"
-              onClick={() => setItems([...items, { date: "", title: "", text: "" }])}
+              onClick={() => setItems([...items, { date: "", title: "", text: "", mediaId: null }])}
             >
               <Plus />
               {t("addMoment")}

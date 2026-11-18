@@ -177,6 +177,8 @@ export const timelineItemSchema = z.object({
   date: shortText(40).default(""),
   title: z.string().trim().min(1).max(80),
   text: shortText(300).default(""),
+  /** A photo for this moment, from the gift's photos. */
+  mediaId: z.uuid().nullable().default(null),
 });
 
 export const timelineContentSchema = z.object({

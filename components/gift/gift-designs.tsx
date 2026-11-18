@@ -1211,6 +1211,7 @@ function JourneyDesign(ctx: Ctx) {
             "[&_ol>li:nth-child(odd)_.dot]:left-auto [&_ol>li:nth-child(odd)_.dot]:right-[calc(-13.6%-0.5rem)] [&_ol>li:nth-child(even)_.dot]:left-[calc(-13.6%-0.5rem)]",
             "[&_ol_li_p.uppercase]:text-[color:var(--t-accent)] [&_ol_li_p.font-semibold:not(.uppercase)]:font-display [&_ol_li_p.font-semibold:not(.uppercase)]:text-lg",
             "[&_figcaption]:font-hand [&_figcaption]:text-2xl [&_figcaption]:text-[color:var(--t-accent)]",
+            "[&_.stop-photo]:w-11/12 [&_ol>li:nth-child(even)_.stop-photo]:ml-auto",
             "[&_footer]:items-center [&_footer]:border-t-0 [&_footer]:text-center [&_.sig]:font-hand [&_.sig]:text-3xl [&_.sig]:text-[color:var(--t-accent)]",
           )}
         />

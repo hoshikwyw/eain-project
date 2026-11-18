@@ -154,7 +154,7 @@ const rsvp = (l: Locale, prompt: string): Section => ({
 const timeline = (items: { date: string; title: string; text: string }[]): Section => ({
   id: sid(),
   type: "timeline",
-  content: { items },
+  content: { items: items.map((item) => ({ ...item, mediaId: null })) },
 });
 
 export const templates: Record<string, TemplateDefinition> = {
