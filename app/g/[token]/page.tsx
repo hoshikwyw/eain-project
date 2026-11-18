@@ -96,7 +96,7 @@ export default async function PublicGiftPage({ params }: PageProps<"/g/[token]">
           recipientName={gift.recipientName}
           senderName={gift.senderName}
           animate
-          questionMode="hidden"
+          questionMode="answer"
         />
       )}
     </GiftReveal>

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import type { GiftColors, Opening, PublicQuestion, ThemeVariant } from "@/features/gifts/schemas";
 import { GiftClosed } from "./gift-closed";
 import { openingDuration } from "./gift-opening";
-import { ResponseForm } from "./response-form";
+import { AnswerProvider } from "./answer";
 
 type Stage = "closed" | "opening" | "open";
 
@@ -109,14 +109,15 @@ export function GiftReveal({
 
   return (
     <div className="mx-auto flex w-full max-w-2xl animate-in flex-col gap-8 px-4 py-8 duration-700 zoom-in-95 fade-in sm:py-14">
-      {children}
-      <ResponseForm
+      <AnswerProvider
         token={token}
         questions={questions}
         invitation={invitation}
         sessionId={getSessionId}
         onStarted={() => void sendEvent(token, "response_started")}
-      />
+      >
+        {children}
+      </AnswerProvider>
       <div ref={endRef} className="flex flex-col items-center gap-4 text-center">
         <div className="bg-hero flex w-full flex-col items-center gap-3 rounded-3xl px-6 py-8">
           <div className="w-24">

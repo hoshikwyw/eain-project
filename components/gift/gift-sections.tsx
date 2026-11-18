@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 import type { MediaItem, Section, TextStyle } from "@/features/gifts/schemas";
 import { cn } from "@/lib/utils";
 import type { Ctx } from "./gift-types";
+import { QuestionSlot } from "./answer";
 import { StickerLayer } from "./sticker-layer";
 import { TEXT_FONTS } from "./text-fonts";
 
@@ -119,7 +120,18 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
   const { media, senderName, compact, placeholders, labels, design } = ctx;
   const editing = Boolean(ctx.edit);
   switch (section.type) {
-    case "question":
+    case "question": {
+      if (ctx.questionMode === "answer") {
+        const questions = ctx.visible.filter((s) => s.type === "question");
+        return (
+          <QuestionSlot
+            questionId={section.content.questionId}
+            last={questions.at(-1)?.id === section.id}
+            prompt={section.content.prompt}
+            required={section.content.required}
+          />
+        );
+      }
       return (
         <div className="question flex flex-col gap-3 rounded-2xl border border-dashed border-[color:var(--t-accent-soft)] p-4 text-left">
           <p className="flex items-center gap-2 text-xs font-semibold tracking-wide text-[color:var(--t-muted)] uppercase">
@@ -153,6 +165,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
           )}
         </div>
       );
+    }
     case "text": {
       const Heading = isFirst ? "h1" : "h2";
       const st = section.content.styles;

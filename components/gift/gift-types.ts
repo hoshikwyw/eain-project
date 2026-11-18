@@ -51,10 +51,12 @@ export type GiftRendererProps = {
   /** Staggered entrance animation for the receiver page. */
   animate?: boolean;
   /**
-   * Questions are answered in the reply form under the gift. "preview" shows a
-   * static card in place (editor and dashboard); "hidden" drops them (receiver).
+   * How question sections show. "preview" is a static card with the prompt
+   * (editor and dashboard); "answer" is the live form, answered right there on
+   * the card inside an AnswerProvider (receiver page and library preview);
+   * "hidden" drops them.
    */
-  questionMode?: "preview" | "hidden";
+  questionMode?: "preview" | "hidden" | "answer";
   /** Labels the renderer needs; passed in so this stays a server-safe component. */
   labels: Labels;
   /** Set by the editor only. Empty optional texts then show, so they can be filled in. */
