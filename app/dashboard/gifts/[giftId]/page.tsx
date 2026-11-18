@@ -115,7 +115,11 @@ export default async function GiftDetailPage({ params }: PageProps<"/dashboard/g
           <div>
             <h2 className="font-display text-xl font-semibold">{t("share")}</h2>
             <p className="mt-0.5 text-sm text-muted-foreground">
-              {isPublished ? t("shareDescription") : t("publishToShare")}
+              {isPublished
+                ? invitation
+                  ? t("shareInvitation")
+                  : t("shareDescription")
+                : t("publishToShare")}
             </p>
           </div>
           {isPublished && qr ? (
@@ -125,6 +129,7 @@ export default async function GiftDetailPage({ params }: PageProps<"/dashboard/g
               qrSvg={qr.svg}
               qrPngDataUrl={qr.pngDataUrl}
               title={gift.title}
+              invitation={invitation}
             />
           ) : (
             <form action={publishGift.bind(null, gift.id)}>

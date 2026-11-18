@@ -7,7 +7,15 @@ import { Button } from "@/components/ui/button";
 import { markGiftShared } from "@/features/gifts/actions";
 import { toast } from "@/lib/toast";
 
-type Props = { giftId: string; url: string; qrSvg: string; qrPngDataUrl: string; title: string };
+type Props = {
+  giftId: string;
+  url: string;
+  qrSvg: string;
+  qrPngDataUrl: string;
+  title: string;
+  /** An invitation goes to many guests, so the words say so. */
+  invitation?: boolean;
+};
 
 const neverChanges = () => () => {};
 
@@ -16,8 +24,9 @@ const neverChanges = () => () => {};
  * phone's own share sheet where there is one, and a QR code. Laid out as
  * one narrow column, so it reads the same in a side panel and on a phone.
  */
-export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title }: Props) {
+export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title, invitation }: Props) {
   const t = useTranslations("share");
+  const w = (key: "shareText" | "anyoneWithLink") => (invitation ? t(`invitation.${key}`) : t(key));
   const [copied, setCopied] = useState(false);
   // False on the server and for the first client render, so the two match; then the browser's answer.
   const canShare = useSyncExternalStore(
@@ -44,7 +53,7 @@ export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title }: Props) {
 
   async function share() {
     try {
-      await navigator.share({ title, text: t("shareText"), url });
+      await navigator.share({ title, text: w("shareText"), url });
       recordShared();
     } catch {
       // User cancelled or share is unsupported.
@@ -101,7 +110,7 @@ export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title }: Props) {
 
       <p className="flex gap-2 px-1 text-xs text-muted-foreground">
         <Lock className="mt-0.5 size-3.5 shrink-0" />
-        {t("anyoneWithLink")}
+        {w("anyoneWithLink")}
       </p>
     </div>
   );

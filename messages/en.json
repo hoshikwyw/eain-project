@@ -532,7 +532,11 @@
     "qrAlt": "QR code for the gift link",
     "downloadQr": "Download QR",
     "copiedToast": "Link copied",
-    "copyFailed": "Could not copy. Select the link and copy it yourself."
+    "copyFailed": "Could not copy. Select the link and copy it yourself.",
+    "invitation": {
+      "shareText": "You're invited! Open the link to see when and where, and let me know if you can come.",
+      "anyoneWithLink": "Anyone with this link can open the invitation. Send it to everyone you want there."
+    }
   },
   "accountDeleted": {
     "title": "Your account was deleted",
@@ -951,6 +955,7 @@
       "edit": "Edit",
       "share": "Share",
       "shareDescription": "Send the link or QR code to the person this is for.",
+      "shareInvitation": "Send the link or QR code to everyone you are inviting. Each guest answers with their name.",
       "publishToShare": "Publish the gift to get its link and QR code.",
       "publishNow": "Publish now",
       "justPublished": "Your gift is live. Share the link below.",
