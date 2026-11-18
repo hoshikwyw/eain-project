@@ -16,6 +16,12 @@ export type Labels = {
   questionNote: string;
   /** Title of the link that opens an event's place in a maps app. */
   openInMaps: string;
+  /** The "Add to calendar" row under an event with a real date, and its two links. */
+  addToCalendar: string;
+  calendarGoogle: string;
+  calendarIcs: string;
+  /** Name of the calendar entry when the card has no heading. */
+  calendarTitle: string;
 };
 
 /**
@@ -61,6 +67,11 @@ export type GiftRendererProps = {
   labels: Labels;
   /** Set by the editor only. Empty optional texts then show, so they can be filled in. */
   edit?: GiftEdit;
+  /**
+   * Where the receiver page serves an event as an .ics file, "/api/g/<token>/calendar".
+   * Only the receiver page has it; elsewhere the calendar links are pictured, not live.
+   */
+  calendarBase?: string;
 };
 
 /** What every design and section is handed: the renderer's own input, plus what it worked out from it. */

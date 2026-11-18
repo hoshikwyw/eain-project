@@ -290,6 +290,8 @@
       "eventTime": "အချိန်",
       "eventPlace": "နေရာ",
       "eventNote": "မှတ်ချက် (ဝတ်စုံ၊ အကြောင်းပြန်ရန် နောက်ဆုံးရက်…)",
+      "eventCalendar": "ပြက္ခဒိန် ရက်စွဲ (ရွေးချယ်နိုင်)",
+      "eventCalendarHint": "ဧည့်သည်များအတွက် “ပြက္ခဒိန်ထဲ ထည့်ရန်” ခလုတ် ပေါ်လာပါမယ်။",
       "quote": "ကိုးကားချက်",
       "attribution": "ဘယ်သူ ပြောခဲ့လဲ",
       "closingLine": "နိဂုံးစာကြောင်း",
@@ -492,6 +494,9 @@
     "addPhoto": "ဓာတ်ပုံ ထည့်ပါ",
     "questionNote": "သူတို့ကို မေးမည့်မေးခွန်း",
     "openInMaps": "မြေပုံတွင် ဖွင့်ရန်",
+    "addToCalendar": "ပြက္ခဒိန်ထဲ ထည့်ရန်",
+    "calendarGoogle": "Google Calendar",
+    "calendarIcs": "Apple / Outlook",
     "response": {
       "title": "အဖြေ ပြန်ပို့ရန်",
       "subtitle": "သင့်အဖြေက ဒီလက်ဆောင် ဖန်တီးသူဆီသာ ရောက်ပါမယ်။",

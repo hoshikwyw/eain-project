@@ -15,6 +15,10 @@ export function GiftView(props: Props) {
         addPhoto: t("addPhoto"),
         questionNote: t("questionNote"),
         openInMaps: t("openInMaps"),
+        addToCalendar: t("addToCalendar"),
+        calendarGoogle: t("calendarGoogle"),
+        calendarIcs: t("calendarIcs"),
+        calendarTitle: t("invitation.title"),
       }}
     />
   );

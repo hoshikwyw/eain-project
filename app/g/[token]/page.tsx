@@ -97,6 +97,7 @@ export default async function PublicGiftPage({ params }: PageProps<"/g/[token]">
           senderName={gift.senderName}
           animate
           questionMode="answer"
+          calendarBase={`/api/g/${token}/calendar`}
         />
       )}
     </GiftReveal>

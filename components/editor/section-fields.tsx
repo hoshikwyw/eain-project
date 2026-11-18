@@ -173,6 +173,13 @@ export function SectionFields({ section, onChange, giftId, guest, media, onMedia
           onChange={(e) => onChange({ ...section, content: { ...content, [key]: e.target.value } })}
         />
       );
+      // The real date behind the words, kept as "YYYY-MM-DD" or "YYYY-MM-DDTHH:MM".
+      const [calDate = "", calTime = ""] = (content.startsAt ?? "").split("T");
+      const setCalendar = (date: string, time: string) =>
+        onChange({
+          ...section,
+          content: { ...content, startsAt: date ? (time ? `${date}T${time}` : date) : "" },
+        });
       return (
         <div className="flex flex-col gap-2">
           <div className="grid gap-2 sm:grid-cols-2">
@@ -181,6 +188,27 @@ export function SectionFields({ section, onChange, giftId, guest, media, onMedia
           </div>
           {field("place", t("eventPlace"), 120)}
           {field("note", t("eventNote"), 160)}
+          <Field
+            label={t("eventCalendar")}
+            htmlFor={`${id}-calendar`}
+            hint={t("eventCalendarHint")}
+          >
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Input
+                id={`${id}-calendar`}
+                type="date"
+                value={calDate}
+                onChange={(e) => setCalendar(e.target.value, calTime)}
+              />
+              <Input
+                type="time"
+                aria-label={t("eventTime")}
+                value={calTime}
+                disabled={!calDate}
+                onChange={(e) => setCalendar(calDate, e.target.value)}
+              />
+            </div>
+          </Field>
         </div>
       );
     }

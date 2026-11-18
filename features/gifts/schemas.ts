@@ -197,6 +197,15 @@ export const eventContentSchema = z.object({
   time: shortText(40).default(""),
   place: shortText(120).default(""),
   note: shortText(160).default(""),
+  /**
+   * The real date, and time, behind the words: "2026-12-21" or
+   * "2026-12-21T19:00". Optional; when set, guests get an "Add to calendar"
+   * button. Kept apart from the free text so a Burmese date still works.
+   */
+  startsAt: z
+    .string()
+    .regex(/^(\d{4}-\d{2}-\d{2}(T\d{2}:\d{2})?)?$/)
+    .optional(),
   styles: stylesFor(["date", "time", "place", "note"]),
 });
 

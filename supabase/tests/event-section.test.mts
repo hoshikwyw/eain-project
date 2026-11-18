@@ -71,6 +71,7 @@ describe("event details section", () => {
           time: "7 pm",
           place: "Rooftop, Inya Lake Hotel",
           note: "Dress bright. RSVP by Monday.",
+          startsAt: "2026-12-21T19:00",
         },
       },
     ]);
@@ -95,7 +96,31 @@ describe("event details section", () => {
     ]) {
       assert.ok(html.includes(text), `missing: ${text}`);
     }
-    // The closed page carries the sections as data; the icons draw once the gift is opened.
     // The closed page carries the section's words as data; its icons draw once the gift is opened.
+    // The real date set beside the words gives guests calendar links.
+    assert.ok(html.includes("Add to calendar"), "missing the calendar row");
+    assert.ok(html.includes("calendar.google.com/calendar/render"), "missing the Google link");
+    assert.ok(html.includes(`/api/g/${token}/calendar?section=`), "missing the .ics link");
+  });
+
+  it("serves the event as an .ics file", async (t) => {
+    if (!migrated) return t.skip("migration 0017 not applied");
+    const res = await fetch(`${site}/api/g/${token}/calendar`);
+    assert.equal(res.status, 200);
+    assert.match(res.headers.get("content-type") ?? "", /text\/calendar/);
+    const ics = await res.text();
+    for (const line of [
+      "BEGIN:VEVENT",
+      "DTSTART:20261221T190000",
+      "DTEND:20261221T210000",
+      "SUMMARY:You are invited",
+      "LOCATION:Rooftop\\, Inya Lake Hotel",
+      "DESCRIPTION:Dress bright. RSVP by Monday.",
+    ]) {
+      assert.ok(ics.includes(line), `missing: ${line}`);
+    }
+    // An event the gift does not have is nothing to serve.
+    const none = await fetch(`${site}/api/g/${token}/calendar?section=not-there`);
+    assert.equal(none.status, 404);
   });
 });

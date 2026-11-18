@@ -290,6 +290,8 @@
       "eventTime": "Time",
       "eventPlace": "Place",
       "eventNote": "Note (dress code, RSVP by…)",
+      "eventCalendar": "Calendar date (optional)",
+      "eventCalendarHint": "Guests then get an “Add to calendar” button with the real date and time.",
       "quote": "Quote",
       "attribution": "Who said it",
       "closingLine": "Closing line",
@@ -492,6 +494,9 @@
     "addPhoto": "Add a photo",
     "questionNote": "They will be asked",
     "openInMaps": "Open in Maps",
+    "addToCalendar": "Add to calendar",
+    "calendarGoogle": "Google Calendar",
+    "calendarIcs": "Apple / Outlook",
     "response": {
       "title": "Send a reply",
       "subtitle": "Your answer goes only to the person who made this.",

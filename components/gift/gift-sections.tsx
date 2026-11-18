@@ -1,5 +1,6 @@
-import { CalendarDays, Clock, ImagePlus, Info, MapPin } from "lucide-react";
+import { CalendarDays, CalendarPlus, Clock, ImagePlus, Info, MapPin } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
+import { calendarEntry, googleCalendarUrl } from "@/features/gifts/calendar";
 import type { MediaItem, Section, TextStyle } from "@/features/gifts/schemas";
 import { cn } from "@/lib/utils";
 import type { Ctx } from "./gift-types";
@@ -417,6 +418,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
     }
     case "event": {
       const st = section.content.styles;
+      const calendar = calendarEntry(section, ctx.sections, labels.calendarTitle);
       const rows = [
         ["date", CalendarDays, section.content.date, "text-lg font-semibold"],
         ["time", Clock, section.content.time, ""],
@@ -454,6 +456,30 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
                 </p>
               </li>
             ) : null,
+          )}
+          {calendar && (
+            // Only when the creator set a real date. In the editor the links are pictured, not live.
+            <li className="calendar flex flex-wrap items-center gap-x-3 gap-y-2 pt-1">
+              <CalendarPlus
+                aria-hidden="true"
+                className="size-4 shrink-0 text-[color:var(--t-accent)]"
+              />
+              <span className="text-sm text-[color:var(--t-muted)]">{labels.addToCalendar}</span>
+              <span className="flex flex-wrap gap-2">
+                <CalendarChip href={editing ? undefined : googleCalendarUrl(calendar)}>
+                  {labels.calendarGoogle}
+                </CalendarChip>
+                <CalendarChip
+                  href={
+                    editing || !ctx.calendarBase
+                      ? undefined
+                      : `${ctx.calendarBase}?section=${section.id}`
+                  }
+                >
+                  {labels.calendarIcs}
+                </CalendarChip>
+              </span>
+            </li>
           )}
         </ul>
       );
@@ -532,5 +558,25 @@ function PhotoPlaceholder({ label, polaroid }: { label: string; polaroid?: boole
       <ImagePlus className="size-6" />
       <span className="text-sm">{label}</span>
     </div>
+  );
+}
+
+/** One small pill in the "Add to calendar" row. A plain span where there is nothing to open yet. */
+function CalendarChip({ href, children }: { href?: string; children: ReactNode }) {
+  const look =
+    "rounded-full border border-[color:var(--t-accent-soft)] px-3 py-1 text-xs font-semibold text-[color:var(--t-accent)]";
+  if (!href) return <span className={look}>{children}</span>;
+  return (
+    <a
+      href={href}
+      target={href.startsWith("http") ? "_blank" : undefined}
+      rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+      className={cn(
+        look,
+        "transition-colors hover:bg-[color:var(--t-accent-soft)] focus-visible:ring-2 focus-visible:ring-[color:var(--t-accent)]/50 focus-visible:outline-none",
+      )}
+    >
+      {children}
+    </a>
   );
 }
