@@ -143,6 +143,52 @@ export async function recordReceiverEvent(
   return !error && data === true;
 }
 
+export type SessionAnswer = {
+  questionId: string;
+  optionId: string | null;
+  text: string | null;
+  number: number | null;
+};
+
+/**
+ * What one browser session answered on a gift, so a returning guest sees their
+ * own reply on the card. The session id is the random value that browser made
+ * for itself, so this reads back only that guest's answers. null when there is
+ * no such published gift; [] when the session has not replied (or the creator
+ * removed the reply).
+ */
+export async function getSessionAnswers(
+  token: string,
+  sessionId: string,
+): Promise<SessionAnswer[] | null> {
+  if (!/^[A-Za-z0-9_-]{40,64}$/.test(token)) return null;
+  const admin = createAdminClient();
+  const { data: gift } = await admin
+    .from("gifts")
+    .select("id")
+    .eq("share_token", token)
+    .eq("status", "published")
+    .maybeSingle();
+  if (!gift) return null;
+  const { data: response } = await admin
+    .from("gift_responses")
+    .select("id")
+    .eq("gift_id", gift.id)
+    .eq("session_id", sessionId)
+    .maybeSingle();
+  if (!response) return [];
+  const { data: answers } = await admin
+    .from("gift_answers")
+    .select("question_id, option_id, answer_text, answer_number")
+    .eq("response_id", response.id);
+  return (answers ?? []).map((a) => ({
+    questionId: a.question_id,
+    optionId: a.option_id,
+    text: a.answer_text,
+    number: a.answer_number,
+  }));
+}
+
 export type SubmitResult =
   { ok: true } | { ok: false; reason: "not-found" | "duplicate" | "invalid" | "error" };
 

@@ -243,6 +243,24 @@ describe("responses and premium unlock", () => {
     );
   });
 
+  it("a returning session reads back its own answers, and only its own", async () => {
+    const res = await fetch(`${site}/api/g/${token}/responses?session=${session}`);
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as {
+      ok: boolean;
+      answers: { questionId: string; optionId: string | null }[];
+    };
+    assert.deepEqual(
+      body.answers.map((a) => [a.questionId, a.optionId]),
+      [[choiceQ, optionB]],
+      "the answer it last sent",
+    );
+    const other = await fetch(`${site}/api/g/${token}/responses?session=never-replied-1`);
+    assert.deepEqual(await other.json(), { ok: true, answers: [] });
+    const bad = await fetch(`${site}/api/g/${token}/responses`);
+    assert.equal(bad.status, 400, "no session id, nothing to read");
+  });
+
   it("a second session responds but does not pay again", async () => {
     const before = await user.from("profiles").select("points_balance").single();
     const res = await post(`/api/g/${token}/responses`, {

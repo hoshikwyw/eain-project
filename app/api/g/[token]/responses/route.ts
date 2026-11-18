@@ -1,7 +1,28 @@
 import { NextResponse } from "next/server";
-import { submitResponse } from "@/features/gifts/public";
-import { responseSubmissionSchema } from "@/features/gifts/schemas";
+import { getSessionAnswers, submitResponse } from "@/features/gifts/public";
+import { responseSubmissionSchema, sessionIdSchema } from "@/features/gifts/schemas";
 import { checkRateLimit, clientKey } from "@/lib/rate-limit";
+
+/**
+ * GET /api/g/[token]/responses?session=<id>
+ * Authentication: none. Authorization: the share token and the browser's own
+ * session id. Returns that session's answers, { ok, answers: [] } when it has
+ * none, so a returning guest sees what they replied. Never anyone else's.
+ */
+export async function GET(request: Request, context: { params: Promise<{ token: string }> }) {
+  const { token } = await context.params;
+  const session = sessionIdSchema.safeParse(new URL(request.url).searchParams.get("session"));
+  if (!/^[A-Za-z0-9_-]{40,64}$/.test(token) || !session.success) {
+    return NextResponse.json({ ok: false, error: "bad-request" }, { status: 400 });
+  }
+
+  const allowed = await checkRateLimit(`resp-read:${clientKey(request)}`, 60, 60);
+  if (!allowed) return NextResponse.json({ ok: false, error: "rate-limited" }, { status: 429 });
+
+  const answers = await getSessionAnswers(token, session.data);
+  if (!answers) return NextResponse.json({ ok: false, error: "not-found" }, { status: 404 });
+  return NextResponse.json({ ok: true, answers }, { headers: { "Cache-Control": "no-store" } });
+}
 
 /**
  * POST /api/g/[token]/responses

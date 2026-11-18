@@ -2,7 +2,7 @@
 
 import { Check, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { createContext, useContext, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { PublicQuestion } from "@/features/gifts/schemas";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,13 @@ import { cn } from "@/lib/utils";
  */
 
 type Answer = { optionId?: string; text?: string; number?: number };
+/** One answer as the responses route reads it back. */
+type SentAnswer = {
+  questionId: string;
+  optionId: string | null;
+  text: string | null;
+  number: number | null;
+};
 type State = "idle" | "sending" | "sent" | "duplicate" | "error" | "invalid";
 
 type Store = {
@@ -70,6 +77,47 @@ export function AnswerProvider(props: ProviderProps) {
   const started = useRef(false);
   // True once the guest asked to change an answer already sent: the next send replaces it.
   const replacing = useRef(false);
+
+  // Back on a card they already answered: fetch what they said, so the card shows it
+  // filled in and locked. If the creator has since removed the reply, the card opens again.
+  const token = props.demo ? undefined : props.token;
+  const sessionId = props.demo ? undefined : props.sessionId;
+  const restore = useRef(state === "sent" && Boolean(token));
+  useEffect(() => {
+    if (!restore.current || !token || !sessionId) return;
+    // Dev strict mode mounts twice; the flag clears only once an answer arrives.
+    let stale = false;
+    fetch(`/api/g/${token}/responses?session=${encodeURIComponent(sessionId())}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { answers?: SentAnswer[] } | null) => {
+        if (stale || !data?.answers) return;
+        restore.current = false;
+        if (data.answers.length === 0) {
+          try {
+            if (doneKey) window.localStorage.removeItem(doneKey);
+          } catch {
+            // ignore
+          }
+          setState("idle");
+          return;
+        }
+        const restored: Record<string, Answer> = {};
+        for (const a of data.answers) {
+          restored[a.questionId] = {
+            ...(a.optionId && { optionId: a.optionId }),
+            ...(a.text && { text: a.text }),
+            ...(a.number !== null && { number: a.number }),
+          };
+        }
+        setAnswers(restored);
+      })
+      .catch(() => {
+        // Offline or blocked: the card still says the reply was sent.
+      });
+    return () => {
+      stale = true;
+    };
+  }, [token, sessionId, doneKey]);
 
   function change() {
     replacing.current = true;
