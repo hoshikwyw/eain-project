@@ -22,6 +22,10 @@ export type Labels = {
   calendarIcs: string;
   /** Name of the calendar entry when the card has no heading. */
   calendarTitle: string;
+  /** "Please reply by {date}", shown under the event while its RSVP deadline is ahead. */
+  replyBy: string;
+  /** The page's language, for dates the card prints itself. */
+  locale: string;
 };
 
 /**

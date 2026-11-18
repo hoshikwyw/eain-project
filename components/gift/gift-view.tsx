@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { GiftRenderer } from "./gift-renderer";
 
 type Props = Omit<React.ComponentProps<typeof GiftRenderer>, "labels">;
@@ -6,6 +6,7 @@ type Props = Omit<React.ComponentProps<typeof GiftRenderer>, "labels">;
 /** GiftRenderer with translated labels. Use from server or client components. */
 export function GiftView(props: Props) {
   const t = useTranslations("gift");
+  const locale = useLocale();
   return (
     <GiftRenderer
       {...props}
@@ -19,6 +20,8 @@ export function GiftView(props: Props) {
         calendarGoogle: t("calendarGoogle"),
         calendarIcs: t("calendarIcs"),
         calendarTitle: t("invitation.title"),
+        replyBy: t("replyBy", { date: "{date}" }),
+        locale,
       }}
     />
   );

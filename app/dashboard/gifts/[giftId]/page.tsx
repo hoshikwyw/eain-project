@@ -16,6 +16,7 @@ import {
   unpublishGift,
 } from "@/features/gifts/actions";
 import { getGiftDetail, getGiftResponses, getResponseTallies } from "@/features/gifts/queries";
+import { rsvpClosed, rsvpDeadline } from "@/features/gifts/rsvp";
 import { isInvitationDesign } from "@/features/gifts/templates";
 import { getCurrentProfile } from "@/features/profile/queries";
 import { makeQr } from "@/lib/qr";
@@ -63,6 +64,7 @@ export default async function GiftDetailPage({ params }: PageProps<"/dashboard/g
   if (!data) notFound();
   const hasQuestions = data.sections.some((s) => s.type === "question");
   const invitation = isInvitationDesign(data.style.design);
+  const deadline = rsvpDeadline(data.sections);
 
   const { gift, recipient, events } = data;
   const opened = Boolean(recipient?.first_opened_at);
@@ -181,6 +183,15 @@ export default async function GiftDetailPage({ params }: PageProps<"/dashboard/g
                         : t("responses.empty")
                       : t("responses.description")}
                   </p>
+                  {deadline && (
+                    <p className="mt-1 text-sm">
+                      {t(rsvpClosed(deadline) ? "responses.deadlinePast" : "responses.deadline", {
+                        date: format.dateTime(new Date(`${deadline}T00:00:00`), {
+                          dateStyle: "long",
+                        }),
+                      })}
+                    </p>
+                  )}
                 </div>
                 {responses.length > 0 && (
                   <DownloadReplies

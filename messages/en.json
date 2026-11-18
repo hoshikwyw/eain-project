@@ -497,6 +497,7 @@
     "addPhoto": "Add a photo",
     "questionNote": "They will be asked",
     "openInMaps": "Open in Maps",
+    "replyBy": "Please reply by {date}",
     "addToCalendar": "Add to calendar",
     "calendarGoogle": "Google Calendar",
     "calendarIcs": "Apple / Outlook",
@@ -1012,7 +1013,9 @@
         "removeConfirm": "Remove this reply? It cannot be undone. The guest can answer again.",
         "removed": "Reply removed.",
         "removeFailed": "Could not remove the reply.",
-        "expected": "{count, number, digits} guests expected"
+        "expected": "{count, number, digits} guests expected",
+        "deadline": "Guests can reply until {date}.",
+        "deadlinePast": "Replies closed on {date}."
       },
       "status": {
         "draft": "Draft",

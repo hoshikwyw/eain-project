@@ -1,6 +1,7 @@
-import { CalendarDays, CalendarPlus, Clock, ImagePlus, Info, MapPin } from "lucide-react";
+import { CalendarDays, CalendarPlus, Clock, ImagePlus, Info, MapPin, Reply } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 import { calendarEntry, googleCalendarUrl } from "@/features/gifts/calendar";
+import { formatDay, rsvpClosed } from "@/features/gifts/rsvp";
 import type { MediaItem, Section, TextStyle } from "@/features/gifts/schemas";
 import { cn } from "@/lib/utils";
 import type { Ctx } from "./gift-types";
@@ -419,6 +420,11 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
     case "event": {
       const st = section.content.styles;
       const calendar = calendarEntry(section, ctx.sections, labels.calendarTitle);
+      // The deadline is announced while it is ahead; once past, the question slot says so.
+      const replyBy =
+        section.content.rsvpBy && !rsvpClosed(section.content.rsvpBy)
+          ? labels.replyBy.replace("{date}", formatDay(section.content.rsvpBy, labels.locale))
+          : null;
       const rows = [
         ["date", CalendarDays, section.content.date, "text-lg font-semibold"],
         ["time", Clock, section.content.time, ""],
@@ -456,6 +462,15 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
                 </p>
               </li>
             ) : null,
+          )}
+          {replyBy && (
+            <li className="reply-by flex items-start gap-3 text-sm">
+              <Reply
+                aria-hidden="true"
+                className="mt-0.5 size-4 shrink-0 text-[color:var(--t-accent)]"
+              />
+              <p className="min-w-0 flex-1 font-semibold">{replyBy}</p>
+            </li>
           )}
           {calendar && (
             // Only when the creator set a real date. In the editor the links are pictured, not live.

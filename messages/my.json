@@ -497,6 +497,7 @@
     "addPhoto": "ဓာတ်ပုံ ထည့်ပါ",
     "questionNote": "သူတို့ကို မေးမည့်မေးခွန်း",
     "openInMaps": "မြေပုံတွင် ဖွင့်ရန်",
+    "replyBy": "{date} မတိုင်မီ အကြောင်းပြန်ပေးပါ",
     "addToCalendar": "ပြက္ခဒိန်ထဲ ထည့်ရန်",
     "calendarGoogle": "Google Calendar",
     "calendarIcs": "Apple / Outlook",
@@ -1012,7 +1013,9 @@
         "removeConfirm": "ဒီအဖြေကို ဖယ်ရှားမလား။ ပြန်မရနိုင်ပါ။ ဧည့်သည် ထပ်ဖြေနိုင်ပါမယ်။",
         "removed": "အဖြေ ဖယ်ရှားပြီးပါပြီ။",
         "removeFailed": "အဖြေကို ဖယ်ရှား၍ မရပါ။",
-        "expected": "ဧည့်သည် {count, number, digits} ယောက် လာမည်ဟု မျှော်လင့်ရပါတယ်"
+        "expected": "ဧည့်သည် {count, number, digits} ယောက် လာမည်ဟု မျှော်လင့်ရပါတယ်",
+        "deadline": "ဧည့်သည်များ {date} အထိ အကြောင်းပြန်နိုင်ပါတယ်။",
+        "deadlinePast": "အကြောင်းပြန်ခြင်းကို {date} တွင် ပိတ်ခဲ့ပါပြီ။"
       },
       "status": {
         "draft": "မူကြမ်း",

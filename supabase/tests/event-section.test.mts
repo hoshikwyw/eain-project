@@ -152,5 +152,7 @@ describe("event details section", () => {
       .update({ content: { ...content, rsvpBy: "2999-12-31" } })
       .eq("id", row!.id);
     assert.equal((await post()).status, 400, "open again: the reply reaches validation");
+    const html = await (await fetch(`${site}/g/${token}`)).text();
+    assert.ok(html.includes("Please reply by 31 December 2999"), "the card announces the deadline");
   });
 });
