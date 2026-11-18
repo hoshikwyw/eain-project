@@ -226,7 +226,15 @@ export const finalMessageContentSchema = z.object({
   styles: stylesFor(["text", "signature"]),
 });
 
-export const questionKindSchema = z.enum(["choice", "yes_no", "short_text", "reaction", "rating"]);
+/** "count" is a headcount: a number from 1 to 10, stored like a rating. */
+export const questionKindSchema = z.enum([
+  "choice",
+  "yes_no",
+  "short_text",
+  "reaction",
+  "rating",
+  "count",
+]);
 export type QuestionKind = z.infer<typeof questionKindSchema>;
 export const QUESTION_KINDS = questionKindSchema.options;
 

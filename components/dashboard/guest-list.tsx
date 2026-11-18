@@ -1,7 +1,7 @@
 "use client";
 
 import { Trash2 } from "lucide-react";
-import { useFormatter } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
@@ -38,6 +38,7 @@ type Props = {
  */
 export function GuestList({ giftId, responses, labels }: Props) {
   const format = useFormatter();
+  const t = useTranslations("dashboard.gifts.responses");
   const router = useRouter();
   const [filter, setFilter] = useState<Filter>("all");
   const [target, setTarget] = useState<string | null>(null);
@@ -51,6 +52,13 @@ export function GuestList({ giftId, responses, labels }: Props) {
     no: responses.filter((r) => rsvpOf(r)?.pick === "no").length,
   };
   const shown = filter === "all" ? responses : responses.filter((r) => rsvpOf(r)?.pick === filter);
+  // Guests to expect: the headcounts of everyone who did not say no.
+  const headcounts = responses
+    .filter((r) => rsvpOf(r)?.pick !== "no")
+    .map((r) => r.answers.find((a) => a.kind === "count")?.number ?? null);
+  const expected = headcounts.some((n) => n !== null)
+    ? headcounts.reduce<number>((sum, n) => sum + (n ?? 0), 0)
+    : null;
 
   function remove() {
     const id = target;
@@ -74,6 +82,11 @@ export function GuestList({ giftId, responses, labels }: Props) {
 
   return (
     <div className="mt-4 flex flex-col gap-3">
+      {expected !== null && (
+        <p className="rounded-2xl border border-border px-4 py-3 text-sm">
+          {t("expected", { count: expected })}
+        </p>
+      )}
       {hasRsvp && (
         <div className="flex flex-wrap gap-2">
           {chips.map((c) => (

@@ -219,9 +219,13 @@ export function AnswerProvider(props: ProviderProps) {
 function isAnswered(q: PublicQuestion, a: Answer | undefined): boolean {
   if (!a) return false;
   if (q.kind === "short_text") return Boolean(a.text && a.text.trim());
-  if (q.kind === "rating") return typeof a.number === "number";
+  if (q.kind === "rating" || q.kind === "count") return typeof a.number === "number";
   return Boolean(a.optionId);
 }
+
+const RATINGS = [1, 2, 3, 4, 5];
+/** A headcount runs to ten; a bigger party can reply twice. */
+const COUNTS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 /** Controls drawn in the card's own colours, so they belong to the look rather than the site. */
 const control =
@@ -424,9 +428,10 @@ function QuestionInput({
         />
       );
     case "rating":
+    case "count":
       return (
-        <div className="flex gap-2" role="radiogroup" aria-label={q.prompt}>
-          {[1, 2, 3, 4, 5].map((n) => (
+        <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={q.prompt}>
+          {(q.kind === "count" ? COUNTS : RATINGS).map((n) => (
             <button
               key={n}
               type="button"

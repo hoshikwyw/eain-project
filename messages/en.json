@@ -307,7 +307,8 @@
         "yes_no": "Yes or no",
         "short_text": "Short text",
         "reaction": "Reaction",
-        "rating": "Rating 1 to 5"
+        "rating": "Rating 1 to 5",
+        "count": "How many (1 to 10)"
       },
       "options": "Options",
       "optionLabel": "Option {n}",
@@ -1010,7 +1011,8 @@
         "remove": "Remove reply",
         "removeConfirm": "Remove this reply? It cannot be undone. The guest can answer again.",
         "removed": "Reply removed.",
-        "removeFailed": "Could not remove the reply."
+        "removeFailed": "Could not remove the reply.",
+        "expected": "{count, number, digits} guests expected"
       },
       "status": {
         "draft": "Draft",

@@ -86,7 +86,10 @@ describe("template pages", () => {
     // The preview itself is drawn in the browser; the page's facts come from the same registry.
     const page = await (await fetch(`${site}/templates/party-invitation`)).text();
     assert.ok(page.includes("Party Invitation"), "the template page names it");
-    assert.ok(page.includes("6 sections"), "cover, event details, message, name, RSVP and closing");
+    assert.ok(
+      page.includes("7 sections"),
+      "cover, event details, message, name, RSVP, headcount and closing",
+    );
     assert.ok(page.includes("Try it free"), "a free invitation can be tried");
   });
 

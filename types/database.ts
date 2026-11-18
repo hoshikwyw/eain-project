@@ -133,7 +133,7 @@ export interface GiftEvent extends Record<string, unknown> {
   created_at: string;
 }
 
-export type QuestionType = "choice" | "yes_no" | "short_text" | "reaction" | "rating";
+export type QuestionType = "choice" | "yes_no" | "short_text" | "reaction" | "rating" | "count";
 
 export interface GiftQuestion extends Record<string, unknown> {
   id: string;

@@ -162,6 +162,8 @@ export type ResponseView = {
     prompt: string;
     value: string;
     kind: QuestionKind;
+    /** A rating or a headcount, as the number. */
+    number: number | null;
     /** For a yes/no question: which way the guest answered. Its first option is the yes. */
     pick: "yes" | "no" | null;
   }[];
@@ -221,12 +223,21 @@ export async function getGiftResponses(giftId: string): Promise<ResponseView[]> 
           (questionById.get(a.question_id)?.position ?? 0) -
           (questionById.get(b.question_id)?.position ?? 0),
       )
-      .map((a) => ({
-        prompt: questionById.get(a.question_id)?.prompt ?? "",
-        value: a.answer_text ?? (a.answer_number !== null ? `${a.answer_number}/5` : ""),
-        kind: questionById.get(a.question_id)?.type ?? "short_text",
-        pick: pickOf(a),
-      })),
+      .map((a) => {
+        const q = questionById.get(a.question_id);
+        const kind = q?.type ?? "short_text";
+        const number = a.answer_number;
+        return {
+          prompt: q?.prompt ?? "",
+          // A rating reads "4/5"; a headcount is just the number.
+          value:
+            a.answer_text ??
+            (number !== null ? (kind === "rating" ? `${number}/5` : String(number)) : ""),
+          kind,
+          number,
+          pick: pickOf(a),
+        };
+      }),
   }));
 }
 

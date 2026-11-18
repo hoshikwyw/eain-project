@@ -280,6 +280,49 @@ describe("responses and premium unlock", () => {
     assert.equal((ans ?? []).length, 0);
   });
 
+  it("a headcount question stores its number and reads it plainly", async () => {
+    const { data: q, error } = await admin
+      .from("gift_questions")
+      .insert({
+        gift_id: giftId,
+        type: "count",
+        prompt: "How many of you?",
+        position: 9,
+        is_required: false,
+      })
+      .select("id")
+      .single();
+    if (error && /invalid input value for enum/.test(error.message)) {
+      console.log("  ⚠ migration 0022 is not applied on this project; run it in the SQL editor");
+      return;
+    }
+    assert.equal(error, null, error?.message);
+    const res = await post(`/api/g/${token}/responses`, {
+      sessionId: "headcount-1",
+      answers: [
+        { questionId: choiceQ, optionId: optionA },
+        { questionId: q!.id, number: 3 },
+      ],
+    });
+    assert.equal(res.status, 200);
+    const { data: stored } = await admin
+      .from("gift_answers")
+      .select("answer_number")
+      .eq("question_id", q!.id)
+      .single();
+    assert.equal(stored?.answer_number, 3);
+    const { data: note } = await admin
+      .from("notifications")
+      .select("payload")
+      .eq("gift_id", giftId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+    const summary = String((note?.payload as { summary?: string })?.summary ?? "");
+    assert.ok(summary.endsWith("3"), `plain number in the summary, got: ${summary}`);
+    assert.ok(!summary.includes("3/5"), "not out of five");
+  });
+
   it("the creator can remove a reply; nobody else can", async () => {
     const { data: rows } = await user
       .from("gift_responses")
