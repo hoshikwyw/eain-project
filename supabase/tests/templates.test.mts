@@ -65,9 +65,11 @@ describe("template pages", () => {
     assert.equal(res.status, 200);
     const html = await res.text();
     const { data } = await anon.from("templates").select("name_en").eq("is_active", true);
+    // React escapes quotes in attributes ("We've" becomes "We&#x27;ve").
+    const escaped = (text: string) => text.replace(/'/g, "&#x27;").replace(/"/g, "&quot;");
     for (const t of data!) {
       assert.ok(
-        html.includes(`aria-label="Preview ${t.name_en}"`),
+        html.includes(`aria-label="Preview ${escaped(t.name_en)}"`),
         `preview button for ${t.name_en}`,
       );
     }
