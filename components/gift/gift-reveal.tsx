@@ -1,6 +1,6 @@
 "use client";
 
-import { Gift } from "lucide-react";
+import { Gift, Mail } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
@@ -133,8 +133,8 @@ export function GiftReveal({
           </Link>
           <Button asChild className="mt-1">
             <Link href={tryHref}>
-              <Gift />
-              {t("makeYourOwn")}
+              {invitation ? <Mail /> : <Gift />}
+              {invitation ? t("invitation.makeYourOwn") : t("makeYourOwn")}
             </Link>
           </Button>
           <p className="text-xs text-muted-foreground">{t("makeYourOwnHint")}</p>
