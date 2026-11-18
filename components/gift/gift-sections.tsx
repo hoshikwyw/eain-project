@@ -1,9 +1,10 @@
-import { CalendarDays, Clock, ImagePlus, Info, MapPin, MessageCircleQuestion } from "lucide-react";
+import { CalendarDays, Clock, ImagePlus, Info, MapPin } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 import type { MediaItem, Section, TextStyle } from "@/features/gifts/schemas";
 import { cn } from "@/lib/utils";
 import type { Ctx } from "./gift-types";
-import { QuestionSlot } from "./answer";
+import { isInvitationDesign } from "@/features/gifts/templates";
+import { QuestionPreview, QuestionSlot } from "./answer";
 import { StickerLayer } from "./sticker-layer";
 import { TEXT_FONTS } from "./text-fonts";
 
@@ -121,49 +122,32 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
   const editing = Boolean(ctx.edit);
   switch (section.type) {
     case "question": {
+      const questions = ctx.visible.filter((s) => s.type === "question");
+      const last = questions.at(-1)?.id === section.id;
       if (ctx.questionMode === "answer") {
-        const questions = ctx.visible.filter((s) => s.type === "question");
         return (
           <QuestionSlot
             questionId={section.content.questionId}
-            last={questions.at(-1)?.id === section.id}
+            last={last}
             prompt={section.content.prompt}
             required={section.content.required}
           />
         );
       }
+      const c = section.content;
       return (
-        <div className="question flex flex-col gap-3 rounded-2xl border border-dashed border-[color:var(--t-accent-soft)] p-4 text-left">
-          <p className="flex items-center gap-2 text-xs font-semibold tracking-wide text-[color:var(--t-muted)] uppercase">
-            <MessageCircleQuestion className="size-4" />
-            {labels.questionNote}
-          </p>
-          <p className="font-semibold">{section.content.prompt || "…"}</p>
-          {section.content.options.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {section.content.options.map((o) => (
-                <span
-                  key={o.id}
-                  className="rounded-full border border-[color:var(--t-accent-soft)] px-3 py-1 text-sm"
-                >
-                  {o.label}
-                </span>
-              ))}
-            </div>
-          )}
-          {section.content.kind === "rating" && (
-            <div className="flex gap-1.5">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <span
-                  key={n}
-                  className="grid size-8 place-items-center rounded-full border border-[color:var(--t-accent-soft)] text-sm"
-                >
-                  {n}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
+        <QuestionPreview
+          question={{
+            id: c.questionId,
+            kind: c.kind,
+            prompt: c.prompt,
+            required: c.required,
+            options: c.options,
+          }}
+          last={last}
+          invitation={isInvitationDesign(design)}
+          note={labels.questionNote}
+        />
       );
     }
     case "text": {

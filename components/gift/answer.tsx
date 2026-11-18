@@ -233,6 +233,56 @@ export function QuestionSlot({
   );
 }
 
+/**
+ * What the creator sees in the editor and on the dashboard: the question as
+ * the receiver will get it, drawn with the same controls but inert, with a
+ * small note that it is theirs to answer. The last question shows the send
+ * button too, so the whole reply is pictured.
+ */
+export function QuestionPreview({
+  question,
+  last,
+  invitation,
+  note,
+}: {
+  question: PublicQuestion;
+  last: boolean;
+  invitation: boolean;
+  note: string;
+}) {
+  const t = useTranslations("gift.response");
+  return (
+    <div
+      aria-label={note}
+      className="question flex flex-col gap-3 rounded-2xl border border-dashed border-[color:var(--t-accent-soft)] p-4 text-left"
+    >
+      <p className="text-[10px] font-semibold tracking-[0.18em] text-[color:var(--t-muted)] uppercase">
+        {note}
+      </p>
+      <p className="font-semibold">
+        {question.prompt || "…"}
+        {question.required && (
+          <span aria-hidden="true" className="ml-1 text-[color:var(--t-accent)]">
+            *
+          </span>
+        )}
+      </p>
+      <div className="pointer-events-none" aria-hidden="true">
+        <QuestionInput question={question} value={undefined} disabled={false} onChange={() => {}} />
+      </div>
+      {last && (
+        <div className="pointer-events-none mt-1 flex flex-col gap-2" aria-hidden="true">
+          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-[color:var(--t-accent)] px-5 py-2.5 text-sm font-semibold text-[color:var(--t-on-accent,#fff)] shadow-sm">
+            <Send className="size-4" />
+            {invitation ? t("rsvp.send") : t("send")}
+          </span>
+          <p className="text-xs text-[color:var(--t-muted)]">{t("privacy")}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function QuestionInput({
   question: q,
   value,
