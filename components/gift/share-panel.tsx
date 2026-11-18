@@ -1,6 +1,16 @@
 "use client";
 
-import { Check, Copy, Download, Lock, Share2 } from "lucide-react";
+import {
+  Check,
+  Copy,
+  Download,
+  Lock,
+  MessageCircle,
+  MessageSquareText,
+  Phone,
+  Send,
+  Share2,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +30,43 @@ type Props = {
 const neverChanges = () => () => {};
 
 /**
+ * The apps people in Myanmar actually send links with, each opened with the
+ * message and link filled in. Plain icons in the apps' colours, with the name
+ * under each, rather than the brand marks themselves. Messenger has no web
+ * share without a Facebook app id, so its button is only shown on phones.
+ */
+const SHARE_APPS = [
+  {
+    name: "Viber",
+    color: "#7360F2",
+    Icon: Phone,
+    href: (text: string) => `viber://forward?text=${encodeURIComponent(text)}`,
+    app: true,
+  },
+  {
+    name: "Messenger",
+    color: "#0084FF",
+    Icon: MessageCircle,
+    href: (_text: string, url: string) => `fb-messenger://share/?link=${encodeURIComponent(url)}`,
+    app: true,
+    phoneOnly: true,
+  },
+  {
+    name: "Telegram",
+    color: "#26A5E4",
+    Icon: Send,
+    href: (text: string, url: string) =>
+      `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`,
+  },
+  {
+    name: "WhatsApp",
+    color: "#25D366",
+    Icon: MessageSquareText,
+    href: (text: string) => `https://wa.me/?text=${encodeURIComponent(text)}`,
+  },
+] as const;
+
+/**
  * Everything needed to pass a gift on: the link with a copy button, the
  * phone's own share sheet where there is one, and a QR code. Laid out as
  * one narrow column, so it reads the same in a side panel and on a phone.
@@ -34,6 +81,12 @@ export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title, invitation
     () => typeof navigator.share === "function",
     () => false,
   );
+  const onPhone = useSyncExternalStore(
+    neverChanges,
+    () => /Android|iPhone|iPad/i.test(navigator.userAgent),
+    () => false,
+  );
+  const apps = SHARE_APPS.filter((a) => !("phoneOnly" in a && a.phoneOnly) || onPhone);
 
   // "Shared" in the timeline means the creator passed the link on. Recorded once per gift.
   const recordShared = () => void markGiftShared(giftId).catch(() => undefined);
@@ -86,6 +139,32 @@ export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title, invitation
           {t("nativeShare")}
         </Button>
       )}
+
+      <div className="rounded-2xl border glass p-3">
+        <p className="mb-2 text-sm font-semibold">{t("sendWith")}</p>
+        <ul className="grid grid-cols-4 gap-1">
+          {apps.map(({ name, color, Icon, href, ...rest }) => (
+            <li key={name}>
+              <a
+                href={href(`${w("shareText")} ${url}`, url)}
+                // App links open in place; web ones in a new tab, so this page stays.
+                target={"app" in rest && rest.app ? undefined : "_blank"}
+                rel="noopener noreferrer"
+                onClick={recordShared}
+                className="flex flex-col items-center gap-1.5 rounded-xl py-2 text-xs text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:outline-none"
+              >
+                <span
+                  style={{ backgroundColor: color }}
+                  className="flex size-11 items-center justify-center rounded-full text-white shadow-sm"
+                >
+                  <Icon aria-hidden="true" className="size-5" />
+                </span>
+                {name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <div className="flex items-center gap-4 rounded-2xl border glass p-3">
         <div
