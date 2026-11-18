@@ -45,6 +45,8 @@ type Props = {
   highlightSlug?: string;
   /** Language for the preview's starting text. */
   locale: "en" | "my";
+  /** Category id to start filtered on, from a link such as /templates?category=invitations. */
+  initialCategory?: string | null;
 };
 
 /** Template library with category chips and search. Filtering is client-side; the list is small. */
@@ -55,11 +57,12 @@ export function TemplateGrid({
   pointsBalance = null,
   highlightSlug,
   locale,
+  initialCategory = null,
 }: Props) {
   const t = useTranslations("create");
   const format = useFormatter();
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<string | null>(null);
+  const [category, setCategory] = useState<string | null>(initialCategory);
 
   const usedCategories = useMemo(() => {
     const ids = new Set(templates.map((x) => x.categoryId));

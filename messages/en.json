@@ -12,6 +12,17 @@
     "createGift": "Create a Gift",
     "menu": "Menu"
   },
+  "invitations": {
+    "previewName": "Wedding Invitation",
+    "rsvp": "RSVP on the card",
+    "rsvpText": "Guests say yes or no and leave their name, with no app and no account.",
+    "headcount": "A headcount, added up",
+    "headcountText": "Ask how many are coming. The total waits on your guest list.",
+    "calendar": "Save the date, find the place",
+    "calendarText": "One tap adds it to their calendar; another opens the venue in Maps.",
+    "deadline": "A deadline and a list",
+    "deadlineText": "Replies close on the day you choose. Filter who is coming and download the list."
+  },
   "home": {
     "eyebrow": "Eain · အိမ် · Home",
     "headline": "Digital gifts that feel like <em>home</em>.",
@@ -28,6 +39,10 @@
     "statementEnd": "Eain is a place to create that feeling, and give it to someone.",
     "showcaseLabel": "Templates",
     "showcaseTitle": "Many ways to begin.",
+    "invitationsLabel": "Invitations",
+    "invitationsTitle": "Invite everyone. Know who's coming.",
+    "invitationsText": "Weddings, parties, showers and farewells: send one link, and your guests answer on the card itself.",
+    "invitationsCta": "Browse invitations",
     "forLabel": "For everyone",
     "trustLabel": "Privacy",
     "rights": "All rights reserved."

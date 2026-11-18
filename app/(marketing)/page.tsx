@@ -1,4 +1,13 @@
-import { ArrowRight, Link2, Lock, ShieldCheck } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarPlus,
+  CheckCircle2,
+  Link2,
+  ListChecks,
+  Lock,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -27,6 +36,12 @@ const connections = [
   "classmates",
   "coworkers",
   "distance",
+] as const;
+const invitationFeatures = [
+  { key: "rsvp", icon: CheckCircle2 },
+  { key: "headcount", icon: Users },
+  { key: "calendar", icon: CalendarPlus },
+  { key: "deadline", icon: ListChecks },
 ] as const;
 const trust = [
   { key: "private", icon: Link2 },
@@ -269,6 +284,43 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Invitations */}
+      <section className="border-t border-border/60">
+        <div className="mx-auto grid max-w-6xl gap-12 px-4 py-24 md:grid-cols-[1fr_1.4fr] md:gap-20 md:py-32">
+          <div className="mx-auto w-full max-w-xs md:sticky md:top-28 md:mx-0 md:self-start">
+            <TemplatePreview
+              slug="wedding-invitation"
+              variant="champagne"
+              locale={locale}
+              name={t("invitations.previewName")}
+            />
+          </div>
+          <div>
+            <Label>{t("home.invitationsLabel")}</Label>
+            <h2 className={sectionTitle}>{t("home.invitationsTitle")}</h2>
+            <p className="mt-4 text-muted-foreground">{t("home.invitationsText")}</p>
+            <ul className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2">
+              {invitationFeatures.map(({ key, icon: Icon }) => (
+                <li key={key} className="flex flex-col gap-2 border-t border-border pt-5">
+                  <Icon className="size-5 text-muted-foreground" strokeWidth={1.5} />
+                  <h3 className="font-display text-xl">{t(`invitations.${key}`)}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {t(`invitations.${key}Text`)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/templates?category=invitations"
+              className="group mt-10 inline-flex items-center gap-2 text-sm font-semibold"
+            >
+              {t("home.invitationsCta")}
+              <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* For everyone */}
       <section className="border-t border-border/60">

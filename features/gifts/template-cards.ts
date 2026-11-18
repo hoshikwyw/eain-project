@@ -8,7 +8,7 @@ import { getTemplateStyle, isAvailableTemplate } from "./templates";
  */
 export async function loadTemplateCards(locale: "en" | "my"): Promise<{
   templates: TemplateCard[];
-  categories: { id: string; name: string }[];
+  categories: { id: string; slug: string; name: string }[];
 }> {
   const supabase = await createClient();
   const [{ data: rows }, { data: categories }, { data: unlocks }] = await Promise.all([
@@ -22,7 +22,7 @@ export async function loadTemplateCards(locale: "en" | "my"): Promise<{
       .order("created_at"),
     supabase
       .from("categories")
-      .select("id, name_en, name_my, sort_order")
+      .select("id, slug, name_en, name_my, sort_order")
       .eq("is_active", true)
       .order("sort_order"),
     supabase.from("template_unlocks").select("template_id"),
@@ -30,6 +30,7 @@ export async function loadTemplateCards(locale: "en" | "my"): Promise<{
 
   const cats = (categories ?? []).map((c) => ({
     id: c.id,
+    slug: c.slug,
     name: locale === "my" ? c.name_my : c.name_en,
   }));
   const catName = new Map(cats.map((c) => [c.id, c.name]));

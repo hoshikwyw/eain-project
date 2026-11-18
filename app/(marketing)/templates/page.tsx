@@ -14,9 +14,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /** Public template library. Browsing needs no account; creating does. */
-export default async function TemplatesPage() {
+export default async function TemplatesPage({ searchParams }: PageProps<"/templates">) {
   const t = await getTranslations("templatesPage");
   const locale = await getLocale();
+  const { category: wanted } = await searchParams;
 
   const { templates, categories } = isSupabaseConfigured()
     ? await loadTemplateCards(locale === "my" ? "my" : "en")
@@ -33,6 +34,7 @@ export default async function TemplatesPage() {
         categories={categories}
         mode="browse"
         locale={locale === "my" ? "my" : "en"}
+        initialCategory={categories.find((c) => c.slug === wanted)?.id ?? null}
       />
     </div>
   );

@@ -79,6 +79,17 @@ describe("template pages", () => {
     assert.ok(!html.includes("lucide-image-plus"), "no empty photo boxes in the thumbnails");
   });
 
+  it("the home page introduces invitations and links to them", async () => {
+    const home = await (await fetch(`${site}/`)).text();
+    assert.ok(home.includes("Invite everyone."), "the section is there");
+    assert.ok(
+      home.includes("/templates?category=invitations"),
+      "leads to the invitation templates",
+    );
+    const res = await fetch(`${site}/templates?category=invitations`);
+    assert.equal(res.status, 200, "the library takes the category in its address");
+  });
+
   it("shows the invitations with their details and RSVP answers", async () => {
     const library = await (await fetch(`${site}/templates`)).text();
     assert.ok(library.includes("Invitations"), "the category is in the library");
