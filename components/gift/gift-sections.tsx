@@ -441,8 +441,9 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
                   className="mt-1 size-4 shrink-0 text-[color:var(--t-accent)]"
                 />
                 <p style={alignStyle(st?.[field])} className={cn("min-w-0 flex-1", look)}>
-                  {field === "place" && !editing ? (
+                  {field === "place" && !editing && !compact ? (
                     // The place opens in the phone's maps app; the words stay the creator's.
+                    // Thumbnails (compact) carry no links: they often sit inside a link themselves.
                     <a
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(value)}`}
                       target="_blank"
@@ -481,12 +482,12 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
               />
               <span className="text-sm text-[color:var(--t-muted)]">{labels.addToCalendar}</span>
               <span className="flex flex-wrap gap-2">
-                <CalendarChip href={editing ? undefined : googleCalendarUrl(calendar)}>
+                <CalendarChip href={editing || compact ? undefined : googleCalendarUrl(calendar)}>
                   {labels.calendarGoogle}
                 </CalendarChip>
                 <CalendarChip
                   href={
-                    editing || !ctx.calendarBase
+                    editing || compact || !ctx.calendarBase
                       ? undefined
                       : `${ctx.calendarBase}?section=${section.id}`
                   }

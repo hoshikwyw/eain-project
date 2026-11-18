@@ -86,6 +86,8 @@ describe("template pages", () => {
       home.includes("/templates?category=invitations"),
       "leads to the invitation templates",
     );
+    // Thumbnails sit inside links, so the cards they picture must carry none of their own.
+    assert.ok(!home.includes("google.com/maps"), "no links inside the template thumbnails");
     const res = await fetch(`${site}/templates?category=invitations`);
     assert.equal(res.status, 200, "the library takes the category in its address");
   });
