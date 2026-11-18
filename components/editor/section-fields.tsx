@@ -209,6 +209,16 @@ export function SectionFields({ section, onChange, giftId, guest, media, onMedia
               />
             </div>
           </Field>
+          <Field label={t("eventRsvpBy")} htmlFor={`${id}-rsvp-by`} hint={t("eventRsvpByHint")}>
+            <Input
+              id={`${id}-rsvp-by`}
+              type="date"
+              value={content.rsvpBy ?? ""}
+              onChange={(e) =>
+                onChange({ ...section, content: { ...content, rsvpBy: e.target.value } })
+              }
+            />
+          </Field>
         </div>
       );
     }

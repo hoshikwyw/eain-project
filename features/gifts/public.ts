@@ -4,6 +4,7 @@ import { cache } from "react";
 import { track } from "@/lib/analytics";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { signMedia } from "./media";
+import { rsvpClosed, rsvpDeadline } from "./rsvp";
 import type {
   GiftColors,
   MediaItem,
@@ -190,29 +191,39 @@ export async function getSessionAnswers(
 }
 
 export type SubmitResult =
-  { ok: true } | { ok: false; reason: "not-found" | "duplicate" | "invalid" | "error" };
+  { ok: true } | { ok: false; reason: "not-found" | "duplicate" | "invalid" | "closed" | "error" };
 
 export async function submitResponse(
   token: string,
   submission: ResponseSubmission,
 ): Promise<SubmitResult> {
   const admin = createAdminClient();
+  const { data: gift } = await admin
+    .from("gifts")
+    .select("id")
+    .eq("share_token", token)
+    .eq("status", "published")
+    .maybeSingle();
+  if (!gift) return { ok: false, reason: "not-found" };
+
+  // After the host's RSVP deadline the card takes no more replies, new or changed.
+  const { data: eventRows } = await admin
+    .from("gift_sections")
+    .select("id, type, content, position")
+    .eq("gift_id", gift.id)
+    .eq("type", "event");
+  if (rsvpClosed(rsvpDeadline(sectionsFromRows(eventRows ?? [])))) {
+    return { ok: false, reason: "closed" };
+  }
+
   if (submission.replace) {
     // A change of mind: the earlier reply from this browser goes, answers with it, and the
     // new one is stored as usual. The creator is told again, with the new answer.
-    const { data: gift } = await admin
-      .from("gifts")
-      .select("id")
-      .eq("share_token", token)
-      .eq("status", "published")
-      .maybeSingle();
-    if (gift) {
-      await admin
-        .from("gift_responses")
-        .delete()
-        .eq("gift_id", gift.id)
-        .eq("session_id", submission.sessionId);
-    }
+    await admin
+      .from("gift_responses")
+      .delete()
+      .eq("gift_id", gift.id)
+      .eq("session_id", submission.sessionId);
   }
   const { error } = await admin.rpc("submit_gift_response", {
     p_share_token: token,

@@ -206,6 +206,11 @@ export const eventContentSchema = z.object({
     .string()
     .regex(/^(\d{4}-\d{2}-\d{2}(T\d{2}:\d{2})?)?$/)
     .optional(),
+  /** Last day for replies ("2026-12-01"). After it the card takes no RSVPs. */
+  rsvpBy: z
+    .string()
+    .regex(/^(\d{4}-\d{2}-\d{2})?$/)
+    .optional(),
   styles: stylesFor(["date", "time", "place", "note"]),
 });
 

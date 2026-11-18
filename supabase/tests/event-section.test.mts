@@ -123,4 +123,34 @@ describe("event details section", () => {
     const none = await fetch(`${site}/api/g/${token}/calendar?section=not-there`);
     assert.equal(none.status, 404);
   });
+
+  it("after the RSVP deadline the card takes no replies", async (t) => {
+    if (!migrated) return t.skip("migration 0017 not applied");
+    const { data: row } = await admin
+      .from("gift_sections")
+      .select("id, content")
+      .eq("gift_id", giftId)
+      .eq("type", "event")
+      .single();
+    const content = row!.content as Record<string, unknown>;
+    const post = () =>
+      fetch(`${site}/api/g/${token}/responses`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId: "deadline-1",
+          answers: [{ questionId: "00000000-0000-4000-8000-000000000001", text: "x" }],
+        }),
+      });
+    await admin
+      .from("gift_sections")
+      .update({ content: { ...content, rsvpBy: "2000-01-01" } })
+      .eq("id", row!.id);
+    assert.equal((await post()).status, 410, "closed once the day is over");
+    await admin
+      .from("gift_sections")
+      .update({ content: { ...content, rsvpBy: "2999-12-31" } })
+      .eq("id", row!.id);
+    assert.equal((await post()).status, 400, "open again: the reply reaches validation");
+  });
 });

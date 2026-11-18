@@ -51,6 +51,8 @@ type Props = {
   recipientName: string;
   /** An invitation: the closed stage asks them to come, not to open a gift. */
   invitation?: boolean;
+  /** The RSVP deadline, when it has passed. The card then takes no replies. */
+  closedOn?: string;
   /** Where "Make your own gift" goes: the same template to try, or the library. */
   tryHref: string;
   children: React.ReactNode;
@@ -58,6 +60,7 @@ type Props = {
 
 export function GiftReveal({
   token,
+  closedOn,
   questions,
   opening,
   variant,
@@ -113,6 +116,7 @@ export function GiftReveal({
         token={token}
         questions={questions}
         invitation={invitation}
+        closedOn={closedOn}
         sessionId={getSessionId}
         onStarted={() => void sendEvent(token, "response_started")}
       >

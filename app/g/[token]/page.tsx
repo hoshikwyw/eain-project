@@ -5,6 +5,7 @@ import { GiftView } from "@/components/gift/gift-view";
 import { SceneFrame } from "@/components/scene/scene-frame";
 import { getPublicGift } from "@/features/gifts/public";
 import { isAvailableTemplate, isInvitationDesign } from "@/features/gifts/templates";
+import { rsvpClosed, rsvpDeadline } from "@/features/gifts/rsvp";
 import { sceneConfig } from "@/features/gifts/scene";
 import { GiftUnavailable } from "./unavailable";
 
@@ -54,6 +55,9 @@ export default async function PublicGiftPage({ params }: PageProps<"/g/[token]">
   if (!gift) return <GiftUnavailable />;
 
   const t = await getTranslations("gift");
+  // Past the host's RSVP deadline the card shows the date and takes no replies.
+  const deadline = rsvpDeadline(gift.sections);
+  const closedOn = rsvpClosed(deadline) ? (deadline ?? undefined) : undefined;
   // A free template opens for them to try right away; a premium one is only shown in the library.
   const tryHref =
     isAvailableTemplate(gift.templateSlug) && !gift.templatePremium
@@ -70,6 +74,7 @@ export default async function PublicGiftPage({ params }: PageProps<"/g/[token]">
       colors={gift.colors}
       recipientName={gift.recipientName}
       invitation={isInvitationDesign(gift.style.design)}
+      closedOn={closedOn}
     >
       {gift.style.scene ? (
         // A scene template: the animation plays in a tall, phone-shaped frame.

@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Send } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { PublicQuestion } from "@/features/gifts/schemas";
 import { toast } from "@/lib/toast";
@@ -22,7 +22,7 @@ type SentAnswer = {
   text: string | null;
   number: number | null;
 };
-type State = "idle" | "sending" | "sent" | "duplicate" | "error" | "invalid";
+type State = "idle" | "sending" | "sent" | "duplicate" | "error" | "invalid" | "closed";
 
 type Store = {
   questions: PublicQuestion[];
@@ -34,6 +34,8 @@ type Store = {
   change: () => void;
   invitation: boolean;
   demo: boolean;
+  /** The RSVP deadline, when it has passed: the card shows it and takes nothing. */
+  closedOn?: string;
 };
 
 const AnswerContext = createContext<Store | null>(null);
@@ -41,6 +43,8 @@ const AnswerContext = createContext<Store | null>(null);
 type ProviderProps = {
   questions: PublicQuestion[];
   invitation?: boolean;
+  /** Set when the host's RSVP deadline has passed: that date, "YYYY-MM-DD". */
+  closedOn?: string;
   children: React.ReactNode;
 } & (
   | {
@@ -120,12 +124,14 @@ export function AnswerProvider(props: ProviderProps) {
   }, [token, sessionId, doneKey]);
 
   function change() {
+    if (props.closedOn) return;
     replacing.current = true;
     setAnswers({});
     setState("idle");
   }
 
   function set(questionId: string, answer: Answer) {
+    if (props.closedOn || state === "closed") return;
     if (state === "sent" || state === "duplicate" || state === "sending") return;
     if (!started.current) {
       started.current = true;
@@ -136,6 +142,7 @@ export function AnswerProvider(props: ProviderProps) {
   }
 
   async function submit() {
+    if (props.closedOn || state === "closed") return;
     if (state === "sending" || state === "sent" || state === "duplicate") return;
     const missing = questions.some((q) => q.required && !isAnswered(q, answers[q.id]));
     const payload = questions
@@ -177,6 +184,9 @@ export function AnswerProvider(props: ProviderProps) {
         else toast.info(t("alreadyText"));
       } else if (res.status === 400) {
         setState("invalid");
+      } else if (res.status === 410) {
+        // The deadline passed while the card was open.
+        setState("closed");
       } else {
         setState("error");
         toast.error(t("error"));
@@ -198,6 +208,7 @@ export function AnswerProvider(props: ProviderProps) {
         change,
         invitation,
         demo: Boolean(props.demo),
+        closedOn: props.closedOn,
       }}
     >
       {children}
@@ -236,20 +247,29 @@ export function QuestionSlot({
 }) {
   const store = useContext(AnswerContext);
   const t = useTranslations("gift.response");
+  const format = useFormatter();
   if (!store) return null;
   const q = store.questions.find((x) => x.id === questionId);
   if (!q) return null;
   const { state, invitation } = store;
   const done = state === "sent" || state === "duplicate";
-  const w = (key: "send" | "sentTitle" | "sentText" | "change") =>
-    invitation ? t(`rsvp.${key}`) : t(key);
+  const closed = Boolean(store.closedOn) || state === "closed";
+  const w = (
+    key: "send" | "sentTitle" | "sentText" | "change" | "closed" | "closedShort",
+    values?: Record<string, string>,
+  ) => (invitation ? t(`rsvp.${key}`, values) : t(key, values));
+  const closedText = store.closedOn
+    ? w("closed", {
+        date: format.dateTime(new Date(`${store.closedOn}T00:00:00`), { dateStyle: "long" }),
+      })
+    : w("closedShort");
   const value = store.answers[q.id];
 
   return (
     <div className="question flex flex-col gap-3 rounded-2xl border border-[color:var(--t-accent-soft)] p-4 text-left">
       <p className="font-semibold">
         {prompt}
-        {required && !done && (
+        {required && !done && !closed && (
           <span aria-hidden="true" className="ml-1 text-[color:var(--t-accent)]">
             *
           </span>
@@ -258,7 +278,7 @@ export function QuestionSlot({
       <QuestionInput
         question={q}
         value={value}
-        disabled={done || state === "sending"}
+        disabled={done || closed || state === "sending"}
         onChange={(a) => store.set(q.id, a)}
       />
       {last && (
@@ -281,7 +301,7 @@ export function QuestionSlot({
                 <span className="text-[color:var(--t-muted)]">
                   {state === "sent" ? w("sentText") : t("alreadyText")}
                 </span>{" "}
-                {!store.demo && (
+                {!store.demo && !closed && (
                   <button
                     type="button"
                     onClick={store.change}
@@ -294,6 +314,10 @@ export function QuestionSlot({
                   </button>
                 )}
               </span>
+            </p>
+          ) : closed ? (
+            <p role="status" className="text-sm text-[color:var(--t-muted)]">
+              {closedText}
             </p>
           ) : (
             <>

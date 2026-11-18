@@ -60,6 +60,8 @@ export async function POST(request: Request, context: { params: Promise<{ token:
         ? 409
         : result.reason === "invalid"
           ? 400
-          : 500;
+          : result.reason === "closed"
+            ? 410
+            : 500;
   return NextResponse.json({ ok: false, error: result.reason }, { status });
 }

@@ -292,6 +292,8 @@
       "eventNote": "Note (dress code, RSVP by…)",
       "eventCalendar": "Calendar date (optional)",
       "eventCalendarHint": "Guests then get an “Add to calendar” button with the real date and time.",
+      "eventRsvpBy": "RSVP deadline (optional)",
+      "eventRsvpByHint": "After this day the card no longer takes replies.",
       "quote": "Quote",
       "attribution": "Who said it",
       "closingLine": "Closing line",
@@ -510,14 +512,18 @@
         "send": "Send my RSVP",
         "sentTitle": "Your RSVP has been sent.",
         "sentText": "Thank you. The host has your answer.",
-        "change": "Change my RSVP"
+        "change": "Change my RSVP",
+        "closed": "RSVPs closed on {date}.",
+        "closedShort": "RSVPs are closed."
       },
       "error": "Could not send. Please try again.",
       "sentTitle": "Your reply has been sent.",
       "sentText": "Thank you. They will see it on their side.",
       "alreadyText": "You have already replied from this device.",
       "privacy": "No account needed. Only the sender sees your reply.",
-      "change": "Change my answer"
+      "change": "Change my answer",
+      "closed": "Replies closed on {date}.",
+      "closedShort": "Replies are closed."
     },
     "madeWith": "Made with Eain",
     "makeYourOwn": "Make your own gift",
