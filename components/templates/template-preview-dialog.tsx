@@ -56,7 +56,7 @@ export function TemplatePreviewDialog({
           type="button"
           variant="secondary"
           size="icon"
-          className={cn("size-9 rounded-full shadow-soft", triggerClassName)}
+          className={cn("size-11 rounded-full shadow-soft sm:size-9", triggerClassName)}
           aria-label={t("open", { template: name })}
           onClick={() => setOpen(true)}
         >

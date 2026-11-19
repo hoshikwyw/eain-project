@@ -96,7 +96,7 @@ export function GuestList({ giftId, responses, labels }: Props) {
               aria-pressed={filter === c.key}
               onClick={() => setFilter(c.key)}
               className={cn(
-                "rounded-full border px-3 py-1 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:outline-none",
+                "inline-flex min-h-11 items-center rounded-full border px-3.5 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:outline-none sm:min-h-9",
                 filter === c.key
                   ? "border-transparent bg-primary text-primary-foreground"
                   : "border-border text-muted-foreground hover:bg-secondary hover:text-foreground",

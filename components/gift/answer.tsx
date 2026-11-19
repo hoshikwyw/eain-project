@@ -226,7 +226,8 @@ export function AnswerProvider(props: ProviderProps) {
 
 function hasDeclined(questions: PublicQuestion[], answers: Record<string, Answer>): boolean {
   return questions.some(
-    (q) => q.kind === "yes_no" && Boolean(q.options[1]) && answers[q.id]?.optionId === q.options[1].id,
+    (q) =>
+      q.kind === "yes_no" && Boolean(q.options[1]) && answers[q.id]?.optionId === q.options[1].id,
   );
 }
 
@@ -389,7 +390,7 @@ export function QuestionPreview({
       aria-label={note}
       className="question flex flex-col gap-3 rounded-2xl border border-dashed border-[color:var(--t-accent-soft)] p-4 text-left"
     >
-      <p className="text-[10px] font-semibold tracking-[0.18em] text-[color:var(--t-muted)] uppercase">
+      <p className="text-xs font-semibold tracking-[0.18em] text-[color:var(--t-muted)] uppercase">
         {note}
       </p>
       <p className="font-semibold">

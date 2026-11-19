@@ -52,7 +52,7 @@ export function GiftGallery({ items, initial, tail }: Props) {
         <div
           role="group"
           aria-label={t("label")}
-          className="flex gap-1 rounded-full bg-secondary p-1 sm:inline-flex"
+          className="flex gap-2 rounded-full bg-secondary p-1 sm:inline-flex"
         >
           {GALLERY_FILTERS.map((key) => {
             const active = key === filter;
@@ -63,7 +63,7 @@ export function GiftGallery({ items, initial, tail }: Props) {
                 aria-pressed={active}
                 onClick={() => choose(key)}
                 className={cn(
-                  "inline-flex h-9 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full px-2 text-sm font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60 sm:flex-none sm:px-3.5",
+                  "inline-flex h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full px-2 text-sm font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60 sm:h-9 sm:flex-none sm:px-3.5",
                   active
                     ? "bg-card text-foreground shadow-soft"
                     : "text-muted-foreground hover:text-foreground",

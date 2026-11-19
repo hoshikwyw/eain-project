@@ -39,7 +39,7 @@ export function AppHeader({ displayName, email, pointsBalance, unreadCount, isAd
       {/* The glass is a layer of its own, so the account menu can blur the page behind it too. */}
       <div aria-hidden="true" className="absolute inset-0 -z-10 border-b glass-bar" />
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4 md:h-[4.5rem]">
-        <Link href="/dashboard" aria-label="Eain" className="rounded-lg">
+        <Link href="/dashboard" aria-label="Eain" className="flex min-h-11 items-center rounded-lg">
           <Logo />
         </Link>
 

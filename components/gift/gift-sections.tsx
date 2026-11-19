@@ -453,7 +453,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
                       target="_blank"
                       rel="noopener noreferrer"
                       title={labels.openInMaps}
-                      className="underline decoration-dotted underline-offset-4 hover:decoration-solid"
+                      className="py-2 underline decoration-dotted underline-offset-4 hover:decoration-solid"
                     >
                       <Styled style={st?.[field]} text={value}>
                         {value}

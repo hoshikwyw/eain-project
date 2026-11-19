@@ -26,7 +26,10 @@ export async function GiftTile({ card, senderName, actions }: Props) {
 
   return (
     <div className="flex flex-col gap-2.5">
-      <Link href={href} className="group flex flex-col gap-2.5 rounded-2xl outline-none">
+      <Link
+        href={href}
+        className="group flex flex-col gap-2.5 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      >
         <GiftThumb
           card={card}
           senderName={senderName}

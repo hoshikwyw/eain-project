@@ -23,7 +23,7 @@ export function BottomNav({ unreadCount }: { unreadCount: number }) {
         aria-current={active ? "page" : undefined}
         aria-label={t(key)}
         className={cn(
-          "relative flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-semibold",
+          "relative flex flex-1 flex-col items-center gap-0.5 py-2 text-xs font-semibold",
           active ? "text-primary-ink" : "text-muted-foreground",
         )}
       >

@@ -81,7 +81,7 @@ export default async function GiftDetailPage({ params }: PageProps<"/dashboard/g
       <div className="flex flex-col gap-3">
         <Link
           href="/dashboard/gifts"
-          className="inline-flex items-center gap-1.5 self-start rounded-full text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+          className="inline-flex min-h-11 items-center gap-1.5 self-start rounded-full text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="size-4" />
           {tNav("gifts")}
@@ -154,6 +154,7 @@ export default async function GiftDetailPage({ params }: PageProps<"/dashboard/g
             {t("preview")}
           </CapsLabel>
           <GiftView
+            headingLevel={2}
             sections={data.sections}
             media={data.media}
             variant={data.variant}

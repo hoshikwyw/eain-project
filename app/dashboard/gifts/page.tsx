@@ -34,7 +34,7 @@ export default async function GiftsPage({ searchParams }: PageProps<"/dashboard/
         card={card}
         senderName={profile.display_name}
         actions={
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <Button asChild variant="secondary" size="sm" className="min-w-0 flex-1">
               <Link href={`/create/${card.gift.id}`}>
                 <Pencil />
@@ -45,7 +45,7 @@ export default async function GiftsPage({ searchParams }: PageProps<"/dashboard/
               <ConfirmButton
                 variant="ghost"
                 size="sm"
-                className="px-2.5 text-destructive"
+                className="min-w-11 px-0 text-destructive sm:min-w-9"
                 aria-label={t("gifts.delete")}
                 title={t("gifts.delete")}
                 confirmText={t("gifts.deleteConfirm")}

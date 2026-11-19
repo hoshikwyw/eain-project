@@ -11,7 +11,7 @@
  *
  * Options: --base http://localhost:5173  --width 390,1280  --theme light,dark
  *          --cookie "name=value" (repeatable)  --json <file>  --max 8 (examples per finding)
- * Needs Microsoft Edge or Chrome on the machine (headless, no dependencies).
+ * Needs Chrome (preferred) or Microsoft Edge on the machine (headless, no dependencies).
  */
 import { spawn } from "node:child_process";
 import { existsSync, mkdtempSync, writeFileSync } from "node:fs";
@@ -29,10 +29,13 @@ const DEFAULT_PAGES = [
   "/auth/signup",
   "/auth/forgot",
 ];
+// Chrome first: headless Edge (new mode) stops completing React's streamed sections after a
+// few page loads in one session, which would read as empty pages.
 const BROWSERS = [
+  "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
   "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
   "C:/Program Files/Microsoft/Edge/Application/msedge.exe",
-  "C:/Program Files/Google/Chrome/Application/chrome.exe",
   "/usr/bin/google-chrome",
   "/usr/bin/chromium",
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
@@ -257,7 +260,12 @@ const AUDIT = String.raw`(() => {
   const noPointer = interactive.filter((el) => (el.tagName === "BUTTON" || el.getAttribute("role") === "button" || el.tagName === "A") && getComputedStyle(el).cursor !== "pointer").map(desc);
 
   // Baseline styles for the focus check that follows (keyed by element).
-  window.__eainBase = new Map(interactive.map((el) => [el, getComputedStyle(el).outlineStyle + "|" + getComputedStyle(el).outlineWidth + "|" + getComputedStyle(el).boxShadow]));
+  const look = (el) => getComputedStyle(el).outlineStyle + "|" + getComputedStyle(el).outlineWidth + "|" + getComputedStyle(el).boxShadow;
+  window.__eainBase = new Map();
+  for (const el of interactive) {
+    window.__eainBase.set(el, look(el));
+    if (el.parentElement) window.__eainBase.set(el.parentElement, look(el.parentElement));
+  }
 
   const cut = (xs) => ({ count: xs.length, examples: xs.slice(0, MAX) });
   return {
@@ -267,6 +275,39 @@ const AUDIT = String.raw`(() => {
     headings: { h1: h1s, skips }, zoomLocked, viewport: vp, noPointer: cut(noPointer),
   };
 })()`;
+
+/**
+ * Waits until the page has stopped changing: loaded, no streamed section still
+ * pending, and its markup the same size for 1.5s. A fixed wait would measure
+ * the loading shell of a page that is still arriving. If a streamed section
+ * never arrives (the dev server sometimes drops one), the page is reloaded
+ * once and the wait starts over.
+ */
+async function settle(b, maxMs = 25000, reloaded = false) {
+  const start = Date.now();
+  let last = -1;
+  let stableSince = Date.now();
+  while (Date.now() - start < maxMs) {
+    await sleep(500);
+    const state = await b.evaluate(
+      'JSON.stringify({ size: document.readyState === "complete" ? document.body.innerHTML.length : -1, pending: [...document.querySelectorAll("template")].some((t) => t.id.startsWith("B:")) })',
+    );
+    const { size, pending } = JSON.parse(state);
+    if (size !== last) {
+      last = size;
+      stableSince = Date.now();
+    } else if (size > 0 && !pending && Date.now() - stableSince >= 1500) return;
+  }
+  const pending = await b.evaluate(
+    '[...document.querySelectorAll("template")].some((t) => t.id.startsWith("B:"))',
+  );
+  if (pending && !reloaded) {
+    stalled++;
+    await b.send("Page.reload");
+    return settle(b, maxMs, true);
+  }
+}
+let stalled = 0;
 
 /** Presses Tab through the page and reports focused controls whose look did not change. */
 async function focusCheck(b, max = 60) {
@@ -295,7 +336,15 @@ async function focusCheck(b, max = 60) {
       const now = cs.outlineStyle + "|" + cs.outlineWidth + "|" + cs.boxShadow;
       const base = window.__eainBase && window.__eainBase.get(a);
       const key = a.tagName + ":" + (a.getAttribute("aria-label") || a.textContent || "").trim().slice(0, 30);
-      const ring = (cs.outlineStyle !== "none" && parseFloat(cs.outlineWidth) > 0) || (base !== undefined && now !== base) || cs.boxShadow !== "none";
+      const parent = a.parentElement;
+      const pcs = parent && getComputedStyle(parent);
+      const parentNow = pcs ? pcs.outlineStyle + "|" + pcs.outlineWidth + "|" + pcs.boxShadow : "";
+      const parentBase = parent && window.__eainBase ? window.__eainBase.get(parent) : undefined;
+      const ring =
+        (cs.outlineStyle !== "none" && parseFloat(cs.outlineWidth) > 0) ||
+        (base !== undefined && now !== base) ||
+        cs.boxShadow !== "none" ||
+        (parentBase !== undefined && parentNow !== parentBase);
       return { key, ring, desc: a.tagName.toLowerCase() + ' "' + (a.getAttribute("aria-label") || a.textContent || "").trim().replace(/\\s+/g, " ").slice(0, 40) + '"' };
     })()`);
     if (!r) break;
@@ -310,6 +359,19 @@ const report = [];
 for (const width of opt.widths) {
   const b = await launch(width);
   try {
+    // Cookies go in once per browser: a session cookie set again later would overwrite
+    // the fresher one the server has since issued and sign the user out.
+    if (opt.cookies.length) {
+      for (const c of opt.cookies) {
+        const i = c.indexOf("=");
+        await b.send("Network.setCookie", {
+          name: c.slice(0, i),
+          value: c.slice(i + 1),
+          url: opt.base,
+          path: "/",
+        });
+      }
+    }
     for (const theme of opt.themes) {
       await b.send("Page.addScriptToEvaluateOnNewDocument", {
         source: `try { localStorage.setItem("theme", ${JSON.stringify(theme)}); } catch {}`,
@@ -320,28 +382,18 @@ for (const width of opt.widths) {
           { name: "prefers-reduced-motion", value: "reduce" },
         ],
       });
-      if (opt.cookies.length) {
-        const host = new URL(opt.base).hostname;
-        for (const c of opt.cookies) {
-          const i = c.indexOf("=");
-          await b.send("Network.setCookie", {
-            name: c.slice(0, i),
-            value: c.slice(i + 1),
-            domain: host,
-            path: "/",
-          });
-        }
-      }
       for (const path of pages) {
         await b.send("Page.navigate", { url: opt.base + path });
-        await sleep(3000);
+        await settle(b);
         await b.evaluate(
           `document.documentElement.classList.toggle("dark", ${JSON.stringify(theme)} === "dark"); document.documentElement.classList.toggle("light", ${JSON.stringify(theme)} === "light"); window.scrollTo(0, 0);`,
         );
         await sleep(400);
         const findings = await b.evaluate(AUDIT.replace("__MAX__", String(opt.max)));
         const focus = await focusCheck(b);
-        report.push({ path, width, theme, ...findings, focus });
+        // Where the browser actually ended up: a redirect to sign-in would otherwise pass as a page.
+        const landed = await b.evaluate("location.pathname + location.search");
+        report.push({ path, width, theme, landed, ...findings, focus });
       }
     }
   } finally {
@@ -351,6 +403,7 @@ for (const width of opt.widths) {
 
 // Print.
 const issues = (r) =>
+  (r.landed && r.landed !== r.path ? 1 : 0) +
   r.small.count +
   r.tight.count +
   r.unnamed.count +
@@ -409,6 +462,7 @@ console.log("\nDetails (first examples per finding):");
 for (const r of report) {
   if (issues(r) === 0) continue;
   console.log(`\n== ${r.path} @${r.width} ${r.theme}`);
+  if (r.landed && r.landed !== r.path) console.log(`  landed on ${r.landed}`);
   const list = (label, xs, fmt = (x) => x) => {
     if (xs.count) console.log(`  ${label} (${xs.count}):`);
     for (const x of xs.examples) console.log("    - " + fmt(x));
@@ -444,5 +498,7 @@ if (opt.json) {
   console.log(`\nwritten ${opt.json}`);
 }
 const total = report.reduce((n, r) => n + issues(r), 0);
+if (stalled)
+  console.log(`${stalled} page load(s) stalled on a streamed section and were reloaded.`);
 console.log(`\n${total} finding(s) in all.`);
 process.exit(0);

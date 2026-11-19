@@ -70,7 +70,7 @@ export function UserMenu({ displayName, email, isAdmin }: Props) {
           open ? "ring-primary" : "ring-transparent hover:ring-border",
         )}
       >
-        {avatar("size-9 text-sm")}
+        {avatar("size-11 text-sm sm:size-9")}
       </button>
 
       {open && (

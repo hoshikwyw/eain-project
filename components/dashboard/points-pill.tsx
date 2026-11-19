@@ -23,8 +23,8 @@ export function PointsPill({ balance, label, tone = "brand", className }: Props)
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full text-sm font-bold transition",
         tone === "brand"
-          ? "h-9 bg-brand-soft px-3.5 text-accent-foreground hover:brightness-95 dark:text-brand dark:hover:brightness-110"
-          : "h-8 bg-background/70 px-3 hover:bg-background",
+          ? "h-11 bg-brand-soft px-3.5 text-accent-foreground hover:brightness-95 sm:h-9 dark:text-brand dark:hover:brightness-110"
+          : "h-11 bg-background/70 px-3 hover:bg-background sm:h-8",
         className,
       )}
     >

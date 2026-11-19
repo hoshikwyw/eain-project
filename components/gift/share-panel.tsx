@@ -125,7 +125,7 @@ export function SharePanel({ giftId, url, qrSvg, qrPngDataUrl, title, invitation
           readOnly
           value={url}
           onFocus={(e) => e.currentTarget.select()}
-          className="min-w-0 flex-1 bg-transparent font-mono text-xs outline-none"
+          className="h-11 min-w-0 flex-1 bg-transparent font-mono text-xs outline-none sm:h-9"
         />
         <Button type="button" size="sm" onClick={copy} aria-live="polite">
           {copied ? <Check /> : <Copy />}
