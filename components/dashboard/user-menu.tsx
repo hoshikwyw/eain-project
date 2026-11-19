@@ -7,11 +7,18 @@ import { useEffect, useRef, useState } from "react";
 import { LocaleToggle } from "@/components/settings/locale-toggle";
 import { ThemeToggle } from "@/components/settings/theme-toggle";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import { signOut } from "@/features/auth/actions";
 import { adminHref } from "@/lib/app-mode";
-import { cn, initialOf } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
-type Props = { displayName: string; email: string; isAdmin?: boolean };
+type Props = {
+  userId: string;
+  avatarUrl: string | null;
+  displayName: string;
+  email: string;
+  isAdmin?: boolean;
+};
 
 const itemClass =
   "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-foreground transition-colors outline-none hover:bg-secondary focus-visible:bg-secondary [&_svg]:size-4.5 [&_svg]:text-muted-foreground";
@@ -21,7 +28,7 @@ const itemClass =
  * settings, language, theme, the admin console for admins, and sign out.
  * Everything about the account lives here, so the bar itself stays short.
  */
-export function UserMenu({ displayName, email, isAdmin }: Props) {
+export function UserMenu({ userId, avatarUrl, displayName, email, isAdmin }: Props) {
   const t = useTranslations("dashboard");
   const tSettings = useTranslations("settings");
   const [open, setOpen] = useState(false);
@@ -44,17 +51,8 @@ export function UserMenu({ displayName, email, isAdmin }: Props) {
     };
   }, [open]);
 
-  const initial = initialOf(displayName);
-  const avatar = (className: string) => (
-    <span
-      aria-hidden="true"
-      className={cn(
-        "grid shrink-0 place-items-center rounded-full bg-brand-soft font-bold text-accent-foreground dark:text-brand",
-        className,
-      )}
-    >
-      {initial}
-    </span>
+  const avatar = (size: number, className?: string) => (
+    <UserAvatar avatar={avatarUrl} userId={userId} size={size} className={className} />
   );
 
   return (
@@ -70,13 +68,13 @@ export function UserMenu({ displayName, email, isAdmin }: Props) {
           open ? "ring-primary" : "ring-transparent hover:ring-border",
         )}
       >
-        {avatar("size-11 text-sm sm:size-9")}
+        {avatar(44, "sm:size-9!")}
       </button>
 
       {open && (
         <div className="absolute top-[calc(100%+0.75rem)] right-0 z-50 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-3xl border glass-strong shadow-xl">
           <div className="flex items-center gap-3 p-4">
-            {avatar("size-11 text-base")}
+            {avatar(44)}
             <div className="min-w-0">
               <p className="truncate font-semibold">{displayName}</p>
               <p className="truncate text-xs text-muted-foreground">{email}</p>

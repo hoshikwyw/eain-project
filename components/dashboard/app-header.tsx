@@ -13,6 +13,8 @@ import { UserMenu } from "./user-menu";
 import { PointsPill } from "./points-pill";
 
 type Props = {
+  userId: string;
+  avatarUrl: string | null;
   displayName: string;
   email: string;
   pointsBalance: number;
@@ -27,7 +29,15 @@ type Props = {
  * points balance and the notification bell; phones get the logo and the
  * avatar, since their bottom bar carries the rest.
  */
-export function AppHeader({ displayName, email, pointsBalance, unreadCount, isAdmin }: Props) {
+export function AppHeader({
+  userId,
+  avatarUrl,
+  displayName,
+  email,
+  pointsBalance,
+  unreadCount,
+  isAdmin,
+}: Props) {
   const pathname = usePathname();
   const t = useTranslations("dashboard");
   const format = useFormatter();
@@ -99,7 +109,13 @@ export function AppHeader({ displayName, email, pointsBalance, unreadCount, isAd
             )}
           </Link>
 
-          <UserMenu displayName={displayName} email={email} isAdmin={isAdmin} />
+          <UserMenu
+            userId={userId}
+            avatarUrl={avatarUrl}
+            displayName={displayName}
+            email={email}
+            isAdmin={isAdmin}
+          />
         </div>
       </div>
     </header>

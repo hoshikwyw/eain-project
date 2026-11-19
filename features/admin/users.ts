@@ -14,6 +14,7 @@ export type AdminUserRow = {
   email: string;
   provider: string;
   displayName: string;
+  avatarUrl: string | null;
   role: UserRole;
   points: number;
   locale: string;
@@ -32,7 +33,7 @@ export async function listUsersAdmin(query: string): Promise<AdminUserRow[]> {
   const admin = createAdminClient();
   const [{ data: authData }, { data: profiles }, { data: gifts }] = await Promise.all([
     admin.auth.admin.listUsers({ page: 1, perPage: 1000 }),
-    admin.from("profiles").select("id, display_name, role, points_balance, locale"),
+    admin.from("profiles").select("id, display_name, avatar_url, role, points_balance, locale"),
     admin.from("gifts").select("sender_id").neq("status", "deleted"),
   ]);
 
@@ -49,6 +50,7 @@ export async function listUsersAdmin(query: string): Promise<AdminUserRow[]> {
         email: u.email ?? "",
         provider: (u.app_metadata?.provider as string | undefined) ?? "email",
         displayName: p?.display_name ?? "",
+        avatarUrl: p?.avatar_url ?? null,
         role: (p?.role ?? "user") as UserRole,
         points: p?.points_balance ?? 0,
         locale: p?.locale ?? "en",

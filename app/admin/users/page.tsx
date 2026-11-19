@@ -8,7 +8,7 @@ import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
 import { requireAdmin } from "@/features/admin/queries";
 import { listUsersAdmin } from "@/features/admin/users";
-import { initialOf } from "@/lib/utils";
+import { UserAvatar } from "@/components/ui/user-avatar";
 
 export default async function AdminUsersPage({ searchParams }: PageProps<"/admin/users">) {
   const me = await requireAdmin();
@@ -43,9 +43,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/admin
             <Link href={`/admin/users/${u.id}`} className="block rounded-2xl">
               <Card className="transition-colors hover:bg-secondary/60">
                 <CardContent className="flex items-center gap-4 p-4">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-soft text-sm font-bold text-accent-foreground dark:text-brand">
-                    {initialOf(u.displayName || u.email, "?")}
-                  </span>
+                  <UserAvatar avatar={u.avatarUrl} userId={u.id} size={40} />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="truncate font-semibold">

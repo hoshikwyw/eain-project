@@ -8,7 +8,7 @@ import { signOut } from "@/features/auth/actions";
 import { getCurrentProfile } from "@/features/profile/queries";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { PageTitle } from "@/components/ui/page-title";
-import { initialOf } from "@/lib/utils";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import { PointsPill } from "@/components/dashboard/points-pill";
 
 /** An action in the account group: icon and label, full width, left aligned. */
@@ -33,12 +33,12 @@ export default async function SettingsPage() {
 
       {/* Who is signed in */}
       <section className="bg-hero flex items-center gap-4 rounded-4xl px-5 py-6 sm:gap-6 sm:px-8 sm:py-7">
-        <span
-          aria-hidden="true"
-          className="grid size-16 shrink-0 place-items-center rounded-full bg-background/70 font-display text-3xl font-semibold ring-4 ring-background/40 sm:size-20 sm:text-4xl"
-        >
-          {initialOf(profile.display_name)}
-        </span>
+        <UserAvatar
+          avatar={profile.avatar_url}
+          userId={profile.id}
+          size={80}
+          className="size-16! ring-4 ring-background/40 sm:size-20!"
+        />
         <div className="flex min-w-0 flex-1 flex-col items-start">
           <p className="max-w-full truncate font-display text-2xl font-semibold">
             {profile.display_name}
