@@ -49,6 +49,7 @@ export function TemplateDemo({ slug, locale, closedClassName = "min-h-full" }: P
   if (stage !== "open") {
     return (
       <GiftClosed
+        titleAs="h2"
         opening={sample.opening}
         variant={sample.variant}
         stage={stage}
@@ -86,6 +87,7 @@ export function TemplateDemo({ slug, locale, closedClassName = "min-h-full" }: P
             senderName={sample.senderName}
             animate
             questionMode="answer"
+            headingLevel={2}
           />
         </AnswerProvider>
       )}

@@ -54,7 +54,7 @@ function Label({ children, center }: { children: React.ReactNode; center?: boole
   return (
     <p
       className={cn(
-        "flex items-center gap-3 text-[11px] font-semibold tracking-[0.28em] text-muted-foreground uppercase my:text-xs my:tracking-normal my:normal-case",
+        "flex items-center gap-3 text-xs font-semibold tracking-[0.28em] text-muted-foreground uppercase my:tracking-normal my:normal-case",
         center && "justify-center",
       )}
     >
@@ -190,7 +190,7 @@ export default async function HomePage() {
               {i > 0 && <span aria-hidden="true" className="size-1 rounded-full bg-border" />}
               <Link
                 href="/templates"
-                className="font-display text-xl font-light text-foreground/75 italic transition-colors hover:text-primary-ink md:text-2xl my:not-italic"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center font-display text-xl font-light text-foreground/75 italic transition-colors hover:text-primary-ink md:text-2xl my:not-italic"
               >
                 {t(`categories.${key}`)}
               </Link>
@@ -250,7 +250,7 @@ export default async function HomePage() {
             </div>
             <Link
               href="/templates"
-              className="group inline-flex items-center gap-2 text-sm font-semibold"
+              className="group inline-flex min-h-11 items-center gap-2 text-sm font-semibold"
             >
               {t("showcase.cta")}
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
@@ -269,7 +269,7 @@ export default async function HomePage() {
                 </div>
                 <div className="mt-4 flex items-baseline justify-between gap-3">
                   <span className="font-display text-lg">{tp.name}</span>
-                  <span className="flex items-center gap-2 text-[11px] tracking-[0.2em] text-muted-foreground uppercase my:text-xs my:tracking-normal my:normal-case">
+                  <span className="flex items-center gap-2 text-xs tracking-[0.2em] text-muted-foreground uppercase my:tracking-normal my:normal-case">
                     {tp.category}
                     {tp.isPremium && (
                       <Lock
@@ -313,7 +313,7 @@ export default async function HomePage() {
             </ul>
             <Link
               href="/templates?category=invitations"
-              className="group mt-10 inline-flex items-center gap-2 text-sm font-semibold"
+              className="group mt-10 inline-flex min-h-11 items-center gap-2 text-sm font-semibold"
             >
               {t("home.invitationsCta")}
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
@@ -366,7 +366,7 @@ export default async function HomePage() {
           </div>
           <Link
             href="/security"
-            className="group mt-12 inline-flex items-center gap-2 text-sm font-semibold"
+            className="group mt-12 inline-flex min-h-11 items-center gap-2 text-sm font-semibold"
           >
             {t("trust.learnMore")}
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />

@@ -134,7 +134,7 @@ export function TemplateGrid({
                     {mode === "browse" ? (
                       <Link
                         href={`/templates/${template.slug}`}
-                        className="rounded-sm underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                        className="inline-flex min-h-11 items-center rounded-sm underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                       >
                         {template.name}
                       </Link>
@@ -258,7 +258,7 @@ function FilterChip({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "h-9 shrink-0 cursor-pointer rounded-full px-4 text-sm font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+        "h-11 shrink-0 cursor-pointer rounded-full px-4 text-sm font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60 sm:h-9",
         active
           ? "bg-primary text-primary-foreground"
           : "bg-secondary text-muted-foreground hover:text-foreground",

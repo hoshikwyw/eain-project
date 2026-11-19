@@ -76,7 +76,7 @@ export default async function TemplatePage({ params }: Props) {
         <div className="flex flex-col gap-7 lg:sticky lg:top-24">
           <Link
             href="/templates"
-            className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+            className="-my-2 inline-flex min-h-11 w-fit items-center gap-2 rounded-lg text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft className="size-4" />
             {t("back")}
@@ -152,7 +152,7 @@ export default async function TemplatePage({ params }: Props) {
             <h2 className="font-display text-2xl font-semibold">{t("more")}</h2>
             <Link
               href="/templates"
-              className="group inline-flex items-center gap-2 text-sm font-semibold"
+              className="group inline-flex min-h-11 items-center gap-2 text-sm font-semibold"
             >
               {t("back")}
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />

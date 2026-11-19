@@ -153,13 +153,17 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
       );
     }
     case "text": {
-      const Heading = isFirst ? "h1" : "h2";
+      // The look hangs on the class (the designs style .h1 and .h2); the tag is the real
+      // heading on a page, and a plain paragraph inside a thumbnail, which is a picture.
+      const second = ctx.headingLevel === 2;
+      const Heading = ctx.inert ? "p" : isFirst ? (second ? "h2" : "h1") : second ? "h3" : "h2";
       const st = section.content.styles;
       return (
         <header className="flex flex-col gap-2">
           <Heading
             style={alignStyle(st?.heading)}
             className={cn(
+              isFirst ? "h1" : "h2",
               "font-display leading-[1.12] font-semibold tracking-[-0.01em] text-balance [overflow-wrap:anywhere]",
               compact
                 ? isFirst

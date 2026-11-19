@@ -32,7 +32,11 @@ export async function AuthShell({ title, subtitle, reward, intro, children }: Pr
     <main className="bg-hero relative flex flex-1 flex-col lg:flex-row">
       {branded && (
         <aside className="hidden flex-1 flex-col items-center justify-center gap-8 p-12 text-center lg:flex">
-          <Link href="/" aria-label="Eain" className="absolute top-5 left-8 rounded-lg">
+          <Link
+            href="/"
+            aria-label="Eain"
+            className="absolute top-5 left-8 flex min-h-11 items-center rounded-lg"
+          >
             <Logo />
           </Link>
           <div className="w-full max-w-xs xl:max-w-sm">
@@ -59,7 +63,11 @@ export async function AuthShell({ title, subtitle, reward, intro, children }: Pr
         )}
       >
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 lg:px-8">
-          <Link href="/" aria-label="Eain" className={cn("rounded-lg", branded && "lg:invisible")}>
+          <Link
+            href="/"
+            aria-label="Eain"
+            className={cn("flex min-h-11 items-center rounded-lg", branded && "lg:invisible")}
+          >
             <Logo />
           </Link>
           <div className="flex items-center gap-1.5">

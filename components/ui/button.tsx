@@ -17,10 +17,11 @@ const buttonVariants = cva(
         link: "text-primary-ink underline-offset-4 hover:underline",
       },
       size: {
-        sm: "h-9 px-3.5",
+        // Phones get the 44px touch height; from the sm breakpoint the compact sizes return.
+        sm: "h-11 px-4 sm:h-9 sm:px-3.5",
         md: "h-11 px-5",
         lg: "h-12 px-7 text-base",
-        icon: "size-10",
+        icon: "size-11 sm:size-10",
       },
     },
     defaultVariants: {

@@ -111,7 +111,7 @@ export function AuthForm({
             {mode === "login" && (
               <Link
                 href="/auth/forgot"
-                className="text-xs font-semibold text-primary-ink underline-offset-4 hover:underline"
+                className="inline-flex min-h-11 items-center rounded px-1 text-xs font-semibold text-primary-ink underline-offset-4 hover:underline"
               >
                 {t("forgotLink")}
               </Link>
@@ -147,7 +147,7 @@ export function AuthForm({
           {mode === "login" ? t("noAccount") : t("haveAccount")}{" "}
           <Link
             href={{ pathname: mode === "login" ? "/auth/signup" : "/auth/login", query: { next } }}
-            className="font-semibold text-primary-ink underline-offset-4 hover:underline"
+            className="py-[3px] font-semibold text-primary-ink underline-offset-4 hover:underline"
           >
             {mode === "login" ? t("signUp") : t("logIn")}
           </Link>

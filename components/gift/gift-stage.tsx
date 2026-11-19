@@ -45,7 +45,8 @@ export function GiftStage({ children }: { children: React.ReactNode }) {
   return (
     <div
       ref={outer}
-      className="mx-auto w-full overflow-hidden"
+      // contain: inline-size keeps the fixed-width card from widening a grid cell or a flex row.
+      className="mx-auto w-full overflow-hidden [contain:inline-size]"
       style={{
         maxWidth: STAGE_MAX_WIDTH,
         height: fit?.height,

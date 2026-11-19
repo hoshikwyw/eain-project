@@ -30,7 +30,8 @@
     "test:invitations": "node --import ./supabase/tests/ts-resolve.mjs --test supabase/tests/invitations.test.mts",
     "test:registry": "node --import ./supabase/tests/ts-resolve.mjs --test supabase/tests/registry.test.mts",
     "check:admin-pages": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/check-admin-pages.mjs",
-    "cleanup:test-users": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/cleanup-test-users.mjs"
+    "cleanup:test-users": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/cleanup-test-users.mjs",
+    "ux:audit": "node scripts/ux-audit.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.3.3",

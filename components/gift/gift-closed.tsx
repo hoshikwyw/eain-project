@@ -10,6 +10,8 @@ import { GiftOpening, type OpeningStage } from "./gift-opening";
 import { giftPalette } from "./palettes";
 
 type Props = {
+  /** Heading level of the title: h2 inside a page that has its own h1 (the template demo). */
+  titleAs?: "h1" | "h2";
   opening: Opening;
   variant: ThemeVariant;
   colors?: GiftColors;
@@ -28,6 +30,7 @@ type Props = {
  * gift itself opens it too. While it opens, the words fade out.
  */
 export function GiftClosed({
+  titleAs,
   opening,
   variant,
   colors,
@@ -76,7 +79,7 @@ export function GiftClosed({
         <p className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
           {invitation ? t("invitation.someone") : t("someone")}
         </p>
-        <PageTitle className="text-balance">
+        <PageTitle as={titleAs} className="text-balance">
           {invitation ? t("invitation.title") : t("specialForYou")}
         </PageTitle>
       </div>

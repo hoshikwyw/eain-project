@@ -115,7 +115,8 @@ export function GoogleSignIn({ clientId, next }: Props) {
         }}
       />
       {status !== "failed" && (
-        <div className="relative min-h-11">
+        // Google draws its own button (40px tall at its largest); the audit skips it.
+        <div className="relative min-h-11" data-audit-ignore="third-party">
           <div
             ref={slot}
             aria-busy={pending}

@@ -51,7 +51,7 @@ export function renderDesign(ctx: Ctx) {
 
 /** Rainbow gradient on the cover heading, from the palette's party colours. */
 const rainbowHeading =
-  "[&_h1]:w-fit [&_h1]:bg-clip-text [&_h1]:text-transparent [&_h1]:[background-image:linear-gradient(100deg,var(--t-c1,var(--t-accent)),var(--t-c2,var(--t-accent))_35%,var(--t-c4,var(--t-accent))_70%,var(--t-c3,var(--t-accent)))]";
+  "[&_.h1]:w-fit [&_.h1]:bg-clip-text [&_.h1]:text-transparent [&_.h1]:[background-image:linear-gradient(100deg,var(--t-c1,var(--t-accent)),var(--t-c2,var(--t-accent))_35%,var(--t-c4,var(--t-accent))_70%,var(--t-c3,var(--t-accent)))]";
 
 /** A string of triangle flags across the top of a card. */
 function Bunting({ count }: { count: number }) {
@@ -208,7 +208,7 @@ function PartyDesign(ctx: Ctx) {
               className="pointer-events-none absolute inset-2 rounded-xl border border-dashed border-[color:var(--t-on-accent,#fff)]/45"
             />
             <Eyebrow text={eyebrow} className="text-[color:var(--t-on-accent,#fff)] opacity-85" />
-            <div className="mt-1 [&_h1]:text-[color:var(--t-on-accent,#fff)] [&_h2]:text-[color:var(--t-on-accent,#fff)] [&_p]:text-[color:var(--t-on-accent,#fff)] [&_span]:text-[color:var(--t-on-accent,#fff)]">
+            <div className="mt-1 [&_.h1]:text-[color:var(--t-on-accent,#fff)] [&_.h2]:text-[color:var(--t-on-accent,#fff)] [&_p]:text-[color:var(--t-on-accent,#fff)] [&_span]:text-[color:var(--t-on-accent,#fff)]">
               <Sections ctx={coverCtx} />
             </div>
           </div>
@@ -298,7 +298,7 @@ function ElegantDesign(ctx: Ctx) {
           itemClassName={cn(
             "w-full",
             // Headings and the signature in italic serif; the signature and captions in gold.
-            "[&_h1]:italic [&_h1]:font-medium [&_h2]:italic [&_h2]:font-medium [&_h2]:text-[color:var(--t-muted)]",
+            "[&_.h1]:italic [&_.h1]:font-medium [&_.h2]:italic [&_.h2]:font-medium [&_.h2]:text-[color:var(--t-muted)]",
             "[&_p.msg]:mx-auto [&_p.msg]:max-w-[32ch] [&_p.msg]:text-lg",
             "[&_blockquote]:border-0 [&_blockquote]:pl-0 [&_blockquote_p]:font-display [&_blockquote_p]:text-xl [&_blockquote_p]:italic",
             "[&_footer]:items-center [&_footer]:border-t-0 [&_.sig]:text-2xl [&_.sig]:font-medium [&_.sig]:italic [&_.sig]:text-[color:var(--glow)]",
@@ -359,7 +359,7 @@ function PlayfulDesign(ctx: Ctx) {
         <Sections
           ctx={ctx}
           className={cn("relative", compact ? "gap-4" : "gap-5")}
-          itemClassName="[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:font-bold [&_h1]:leading-[0.95] [&_h1]:tracking-normal [&_h1]:text-[color:var(--t-accent)] [&_h1:has([data-burmese])]:text-4xl [&_h2]:font-hand [&_h2]:text-4xl [&_h2]:text-[color:var(--t-accent)] [&_h2:has([data-burmese])]:text-2xl [&_p.msg]:relative [&_p.msg]:rounded-3xl [&_p.msg]:rounded-bl-md [&_p.msg]:bg-[color:var(--t-accent-soft)] [&_p.msg]:px-5 [&_p.msg]:py-4 [&_blockquote]:border-l-0 [&_blockquote]:pl-0 [&_blockquote_p]:font-hand [&_blockquote_p]:text-3xl [&_blockquote_p]:leading-[1.15] [&_blockquote_p]:not-italic [&_blockquote_p]:text-[color:var(--t-fg)]/85 [&_blockquote_p:has([data-burmese])]:text-xl [&_blockquote_p:has([data-burmese])]:leading-normal [&_.sig]:font-hand [&_.sig]:text-3xl [&_.sig]:text-[color:var(--t-accent)] [&_.sig:has([data-burmese])]:text-2xl"
+          itemClassName="[&_.h1]:font-hand [&_.h1]:text-6xl [&_.h1]:font-bold [&_.h1]:leading-[0.95] [&_.h1]:tracking-normal [&_.h1]:text-[color:var(--t-accent)] [&_h1:has([data-burmese])]:text-4xl [&_.h2]:font-hand [&_.h2]:text-4xl [&_.h2]:text-[color:var(--t-accent)] [&_h2:has([data-burmese])]:text-2xl [&_p.msg]:relative [&_p.msg]:rounded-3xl [&_p.msg]:rounded-bl-md [&_p.msg]:bg-[color:var(--t-accent-soft)] [&_p.msg]:px-5 [&_p.msg]:py-4 [&_blockquote]:border-l-0 [&_blockquote]:pl-0 [&_blockquote_p]:font-hand [&_blockquote_p]:text-3xl [&_blockquote_p]:leading-[1.15] [&_blockquote_p]:not-italic [&_blockquote_p]:text-[color:var(--t-fg)]/85 [&_blockquote_p:has([data-burmese])]:text-xl [&_blockquote_p:has([data-burmese])]:leading-normal [&_.sig]:font-hand [&_.sig]:text-3xl [&_.sig]:text-[color:var(--t-accent)] [&_.sig:has([data-burmese])]:text-2xl"
         />
         <CardMark className="relative self-end" />
       </div>
@@ -433,7 +433,7 @@ function BotanicalDesign(ctx: Ctx) {
         <Sections
           ctx={ctx}
           className={cn("relative", compact ? "gap-5" : "gap-7")}
-          itemClassName="[&_h1]:font-medium [&_h1]:italic [&_h1]:tracking-normal [&_h2]:font-medium [&_h2]:italic"
+          itemClassName="[&_.h1]:font-medium [&_.h1]:italic [&_.h1]:tracking-normal [&_.h2]:font-medium [&_.h2]:italic"
         />
         <div
           className={cn(
@@ -526,7 +526,7 @@ function CertificateDesign(ctx: Ctx) {
         <Sections
           ctx={ctx}
           className={cn("relative w-full items-center", compact ? "gap-5" : "gap-7")}
-          itemClassName="w-full [&_h1]:text-[2rem] [&_h1]:leading-[1.2] [&_h1]:font-semibold [&_h1]:uppercase [&_h1]:tracking-[0.08em] [&_h1]:after:mx-auto [&_h1]:after:mt-4 [&_h1]:after:block [&_h1]:after:h-0.5 [&_h1]:after:w-20 [&_h1]:after:rounded-full [&_h1]:after:bg-[color:var(--glow)] [&_h1]:after:content-[] [&_h2]:uppercase [&_h2]:tracking-[0.06em] [&_h2]:text-2xl [&_footer]:items-center [&_footer]:border-t-0 [&_.sig]:text-2xl"
+          itemClassName="w-full [&_.h1]:text-[2rem] [&_.h1]:leading-[1.2] [&_.h1]:font-semibold [&_.h1]:uppercase [&_.h1]:tracking-[0.08em] [&_.h1]:after:mx-auto [&_.h1]:after:mt-4 [&_.h1]:after:block [&_.h1]:after:h-0.5 [&_.h1]:after:w-20 [&_.h1]:after:rounded-full [&_.h1]:after:bg-[color:var(--glow)] [&_.h1]:after:content-[] [&_.h2]:uppercase [&_.h2]:tracking-[0.06em] [&_.h2]:text-2xl [&_footer]:items-center [&_footer]:border-t-0 [&_.sig]:text-2xl"
         />
         <div className="relative flex items-end justify-center gap-5">
           <Rosette className={cn("mb-1", compact ? "w-10" : "w-12")} />
@@ -570,7 +570,7 @@ function LetterDesign(ctx: Ctx) {
           <Sections
             ctx={ctx}
             className={compact ? "gap-5" : "gap-7"}
-            itemClassName="[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:font-bold [&_h1]:leading-[0.95] [&_h1]:tracking-normal [&_h1:has([data-burmese])]:text-4xl [&_h2]:font-hand [&_h2]:text-4xl [&_h2:has([data-burmese])]:text-2xl [&_p.msg]:font-hand [&_p.msg]:text-2xl [&_p.msg]:leading-[2rem] [&_p.msg:has([data-burmese])]:text-lg [&_.sig]:font-hand [&_.sig]:text-3xl [&_.sig]:text-[color:var(--t-accent)] [&_.sig:has([data-burmese])]:text-2xl"
+            itemClassName="[&_.h1]:font-hand [&_.h1]:text-6xl [&_.h1]:font-bold [&_.h1]:leading-[0.95] [&_.h1]:tracking-normal [&_h1:has([data-burmese])]:text-4xl [&_.h2]:font-hand [&_.h2]:text-4xl [&_h2:has([data-burmese])]:text-2xl [&_p.msg]:font-hand [&_p.msg]:text-2xl [&_p.msg]:leading-[2rem] [&_p.msg:has([data-burmese])]:text-lg [&_.sig]:font-hand [&_.sig]:text-3xl [&_.sig]:text-[color:var(--t-accent)] [&_.sig:has([data-burmese])]:text-2xl"
           />
           <div className="flex items-end justify-between gap-4">
             <CardMark className="mb-1" />
@@ -887,8 +887,8 @@ function GardenDesign(ctx: Ctx) {
           className={cn("w-full items-center", compact ? "gap-3" : "gap-4")}
           itemClassName={cn(
             "w-full text-[#fff6ec]",
-            "[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:leading-none [&_h1]:font-bold [&_h1:has([data-burmese])]:text-4xl [&_h1]:[text-shadow:0_0_22px_rgba(255,143,177,0.75)] [&_h1]:after:ml-2 [&_h1]:after:align-middle [&_h1]:after:text-4xl [&_h1]:after:font-normal [&_h1]:after:text-[#ff8fb1] [&_h1]:after:content-['♡']",
-            "[&_h2]:font-hand [&_h2]:text-4xl [&_h2:has([data-burmese])]:text-2xl [&_h2]:text-[#fff6ec]/90 [&_p.msg]:text-[#fff6ec]/95 [&_p.msg]:[text-shadow:0_1px_12px_rgba(47,37,96,0.7)]",
+            "[&_.h1]:font-hand [&_.h1]:text-6xl [&_.h1]:leading-none [&_.h1]:font-bold [&_h1:has([data-burmese])]:text-4xl [&_.h1]:[text-shadow:0_0_22px_rgba(255,143,177,0.75)] [&_.h1]:after:ml-2 [&_.h1]:after:align-middle [&_.h1]:after:text-4xl [&_.h1]:after:font-normal [&_.h1]:after:text-[#ff8fb1] [&_.h1]:after:content-['♡']",
+            "[&_.h2]:font-hand [&_.h2]:text-4xl [&_h2:has([data-burmese])]:text-2xl [&_.h2]:text-[#fff6ec]/90 [&_p.msg]:text-[#fff6ec]/95 [&_p.msg]:[text-shadow:0_1px_12px_rgba(47,37,96,0.7)]",
             "[&_footer]:items-center [&_footer]:border-t-0 [&_.sig]:font-hand [&_.sig]:text-3xl",
           )}
         />
@@ -984,7 +984,7 @@ function ScrapbookDesign(ctx: Ctx) {
             "relative rounded-sm bg-[color:var(--t-card)] text-[color:var(--t-fg)] shadow-md [--t-card:#fbf6ec] [--t-fg:#3b2f2a] [--t-muted:#7d6b63] odd:rotate-[-0.6deg] even:rotate-[0.6deg]",
             // Washi tape over the top edge, gold on one page and the accent on the next.
             "before:absolute before:-top-2.5 before:left-1/2 before:h-5 before:w-24 before:-translate-x-1/2 before:rounded-sm before:content-[''] odd:before:rotate-[-3deg] odd:before:bg-[color:var(--glow)]/85 even:before:rotate-[3deg] even:before:bg-[color:var(--t-accent)]/60",
-            "[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:leading-none [&_h1]:font-bold [&_h1:has([data-burmese])]:text-4xl [&_h2]:font-hand [&_h2]:text-3xl [&_h2:has([data-burmese])]:text-2xl",
+            "[&_.h1]:font-hand [&_.h1]:text-6xl [&_.h1]:leading-none [&_.h1]:font-bold [&_h1:has([data-burmese])]:text-4xl [&_.h2]:font-hand [&_.h2]:text-3xl [&_h2:has([data-burmese])]:text-2xl",
             "[&_ol]:border-l-2 [&_ol]:border-dotted [&_ol]:border-[color:var(--t-accent)] [&_ol_.dot]:bg-[color:var(--glow)] [&_ol_.dot]:ring-[#fbf6ec]",
             "[&_footer]:border-[color:var(--t-accent)]/30 [&_.sig]:font-hand [&_.sig]:text-3xl [&_.sig]:font-bold [&_.sig:has([data-burmese])]:text-2xl",
             compact ? "p-5" : "p-6",
@@ -1003,7 +1003,7 @@ function ScrapbookDesign(ctx: Ctx) {
 const STATIONERY_TYPE = cn(
   "w-full",
   // Headline in the display face at a medium weight, never bold; the second line quiet and italic.
-  "[&_h1]:font-display [&_h1]:text-[2.25rem] [&_h1]:leading-[1.15] [&_h1]:font-medium [&_h1]:tracking-[-0.01em] [&_h2]:text-base [&_h2]:text-[color:var(--t-muted)] [&_h2]:italic",
+  "[&_.h1]:font-display [&_.h1]:text-[2.25rem] [&_.h1]:leading-[1.15] [&_.h1]:font-medium [&_.h1]:tracking-[-0.01em] [&_.h2]:text-base [&_.h2]:text-[color:var(--t-muted)] [&_.h2]:italic",
   "[&_p.msg]:mx-auto [&_p.msg]:max-w-[34ch] [&_p.msg]:leading-relaxed",
   // Event details as a typographic block between two hairlines: the date large, the rest in spaced small caps.
   "[&_.event]:items-center [&_.event]:gap-3 [&_.event]:rounded-none [&_.event]:border-x-0 [&_.event]:border-y [&_.event]:border-[color:var(--t-fg)]/12 [&_.event]:px-0 [&_.event]:py-6 [&_.event]:text-center [&_.event_svg]:hidden [&_.event_li]:justify-center [&_.event_p]:text-center",
@@ -1131,7 +1131,7 @@ function WeddingDesign(ctx: Ctx) {
           className={cn("relative w-full items-center text-center", compact ? "gap-5" : "gap-7")}
           itemClassName={cn(
             STATIONERY_TYPE,
-            "[&_h1]:text-[color:var(--t-accent)] [&_h1]:italic [&_p.msg]:font-display [&_p.msg]:text-lg [&_p.msg]:italic",
+            "[&_.h1]:text-[color:var(--t-accent)] [&_.h1]:italic [&_p.msg]:font-display [&_p.msg]:text-lg [&_p.msg]:italic",
             "[&_.event]:border-[color:var(--glow)] [&_.question]:border-[color:var(--glow)]/70",
           )}
         />
@@ -1200,7 +1200,7 @@ function JourneyDesign(ctx: Ctx) {
           className={cn("relative", compact ? "gap-5" : "gap-7")}
           itemClassName={cn(
             // The title in script, the second line in the muted ink.
-            "[&_h1]:font-hand [&_h1]:text-6xl [&_h1]:leading-none [&_h1]:font-bold [&_h1]:text-[color:var(--t-accent)] [&_h1:has([data-burmese])]:text-4xl [&_h2]:text-base [&_h2]:tracking-[0.12em] [&_h2]:uppercase",
+            "[&_.h1]:font-hand [&_.h1]:text-6xl [&_.h1]:leading-none [&_.h1]:font-bold [&_.h1]:text-[color:var(--t-accent)] [&_h1:has([data-burmese])]:text-4xl [&_.h2]:text-base [&_.h2]:tracking-[0.12em] [&_.h2]:uppercase",
             // The road: a grey band down the middle with a dashed centre line, stops on alternate sides.
             "[&_ol]:relative [&_ol]:mx-0 [&_ol]:gap-7 [&_ol]:border-l-0 [&_ol]:py-4 [&_ol]:pl-0",
             "[&_ol]:before:absolute [&_ol]:before:inset-y-0 [&_ol]:before:left-1/2 [&_ol]:before:w-3.5 [&_ol]:before:-translate-x-1/2 [&_ol]:before:rounded-full [&_ol]:before:bg-[#67758a] [&_ol]:before:content-['']",
@@ -1258,7 +1258,7 @@ function BoldDesign(ctx: Ctx) {
           ctx={ctx}
           className={compact ? "gap-5" : "gap-6"}
           // Condensed poster type: a long word like "Congratulations" fits the card in one line.
-          itemClassName="[&_h1]:font-poster [&_h1]:text-[2.75rem] [&_h1]:font-normal [&_h1]:leading-[0.92] [&_h1]:tracking-[0.02em] [&_h1]:text-[color:var(--t-accent)] [&_h2]:font-poster [&_h2]:text-4xl [&_h2]:font-normal [&_h2]:tracking-[0.02em] [&_p.msg]:text-xl [&_p.msg]:font-medium [&_footer]:border-t-[3px] [&_footer]:border-[color:var(--t-fg)] [&_.sig]:font-poster [&_.sig]:text-3xl [&_.sig]:tracking-[0.04em]"
+          itemClassName="[&_.h1]:font-poster [&_.h1]:text-[2.75rem] [&_.h1]:font-normal [&_.h1]:leading-[0.92] [&_.h1]:tracking-[0.02em] [&_.h1]:text-[color:var(--t-accent)] [&_.h2]:font-poster [&_.h2]:text-4xl [&_.h2]:font-normal [&_.h2]:tracking-[0.02em] [&_p.msg]:text-xl [&_p.msg]:font-medium [&_footer]:border-t-[3px] [&_footer]:border-[color:var(--t-fg)] [&_.sig]:font-poster [&_.sig]:text-3xl [&_.sig]:tracking-[0.04em]"
         />
         <div className="flex items-end justify-between gap-4 border-t-[3px] border-[color:var(--t-fg)] pt-4">
           <span aria-hidden="true" className="pattern-stripes h-3 flex-1 opacity-70" />

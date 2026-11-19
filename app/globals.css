@@ -222,6 +222,12 @@
 }
 
 @layer base {
+  /* Clickable things show the hand, as on every other site; disabled ones do not. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary {
+    cursor: pointer;
+  }
   * {
     border-color: var(--border);
   }
@@ -302,7 +308,7 @@
     line-height: 1.85;
   }
 
-  :lang(my) :is(h1, h2, h3, h4) {
+  :lang(my) :is(h1, h2, h3, h4, .h1, .h2) {
     line-height: 1.55;
     letter-spacing: 0;
   }
@@ -420,7 +426,7 @@
   line-height: 1.75;
 }
 
-:is(h1, h2) [data-burmese] {
+:is(h1, h2, .h1, .h2) [data-burmese] {
   line-height: 1.5;
 }
 

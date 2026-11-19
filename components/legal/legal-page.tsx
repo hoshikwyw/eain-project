@@ -71,14 +71,14 @@ export async function LegalPage({
             <Link
               key={r.key}
               href={r.href}
-              className="rounded-full border border-border px-3.5 py-1.5 font-semibold text-muted-foreground hover:text-foreground"
+              className="inline-flex min-h-11 items-center rounded-full border border-border px-4 font-semibold text-muted-foreground hover:text-foreground sm:min-h-9"
             >
               {t(`links.${r.key}`)}
             </Link>
           ))}
         <Link
           href="/contact"
-          className="rounded-full border border-border px-3.5 py-1.5 font-semibold text-muted-foreground hover:text-foreground"
+          className="inline-flex min-h-11 items-center rounded-full border border-border px-4 font-semibold text-muted-foreground hover:text-foreground sm:min-h-9"
         >
           {t("links.contact")}
         </Link>

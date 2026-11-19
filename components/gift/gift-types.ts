@@ -82,6 +82,8 @@ export type GiftRendererProps = {
    * Only the receiver page has it; elsewhere the calendar links are pictured, not live.
    */
   calendarBase?: string;
+  /** Level of the card's first heading. 2 when the page already has its own h1 above the card. */
+  headingLevel?: 1 | 2;
 };
 
 /** What every design and section is handed: the renderer's own input, plus what it worked out from it. */

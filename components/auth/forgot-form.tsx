@@ -58,7 +58,7 @@ export function ForgotForm({ expired }: { expired?: boolean }) {
       <p className="text-center text-xs text-muted-foreground">{t("sameDevice")}</p>
       <Link
         href="/auth/login"
-        className="text-center text-sm font-semibold text-primary-ink underline-offset-4 hover:underline"
+        className="inline-flex min-h-11 w-full items-center justify-center rounded text-sm font-semibold text-primary-ink underline-offset-4 hover:underline"
       >
         {t("backToLogin")}
       </Link>

@@ -37,11 +37,18 @@ export function Wordmark({ className }: { className?: string }) {
   );
 }
 
-export function Logo({ className }: { className?: string }) {
+/** Mark and wordmark. With `markOnlyOnPhones` the wordmark appears from the sm breakpoint, for a crowded bar. */
+export function Logo({
+  className,
+  markOnlyOnPhones,
+}: {
+  className?: string;
+  markOnlyOnPhones?: boolean;
+}) {
   return (
     <span className={cn("inline-flex items-center gap-2", className)}>
       <LogoMark />
-      <Wordmark />
+      <Wordmark className={markOnlyOnPhones ? "max-sm:hidden" : undefined} />
     </span>
   );
 }
