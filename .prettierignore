@@ -14,3 +14,6 @@ CLAUDE.md
 # Generated.
 pnpm-lock.yaml
 next-env.d.ts
+
+# The UI/UX Pro Max skill: data files and docs shipped as they are.
+.claude/skills/
