@@ -127,8 +127,8 @@ export function AnswerProvider(props: ProviderProps) {
 
   function change() {
     if (props.closedOn) return;
+    // The earlier answers stay filled in: the guest changes what they want and sends again.
     replacing.current = true;
-    setAnswers({});
     setState("idle");
   }
 

@@ -1,0 +1,89 @@
+# Eain — UX audit and test report, 19 November 2026
+
+What was checked, what was wrong, what changed, and what is left. Measured
+on the local dev server with the two scripts in `scripts/`, in headless
+Chrome, at 390px (touch) and 1280px (mouse), in the light and dark themes.
+
+## Tools
+
+- `pnpm ux:audit [paths]` — loads pages and measures them against the
+  checklist in `MASTER.md`: tap targets (44px on touch widths, 24px with a
+  mouse, links inside running text at least 24px), 8px between targets,
+  controls without a name, inputs without a label, images without alt,
+  text contrast against the composited background (4.5:1, 3:1 for large
+  text), text under 12px, horizontal overflow, focus rings by tabbing
+  through the page, heading count and skipped levels, zoom lock, pointer
+  cursor. Options: `--width`, `--theme`, `--cookie`, `--click`, `--json`.
+  In Git Bash prefix `MSYS_NO_PATHCONV=1` so `/paths` are not rewritten.
+- `pnpm ux:flows [--width 1280]` — four journeys in a real browser with a
+  throwaway host and a published invitation: visitor (home, library,
+  template page, guest editor), guest (RSVP on the card, come back, change
+  it), keyboard (the card by Tab and arrows), host (sign in, guest list,
+  download). 31 checks, exit 1 on any failure.
+
+Both need Chrome or Edge on the machine. Chrome is preferred: headless Edge
+(new mode) stops completing React's streamed sections after a few loads in
+one session, which reads as empty pages. Do not run them while `pnpm test`
+runs; the tests delete throwaway `@example.com` users.
+
+## Results
+
+| Area                                                                                           | Pages × widths × themes          | Findings before                      | Findings after |
+| ---------------------------------------------------------------------------------------------- | -------------------------------- | ------------------------------------ | -------------- |
+| Public pages (home, library, template pages, legal, contact, sign in/up/forgot)                | 9 × 2 × 2                        | 682                                  | 0              |
+| Signed-in pages (dashboard, My Gifts, gift page with replies, notifications, points, settings) | 6 × 2 × 2                        | 136                                  | 0              |
+| Editor (template picker, draft editor) and guest try pages                                     | 4 × 2 × 2                        | 58                                   | 0              |
+| Receiver page, closed and opened (invitation and gift)                                         | 2 × 2 × 2 × 2 states             | 15 (opened, after the earlier parts) | 0              |
+| Journeys (`ux:flows`)                                                                          | 31 checks at 390px and at 1280px | 5 failed on the first run            | 0 failed       |
+
+Full test suite after the work: 147 tests, 146 pass, 1 skipped (a cron
+case that needs the production secret), 0 failures.
+
+## What changed
+
+**Touch sizes.** Small and icon buttons are 44px tall below the `sm`
+breakpoint everywhere (`components/ui/button.tsx`); the compact desktop
+sizes return from 640px. Header, nav, footer, legal, library, auth,
+dashboard and editor links and chips are 44px tall on phones with 8px
+between neighbours. Inside the gift card, which is laid out at 400px and
+scaled to the screen, controls use `touch-min` and `touch-gap` (divided by
+the stage's scale) so they still measure 44px and 8px on the screen.
+
+**Headings.** Every page has exactly one h1. Gift thumbnails used to leak
+their sample title as an h1 (ten h1s on the home page); headings in the
+card now carry a class for their look and render as plain text in
+thumbnails, as h2 under a page title.
+
+**Hydration.** Thumbnails sat inside links while carrying links of their
+own (the event's map link), so the home page and the galleries threw their
+server HTML away and re-rendered on the client. Thumbnails are inert now.
+
+**Contrast.** The champagne look's muted and accent text (4.1:1, 4.25:1)
+and the celebrate look's accent button (3.64:1) read at 4.5:1 or better.
+
+**Readability.** 11px labels (home eyebrows, bottom nav, editor tabs) and
+the 10px question note are 12px.
+
+**Keyboard.** Buttons show a pointer cursor. Gift tiles, canvas sections and
+the editor's section list show focus rings. The card's options behave like
+radio buttons: one tab stop per group, arrow keys move and choose.
+
+**Layout.** The fixed-width card no longer widens grid cells on phones
+(`contain: inline-size` on the stage); the phone header shows the logo
+mark alone so nothing overlaps.
+
+**Flows.** "Change my RSVP" kept clearing the guest's name, so a changed
+answer could not be sent on an invitation; the earlier answers now stay
+filled in. The library's chip filter, the returning-guest restore and the
+sign-in form all pass the journey checks.
+
+## Known limits
+
+- Text over gradients or images is reported as unmeasured, not passed; the
+  audit prints how many such elements each page has.
+- Google's own sign-in button is 40px tall at its largest size and is
+  excluded from the audit (`data-audit-ignore`).
+- On the template pages in development, React's dev build logs a timing
+  exception ("negative time stamp"); it is absent from production builds.
+- The audit and the flows run against the dev server. A production build
+  was not measured in this pass.
