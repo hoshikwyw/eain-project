@@ -85,5 +85,8 @@ sign-in form all pass the journey checks.
   excluded from the audit (`data-audit-ignore`).
 - On the template pages in development, React's dev build logs a timing
   exception ("negative time stamp"); it is absent from production builds.
-- The audit and the flows run against the dev server. A production build
-  was not measured in this pass.
+- The same audit and journeys were then run against a local production
+  build (`next build` served by `next start`): 92 page rows, 0 findings, no
+  stalled loads; 31 of 31 journey checks at 390px and at 1280px; the dev-only
+  timing exception is absent; the home page answers in about 0.9s to first
+  byte on this machine.
