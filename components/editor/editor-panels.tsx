@@ -126,7 +126,7 @@ export function SectionsPanel(p: SectionsPanelProps) {
                 <button
                   type="button"
                   aria-expanded={selected}
-                  className="flex min-w-0 flex-1 cursor-pointer flex-col py-1.5 text-left outline-none"
+                  className="flex min-w-0 flex-1 cursor-pointer flex-col rounded-lg py-1.5 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
                   onClick={() => p.onSelect(selected ? null : section.id)}
                 >
                   <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">

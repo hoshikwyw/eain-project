@@ -61,7 +61,7 @@ export function EditorBar(p: Props) {
           asChild
           variant="ghost"
           size="icon"
-          className="size-9 shrink-0"
+          className="size-11 shrink-0 sm:size-9"
           aria-label={t("back")}
         >
           <Link href={p.backHref}>
@@ -72,7 +72,7 @@ export function EditorBar(p: Props) {
           type="button"
           title={p.detailsLabel}
           onClick={p.onTitle}
-          className="min-w-0 cursor-pointer truncate rounded-lg font-display text-lg font-semibold outline-none hover:text-primary-ink focus-visible:ring-2 focus-visible:ring-ring/60"
+          className="inline-flex min-h-11 min-w-0 cursor-pointer items-center truncate rounded-lg font-display text-lg font-semibold outline-none hover:text-primary-ink focus-visible:ring-2 focus-visible:ring-ring/60"
         >
           {p.title.trim() || p.detailsLabel}
         </button>
@@ -81,19 +81,19 @@ export function EditorBar(p: Props) {
         ) : (
           <GiftStatusChip status={p.status} opened={p.opened} />
         )}
-        <span className="ml-auto flex shrink-0 items-center gap-1 lg:hidden">
+        <span className="ml-auto flex shrink-0 items-center gap-2 lg:hidden">
           <LocaleToggle />
           <ThemeToggle />
         </span>
       </div>
 
       {/* What can be done with it. */}
-      <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:gap-2">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="size-9"
+          className="size-11 sm:size-9"
           aria-label={t("undo")}
           disabled={!p.history.canUndo}
           onClick={p.history.undo}
@@ -104,7 +104,7 @@ export function EditorBar(p: Props) {
           type="button"
           variant="ghost"
           size="icon"
-          className="size-9"
+          className="size-11 sm:size-9"
           aria-label={t("redo")}
           disabled={!p.history.canRedo}
           onClick={p.history.redo}

@@ -469,7 +469,8 @@
   outline: 1.5px dashed color-mix(in srgb, var(--canvas-mark) 60%, transparent);
 }
 
-.gift-canvas [data-section-id][data-selected] {
+.gift-canvas [data-section-id][data-selected],
+.gift-canvas [data-section-id]:focus-visible {
   outline: 2px solid var(--canvas-mark);
 }
 

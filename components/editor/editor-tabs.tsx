@@ -54,7 +54,7 @@ export function ToolTabs({ tabs, labels, active, onPick, label, className }: Pro
             aria-selected={chosen}
             onClick={() => onPick(name)}
             className={cn(
-              "flex cursor-pointer flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[11px] leading-tight font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+              "flex cursor-pointer flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-xs leading-tight font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
               chosen
                 ? "bg-accent text-accent-foreground"
                 : "text-muted-foreground hover:bg-secondary hover:text-foreground",
