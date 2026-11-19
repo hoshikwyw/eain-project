@@ -77,6 +77,26 @@ answer could not be sent on an invitation; the earlier answers now stay
 filled in. The library's chip filter, the returning-guest restore and the
 sign-in form all pass the journey checks.
 
+## Landing page against the skill's patterns
+
+The database pairs this product with the "Minimal & Direct" landing pattern
+(hero headline, short description, at most three benefit bullets, one CTA,
+large type, whitespace) and, for invitations, storytelling with proof.
+Measured on 19 November 2026:
+
+- The primary button sits above the fold at 1280×800 and at 390×844
+  (bottom edge at 463px in both), and the hero leaves the top of the next
+  section visible as a cue.
+- Running text measures at most 56 characters per line on desktop and 50
+  on a phone, inside the ranges the guidelines ask for.
+- Motion: one floating illustration in the hero; every animation and
+  transition collapses under `prefers-reduced-motion`.
+- Fixed in this review: both hero buttons led to the template library. The
+  secondary one now goes to "How it works", so the hero offers one primary
+  action and one different path, as the pattern asks.
+- Not done on purpose: social proof. Eain has no testimonials or usage
+  numbers worth showing yet, and none will be invented.
+
 ## Known limits
 
 - Text over gradients or images is reported as unmeasured, not passed; the

@@ -159,7 +159,8 @@ export default async function HomePage() {
               size="lg"
               className="px-6 text-muted-foreground hover:bg-transparent hover:text-foreground"
             >
-              <Link href="/templates">{t("home.secondaryCta")}</Link>
+              {/* The second button goes somewhere the first does not: down to how it works. */}
+              <Link href="/#how">{t("home.secondaryCta")}</Link>
             </Button>
           </div>
           <p className="mt-6 text-xs tracking-wide text-muted-foreground">{t("home.meta")}</p>
