@@ -59,6 +59,9 @@ export function GiftStage({ children }: { children: React.ReactNode }) {
           width: STAGE_WIDTH,
           transformOrigin: "top left",
           transform: fit ? `scale(${fit.scale})` : undefined,
+          // Read by the touch-min utility: a control divides 44px by this so that, once
+          // the card is scaled down on a phone, it still measures 44px on the screen.
+          ["--stage-scale" as string]: fit?.scale ?? 1,
         }}
       >
         {children}

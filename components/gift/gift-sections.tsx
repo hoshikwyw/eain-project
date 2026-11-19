@@ -485,7 +485,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
                 className="size-4 shrink-0 text-[color:var(--t-accent)]"
               />
               <span className="text-sm text-[color:var(--t-muted)]">{labels.addToCalendar}</span>
-              <span className="flex flex-wrap gap-2">
+              <span className="flex flex-wrap touch-gap">
                 <CalendarChip href={editing || ctx.inert ? undefined : googleCalendarUrl(calendar)}>
                   {labels.calendarGoogle}
                 </CalendarChip>
@@ -584,7 +584,7 @@ function PhotoPlaceholder({ label, polaroid }: { label: string; polaroid?: boole
 /** One small pill in the "Add to calendar" row. A plain span where there is nothing to open yet. */
 function CalendarChip({ href, children }: { href?: string; children: ReactNode }) {
   const look =
-    "rounded-full border border-[color:var(--t-accent-soft)] px-3 py-1 text-xs font-semibold text-[color:var(--t-accent)]";
+    "inline-flex touch-min items-center rounded-full border border-[color:var(--t-accent-soft)] px-4 text-xs font-semibold text-[color:var(--t-accent)]";
   if (!href) return <span className={look}>{children}</span>;
   return (
     <a

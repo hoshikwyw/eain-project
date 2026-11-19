@@ -128,7 +128,7 @@ export function GiftReveal({
             <Lovebirds />
           </div>
           <p className="text-sm text-muted-foreground">{t("madeWith")}</p>
-          <Link href="/" className="inline-flex rounded-lg" aria-label="Eain">
+          <Link href="/" className="inline-flex min-h-11 items-center rounded-lg" aria-label="Eain">
             <Logo />
           </Link>
           <Button asChild className="mt-1">
@@ -141,7 +141,7 @@ export function GiftReveal({
         </div>
         <Link
           href={`/g/${token}/report`}
-          className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+          className="inline-flex min-h-11 items-center rounded px-2 text-xs text-muted-foreground underline-offset-4 hover:underline"
         >
           {t("reportThis")}
         </Link>

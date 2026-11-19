@@ -381,6 +381,20 @@
  * blur on every card of a long page is slow on small phones. Bars and
  * popups, which do have content behind them, blur.
  */
+/*
+ * A tap target inside a scaled card: at least 44px tall and wide on the screen,
+ * whatever scale the stage is drawn at (the stage sets --stage-scale).
+ */
+@utility touch-min {
+  min-height: calc(44px / var(--stage-scale, 1));
+  min-width: calc(44px / var(--stage-scale, 1));
+}
+
+/* 8px between tap targets on the screen, inside a scaled card. */
+@utility touch-gap {
+  gap: calc(8px / var(--stage-scale, 1));
+}
+
 @utility glass {
   border-color: var(--glass-border);
   background-color: var(--glass);

@@ -331,7 +331,8 @@ export function QuestionSlot({
                     type="button"
                     onClick={store.change}
                     className={cn(
-                      "rounded font-semibold text-[color:var(--t-accent)] underline decoration-dotted underline-offset-4 hover:decoration-solid",
+                      "mt-1 inline-flex touch-min items-center rounded-full border px-4 text-sm font-semibold text-[color:var(--t-accent)]",
+                      control,
                       focus,
                     )}
                   >
@@ -351,7 +352,7 @@ export function QuestionSlot({
                 onClick={() => void store.submit()}
                 disabled={state === "sending"}
                 className={cn(
-                  "inline-flex w-fit items-center gap-2 rounded-full bg-[color:var(--t-accent)] px-5 py-2.5 text-sm font-semibold text-[color:var(--t-on-accent,#fff)] shadow-sm transition-opacity disabled:opacity-60",
+                  "inline-flex touch-min w-fit items-center gap-2 rounded-full bg-[color:var(--t-accent)] px-5 py-2.5 text-sm font-semibold text-[color:var(--t-on-accent,#fff)] shadow-sm transition-opacity disabled:opacity-60",
                   focus,
                 )}
               >
@@ -406,7 +407,7 @@ export function QuestionPreview({
       </div>
       {last && (
         <div className="pointer-events-none mt-1 flex flex-col gap-2" aria-hidden="true">
-          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-[color:var(--t-accent)] px-5 py-2.5 text-sm font-semibold text-[color:var(--t-on-accent,#fff)] shadow-sm">
+          <span className="inline-flex touch-min w-fit items-center gap-2 rounded-full bg-[color:var(--t-accent)] px-5 py-2.5 text-sm font-semibold text-[color:var(--t-on-accent,#fff)] shadow-sm">
             <Send className="size-4" />
             {invitation ? t("rsvp.send") : t("send")}
           </span>
@@ -453,7 +454,7 @@ function QuestionInput({
       const numbers = q.kind === "count" ? COUNTS : RATINGS;
       const any = typeof value?.number === "number";
       return (
-        <Radios label={q.prompt} className="flex flex-wrap gap-2">
+        <Radios label={q.prompt} className="flex flex-wrap touch-gap">
           {numbers.map((n, i) => {
             const picked = value?.number === n;
             return (
@@ -467,7 +468,7 @@ function QuestionInput({
                 disabled={disabled}
                 onClick={() => onChange({ number: n })}
                 className={cn(
-                  "size-10 rounded-full border text-base font-semibold",
+                  "size-10 touch-min rounded-full border text-base font-semibold",
                   control,
                   focus,
                   picked && chosen,
@@ -484,7 +485,7 @@ function QuestionInput({
     case "reaction": {
       const any = Boolean(value?.optionId);
       return (
-        <Radios label={q.prompt} className="flex flex-wrap gap-2">
+        <Radios label={q.prompt} className="flex flex-wrap touch-gap">
           {q.options.map((o, i) => {
             const picked = value?.optionId === o.id;
             return (
@@ -498,7 +499,7 @@ function QuestionInput({
                 disabled={disabled}
                 onClick={() => onChange({ optionId: o.id })}
                 className={cn(
-                  "grid size-11 place-items-center rounded-full border text-xl transition-transform",
+                  "grid size-11 touch-min place-items-center rounded-full border text-xl transition-transform",
                   control,
                   focus,
                   picked && cn(chosen, "scale-110"),
@@ -517,7 +518,7 @@ function QuestionInput({
     default: {
       const any = Boolean(value?.optionId);
       return (
-        <Radios label={q.prompt} className="flex flex-col gap-2">
+        <Radios label={q.prompt} className="flex flex-col touch-gap">
           {q.options.map((o, i) => {
             const picked = value?.optionId === o.id;
             return (
@@ -530,7 +531,7 @@ function QuestionInput({
                 disabled={disabled}
                 onClick={() => onChange({ optionId: o.id })}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl border px-3.5 py-2.5 text-left text-sm",
+                  "flex touch-min items-center gap-3 rounded-xl border px-3.5 py-2.5 text-left text-sm",
                   control,
                   focus,
                   picked && chosen,

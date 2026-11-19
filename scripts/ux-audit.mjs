@@ -11,6 +11,7 @@
  *
  * Options: --base http://localhost:5173  --width 390,1280  --theme light,dark
  *          --cookie "name=value" (repeatable)  --json <file>  --max 8 (examples per finding)
+ *          --click "<regex>" (repeatable): press the first visible button or link whose text matches, then wait
  * Needs Chrome (preferred) or Microsoft Edge on the machine (headless, no dependencies).
  */
 import { spawn } from "node:child_process";
@@ -47,6 +48,7 @@ const opt = {
   widths: [390, 1280],
   themes: ["light", "dark"],
   cookies: [],
+  clicks: [],
   json: null,
   max: 8,
 };
@@ -57,6 +59,7 @@ for (let i = 0; i < args.length; i++) {
   else if (a === "--width") opt.widths = args[++i].split(",").map(Number);
   else if (a === "--theme") opt.themes = args[++i].split(",");
   else if (a === "--cookie") opt.cookies.push(args[++i]);
+  else if (a === "--click") opt.clicks.push(args[++i]);
   else if (a === "--json") opt.json = args[++i];
   else if (a === "--max") opt.max = Number(args[++i]);
   else pages.push(a);
@@ -167,7 +170,8 @@ const AUDIT = String.raw`(() => {
     const r = el.getBoundingClientRect();
     const inline = el.tagName === "A" && getComputedStyle(el).display === "inline" && el.closest("p, li, dd, td, label, figcaption");
     const m = Math.min(r.width, r.height);
-    if (m < MIN && !(inline && m >= 24)) small.push({ el: desc(el), w: Math.round(r.width), h: Math.round(r.height), inline: Boolean(inline) });
+    // Half a pixel of slack: a 44px control inside a scaled card measures 43.9.
+    if (m < MIN - 0.5 && !(inline && m >= 23.5)) small.push({ el: desc(el), w: Math.round(r.width), h: Math.round(r.height), inline: Boolean(inline) });
   }
 
   // Spacing: two targets closer than 8px, both under 44px. A touch concern only.
@@ -179,7 +183,7 @@ const AUDIT = String.raw`(() => {
     if (Math.min(a.r.width, a.r.height) >= 44 && Math.min(b.r.width, b.r.height) >= 44) continue;
     const gapX = Math.max(b.r.left - a.r.right, a.r.left - b.r.right);
     const gapY = Math.max(b.r.top - a.r.bottom, a.r.top - b.r.bottom);
-    if (gapX < 8 && gapY < 8 && gapX > -1e9 && (gapX >= 0 || gapY >= 0)) tight.push({ a: desc(a.el), b: desc(b.el), gap: Math.round(Math.max(gapX, gapY)) });
+    if (gapX < 7.5 && gapY < 7.5 && gapX > -1e9 && (gapX >= 0 || gapY >= 0)) tight.push({ a: desc(a.el), b: desc(b.el), gap: Math.round(Math.max(gapX, gapY)) });
   }
 
   // Names on controls.
@@ -385,6 +389,14 @@ for (const width of opt.widths) {
       for (const path of pages) {
         await b.send("Page.navigate", { url: opt.base + path });
         await settle(b);
+        for (const re of opt.clicks) {
+          const hit = await b.evaluate(
+            `(() => { const re = new RegExp(${JSON.stringify(re)}, "i"); const el = [...document.querySelectorAll("button, a")].find((x) => re.test((x.getAttribute("aria-label") || x.textContent || "").trim()) && x.getClientRects().length); if (!el) return false; el.click(); return true; })()`,
+          );
+          if (!hit) console.error(`  (nothing to click for ${re} on ${path})`);
+          await sleep(1500);
+          await settle(b);
+        }
         await b.evaluate(
           `document.documentElement.classList.toggle("dark", ${JSON.stringify(theme)} === "dark"); document.documentElement.classList.toggle("light", ${JSON.stringify(theme)} === "light"); window.scrollTo(0, 0);`,
         );

@@ -105,7 +105,7 @@ const basePalettes = {
     "--t-card": "#fffdf8",
     "--t-fg": "#2d1b3d",
     "--t-muted": "#7a6a88",
-    "--t-accent": "#f0417f",
+    "--t-accent": "#d22f66",
     "--t-accent-soft": "#ffe0ec",
     "--t-deco": "#ffc53d",
     "--t-c1": "#f0417f",
