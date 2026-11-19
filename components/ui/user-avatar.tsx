@@ -1,7 +1,7 @@
 "use client";
 
 import BoringAvatar from "boring-avatars";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   AVATAR_PALETTES,
   resolveAvatar,
@@ -28,6 +28,12 @@ type Props = {
 export function UserAvatar({ avatar, userId, size = 40, className }: Props) {
   const resolved = typeof avatar === "object" && avatar ? avatar : resolveAvatar(avatar, userId);
   const [photoFailed, setPhotoFailed] = useState(false);
+  const img = useRef<HTMLImageElement>(null);
+  // A photo that failed before hydration already has no size when this runs.
+  useEffect(() => {
+    const el = img.current;
+    if (el && el.complete && el.naturalWidth === 0) setPhotoFailed(true);
+  }, []);
   const box = cn("block shrink-0 overflow-hidden rounded-full bg-brand-soft", className);
 
   if (resolved.kind === "photo" && !photoFailed) {
@@ -36,6 +42,7 @@ export function UserAvatar({ avatar, userId, size = 40, className }: Props) {
         {/* Provider photos live on another origin; a plain img keeps them out of the image pipeline. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
+          ref={img}
           src={resolved.src}
           alt=""
           width={size}

@@ -124,6 +124,14 @@ describe("row level security", () => {
     assert.deepEqual(data, { role: "user", points_balance: 100 });
   });
 
+  it("a user can save a drawn avatar on their own row", async () => {
+    const value = "boring:ring:sea:k7x2m9ab";
+    const { error } = await a.client.from("profiles").update({ avatar_url: value }).eq("id", a.id);
+    assert.equal(error, null);
+    const { data } = await a.client.from("profiles").select("avatar_url").single();
+    assert.equal(data?.avatar_url, value);
+  });
+
   it("a user cannot insert point transactions", async () => {
     const { error } = await a.client
       .from("point_transactions")

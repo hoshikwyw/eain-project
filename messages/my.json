@@ -1112,6 +1112,28 @@
       "title": "ဆက်တင်",
       "profile": "ပရိုဖိုင်",
       "profileDescription": "သင်ပို့သော လက်ဆောင်များတွင် သင့်နာမည် ပေါ်မည့်ပုံစံ။",
+      "avatar": "ပုံ",
+      "avatarDescription": "အက်ပ်ထဲမှာ သင့်နာမည်ဘေးမှာ ပြသမည်။ ပုံစံနဲ့ အရောင် ရွေးပါ၊ ဒါမှမဟုတ် ပုံအသစ် ပြောင်းကြည့်ပါ။",
+      "avatarStyle": "ပုံစံ",
+      "avatarPalette": "အရောင်",
+      "avatarShuffle": "ပြောင်းကြည့်မယ်",
+      "avatarPhoto": "Google ဓာတ်ပုံ သုံးမယ်",
+      "avatarSaved": "ပုံ ပြောင်းပြီးပါပြီ",
+      "avatarStyles": {
+        "beam": "ရောင်ခြည်",
+        "marble": "စကျင်",
+        "pixel": "ပစ်ဆယ်",
+        "sunset": "နေဝင်",
+        "ring": "ကွင်း",
+        "bauhaus": "ဘောဟောက်စ်"
+      },
+      "avatarPalettes": {
+        "eain": "Eain",
+        "garden": "ဥယျာဉ်",
+        "sea": "ပင်လယ်",
+        "ember": "မီးကျီး",
+        "dusk": "ညနေခင်း"
+      },
       "displayName": "ပြသမည့် နာမည်",
       "language": "ဘာသာ",
       "notifications": "အသိပေးချက်",

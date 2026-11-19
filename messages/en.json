@@ -1112,6 +1112,28 @@
       "title": "Settings",
       "profile": "Profile",
       "profileDescription": "How your name appears on the gifts you send.",
+      "avatar": "Picture",
+      "avatarDescription": "Shown next to your name in the app. Pick a style and colours, or shuffle for a new drawing.",
+      "avatarStyle": "Style",
+      "avatarPalette": "Colours",
+      "avatarShuffle": "Shuffle",
+      "avatarPhoto": "Use my Google photo",
+      "avatarSaved": "Picture updated",
+      "avatarStyles": {
+        "beam": "Beam",
+        "marble": "Marble",
+        "pixel": "Pixel",
+        "sunset": "Sunset",
+        "ring": "Ring",
+        "bauhaus": "Bauhaus"
+      },
+      "avatarPalettes": {
+        "eain": "Eain",
+        "garden": "Garden",
+        "sea": "Sea",
+        "ember": "Ember",
+        "dusk": "Dusk"
+      },
       "displayName": "Display name",
       "language": "Language",
       "notifications": "Notifications",

@@ -78,6 +78,19 @@ export function resolveAvatar(value: string | null | undefined, userId: string):
   return { kind: "generated", variant: DEFAULT_VARIANT, palette: DEFAULT_PALETTE, seed: userId };
 }
 
+/**
+ * The photo the sign-in provider stored in the auth metadata (Google sets
+ * both keys), when it is an https URL. Null for email accounts.
+ */
+export function providerPhoto(metadata: Record<string, unknown> | undefined): string | null {
+  for (const key of ["avatar_url", "picture"]) {
+    const value = metadata?.[key];
+    if (typeof value === "string" && /^https:\/\//.test(value) && value.length <= 2048)
+      return value;
+  }
+  return null;
+}
+
 /** A fresh seed, eight characters from the alphabet the pattern allows. */
 export function randomSeed(): string {
   const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";

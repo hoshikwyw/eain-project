@@ -1,10 +1,12 @@
 import { ChevronDown, LogOut, Trash2 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { AvatarPicker } from "@/components/dashboard/avatar-picker";
 import { DeleteAccountForm } from "@/components/dashboard/delete-account-form";
 import { ProfileForm } from "@/components/dashboard/profile-form";
 import { SettingsGroup } from "@/components/dashboard/settings-group";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { signOut } from "@/features/auth/actions";
+import { providerPhoto } from "@/features/profile/avatar";
 import { getCurrentProfile } from "@/features/profile/queries";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { PageTitle } from "@/components/ui/page-title";
@@ -52,6 +54,12 @@ export default async function SettingsPage() {
           />
         </div>
       </section>
+
+      <AvatarPicker
+        userId={profile.id}
+        avatarUrl={profile.avatar_url}
+        photoUrl={providerPhoto(user?.user_metadata)}
+      />
 
       <ProfileForm profile={profile} />
 
