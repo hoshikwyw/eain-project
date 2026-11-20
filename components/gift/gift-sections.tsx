@@ -69,7 +69,8 @@ function alignStyle(style: TextStyle | undefined): CSSProperties | undefined {
 }
 
 /** Burmese stacks marks above and below the line, so it needs taller lines than a design sets for Latin. */
-const isBurmese = (text: string) => /[\u1000-\u109f]/.test(text);
+/** Whether a text holds Burmese letters; the designs set Burmese sizes and spacing from it. */
+export const isBurmese = (text: string) => /[\u1000-\u109f]/.test(text);
 
 type StyledProps = {
   style: TextStyle | undefined;

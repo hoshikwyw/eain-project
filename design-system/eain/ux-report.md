@@ -143,6 +143,15 @@ notches, the stamp's perforations and the domed seal the same as the dev
 server; home, library, template and receiver pages 0 findings, journeys 35
 of 35 at both widths.
 
+A Burmese pass over the polished cards followed. Foil, letterpress, the
+stamp, the prints and the stationery frames all hold at Burmese sizes.
+Two things did not: the ticket's stub wrote the guest's name sideways,
+which stacks Burmese marks badly, so Burmese now stays upright on the stub;
+and the invitation's time and place lines wore spaced small capitals, a
+Latin device that pulls Burmese clusters apart, so Burmese event lines keep
+their letters together a size up, and the send line does the same on a
+Burmese page.
+
 ## Known limits
 
 - Text over gradients or images is reported as unmeasured, not passed; the

@@ -9,7 +9,7 @@ import {
   Pattern,
   partyColor,
 } from "./gift-decorations";
-import { Sections } from "./gift-sections";
+import { Sections, isBurmese } from "./gift-sections";
 import { InvitationMotif } from "./motifs";
 import type { Ctx } from "./gift-types";
 
@@ -218,10 +218,15 @@ function PartyDesign(ctx: Ctx) {
               aria-hidden="true"
               className="pointer-events-none absolute inset-y-3 left-[76%] border-l-2 border-dashed border-[color:var(--t-on-accent,#fff)]/55"
             />
-            <div className="absolute inset-y-0 right-0 left-[76%] grid place-items-center">
+            <div className="absolute inset-y-0 right-0 left-[76%] grid place-items-center px-1">
               <Eyebrow
                 text={eyebrow}
-                className="rotate-180 text-[color:var(--t-on-accent,#fff)] opacity-90 [writing-mode:vertical-rl]"
+                className={cn(
+                  "text-[color:var(--t-on-accent,#fff)] opacity-90",
+                  isBurmese(eyebrow)
+                    ? "text-center tracking-normal"
+                    : "rotate-180 [writing-mode:vertical-rl]",
+                )}
               />
             </div>
             <div className="[&_.h1]:text-[color:var(--t-on-accent,#fff)] [&_.h2]:text-[color:var(--t-on-accent,#fff)] [&_p]:text-[color:var(--t-on-accent,#fff)] [&_span]:text-[color:var(--t-on-accent,#fff)]">
@@ -1084,6 +1089,7 @@ const STATIONERY_TYPE = cn(
   "[&_.event_li:nth-child(2)_p]:text-xs [&_.event_li:nth-child(2)_p]:font-semibold [&_.event_li:nth-child(2)_p]:tracking-[0.2em] [&_.event_li:nth-child(2)_p]:uppercase",
   "[&_.event_li:nth-child(3)_p]:text-xs [&_.event_li:nth-child(3)_p]:font-semibold [&_.event_li:nth-child(3)_p]:tracking-[0.2em] [&_.event_li:nth-child(3)_p]:uppercase",
   "[&_.event_li:nth-child(4)_p]:text-sm [&_.event_li:nth-child(4)_p]:text-[color:var(--t-muted)] [&_.event_li:nth-child(4)_p]:italic",
+  "[&_.event_li_p:has([data-burmese])]:text-sm [&_.event_li_p:has([data-burmese])]:tracking-normal [&_.event_li_p:has([data-burmese])]:normal-case",
   // The RSVP as a quiet framed line; the sign-off in the display face.
   "[&_.question]:items-center [&_.question]:rounded-none [&_.question]:border-solid [&_.question]:border-[color:var(--t-fg)]/12 [&_.question]:text-center [&_.question_p]:justify-center",
   // Its controls as printed fields: hairline boxes on the stock, no fills, the numerals and the

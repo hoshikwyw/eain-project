@@ -922,6 +922,11 @@
   }
 }
 
+/* Spaced capitals are a Latin device; on a Burmese page the stationery's send line keeps its letters together. */
+:lang(my) .gift-sheet .send {
+  letter-spacing: 0.03em;
+}
+
 /* A photo print: white matte, hairline and a soft, layered shadow. */
 @utility shadow-print {
   box-shadow:
