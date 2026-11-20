@@ -132,6 +132,17 @@ in the same three; journeys 35 of 35 at both widths; 152 tests, 151 pass,
 1 skipped. Before and after screenshots of all 20 opened cards were taken
 at the receiver's view for the comparison.
 
+The polish was then checked where it had not been looked at: in the editor
+and in a production build. In the editor, the resize handle sits on the
+corner of a photo print and dragging it resizes the print; the stationery
+RSVP preview dresses as it does on the card. One regression found and
+fixed: the print container had started centring itself, so a photo narrower
+than the card no longer stretched to its width as before. The production
+build (`next build`, served by `next start`) draws the foil, the ticket's
+notches, the stamp's perforations and the domed seal the same as the dev
+server; home, library, template and receiver pages 0 findings, journeys 35
+of 35 at both widths.
+
 ## Known limits
 
 - Text over gradients or images is reported as unmeasured, not passed; the

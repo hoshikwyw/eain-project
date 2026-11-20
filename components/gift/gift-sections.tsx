@@ -264,7 +264,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
           <div
             data-photo=""
             style={photoWidth(section.content.size)}
-            className={cn("mx-auto", PRINT, design === "playful" ? "rounded-3xl" : "rounded-xl")}
+            className={cn(PRINT, design === "playful" ? "rounded-3xl" : "rounded-xl")}
           >
             {img}
           </div>
