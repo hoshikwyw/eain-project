@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { flowerSwatch } from "@/features/gifts/scene";
 import { cn } from "@/lib/utils";
 import {
@@ -142,7 +143,7 @@ function PostcardDesign(ctx: Ctx) {
           <Sections
             ctx={ctx}
             className={cn("relative", compact ? "gap-4" : "gap-6")}
-            itemClassName={rainbowHeading}
+            itemClassName={cn(rainbowHeading, "[&_.h2]:letterpress")}
           />
           <aside
             className={cn(
@@ -433,7 +434,7 @@ function BotanicalDesign(ctx: Ctx) {
         <Sections
           ctx={ctx}
           className={cn("relative", compact ? "gap-5" : "gap-7")}
-          itemClassName="[&_.h1]:font-medium [&_.h1]:italic [&_.h1]:tracking-normal [&_.h2]:font-medium [&_.h2]:italic"
+          itemClassName="[&_.h1]:letterpress [&_.h1]:font-medium [&_.h1]:italic [&_.h1]:tracking-normal [&_.h2]:font-medium [&_.h2]:italic"
         />
         <div
           className={cn(
@@ -526,7 +527,7 @@ function CertificateDesign(ctx: Ctx) {
         <Sections
           ctx={ctx}
           className={cn("relative w-full items-center", compact ? "gap-5" : "gap-7")}
-          itemClassName="w-full [&_.h1]:text-[2rem] [&_.h1]:leading-[1.2] [&_.h1]:font-semibold [&_.h1]:uppercase [&_.h1]:tracking-[0.08em] [&_.h1]:after:mx-auto [&_.h1]:after:mt-4 [&_.h1]:after:block [&_.h1]:after:h-0.5 [&_.h1]:after:w-20 [&_.h1]:after:rounded-full [&_.h1]:after:bg-[color:var(--glow)] [&_.h1]:after:content-[] [&_.h2]:uppercase [&_.h2]:tracking-[0.06em] [&_.h2]:text-2xl [&_footer]:items-center [&_footer]:border-t-0 [&_.sig]:text-2xl"
+          itemClassName="w-full [&_.h1]:letterpress [&_.h1]:text-[2rem] [&_.h1]:leading-[1.2] [&_.h1]:font-semibold [&_.h1]:uppercase [&_.h1]:tracking-[0.08em] [&_.h1]:after:mx-auto [&_.h1]:after:mt-4 [&_.h1]:after:block [&_.h1]:after:h-0.5 [&_.h1]:after:w-20 [&_.h1]:after:rounded-full [&_.h1]:after:bg-[color:var(--glow)] [&_.h1]:after:content-[] [&_.h2]:uppercase [&_.h2]:tracking-[0.06em] [&_.h2]:text-2xl [&_footer]:items-center [&_footer]:border-t-0 [&_.sig]:text-2xl"
         />
         <div className="relative flex items-end justify-center gap-5">
           <Rosette className={cn("mb-1", compact ? "w-10" : "w-12")} />
@@ -583,27 +584,54 @@ function LetterDesign(ctx: Ctx) {
 }
 
 /** A postage stamp: the illustration in a perforated frame, the holes punched in the card colour. */
+/** The outline of a stamp: a rectangle with half-round perforations cut along every edge. */
+function stampOutline(w: number, h: number, r = 2.2, step = 7, inset = 2) {
+  const hole = (cx: number, cy: number) =>
+    `M${cx - r} ${cy} a${r} ${r} 0 1 0 ${2 * r} 0 a${r} ${r} 0 1 0 ${-2 * r} 0 Z`;
+  const parts = [`M${inset} ${inset} H${w - inset} V${h - inset} H${inset} Z`];
+  for (let x = inset + step / 2; x < w - inset; x += step)
+    parts.push(hole(x, inset), hole(x, h - inset));
+  for (let y = inset + step / 2; y < h - inset; y += step)
+    parts.push(hole(inset, y), hole(w - inset, y));
+  return parts.join(" ");
+}
+
+/** A postage stamp: perforated paper in the look's soft colour, a hairline frame, the picture inside. */
 function Stamp({ src, className }: { src: string; className?: string }) {
+  const clip = useId();
   return (
-    <span
+    <svg
+      viewBox="0 0 100 76"
       aria-hidden="true"
-      className={cn(
-        "inline-block rotate-3 rounded-[3px] border-[5px] border-dotted border-[color:var(--t-card)] bg-[color:var(--t-accent-soft)] p-1 shadow-sm",
-        className,
-      )}
+      className={cn("block rotate-3 drop-shadow-[0_1px_1px_rgba(0,0,0,0.18)]", className)}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset, optimiser bypassed on purpose */}
-      <img
-        src={src}
-        alt=""
-        width={1200}
-        height={800}
-        loading="lazy"
-        decoding="async"
-        className="block h-auto w-full rounded-[2px] select-none"
-        draggable={false}
+      <defs>
+        <clipPath id={clip}>
+          <rect x="9" y="9" width="82" height="58" rx="1" />
+        </clipPath>
+      </defs>
+      <path d={stampOutline(100, 76)} fill="var(--t-accent-soft)" fillRule="evenodd" />
+      <rect
+        x="7"
+        y="7"
+        width="86"
+        height="62"
+        rx="1.5"
+        fill="none"
+        stroke="var(--t-accent)"
+        strokeWidth="0.6"
+        opacity="0.55"
       />
-    </span>
+      <image
+        href={src}
+        x="9"
+        y="9"
+        width="82"
+        height="58"
+        preserveAspectRatio="xMidYMid slice"
+        clipPath={`url(#${clip})`}
+      />
+    </svg>
   );
 }
 
@@ -613,10 +641,10 @@ function Postmark({ className }: { className?: string }) {
     <svg
       viewBox="0 0 120 60"
       aria-hidden="true"
-      className={cn("text-[color:var(--t-muted)]", className)}
+      className={cn("text-[color:var(--t-fg)]", className)}
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.6"
+      strokeWidth="1.5"
       strokeLinecap="round"
     >
       <circle cx="30" cy="30" r="24" />
@@ -643,27 +671,41 @@ function MinimalDesign(ctx: Ctx) {
       )}
     >
       <Pattern kind="paper" opacity={0.12} />
-      <div className="relative flex items-start justify-between gap-4">
-        <Eyebrow text={eyebrow} className="pt-1" />
+      <span
+        aria-hidden="true"
+        className={cn(
+          "pointer-events-none absolute rounded-[1.1rem] border border-[color:var(--t-fg)]/10",
+          compact ? "inset-2.5" : "inset-3",
+        )}
+      />
+      <div className="relative flex items-start justify-end">
         <span className="relative shrink-0">
           <Postmark
-            className={cn("absolute -top-3 -left-16 opacity-55", compact ? "w-24" : "w-28")}
+            className={cn("absolute -top-3 -left-16 opacity-60", compact ? "w-24" : "w-28")}
           />
           <Stamp src={style.illustration} className={compact ? "w-20" : "w-24"} />
         </span>
       </div>
-      <Sections ctx={ctx} className={cn("relative", compact ? "gap-5" : "gap-7")} />
-      <div
-        aria-hidden="true"
+      <Sections
+        ctx={ctx}
+        className={cn("relative", compact ? "gap-5" : "gap-7")}
+        itemClassName="[&_.h1]:letterpress"
+      />
+      {/* The address side: who it is for, over the lines a hand would write on. */}
+      <aside
         className={cn(
-          "relative flex flex-col border-t border-[color:var(--t-accent-soft)]",
-          compact ? "gap-5 pt-4" : "gap-6 pt-5",
+          "relative flex items-end gap-5 border-t border-dashed border-[color:var(--t-fg)]/15",
+          compact ? "pt-4" : "pt-5",
         )}
       >
-        <span className="h-px w-full bg-[color:var(--t-accent-soft)]" />
-        <span className="h-px w-3/4 bg-[color:var(--t-accent-soft)]" />
-      </div>
-      <CardMark className="relative -mt-2 self-start" />
+        <div className={cn("flex flex-1 flex-col", compact ? "gap-3.5" : "gap-4")}>
+          <Eyebrow text={eyebrow} className="text-[color:var(--t-accent)]" />
+          <span aria-hidden="true" className="h-px w-full bg-[color:var(--t-fg)]/15" />
+          <span aria-hidden="true" className="h-px w-5/6 bg-[color:var(--t-fg)]/15" />
+          <span aria-hidden="true" className="h-px w-2/3 bg-[color:var(--t-fg)]/15" />
+        </div>
+        <CardMark className="mb-0.5" />
+      </aside>
     </article>
   );
 }

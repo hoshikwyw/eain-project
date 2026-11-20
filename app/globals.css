@@ -860,6 +860,13 @@
   opacity: 0.22;
 }
 
+/* Letterpress: a heading pressed into the paper, a light edge below and a shade above. Reads on light and dark stock. */
+@utility letterpress {
+  text-shadow:
+    0 1px 0 rgb(255 255 255 / 0.4),
+    0 -1px 0 rgb(0 0 0 / 0.16);
+}
+
 /* A photo print: white matte, hairline and a soft, layered shadow. */
 @utility shadow-print {
   box-shadow:
