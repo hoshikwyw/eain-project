@@ -86,7 +86,7 @@ function PaperLines({ count }: { count: number }) {
 function Seal({ className }: { className?: string }) {
   return (
     <span
-      className={`grid size-11 place-items-center rounded-full bg-[var(--t-accent)] text-[color:var(--t-on-accent,#fff)] shadow-md ring-4 ring-[color-mix(in_oklab,var(--t-accent)_35%,transparent)] ${className ?? ""}`}
+      className={`grid size-11 place-items-center rounded-full text-[color:var(--t-on-accent,#fff)] shadow-[inset_0_2px_3px_rgba(255,255,255,0.35),inset_0_-3px_4px_rgba(0,0,0,0.28),0_3px_6px_rgba(0,0,0,0.3)] ring-4 ring-[color-mix(in_oklab,var(--t-accent)_35%,transparent)] [background:radial-gradient(circle_at_35%_30%,color-mix(in_oklab,var(--t-accent),white_25%),var(--t-accent)_60%,color-mix(in_oklab,var(--t-accent),black_20%))] ${className ?? ""}`}
     >
       <Heart className="size-5 fill-current" />
     </span>
@@ -97,7 +97,18 @@ function Seal({ className }: { className?: string }) {
 function Envelope({ label }: { label: string }) {
   return (
     <div className="relative mt-24 h-48 w-72">
-      <div className="absolute inset-0 rounded-lg shadow-xl" style={{ background: mix(38) }} />
+      <div
+        className="absolute inset-0 rounded-lg shadow-xl ring-1 ring-black/10"
+        style={{ background: mix(38) }}
+      />
+      {/* The liner, seen once the flap lifts. */}
+      <div
+        className="absolute inset-0 rounded-lg [clip-path:polygon(0_0,100%_0,50%_62%)]"
+        style={{
+          background: `repeating-linear-gradient(135deg, ${mix(28)} 0 5px, ${mix(48)} 5px 11px)`,
+        }}
+      />
+      <div className="pattern-paper pointer-events-none absolute inset-0 rounded-lg opacity-25" />
       <div className="eo-env-letter absolute inset-x-4 top-3 bottom-3 z-[1] flex flex-col gap-4 rounded-md bg-[var(--t-card)] p-5 shadow-md">
         <p className="font-display text-xl font-semibold text-[color:var(--t-accent)]">{label}</p>
         <PaperLines count={3} />
@@ -105,14 +116,16 @@ function Envelope({ label }: { label: string }) {
       <div className="absolute inset-0 z-[2] drop-shadow-[0_-1px_1px_rgba(0,0,0,0.12)]">
         <div
           className="h-full w-full rounded-lg [clip-path:polygon(0_0,50%_58%,100%_0,100%_100%,0_100%)]"
-          style={{ background: mix(20) }}
+          style={{ background: `linear-gradient(180deg, ${mix(18)}, ${mix(24)})` }}
         />
+        <div className="pattern-paper pointer-events-none absolute inset-0 rounded-lg opacity-25 [clip-path:polygon(0_0,50%_58%,100%_0,100%_100%,0_100%)]" />
       </div>
       <div className="eo-env-flap absolute inset-x-0 top-0 z-[4] h-[62%] origin-top drop-shadow-[0_2px_2px_rgba(0,0,0,0.12)]">
         <div
           className="h-full w-full [clip-path:polygon(0_0,100%_0,50%_100%)]"
-          style={{ background: mix(30) }}
+          style={{ background: `linear-gradient(180deg, ${mix(26)}, ${mix(36)})` }}
         />
+        <div className="pattern-paper pointer-events-none absolute inset-0 opacity-25 [clip-path:polygon(0_0,100%_0,50%_100%)]" />
         <Seal className="eo-env-seal absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2" />
       </div>
     </div>
@@ -187,30 +200,30 @@ function GiftBox({ label }: { label: string }) {
       <div
         className="absolute inset-x-4 bottom-0 h-36 overflow-hidden rounded-b-lg shadow-xl"
         style={{
-          background: `linear-gradient(180deg, ${mix(80, "#000")} 0 10px, var(--t-accent) 10px)`,
+          background: `linear-gradient(90deg, rgba(0,0,0,0.16), rgba(0,0,0,0) 28%, rgba(0,0,0,0) 72%, rgba(0,0,0,0.16)), linear-gradient(180deg, ${mix(80, "#000")} 0 10px, var(--t-accent) 10px)`,
         }}
       >
-        <span className="absolute inset-y-0 left-1/2 w-7 -translate-x-1/2 bg-[var(--t-deco)]" />
+        <span className="absolute inset-y-0 left-1/2 w-7 -translate-x-1/2 [background:linear-gradient(90deg,var(--t-deco),color-mix(in_oklab,var(--t-deco),white_40%)_50%,var(--t-deco))]" />
         <span className="absolute bottom-4 left-4 rounded-md bg-[var(--t-card)] px-2.5 py-1 font-display text-sm font-semibold text-[color:var(--t-fg)] shadow">
           {label}
         </span>
       </div>
       <div className="eo-box-lid absolute inset-x-1 bottom-36 h-11">
         <div
-          className="absolute inset-0 rounded-md shadow-md"
-          style={{ background: mix(85, "#fff") }}
+          className="absolute inset-0 rounded-md shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_4px_8px_-2px_rgba(0,0,0,0.3)]"
+          style={{ background: `linear-gradient(180deg, ${mix(78, "#fff")}, ${mix(90, "#fff")})` }}
         />
-        <span className="absolute inset-y-0 left-1/2 w-7 -translate-x-1/2 bg-[var(--t-deco)]" />
-        <span className="absolute -top-7 left-1/2 h-9 w-12 -translate-x-[95%] -rotate-[25deg] rounded-[50%] border-[7px] border-[var(--t-deco)]" />
-        <span className="absolute -top-7 left-1/2 h-9 w-12 -translate-x-[5%] rotate-[25deg] rounded-[50%] border-[7px] border-[var(--t-deco)]" />
-        <span className="absolute -top-2.5 left-1/2 size-5 -translate-x-1/2 rounded-full bg-[var(--t-deco)] shadow" />
+        <span className="absolute inset-y-0 left-1/2 w-7 -translate-x-1/2 [background:linear-gradient(90deg,var(--t-deco),color-mix(in_oklab,var(--t-deco),white_40%)_50%,var(--t-deco))]" />
+        <span className="absolute -top-7 left-1/2 h-9 w-12 -translate-x-[95%] -rotate-[25deg] rounded-[50%] border-[7px] border-[var(--t-deco)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)]" />
+        <span className="absolute -top-7 left-1/2 h-9 w-12 -translate-x-[5%] rotate-[25deg] rounded-[50%] border-[7px] border-[var(--t-deco)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)]" />
+        <span className="absolute -top-2.5 left-1/2 size-5 -translate-x-1/2 rounded-full shadow [background:radial-gradient(circle_at_35%_30%,color-mix(in_oklab,var(--t-deco),white_45%),var(--t-deco)_65%)]" />
       </div>
     </div>
   );
 }
 
 const pleats = (dir: "90deg" | "270deg") =>
-  `linear-gradient(180deg, rgba(0,0,0,0) 70%, rgba(0,0,0,0.18)), repeating-linear-gradient(${dir}, var(--t-accent) 0 12px, ${mix(72, "#000")} 12px 20px, var(--t-accent) 20px 30px)`;
+  `linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0) 30%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.3)), repeating-linear-gradient(${dir}, var(--t-accent) 0 6px, color-mix(in oklab, var(--t-accent), white 12%) 6px 12px, ${mix(72, "#000")} 12px 20px, var(--t-accent) 20px 30px)`;
 
 /** Stage curtains draw back to the sides. */
 function Curtain({ label }: { label: string }) {
@@ -234,8 +247,10 @@ function Curtain({ label }: { label: string }) {
         style={{ background: pleats("270deg") }}
       />
       <div
-        className="absolute inset-x-0 top-0 h-7 border-b-4 border-[var(--t-deco)]"
-        style={{ background: `linear-gradient(180deg, ${mix(70, "#000")}, var(--t-accent))` }}
+        className="absolute inset-x-0 top-0 h-7 border-b-4 border-[var(--t-deco)] shadow-[0_6px_10px_-4px_rgba(0,0,0,0.5)]"
+        style={{
+          background: `repeating-linear-gradient(90deg, rgba(255,255,255,0.08) 0 2px, rgba(0,0,0,0) 2px 9px), linear-gradient(180deg, ${mix(70, "#000")}, var(--t-accent))`,
+        }}
       />
     </div>
   );

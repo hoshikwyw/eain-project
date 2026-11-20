@@ -1,6 +1,6 @@
 "use client";
 
-import { Lock, Search } from "lucide-react";
+import { Crown, Lock, Search } from "lucide-react";
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
@@ -143,8 +143,8 @@ export function TemplateGrid({
                     )}
                   </h2>
                   {template.isPremium ? (
-                    <Chip tone="brand" className="shrink-0">
-                      <Lock className="size-3" />
+                    <Chip tone="gold" className="shrink-0">
+                      <Crown className="size-3" />
                       {format.number(template.pointPrice, "digits")}
                     </Chip>
                   ) : (

@@ -41,6 +41,10 @@
 
   --brand: #f4506e;
   --brand-soft: #ffe4e8;
+  /* Premium: a gold that stays the same in both themes, with dark ink on it. */
+  --gold: #dcb253;
+  --gold-soft: #f7e3ad;
+  --on-gold: #3a2e1f;
   --success: #1f7a51;
   --success-soft: #e3f5ec;
   --neutral-chip: #5f5a5b;
@@ -192,6 +196,9 @@
   --color-ring: var(--ring);
   --color-brand: var(--brand);
   --color-brand-soft: var(--brand-soft);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-on-gold: var(--on-gold);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
   --color-neutral-chip: var(--neutral-chip);

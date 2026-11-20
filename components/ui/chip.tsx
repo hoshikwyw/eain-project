@@ -11,6 +11,8 @@ const chipVariants = cva(
         brand: "bg-brand-soft text-accent-foreground dark:text-brand",
         success: "bg-success-soft text-success",
         primary: "bg-primary text-primary-foreground",
+        /** Premium: brushed gold with a light edge, the same in both themes. */
+        gold: "bg-[linear-gradient(135deg,var(--gold-soft),var(--gold))] text-on-gold shadow-[inset_0_1px_0_rgb(255_255_255/0.55),0_1px_2px_rgb(0_0_0/0.12)]",
       },
     },
     defaultVariants: { tone: "neutral" },

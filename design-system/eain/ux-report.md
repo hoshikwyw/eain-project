@@ -111,6 +111,27 @@ confirmation by its own id instead; and a provider photo that fails before
 hydration never fires its error event, so the component also checks the
 image after mount and falls back to the drawing.
 
+## Premium polish of the templates (20 November 2026)
+
+Five commits gave every card a finish without touching the audit results.
+Shared: paper grain, a sheen and an inner edge on every card, the card's
+shadow cast from the stage, photos as prints with matte, hairline and
+layered shadow. Postcards: a perforated SVG stamp, the postcard back with
+frame and address lines, letterpress headings. Premium cards: gold foil
+from the look's own gold with a drift that reduced motion stops, a ticket
+with stub and perforation, the memory album with linen and stitching,
+fireflies that breathe. Invitations: hairline RSVP fields, display-face
+numerals, an outlined send in spaced capitals, double hairlines and corner
+ornaments, crests pressed in. Openings: a grained envelope with liner and a
+domed wax seal, satin ribbon, velvet curtain under a braided valance; a
+gold crown badge marks premium templates in the library.
+
+After the work: home, library and template pages 0 findings at 390px light
+and dark and 1280px light; the receiver page closed and opened 0 findings
+in the same three; journeys 35 of 35 at both widths; 152 tests, 151 pass,
+1 skipped. Before and after screenshots of all 20 opened cards were taken
+at the receiver's view for the comparison.
+
 ## Known limits
 
 - Text over gradients or images is reported as unmeasured, not passed; the
