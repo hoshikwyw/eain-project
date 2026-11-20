@@ -199,17 +199,32 @@ function PartyDesign(ctx: Ctx) {
           <div
             className={cn(
               "relative w-full rounded-2xl bg-[color:var(--t-accent)] text-[color:var(--t-on-accent,#fff)]",
-              // Notches cut into both sides, like a ticket torn off its stub.
-              "[mask:radial-gradient(12px_at_0_50%,transparent_98%,#000)_0_0/51%_100%_no-repeat,radial-gradient(12px_at_100%_50%,transparent_98%,#000)_100%_0/51%_100%_no-repeat]",
-              compact ? "px-7 py-4" : "px-9 py-6",
+              // Notches at both ends and where the stub tears off; every layer cuts its own hole.
+              "[mask-composite:intersect] [mask:radial-gradient(12px_at_0_50%,transparent_98%,#000),radial-gradient(12px_at_100%_50%,transparent_98%,#000),radial-gradient(9px_at_76%_0,transparent_98%,#000),radial-gradient(9px_at_76%_100%,transparent_98%,#000)]",
+              compact ? "py-4 pr-[27%] pl-7" : "py-6 pr-[27%] pl-9",
             )}
           >
+            {/* Light across the card stock. */}
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute inset-2 rounded-xl border border-dashed border-[color:var(--t-on-accent,#fff)]/45"
+              className="pointer-events-none absolute inset-0 rounded-2xl [background:linear-gradient(120deg,rgba(255,255,255,0.22),rgba(255,255,255,0)_45%,rgba(0,0,0,0.08))]"
             />
-            <Eyebrow text={eyebrow} className="text-[color:var(--t-on-accent,#fff)] opacity-85" />
-            <div className="mt-1 [&_.h1]:text-[color:var(--t-on-accent,#fff)] [&_.h2]:text-[color:var(--t-on-accent,#fff)] [&_p]:text-[color:var(--t-on-accent,#fff)] [&_span]:text-[color:var(--t-on-accent,#fff)]">
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-2 right-[calc(24%+0.5rem)] rounded-xl border border-dashed border-[color:var(--t-on-accent,#fff)]/40"
+            />
+            {/* The stub: the perforation and who the ticket is for, written along it. */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-3 left-[76%] border-l-2 border-dashed border-[color:var(--t-on-accent,#fff)]/55"
+            />
+            <div className="absolute inset-y-0 right-0 left-[76%] grid place-items-center">
+              <Eyebrow
+                text={eyebrow}
+                className="rotate-180 text-[color:var(--t-on-accent,#fff)] opacity-90 [writing-mode:vertical-rl]"
+              />
+            </div>
+            <div className="[&_.h1]:text-[color:var(--t-on-accent,#fff)] [&_.h2]:text-[color:var(--t-on-accent,#fff)] [&_p]:text-[color:var(--t-on-accent,#fff)] [&_span]:text-[color:var(--t-on-accent,#fff)]">
               <Sections ctx={coverCtx} />
             </div>
           </div>
@@ -282,7 +297,11 @@ function ElegantDesign(ctx: Ctx) {
       >
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-2 rounded-xl border border-[color:var(--glow)]/35"
+          className="pointer-events-none absolute inset-2 rounded-xl border border-[color:var(--glow)]/45"
+        />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-3 rounded-[0.6rem] border border-[color:var(--glow)]/20"
         />
         <CornerMark className="absolute top-3.5 left-3.5 size-5" />
         <CornerMark className="absolute top-3.5 right-3.5 size-5 rotate-90" />
@@ -299,10 +318,10 @@ function ElegantDesign(ctx: Ctx) {
           itemClassName={cn(
             "w-full",
             // Headings and the signature in italic serif; the signature and captions in gold.
-            "[&_.h1]:italic [&_.h1]:font-medium [&_.h2]:italic [&_.h2]:font-medium [&_.h2]:text-[color:var(--t-muted)]",
+            "[&_.h1]:foil [&_.h1]:w-fit [&_.h1]:mx-auto [&_.h1]:italic [&_.h1]:font-medium [&_.h2]:italic [&_.h2]:font-medium [&_.h2]:text-[color:var(--t-muted)]",
             "[&_p.msg]:mx-auto [&_p.msg]:max-w-[32ch] [&_p.msg]:text-lg",
             "[&_blockquote]:border-0 [&_blockquote]:pl-0 [&_blockquote_p]:font-display [&_blockquote_p]:text-xl [&_blockquote_p]:italic",
-            "[&_footer]:items-center [&_footer]:border-t-0 [&_.sig]:text-2xl [&_.sig]:font-medium [&_.sig]:italic [&_.sig]:text-[color:var(--glow)]",
+            "[&_footer]:items-center [&_footer]:border-t-0 [&_.sig]:foil [&_.sig]:w-fit [&_.sig]:text-2xl [&_.sig]:font-medium [&_.sig]:italic",
             // The timeline in gold, kept to the width of its words.
             "[&_ol]:mx-auto [&_ol]:w-fit [&_ol]:text-left [&_ol]:border-[color:var(--glow)]/40 [&_ol_.dot]:bg-[color:var(--glow)]",
             // Photos as framed prints: a thin gold frame around a mat of card colour.
@@ -906,16 +925,23 @@ function GardenDesign(ctx: Ctx) {
         className="pointer-events-none absolute inset-0 [background:radial-gradient(120%_40%_at_50%_85%,rgba(255,170,200,0.45),transparent_70%),radial-gradient(70%_28%_at_18%_80%,rgba(255,214,150,0.35),transparent_70%)]"
       />
       <Decorations kind="stars" />
+      <span
+        aria-hidden="true"
+        className={cn(
+          "pointer-events-none absolute rounded-full bg-[#ffe9b8]/25 blur-2xl",
+          compact ? "top-0 left-2 size-24" : "top-0 left-2 size-32",
+        )}
+      />
       <Moon className={cn("absolute left-7", compact ? "top-5 w-12" : "top-6 w-16")} />
       <Cloud className="absolute top-5 right-6 w-24 drop-shadow-[0_0_10px_rgba(255,200,225,0.45)]" />
       <Cloud className="absolute top-[58%] -left-8 w-40 opacity-90 drop-shadow-[0_0_10px_rgba(255,200,225,0.45)]" />
       <Cloud className="absolute top-[63%] -right-4 w-28 opacity-85 drop-shadow-[0_0_10px_rgba(255,200,225,0.45)]" />
-      {fireflies.map(([left, top]) => (
+      {fireflies.map(([left, top], i) => (
         <span
           key={left}
           aria-hidden="true"
-          style={{ left, top }}
-          className="absolute size-1.5 rounded-full bg-[#ffe27a] shadow-[0_0_8px_3px_rgba(255,226,122,0.55)]"
+          style={{ left, top, animationDelay: `${i * 0.7}s` }}
+          className="absolute size-1.5 twinkle rounded-full bg-[#ffe27a] shadow-[0_0_8px_3px_rgba(255,226,122,0.55)]"
         />
       ))}
       <div
@@ -1011,11 +1037,16 @@ function ScrapbookDesign(ctx: Ctx) {
         compact ? "p-3" : "p-4",
       )}
     >
-      <Pattern kind="grid" opacity={0.5} />
+      <Pattern kind="linen" opacity={0.8} />
       <Decorations kind="stars" />
+      {/* The stitching around the cover. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-2 rounded-2xl border border-dashed border-[color:var(--glow)]/45"
+      />
       <div className="relative flex flex-col gap-5">
-        <span className="ml-2 w-fit -rotate-2 rounded-md bg-[color:var(--glow)] px-3 py-1 shadow-sm">
-          <Eyebrow text={eyebrow} className="text-[#3b2f2a]" />
+        <span className="ml-2 w-fit -rotate-2 rounded-md bg-[color:var(--glow)] px-3 py-1 shadow-[0_1px_2px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.5)]">
+          <Eyebrow text={eyebrow} className="text-[#3b2f2a] letterpress" />
         </span>
         <Sections
           ctx={ctx}
@@ -1023,7 +1054,7 @@ function ScrapbookDesign(ctx: Ctx) {
           className={compact ? "gap-5" : "gap-6"}
           itemClassName={cn(
             // Cream pages with their own ink, whatever the look around them.
-            "relative rounded-sm bg-[color:var(--t-card)] text-[color:var(--t-fg)] shadow-md [--t-card:#fbf6ec] [--t-fg:#3b2f2a] [--t-muted:#7d6b63] odd:rotate-[-0.6deg] even:rotate-[0.6deg]",
+            "relative rounded-sm bg-[color:var(--t-card)] text-[color:var(--t-fg)] shadow-print [--t-card:#fbf6ec] [--t-fg:#3b2f2a] [--t-muted:#7d6b63] odd:rotate-[-0.6deg] even:rotate-[0.6deg]",
             // Washi tape over the top edge, gold on one page and the accent on the next.
             "before:absolute before:-top-2.5 before:left-1/2 before:h-5 before:w-24 before:-translate-x-1/2 before:rounded-sm before:content-[''] odd:before:rotate-[-3deg] odd:before:bg-[color:var(--glow)]/85 even:before:rotate-[3deg] even:before:bg-[color:var(--t-accent)]/60",
             "[&_.h1]:font-hand [&_.h1]:text-6xl [&_.h1]:leading-none [&_.h1]:font-bold [&_h1:has([data-burmese])]:text-4xl [&_.h2]:font-hand [&_.h2]:text-3xl [&_h2:has([data-burmese])]:text-2xl",

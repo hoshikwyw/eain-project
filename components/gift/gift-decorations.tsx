@@ -61,7 +61,7 @@ export function Pattern({
   kind,
   opacity = 0.35,
 }: {
-  kind: "dots" | "stripes" | "lines" | "grid" | "rays" | "paper";
+  kind: "dots" | "stripes" | "lines" | "grid" | "rays" | "paper" | "linen";
   opacity?: number;
 }) {
   return (

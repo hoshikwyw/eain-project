@@ -367,6 +367,11 @@
     );
   }
   /* Paper grain: fine noise, meant to sit at a low opacity over a card. */
+  .pattern-linen {
+    background-image:
+      repeating-linear-gradient(45deg, rgb(255 255 255 / 0.07) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(-45deg, rgb(255 255 255 / 0.07) 0 1px, transparent 1px 3px);
+  }
   .pattern-paper {
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.25 0 0 0 0 0.2 0 0 0 0.5 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
     background-size: 160px 160px;
@@ -865,6 +870,49 @@
   text-shadow:
     0 1px 0 rgb(255 255 255 / 0.4),
     0 -1px 0 rgb(0 0 0 / 0.16);
+}
+
+/*
+ * Gold foil, built from the look's --glow so every palette keeps its own
+ * metal: light and dark bands clipped to the text, drifting slowly across.
+ * The drift is an animation, so reduced motion stops it with the rest.
+ */
+@utility foil {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(
+    110deg,
+    color-mix(in oklab, var(--glow), white 45%) 0%,
+    var(--glow) 28%,
+    color-mix(in oklab, var(--glow), black 28%) 50%,
+    var(--glow) 72%,
+    color-mix(in oklab, var(--glow), white 45%) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  animation: foil-drift 7s linear infinite;
+}
+@keyframes foil-drift {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* A firefly: a slow breath of brightness, out of step with its neighbours. */
+@utility twinkle {
+  animation: twinkle 3.4s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
 }
 
 /* A photo print: white matte, hairline and a soft, layered shadow. */
