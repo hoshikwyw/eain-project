@@ -19,7 +19,7 @@ Chrome, at 390px (touch) and 1280px (mouse), in the light and dark themes.
   throwaway host and a published invitation: visitor (home, library,
   template page, guest editor), guest (RSVP on the card, come back, change
   it), keyboard (the card by Tab and arrows), host (sign in, guest list,
-  download). 31 checks, exit 1 on any failure.
+  download, change the account picture). 35 checks, exit 1 on any failure.
 
 Both need Chrome or Edge on the machine. Chrome is preferred: headless Edge
 (new mode) stops completing React's streamed sections after a few loads in
@@ -34,7 +34,7 @@ runs; the tests delete throwaway `@example.com` users.
 | Signed-in pages (dashboard, My Gifts, gift page with replies, notifications, points, settings) | 6 × 2 × 2                        | 136                                  | 0              |
 | Editor (template picker, draft editor) and guest try pages                                     | 4 × 2 × 2                        | 58                                   | 0              |
 | Receiver page, closed and opened (invitation and gift)                                         | 2 × 2 × 2 × 2 states             | 15 (opened, after the earlier parts) | 0              |
-| Journeys (`ux:flows`)                                                                          | 31 checks at 390px and at 1280px | 5 failed on the first run            | 0 failed       |
+| Journeys (`ux:flows`)                                                                          | 35 checks at 390px and at 1280px | 5 failed on the first run            | 0 failed       |
 
 Full test suite after the work: 147 tests, 146 pass, 1 skipped (a cron
 case that needs the production secret), 0 failures.
@@ -96,6 +96,20 @@ Measured on 19 November 2026:
   action and one different path, as the pattern asks.
 - Not done on purpose: social proof. Eain has no testimonials or usage
   numbers worth showing yet, and none will be invented.
+
+## Account pictures (20 November 2026)
+
+Every account now shows a drawn avatar (Boring Avatars) or its provider
+photo, and Settings has a picker: six styles, five palettes, shuffle, the
+Google photo when there is one. The settings page with the picker measures
+0 findings at 390px and 1280px in both themes; the tiles are 72×86px and the
+palette swatches 44×44px with 8px between them. The host journey picks a
+style, sees the confirmation and the bar redraw (35 of 35 checks at both
+widths). Two things the browser run caught: the toast library ignores a
+toast whose fixed id was already dismissed, so the picker dismisses the last
+confirmation by its own id instead; and a provider photo that fails before
+hydration never fires its error event, so the component also checks the
+image after mount and falls back to the drawing.
 
 ## Known limits
 

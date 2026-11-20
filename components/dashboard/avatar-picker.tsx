@@ -29,7 +29,7 @@ type Props = {
 const SWATCH =
   "group grid size-11 cursor-pointer place-items-center rounded-full outline-none has-focus-visible:ring-2 has-focus-visible:ring-ring/60";
 const TILE =
-  "group flex w-[4.5rem] cursor-pointer flex-col items-center gap-1.5 rounded-2xl py-2 text-xs font-semibold text-muted-foreground transition-colors outline-none has-checked:bg-secondary has-checked:text-foreground has-focus-visible:ring-2 has-focus-visible:ring-ring/60";
+  "group flex w-20 cursor-pointer flex-col items-center gap-1.5 rounded-2xl py-2 text-center text-xs leading-tight font-semibold text-muted-foreground transition-colors outline-none has-checked:bg-secondary has-checked:text-foreground has-focus-visible:ring-2 has-focus-visible:ring-ring/60";
 
 /**
  * Choosing the account's picture: six drawn styles, five palettes, a

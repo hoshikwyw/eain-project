@@ -4,7 +4,8 @@
  *   visitor   home -> library -> a template page -> try it in the guest editor
  *   guest     open an invitation link, RSVP on the card, come back and find the answer, change it
  *   keyboard  the RSVP card by Tab and arrow keys alone
- *   host      sign in with email and password, read the guest list, find the download
+ *   host      sign in with email and password, read the guest list, find the download,
+ *             change the account's picture in settings
  *
  * It makes a throwaway host (…@example.com) with a published invitation and
  * deletes them at the end. Needs the Supabase service role from .env.
@@ -526,6 +527,32 @@ try {
   check(
     "the deadline is shown to the host",
     (await b.text("body")).includes("Guests can reply until"),
+  );
+
+  // The account's picture: pick a style, see the confirmation and the bar follow.
+  ms = await b.goto("/dashboard/settings");
+  check(
+    "settings offers the picture styles",
+    (await b.evaluate("document.querySelectorAll('input[name=variant]').length")) === 6,
+    `${ms}ms`,
+  );
+  const pictureBefore = await b.evaluate(
+    "document.querySelector('header button[aria-haspopup] svg')?.innerHTML ?? ''",
+  );
+  check("a style can be chosen", await b.click("^Ring$", "label"));
+  check(
+    "choosing a style is confirmed",
+    await b.waitFor(
+      "[...document.querySelectorAll('.tst')].some((t) => /Picture updated/.test(t.textContent))",
+      15000,
+    ),
+  );
+  check(
+    "the bar shows the new picture",
+    await b.waitFor(
+      `(document.querySelector('header button[aria-haspopup] svg')?.innerHTML ?? '') !== ${JSON.stringify(pictureBefore)}`,
+      10000,
+    ),
   );
   errs = freshErrors();
   check("no console errors in the host flow", errs.length === 0, errs.join(" | "));
