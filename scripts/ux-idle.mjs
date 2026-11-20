@@ -10,7 +10,8 @@
  * samples the browser's performance counters over a quiet window.
  *
  * Run:  pnpm ux:idle [slugs...] [--base http://localhost:5173] [--seconds 5]
- *                    [--throttle 4] [--motion on|off|both] [--width 390] [--json out.json]
+ *                    [--settle 6] [--throttle 4] [--motion on|off|both] [--width 390]
+ *                    [--json out.json]
  * Needs Chrome or Edge. Reduced motion (--motion off) is the floor: every
  * animation in the app collapses under it, so the difference is the cost of
  * motion alone.
@@ -66,6 +67,7 @@ for (let i = 0; i < args.length; i++) {
   const a = args[i];
   if (a === "--base") opt.base = args[++i];
   else if (a === "--seconds") opt.seconds = Number(args[++i]);
+  else if (a === "--settle") opt.settle = Number(args[++i]);
   else if (a === "--throttle") opt.throttle = Number(args[++i]);
   else if (a === "--motion") opt.motion = args[++i];
   else if (a === "--width") opt.width = Number(args[++i]);
@@ -204,8 +206,9 @@ async function measure(b, slug, motion) {
     "(() => { const btn = [...document.querySelectorAll('main button')].find((x) => /open your gift|open the invitation/i.test(x.textContent || '') || (x.textContent || '').includes('ဖွင့်')); if (!btn) return false; btn.click(); return true; })()",
   );
   if (!opened) return { slug, motion, error: "no open button" };
-  // Let the opening and the reveal finish before sampling.
-  await sleep(6000);
+  // Let the opening and the reveal finish before sampling; a scene with a long
+  // intro (the night garden grows, blooms and types) needs --settle 60 or so.
+  await sleep(opt.settle * 1000);
   await b.evaluate("scrollTo(0, 0)");
   const a = await counters(b);
   const t0 = Date.now();

@@ -174,10 +174,35 @@ The night garden is the exception at 99%, with about 46 long tasks in five
 seconds, and it was so before this work: its scene is a canvas and GSAP
 piece adapted from another project, with a frame loop, per-frame layout
 reads on each plant, additive canvas blending and a dozen CSS animations.
-Reduced motion stops all of it. Levers for a later part, in order: cache the
-plants' rects instead of reading them each frame, cap the loop at 30 frames
-a second on small screens, cut particle counts on small screens, and let
-the ambient layer rest after the message has finished.
+Reduced motion stops all of it.
+
+The scene was then taken apart with switches inside its frame. The frame
+loop and the CSS animations each saturated the main thread on their own, so
+only stopping both freed it. Inside the loop, the plants' SVG transform
+writes cost the most (a layout and a repaint of the whole garden per write),
+then the canvas, then the particle maths. Among the CSS animations, the
+grass sway (CSS transforms on SVG groups in the same garden, repainting it
+sixty times a second), the blinking eyes and cheeks (SVG again), the clouds
+(a drop-shadow filter on the parent of a bobbing picture, re-drawn every
+frame) and the twinkling stars (one compositor layer each) cost the most.
+
+Changes in `public/scenes/night-garden`: the grass sways from the same
+15 Hz tick as the plants instead of its own animation; plants are written
+15 times a second; the loop draws 30 frames a second on small screens; the
+canvas draws at 1.5x at most on small screens; blink and cheek glow use
+stepped timing, so they change a few times a second; the cloud's shadow sits
+on the element that bobs; the final line breathes by opacity instead of an
+animated text-shadow; every other star holds still on small screens.
+
+Measured in the same headless setting, old scene against new, over 5 s 40 s
+in: paints 198 to 108, layouts 66 to 53; with CSS animations off, the loop
+alone left a probe at 14 frames a second before and 27 after. Headless
+Chrome composites in software, so the star, cloud and halo layers still
+saturate it there and `ux:idle` keeps reading 99% for this card; on a phone
+those layers run on the GPU and the main-thread savings above are what
+remains. The scene still looks and moves the same: grass angles change from
+tick to tick, half the stars twinkle, clouds keep their glow, the final line
+keeps its halo.
 
 ## Known limits
 

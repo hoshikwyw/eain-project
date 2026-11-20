@@ -152,7 +152,8 @@ body {
   transform-box: fill-box;
   transform-origin: center;
   transition: opacity 0.4s ease, transform 0.4s ease;
-  animation: cheek-glow 3s ease-in-out infinite alternate;
+  /* Stepped: the cheek is SVG, and each change repaints the moon; eight steps a cycle look the same as sixty a second. */
+  animation: cheek-glow 3s steps(8) infinite alternate;
 }
 @keyframes cheek-glow {
   from { opacity: 0.4; }
@@ -192,7 +193,6 @@ body {
   left: 0;
   width: var(--w, 140px);
   opacity: var(--o, 0.7);
-  filter: drop-shadow(0 0 10px rgba(255, 200, 225, 0.45));
   animation: cloud-drift var(--dur, 90s) linear var(--delay, 0s) infinite;
   will-change: transform;
 }
@@ -201,7 +201,10 @@ body {
   width: 100%;
   height: auto;
   overflow: visible;
+  /* The shadow is on the element that bobs, so the bob moves a finished picture rather than re-drawing it. */
+  filter: drop-shadow(0 0 10px rgba(255, 200, 225, 0.45));
   animation: cloud-bob var(--bob, 6s) ease-in-out infinite alternate;
+  will-change: transform;
 }
 @keyframes cloud-drift {
   from { transform: translateX(calc(-1 * var(--w, 140px) - 10px)); }
@@ -341,11 +344,18 @@ body {
 .face__eyes {
   transform-box: fill-box;
   transform-origin: center;
-  animation: blink var(--blink, 4.5s) ease-in-out var(--blink-delay, 0s) infinite;
+  /* Stepped: the eyes are SVG, and each change repaints the garden; a blink snaps shut and open anyway. */
+  animation: blink var(--blink, 4.5s) steps(30) var(--blink-delay, 0s) infinite;
 }
 @keyframes blink {
   0%, 90%, 100% { transform: scaleY(1); }
   94%           { transform: scaleY(0.1); }
+}
+
+/* On small screens every other star holds still; half the twinkle is plenty of sky. */
+.star--still {
+  animation: none;
+  will-change: auto;
 }
 
 /* Grass & baby flowers: spring up when the garden grows, then sway */
@@ -460,11 +470,13 @@ body {
 
 /* Final page glows softly forever */
 .message__page.is-final .message__line:last-child {
+  text-shadow: 0 0 12px rgba(11, 10, 31, 0.9), 0 0 22px rgba(255, 143, 177, 0.75);
   animation: love-glow 2.4s ease-in-out infinite alternate;
+  will-change: opacity;
 }
 @keyframes love-glow {
-  from { text-shadow: 0 0 12px rgba(11, 10, 31, 0.9), 0 0 10px rgba(255, 143, 177, 0.3); }
-  to   { text-shadow: 0 0 12px rgba(11, 10, 31, 0.9), 0 0 26px rgba(255, 143, 177, 0.9); }
+  from { opacity: 0.8; }
+  to   { opacity: 1; }
 }
 
 /* ---------- Phone in landscape (Part 9) ---------- */

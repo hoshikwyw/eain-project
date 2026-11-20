@@ -59,7 +59,9 @@
       for (let i = 0; i < count; i++) {
         const star = document.createElement("span");
         const bright = Math.random() < 0.08;
-        star.className = bright ? "star star--bright" : "star";
+        // Every other star holds still on a small screen: each twinkling star is a layer of its own.
+        const still = state.width <= 500 && i % 2 === 1 && !bright;
+        star.className = (bright ? "star star--bright" : "star") + (still ? " star--still" : "");
 
         // Stars live in the deeper upper sky; more of them near the top
         const top = Math.pow(Math.random(), 1.4) * 58;
@@ -270,7 +272,10 @@
       this.svg = svg;
 
       // Part 6: wind needs to know about the new plants
-      if (window.Ambient && window.Ambient.canvas) window.Ambient.setPlants(this.plants);
+      if (window.Ambient && window.Ambient.canvas) {
+        window.Ambient.setPlants(this.plants);
+        window.Ambient.setForeground(this.fore);
+      }
 
       // Set up the timelines (needs the SVG in the DOM to measure stems).
       // Without GSAP (offline), the garden simply shows fully bloomed.
@@ -339,6 +344,7 @@
     const motion = ambient && !state.reducedMotion;
     if (motion) {
       ambient.init(els.particles, garden.plants);
+      ambient.setForeground(garden.fore);
       ambient.start();
     }
 

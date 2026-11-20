@@ -114,11 +114,25 @@
       });
     },
 
+    // The grass tufts sway from the same tick as the plants. Their CSS
+    // animation would repaint the whole garden every frame on its own; one
+    // write per tick for everything in the SVG costs a single repaint.
+    setForeground(fore) {
+      this.grass = fore
+        ? Array.from(fore.querySelectorAll(".fore-sway")).map((el) => {
+            el.style.animation = "none";
+            return { el, phase: rand(0, TAU), speed: rand(0.8, 1.3) };
+          })
+        : [];
+    },
+
     resize() {
       this.w = window.innerWidth;
       this.h = window.innerHeight;
       this.small = this.w <= 500;
-      this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+      // Glows and petals are soft shapes; a phone draws them at 1.5x at most,
+      // which is less than half the pixels of 2x and looks the same.
+      this.dpr = Math.min(window.devicePixelRatio || 1, this.small ? 1.5 : 2);
       this.canvas.width = Math.round(this.w * this.dpr);
       this.canvas.height = Math.round(this.h * this.dpr);
       this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
@@ -164,6 +178,11 @@
     },
 
     updatePlants(t, wind, dt) {
+      // Every transform written here repaints the whole plant layer. The sway
+      // is slow, so 15 writes a second look the same as 60 and cost a quarter.
+      if (this.plantsAt !== undefined && t - this.plantsAt < 0.066) return;
+      dt = this.plantsAt === undefined ? dt : t - this.plantsAt;
+      this.plantsAt = t;
       const decay = Math.pow(0.04, dt); // push fades to ~4% in a second
       for (const p of this.plants) {
         const depth = p.depth === "back" ? 0.7 : 1;
@@ -182,6 +201,10 @@
           const nod = Math.sin(t * 0.9 + p.swayPhase) * 4 + wind * 3;
           p.flower.root.setAttribute("transform", `rotate(${nod.toFixed(2)})`);
         }
+      }
+      for (const g of this.grass || []) {
+        const a = Math.sin(t * g.speed + g.phase) * 5 + wind * 2;
+        g.el.setAttribute("transform", `rotate(${a.toFixed(2)})`);
       }
     },
 
@@ -588,6 +611,12 @@
 
     loop(now) {
       if (!this.running) return;
+      // Phones draw 30 frames a second: the particles are slow and soft, and the
+      // saved frames are what keeps a mid-range phone cool through a long message.
+      if (this.small && this.last && now - this.last < 31) {
+        requestAnimationFrame((n) => this.loop(n));
+        return;
+      }
       const dt = this.last ? Math.min((now - this.last) / 1000, 0.05) : 0.016;
       this.last = now;
       this.time += dt;
