@@ -352,7 +352,7 @@ export function QuestionSlot({
                 onClick={() => void store.submit()}
                 disabled={state === "sending"}
                 className={cn(
-                  "inline-flex touch-min w-fit items-center gap-2 rounded-full bg-[color:var(--t-accent)] px-5 py-2.5 text-sm font-semibold text-[color:var(--t-on-accent,#fff)] shadow-sm transition-opacity disabled:opacity-60",
+                  "send inline-flex touch-min w-fit items-center gap-2 rounded-full bg-[color:var(--t-accent)] px-5 py-2.5 text-sm font-semibold text-[color:var(--t-on-accent,#fff)] shadow-sm transition-opacity disabled:opacity-60",
                   focus,
                 )}
               >
@@ -407,7 +407,7 @@ export function QuestionPreview({
       </div>
       {last && (
         <div className="pointer-events-none mt-1 flex flex-col gap-2" aria-hidden="true">
-          <span className="inline-flex touch-min w-fit items-center gap-2 rounded-full bg-[color:var(--t-accent)] px-5 py-2.5 text-sm font-semibold text-[color:var(--t-on-accent,#fff)] shadow-sm">
+          <span className="send inline-flex touch-min w-fit items-center gap-2 rounded-full bg-[color:var(--t-accent)] px-5 py-2.5 text-sm font-semibold text-[color:var(--t-on-accent,#fff)] shadow-sm">
             <Send className="size-4" />
             {invitation ? t("rsvp.send") : t("send")}
           </span>
@@ -443,7 +443,7 @@ function QuestionInput({
           rows={2}
           placeholder={t("textPlaceholder")}
           className={cn(
-            "w-full rounded-xl border px-3.5 py-2.5 text-sm placeholder:text-[color:var(--t-muted)] disabled:opacity-80",
+            "field w-full rounded-xl border px-3.5 py-2.5 text-sm placeholder:text-[color:var(--t-muted)] disabled:opacity-80",
             control,
             focus,
           )}
@@ -468,7 +468,7 @@ function QuestionInput({
                 disabled={disabled}
                 onClick={() => onChange({ number: n })}
                 className={cn(
-                  "size-10 touch-min rounded-full border text-base font-semibold",
+                  "chip size-10 touch-min rounded-full border text-base font-semibold",
                   control,
                   focus,
                   picked && chosen,
@@ -499,7 +499,7 @@ function QuestionInput({
                 disabled={disabled}
                 onClick={() => onChange({ optionId: o.id })}
                 className={cn(
-                  "grid size-11 touch-min place-items-center rounded-full border text-xl transition-transform",
+                  "chip grid size-11 touch-min place-items-center rounded-full border text-xl transition-transform",
                   control,
                   focus,
                   picked && cn(chosen, "scale-110"),
@@ -531,7 +531,7 @@ function QuestionInput({
                 disabled={disabled}
                 onClick={() => onChange({ optionId: o.id })}
                 className={cn(
-                  "flex touch-min items-center gap-3 rounded-xl border px-3.5 py-2.5 text-left text-sm",
+                  "opt flex touch-min items-center gap-3 rounded-xl border px-3.5 py-2.5 text-left text-sm",
                   control,
                   focus,
                   picked && chosen,

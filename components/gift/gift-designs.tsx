@@ -502,11 +502,11 @@ function Rosette({ className }: { className?: string }) {
 }
 
 /** An L-shaped ornament for a certificate corner. */
-function CornerMark({ className }: { className?: string }) {
+function CornerMark({ className, color = "var(--glow)" }: { className?: string; color?: string }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="none">
-      <path d="M1 23 V1 H23" stroke="var(--glow)" strokeWidth="2" strokeLinecap="square" />
-      <path d="M6 18 V6 H18" stroke="var(--glow)" strokeWidth="1" opacity="0.7" />
+      <path d="M1 23 V1 H23" stroke={color} strokeWidth="2" strokeLinecap="square" />
+      <path d="M6 18 V6 H18" stroke={color} strokeWidth="1" opacity="0.7" />
     </svg>
   );
 }
@@ -1076,7 +1076,7 @@ function ScrapbookDesign(ctx: Ctx) {
 const STATIONERY_TYPE = cn(
   "w-full",
   // Headline in the display face at a medium weight, never bold; the second line quiet and italic.
-  "[&_.h1]:font-display [&_.h1]:text-[2.25rem] [&_.h1]:leading-[1.15] [&_.h1]:font-medium [&_.h1]:tracking-[-0.01em] [&_.h2]:text-base [&_.h2]:text-[color:var(--t-muted)] [&_.h2]:italic",
+  "[&_.h1]:letterpress [&_.h1]:font-display [&_.h1]:text-[2.25rem] [&_.h1]:leading-[1.15] [&_.h1]:font-medium [&_.h1]:tracking-[-0.01em] [&_.h2]:text-base [&_.h2]:text-[color:var(--t-muted)] [&_.h2]:italic",
   "[&_p.msg]:mx-auto [&_p.msg]:max-w-[34ch] [&_p.msg]:leading-relaxed",
   // Event details as a typographic block between two hairlines: the date large, the rest in spaced small caps.
   "[&_.event]:items-center [&_.event]:gap-3 [&_.event]:rounded-none [&_.event]:border-x-0 [&_.event]:border-y [&_.event]:border-[color:var(--t-fg)]/12 [&_.event]:px-0 [&_.event]:py-6 [&_.event]:text-center [&_.event_svg]:hidden [&_.event_li]:justify-center [&_.event_p]:text-center",
@@ -1086,6 +1086,12 @@ const STATIONERY_TYPE = cn(
   "[&_.event_li:nth-child(4)_p]:text-sm [&_.event_li:nth-child(4)_p]:text-[color:var(--t-muted)] [&_.event_li:nth-child(4)_p]:italic",
   // The RSVP as a quiet framed line; the sign-off in the display face.
   "[&_.question]:items-center [&_.question]:rounded-none [&_.question]:border-solid [&_.question]:border-[color:var(--t-fg)]/12 [&_.question]:text-center [&_.question_p]:justify-center",
+  // Its controls as printed fields: hairline boxes on the stock, no fills, the numerals and the
+  // written answer in the display face, and the send as an outlined line of spaced capitals.
+  "[&_.field]:rounded-none [&_.field]:border-[color:var(--t-fg)]/25 [&_.field]:bg-transparent [&_.field]:text-center [&_.field]:font-display [&_.field]:text-base",
+  "[&_.opt]:rounded-none [&_.opt]:justify-center [&_.opt]:border-[color:var(--t-fg)]/25 [&_.opt]:bg-transparent [&_.opt[aria-checked=true]]:border-[color:var(--t-accent)] [&_.opt[aria-checked=true]]:bg-[color:var(--t-accent)]/8",
+  "[&_.chip]:border-[color:var(--t-fg)]/25 [&_.chip]:bg-transparent [&_.chip]:font-display [&_.chip[aria-checked=true]]:border-[color:var(--t-accent)] [&_.chip[aria-checked=true]]:bg-[color:var(--t-accent)]/8",
+  "[&_.send]:rounded-none [&_.send]:border [&_.send]:border-[color:var(--t-accent)] [&_.send]:bg-transparent [&_.send]:px-6 [&_.send]:text-xs [&_.send]:tracking-[0.18em] [&_.send]:text-[color:var(--t-accent)] [&_.send]:uppercase [&_.send]:shadow-none",
   "[&_footer]:items-center [&_footer]:border-t-0 [&_footer]:text-center [&_.sig]:font-display [&_.sig]:text-xl [&_.sig]:font-medium [&_.sig]:text-[color:var(--t-accent)] [&_.sig]:italic",
 );
 
@@ -1125,12 +1131,33 @@ function InviteDesign(ctx: Ctx) {
         <Pattern kind="paper" opacity={0.08} />
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-2 rounded-lg border border-[color:var(--t-fg)]/10"
+          className="pointer-events-none absolute inset-2 rounded-lg border border-[color:var(--t-fg)]/14"
         />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-3 rounded-md border border-[color:var(--t-fg)]/7"
+        />
+        {(
+          [
+            "top-3.5 left-3.5",
+            "top-3.5 right-3.5 rotate-90",
+            "right-3.5 bottom-3.5 rotate-180",
+            "bottom-3.5 left-3.5 -rotate-90",
+          ] as const
+        ).map((pos) => (
+          <CornerMark
+            key={pos}
+            color="color-mix(in oklab, var(--t-fg) 35%, transparent)"
+            className={cn("absolute size-4", pos)}
+          />
+        ))}
         {style.motif ? (
           <InvitationMotif
             kind={style.motif}
-            className={cn("relative text-[color:var(--t-accent)]", compact ? "size-12" : "size-16")}
+            className={cn(
+              "relative text-[color:var(--t-accent)] [filter:drop-shadow(0_1px_0_rgba(255,255,255,0.45))]",
+              compact ? "size-12" : "size-16",
+            )}
           />
         ) : (
           <Illustration
@@ -1177,7 +1204,11 @@ function WeddingDesign(ctx: Ctx) {
         <Pattern kind="paper" opacity={0.1} />
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-2 rounded-lg border border-[color:var(--glow)]/45"
+          className="pointer-events-none absolute inset-2 rounded-lg border border-[color:var(--glow)]/55"
+        />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-3 rounded-md border border-[color:var(--glow)]/25"
         />
         <CornerMark className="absolute top-3.5 left-3.5 size-5" />
         <CornerMark className="absolute top-3.5 right-3.5 size-5 rotate-90" />
@@ -1186,7 +1217,10 @@ function WeddingDesign(ctx: Ctx) {
         {style.motif ? (
           <InvitationMotif
             kind={style.motif}
-            className={cn("relative text-[color:var(--glow)]", compact ? "size-12" : "size-16")}
+            className={cn(
+              "relative text-[color:var(--glow)] [filter:drop-shadow(0_1px_0_rgba(255,255,255,0.4))]",
+              compact ? "size-12" : "size-16",
+            )}
           />
         ) : (
           <Illustration
