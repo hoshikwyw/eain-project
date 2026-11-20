@@ -43,8 +43,12 @@ export function GiftRenderer(props: GiftRendererProps) {
   const ctx: Ctx = { ...props, design: style.design, eyebrow, visible, sectionStickers };
 
   return (
-    <GiftStage>
-      <div style={giftPalette(variant, colors)} className="relative text-[color:var(--t-fg)]">
+    <GiftStage depth={!props.inert}>
+      {/* gift-sheet: paper grain, sheen and an inner edge on the card, see globals.css. */}
+      <div
+        style={giftPalette(variant, colors)}
+        className="gift-sheet relative text-[color:var(--t-fg)]"
+      >
         {renderDesign(ctx)}
         <StickerLayer
           stickers={stickers.filter((s) => s.anchor === undefined)}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
 
 /**
  * Width a gift is laid out at, in CSS pixels. Phone-sized on purpose: most
@@ -18,7 +19,13 @@ export const STAGE_MAX_WIDTH = 540;
  * on every screen, because every screen shows the same card, only larger or
  * smaller. Hidden until measured, so a card is never seen at the wrong size.
  */
-export function GiftStage({ children }: { children: React.ReactNode }) {
+type Props = {
+  children: React.ReactNode;
+  /** Cast the card's shadow on the page. Off for thumbnails, which sit in frames of their own. */
+  depth?: boolean;
+};
+
+export function GiftStage({ children, depth = false }: Props) {
   const outer = useRef<HTMLDivElement>(null);
   const inner = useRef<HTMLDivElement>(null);
   const [fit, setFit] = useState<{ scale: number; height: number } | null>(null);
@@ -46,7 +53,7 @@ export function GiftStage({ children }: { children: React.ReactNode }) {
     <div
       ref={outer}
       // contain: inline-size keeps the fixed-width card from widening a grid cell or a flex row.
-      className="mx-auto w-full overflow-hidden [contain:inline-size]"
+      className={cn("mx-auto w-full overflow-hidden [contain:inline-size]", depth && "stage-depth")}
       style={{
         maxWidth: STAGE_MAX_WIDTH,
         height: fit?.height,

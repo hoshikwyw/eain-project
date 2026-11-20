@@ -116,6 +116,9 @@ function txt(ctx: Ctx, section: Section, field: string, value: string, index?: n
 }
 
 /** Two corner mounts, top-left and bottom-right, holding a scrapbook photo to its page. */
+/** A photo as a print: white matte around the picture, hairline, soft shadow. */
+const PRINT = "bg-white p-1.5 shadow-print";
+
 const PHOTO_CORNERS =
   "relative before:absolute before:top-0 before:left-0 before:size-3.5 before:bg-[color:var(--t-fg)]/75 before:[clip-path:polygon(0_0,100%_0,0_100%)] before:content-[''] after:absolute after:right-0 after:bottom-0 after:size-3.5 after:bg-[color:var(--t-fg)]/75 after:[clip-path:polygon(100%_100%,100%_0,0_100%)] after:content-['']";
 
@@ -225,7 +228,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
           decoding="async"
           className={cn(
             "w-full object-cover",
-            polaroid ? "aspect-square" : design === "playful" ? "rounded-3xl" : "rounded-2xl",
+            polaroid ? "aspect-square" : design === "playful" ? "rounded-[1.25rem]" : "rounded-lg",
           )}
         />
       );
@@ -235,7 +238,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
             data-photo=""
             style={photoWidth(section.content.size)}
             className={cn(
-              "mx-auto w-fit max-w-full -rotate-1 rounded-sm bg-white p-3 pb-10 shadow-lg",
+              "mx-auto w-fit max-w-full -rotate-1 rounded-sm bg-white p-3 pb-10 shadow-print",
               // A letter's or a party card's photo is taped in.
               (design === "letter" || design === "party") &&
                 "relative before:absolute before:-top-2.5 before:left-1/2 before:h-5 before:w-20 before:-translate-x-1/2 before:rotate-[-4deg] before:rounded-sm before:bg-[color:var(--glow)]/60 before:content-['']",
@@ -258,7 +261,11 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
       }
       return (
         <figure className="flex flex-col gap-2">
-          <div data-photo="" style={photoWidth(section.content.size)}>
+          <div
+            data-photo=""
+            style={photoWidth(section.content.size)}
+            className={cn("mx-auto", PRINT, design === "playful" ? "rounded-3xl" : "rounded-xl")}
+          >
             {img}
           </div>
           {(section.content.caption || editing) && (
@@ -298,7 +305,7 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
                 <div
                   key={item.id}
                   className={cn(
-                    "w-[44%] rounded-sm bg-white p-2 pb-6 shadow-md",
+                    "w-[44%] rounded-sm bg-white p-2 pb-6 shadow-print",
                     PHOTO_CORNERS,
                     i % 2 ? "rotate-2" : "-rotate-2",
                   )}
@@ -332,18 +339,26 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
           <div
             data-photo=""
             style={photoWidth(section.content.size)}
-            className={cn("grid gap-2", items.length === 1 ? "grid-cols-1" : "grid-cols-2")}
+            className={cn("grid gap-3", items.length === 1 ? "grid-cols-1" : "grid-cols-2")}
           >
-            {items.map((item) => (
-              // eslint-disable-next-line @next/next/no-img-element -- private signed URL, optimiser bypassed on purpose
-              <img
+            {items.map((item, i) => (
+              <div
                 key={item.id}
-                src={item.thumbUrl}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                className="aspect-square w-full rounded-xl object-cover"
-              />
+                className={cn(
+                  "rounded-lg p-1",
+                  PRINT,
+                  items.length > 1 && (i % 2 ? "rotate-[0.6deg]" : "-rotate-[0.6deg]"),
+                )}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element -- private signed URL, optimiser bypassed on purpose */}
+                <img
+                  src={item.thumbUrl}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-square w-full rounded-md object-cover"
+                />
+              </div>
             ))}
           </div>
           {(section.content.caption || editing) && (
@@ -375,10 +390,10 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
                     "stop-photo mb-2 block w-full",
                     design === "journey" || design === "scrapbook"
                       ? cn(
-                          "rounded-sm bg-white p-1.5 pb-4 shadow-md",
+                          "rounded-sm bg-white p-1.5 pb-4 shadow-print",
                           i % 2 ? "rotate-2" : "-rotate-2",
                         )
-                      : "overflow-hidden rounded-xl",
+                      : cn("rounded-lg", PRINT),
                   )}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element -- private signed URL, optimiser bypassed on purpose */}
@@ -387,7 +402,10 @@ function SectionView({ ctx, section, isFirst }: { ctx: Ctx; section: Section; is
                     alt=""
                     loading="lazy"
                     decoding="async"
-                    className="aspect-[4/3] w-full object-cover"
+                    className={cn(
+                      "aspect-[4/3] w-full object-cover",
+                      design !== "journey" && design !== "scrapbook" && "rounded-md",
+                    )}
                   />
                 </span>
               )}

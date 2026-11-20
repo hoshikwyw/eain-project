@@ -828,3 +828,47 @@
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * Printed stock, see components/gift/gift-renderer.tsx. Every card gets a
+ * faint paper grain, a sheen from the top and a hairline edge inside, so it
+ * reads as a thing with a surface rather than a flat shape. The grain is an
+ * SVG noise tile blended over the card; overlay blending leaves the colours
+ * alone and works on the dark looks as well as the light ones.
+ */
+.gift-sheet > :first-child {
+  position: relative;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.4),
+    inset 0 0 0 1px rgb(0 0 0 / 0.04),
+    inset 0 -1px 0 rgb(0 0 0 / 0.05);
+}
+.gift-sheet > :first-child::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  border-radius: inherit;
+  background-image:
+    radial-gradient(120% 70% at 50% -10%, rgb(255 255 255 / 0.55), transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:
+    100% 100%,
+    160px 160px;
+  mix-blend-mode: overlay;
+  opacity: 0.22;
+}
+
+/* A photo print: white matte, hairline and a soft, layered shadow. */
+@utility shadow-print {
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.06),
+    0 1px 2px rgb(0 0 0 / 0.1),
+    0 12px 28px -14px rgb(0 0 0 / 0.45);
+}
+
+/* The card's own shadow on the page, outside the stage that clips it. */
+@utility stage-depth {
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.08)) drop-shadow(0 20px 36px rgb(0 0 0 / 0.18));
+}
