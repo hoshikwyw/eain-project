@@ -21,7 +21,15 @@ Chrome, at 390px (touch) and 1280px (mouse), in the light and dark themes.
   it), keyboard (the card by Tab and arrows), host (sign in, guest list,
   download, change the account picture). 35 checks, exit 1 on any failure.
 
-Both need Chrome or Edge on the machine. Chrome is preferred: headless Edge
+- `pnpm ux:idle [slugs]` — how busy the main thread stays once a card is
+  open and nothing is happening, with the CPU throttled four times, the way
+  a mid-range phone feels. It loads the template page, hides everything
+  around the card, opens it, lets it settle and samples the browser's
+  counters over a quiet window: task time as a share of the window, style
+  recalcs, layouts, script and long tasks. `--motion off` gives the floor
+  under reduced motion; `--motion both` prints the pair.
+
+All three need Chrome or Edge on the machine. Chrome is preferred: headless Edge
 (new mode) stops completing React's streamed sections after a few loads in
 one session, which reads as empty pages. Do not run them while `pnpm test`
 runs; the tests delete throwaway `@example.com` users.
@@ -151,6 +159,25 @@ and the invitation's time and place lines wore spaced small capitals, a
 Latin device that pulls Burmese clusters apart, so Burmese event lines keep
 their letters together a size up, and the send line does the same on a
 Burmese page.
+
+## What an open card costs at idle (20 November 2026)
+
+The polish added a grain overlay, a drop-shadow filter on the stage, a foil
+drift, breathing fireflies and the earlier floating illustration, so the
+idle cost of every opened card was measured with `pnpm ux:idle` at 390px
+and the CPU throttled four times. Nineteen of the twenty cards keep the
+main thread between 2% and 16% busy; the foil drift on the anniversary card
+is within noise of the card without it. The first measurement after a dev
+server starts reads high (compilation), so a busy first row is re-run.
+
+The night garden is the exception at 99%, with about 46 long tasks in five
+seconds, and it was so before this work: its scene is a canvas and GSAP
+piece adapted from another project, with a frame loop, per-frame layout
+reads on each plant, additive canvas blending and a dozen CSS animations.
+Reduced motion stops all of it. Levers for a later part, in order: cache the
+plants' rects instead of reading them each frame, cap the loop at 30 frames
+a second on small screens, cut particle counts on small screens, and let
+the ambient layer rest after the message has finished.
 
 ## Known limits
 

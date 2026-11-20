@@ -33,7 +33,8 @@
     "check:admin-pages": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/check-admin-pages.mjs",
     "cleanup:test-users": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/cleanup-test-users.mjs",
     "ux:audit": "node scripts/ux-audit.mjs",
-    "ux:flows": "node --env-file=.env scripts/ux-flows.mjs"
+    "ux:flows": "node --env-file=.env scripts/ux-flows.mjs",
+    "ux:idle": "node scripts/ux-idle.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.3.3",
