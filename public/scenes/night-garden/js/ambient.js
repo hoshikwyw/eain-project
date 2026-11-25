@@ -81,7 +81,7 @@
     fade: 0,              // particle layer fades in after the bloom
     leavesReady: false,   // leaf flutter starts once growth has finished
     flowersReady: false,  // flower nod starts once bloom has finished
-    wind: { gust: 0 },
+    wind: { gustAt: -10, gustPeak: 0 },
     fireflies: [],
     pollen: [],
     petals: [],
@@ -94,6 +94,9 @@
     init(canvas, plants) {
       this.canvas = canvas;
       this.ctx = canvas.getContext("2d");
+      this.moon = document.querySelector(".moon");
+      this.cheeks = Array.from(document.querySelectorAll(".moon__cheek"));
+      this.cheekAt = 0;
       this.sprite = makeGlowSprite(64, "rgba(255, 250, 210, 1)", "rgba(255, 226, 122, 0.45)");
       this.heartSprite = makeHeartSprite(64, "#ffe0ec", "rgba(255, 120, 170, 1)", 14);
       this.bokehSprite = makeHeartSprite(96, "rgba(255, 196, 220, 0.55)", "rgba(255, 170, 205, 0.9)", 22);
@@ -110,6 +113,9 @@
       plants.forEach((p) => {
         p.swayPhase = rand(0, TAU);
         p.push = 0;
+        p.blinkAt = this.time + rand(1, 6);
+        p.blinkUntil = 0;
+        p.eyes = null;
         p.leaves.forEach((l) => (l.phase = rand(0, TAU)));
       });
     },
@@ -142,17 +148,27 @@
 
     // Smooth layered breeze in roughly −1…1, plus gusts
     windAt(t) {
-      return Math.sin(t * 0.55) * 0.5 + Math.sin(t * 0.23 + 1.7) * 0.35 + this.wind.gust;
+      return Math.sin(t * 0.55) * 0.5 + Math.sin(t * 0.23 + 1.7) * 0.35 + this.gustAt(t);
+    },
+
+    // A gust rises over 1.4 s and settles over 2.6 s, shaped like the sine
+    // easing it replaced. Plain maths from a timestamp: the GSAP tween that
+    // did this kept GSAP's ticker awake for good, which is a main frame every
+    // 16 ms, each with a style pass for every running animation on the page.
+    gustAt(t) {
+      const e = t - this.wind.gustAt;
+      if (e < 0 || e > 4) return 0;
+      const k = e < 1.4 ? 0.5 - 0.5 * Math.cos((Math.PI * e) / 1.4) : 0.5 + 0.5 * Math.cos((Math.PI * (e - 1.4)) / 2.6);
+      return this.wind.gustPeak * k;
     },
 
     scheduleGusts() {
       const next = () => {
-        gsap.delayedCall(rand(6, 12), () => {
-          gsap.timeline()
-            .to(this.wind, { gust: rand(0.7, 1.1), duration: 1.4, ease: "sine.inOut" })
-            .to(this.wind, { gust: 0, duration: 2.6, ease: "sine.inOut" });
+        setTimeout(() => {
+          this.wind.gustAt = this.time;
+          this.wind.gustPeak = rand(0.7, 1.1);
           next();
-        });
+        }, rand(6000, 12000));
       };
       next();
     },
@@ -205,6 +221,33 @@
       for (const g of this.grass || []) {
         const a = Math.sin(t * g.speed + g.phase) * 5 + wind * 2;
         g.el.setAttribute("transform", `rotate(${a.toFixed(2)})`);
+      }
+
+      // Blinks and the moon's cheeks ride on this tick. As CSS animations they
+      // woke style on every frame, each of them; here a blink is two writes
+      // every few seconds and the cheeks two writes a second, in frames the
+      // plants already pay for.
+      for (const p of this.plants) {
+        const face = p.flower && p.flower.face;
+        if (!face || face.awake.getAttribute("opacity") === "0") continue;
+        if (!p.eyes) p.eyes = face.awake.querySelector(".face__eyes");
+        if (p.blinkUntil) {
+          if (t >= p.blinkUntil) {
+            p.eyes.style.transform = "";
+            p.blinkUntil = 0;
+            p.blinkAt = t + rand(3.5, 6);
+          }
+        } else if (t >= p.blinkAt) {
+          p.eyes.style.transform = "scaleY(0.1)";
+          p.blinkUntil = t + 0.13;
+        }
+      }
+      if (t - this.cheekAt > 0.45) {
+        this.cheekAt = t;
+        // A tapped moon blushes through its own rule, so the glow steps aside then.
+        const blushing = this.moon && this.moon.classList.contains("is-blushing");
+        const o = blushing ? "" : (0.55 + Math.sin(t * 1.05) * 0.15).toFixed(2);
+        for (const c of this.cheeks) c.style.opacity = o;
       }
     },
 
@@ -611,12 +654,6 @@
 
     loop(now) {
       if (!this.running) return;
-      // Phones draw 30 frames a second: the particles are slow and soft, and the
-      // saved frames are what keeps a mid-range phone cool through a long message.
-      if (this.small && this.last && now - this.last < 31) {
-        requestAnimationFrame((n) => this.loop(n));
-        return;
-      }
       const dt = this.last ? Math.min((now - this.last) / 1000, 0.05) : 0.016;
       this.last = now;
       this.time += dt;
@@ -631,7 +668,17 @@
       if (this.particlesOn || this.bursts.length || this.hadBursts) this.draw(t);
       this.hadBursts = this.bursts.length > 0; // one extra frame clears the last burst
 
-      requestAnimationFrame((n) => this.loop(n));
+      this.next();
+    },
+
+    // Phones draw 30 frames a second: the particles are slow and soft, and the
+    // saved frames keep a mid-range phone cool through a long message. The wait
+    // is a timeout, not a frame callback that returns early: an empty frame
+    // callback still costs a main frame, with a style pass in it for every
+    // running animation on the page.
+    next() {
+      if (this.small) setTimeout(() => requestAnimationFrame((n) => this.loop(n)), 17);
+      else requestAnimationFrame((n) => this.loop(n));
     },
 
     // Wind starts right away (plants sway while growing)

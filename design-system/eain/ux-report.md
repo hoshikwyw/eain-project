@@ -27,7 +27,10 @@ Chrome, at 390px (touch) and 1280px (mouse), in the light and dark themes.
   around the card, opens it, lets it settle and samples the browser's
   counters over a quiet window: task time as a share of the window, style
   recalcs, layouts, script and long tasks. `--motion off` gives the floor
-  under reduced motion; `--motion both` prints the pair.
+  under reduced motion; `--motion both` prints the pair. `--headful` opens a
+  visible window with the GPU on, the closer reading for a scene that leans
+  on compositor layers; headless Chrome composites in software. `--settle`
+  sets the wait after opening (6 s; the night garden needs about 60).
 
 All three need Chrome or Edge on the machine. Chrome is preferred: headless Edge
 (new mode) stops completing React's streamed sections after a few loads in
@@ -203,6 +206,70 @@ those layers run on the GPU and the main-thread savings above are what
 remains. The scene still looks and moves the same: grass angles change from
 tick to tick, half the stars twinkle, clouds keep their glow, the final line
 keeps its halo.
+
+### Measured with the GPU on
+
+`pnpm ux:idle --headful` opens a visible Chrome window with the GPU on and
+brings it to the front (a window spawned from a script starts hidden, and a
+hidden page gets no frames). Two things came out of the first such run.
+
+The tool's own hide rule had never hidden the template page's "more
+templates" strip: the page wraps everything in one element, so the rule
+matched nothing, and the strip's thumbnails, with their floating balloons
+and foil, were counted in every row. The rule now follows the page's
+structure and the tool refuses a row when anything but the demo section is
+left. The `--settle` option had also lost its default, so cards were
+sampled during their opening. The table below replaces the earlier one.
+
+The second finding is how Chrome prices animations, proven on small pages
+built for the purpose, each over three seconds of style recalcs:
+
+- An animation on the compositor costs the main thread nothing, until any
+  requestAnimationFrame loop runs. Then every main frame recalculates style
+  for every running animation (40 twinkles: 0 recalcs alone, 150 with an
+  empty frame loop, 51 with the loop paced to 30 frames a second).
+- A transform animation on an `<svg>` element runs on the main thread (180
+  recalcs); the same animation on a div around it runs on the compositor (2).
+- Keyframes that read a custom property (`opacity: var(--min-o)`) are
+  recomputed for every element in every style pass.
+- An animation that starts while a transition or another animation holds
+  the same property on the same element starts on the main thread and stays
+  there for good, and alone drives sixty main frames a second for the whole
+  page. The tap hint's pulse against the pill's fade-in, and the name's
+  heartbeat against the heart's reveal, were both stuck that way.
+
+Changes in `public/scenes/night-garden`: blinks and the moon's cheeks are
+written from the plants' 15 Hz tick (two writes per blink, two a second for
+the cheeks) instead of CSS animations; the cloud bob sits on a div inside
+the cloud; the cloud drift, the twinkle and the shooting star are Web
+Animations with plain pixel and number keyframes; the heartbeat starts once
+the heart's reveal has finished (`is-beating`); the hint's pulse is on its
+text, and the pill lost its backdrop blur; the gusts are plain maths from a
+timestamp, so GSAP's ticker sleeps after the intro; the loop paces itself
+with a timeout on small screens, since a frame callback that returns early
+still costs a main frame. The scene looks the same: five faces blink, the
+cheeks glow, clouds drift and bob, stars twinkle, shooting stars fly, the
+heart beats, the hint pulses; reduced motion holds the clouds still and
+runs no loop; console clean.
+
+Standalone scene, GPU on, CPU throttled four times, no frame loop of our
+own, 45 s in, before and after this part:
+
+| | before | after |
+| --- | --- | --- |
+| busy, scene running | 96% to 100% | 81% to 85% |
+| busy, ambient loop stopped | 95% | 5% |
+| main frames in 5 s, loop stopped | 140 to 184 | 6 |
+| long tasks in 5 s, scene running | 41 to 48 | 32 to 38 |
+
+With the loop stopped nothing in the scene touches the main thread any
+more. What remains while it runs is the plants' sway: each 15 Hz tick
+writes SVG transforms, and that costs a style pass, a layout, a repaint and
+a re-layerisation of the garden, about 55 ms per tick on the throttled core.
+The structural fix, one `<svg>` per plant so the sway can be a compositor
+transform, is open. Through the tool, the embedded card reads 89% headless
+and 77% with the GPU on.
+
 
 ## Known limits
 

@@ -144,7 +144,7 @@
 
     // Awake: shiny eyes that blink, happy smile
     const awake = el("g", { class: "face__awake", opacity: 0 }, face);
-    const eyes = el("g", { class: "face__eyes", style: `--blink:${rand(3.5, 6).toFixed(1)}s;--blink-delay:${rand(-5, 0).toFixed(1)}s` }, awake);
+    const eyes = el("g", { class: "face__eyes" }, awake); // blinks come from the ambient tick
     [-5.5, 5.5].forEach((x) => {
       el("ellipse", { cx: x, cy: -2, rx: 2.3, ry: 2.9, fill: "#3e220c" }, eyes);
       el("circle", { cx: x - 0.8, cy: -3.1, r: 0.95, fill: "#ffffff" }, eyes);

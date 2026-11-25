@@ -136,6 +136,16 @@
       this.root.classList.add("is-active");
       await wait(100);
       this.nameEl.classList.add("is-visible");
+      // The heartbeat waits for the heart's own reveal to finish. An animation
+      // that starts while a transition still holds the same property on the
+      // element stays on the main thread for good, and drives a main frame
+      // every 16 ms for the whole scene.
+      const heart = this.nameEl.querySelector(".message__heart");
+      if (heart) {
+        Promise.allSettled(heart.getAnimations().map((a) => a.finished)).then(() =>
+          this.nameEl.classList.add("is-beating"),
+        );
+      }
       await wait(1400);
       for (let i = 0; i < pages.length; i++) {
         await this.showPage(pages[i], i === pages.length - 1);

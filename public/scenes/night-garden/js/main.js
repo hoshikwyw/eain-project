@@ -67,11 +67,19 @@
         const top = Math.pow(Math.random(), 1.4) * 58;
         star.style.left = `${rand(0, 100)}%`;
         star.style.top = `${top}%`;
+        const minO = (rand(0.15, 0.5) * (1 - top / 90)).toFixed(2);
         star.style.setProperty("--size", `${bright ? rand(2, 3) : rand(1, 2.2)}px`);
-        star.style.setProperty("--dur", `${rand(1.8, 4.5)}s`);
-        star.style.setProperty("--delay", `${rand(-4, 0)}s`);
-        star.style.setProperty("--min-o", (rand(0.15, 0.5) * (1 - top / 90)).toFixed(2));
+        star.style.setProperty("--min-o", minO);
         frag.appendChild(star);
+        // The twinkle runs on the compositor: plain number keyframes through the
+        // Web Animations API. As CSS keyframes reading var(--min-o), Chrome
+        // recomputed every star in every style pass.
+        if (!still && !state.reducedMotion) {
+          star.animate(
+            [{ opacity: minO, transform: "scale(0.8)" }, { opacity: 1, transform: "scale(1.15)" }],
+            { duration: rand(1800, 4500), delay: -rand(0, 4000), direction: "alternate", iterations: Infinity, easing: "ease-in-out" },
+          );
+        }
       }
 
       this.starsEl.replaceChildren(frag);
@@ -89,13 +97,19 @@
       s.style.left = `${rand(40, 95)}%`;
       s.style.top = `${rand(2, 30)}%`;
       s.style.setProperty("--angle", `${angle}deg`);
-      s.style.setProperty("--dx", Math.cos(rad) * distance);
-      s.style.setProperty("--dy", Math.sin(rad) * distance);
-      s.style.setProperty("--dur", `${rand(0.9, 1.5)}s`);
-
-      s.addEventListener("animationend", () => s.remove(), { once: true });
-      setTimeout(() => s.remove(), 3000); // safety net if animationend never fires
       this.shootingEl.appendChild(s);
+      // A Web Animation with pixel keyframes, so nothing in it reads var(),
+      // which can keep the flight off the compositor.
+      const flight = s.animate(
+        [
+          { opacity: 0, translate: "0 0" },
+          { opacity: 1, offset: 0.15 },
+          { opacity: 0, translate: `${(Math.cos(rad) * distance).toFixed(0)}px ${(Math.sin(rad) * distance).toFixed(0)}px` },
+        ],
+        { duration: rand(900, 1500), easing: "ease-out", fill: "forwards" },
+      );
+      flight.onfinish = () => s.remove();
+      setTimeout(() => s.remove(), 3000); // safety net if finish never fires
     },
 
     scheduleShootingStars() {
@@ -140,11 +154,20 @@
         c.style.top = `${high ? rand(0.5, 4) : rand(38, 50)}%`;
         c.style.setProperty("--w", `${w.toFixed(0)}px`);
         c.style.setProperty("--o", rand(0.9, 1).toFixed(2));
-        c.style.setProperty("--dur", `${dur.toFixed(0)}s`);
-        c.style.setProperty("--delay", `${(-rand(0, dur)).toFixed(0)}s`); // start mid-journey
         c.style.setProperty("--bob", `${rand(4, 8).toFixed(1)}s`);
-        c.innerHTML = this.cloudSVG();
+        c.innerHTML = `<div class="cloud__bob">${this.cloudSVG()}</div>`;
         frag.appendChild(c);
+        // The drift is a Web Animation with pixel keyframes, so nothing in it
+        // reads var() or vw, which can keep a transform animation off the
+        // compositor. The bob lives on a div inside, see style.css.
+        if (state.reducedMotion) {
+          c.style.transform = `translateX(${rand(0, Math.max(0, state.width - w)).toFixed(0)}px)`;
+        } else {
+          c.animate(
+            [{ transform: `translateX(${(-(w + 10)).toFixed(0)}px)` }, { transform: `translateX(${(state.width + 10).toFixed(0)}px)` }],
+            { duration: dur * 1000, delay: -rand(0, dur) * 1000, iterations: Infinity, easing: "linear" }, // a negative delay starts it mid-journey
+          );
+        }
       }
       el.replaceChildren(frag);
     },
@@ -350,7 +373,10 @@
 
     const interact = window.Interact;
     const hint = $("#tap-hint");
-    hint.textContent = cfg.tapHint;
+    const hintText = document.createElement("span");
+    hintText.className = "tap-hint__text"; // the pulse lives on the text, see style.css
+    hintText.textContent = cfg.tapHint;
+    hint.replaceChildren(hintText);
     interact.init({ scene: els.scene, hint, garden, state });
 
     window.Message.build(els.message, state.reducedMotion);

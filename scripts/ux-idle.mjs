@@ -11,10 +11,14 @@
  *
  * Run:  pnpm ux:idle [slugs...] [--base http://localhost:5173] [--seconds 5]
  *                    [--settle 6] [--throttle 4] [--motion on|off|both] [--width 390]
- *                    [--json out.json]
+ *                    [--json out.json] [--headful]
  * Needs Chrome or Edge. Reduced motion (--motion off) is the floor: every
  * animation in the app collapses under it, so the difference is the cost of
- * motion alone.
+ * motion alone. Headless Chrome composites in software, so a scene that
+ * leans on compositor layers (the night garden's stars and clouds) reads far
+ * busier than it is on a phone; --headful opens a visible window with the GPU
+ * on, which is the closer reading for those. It is brought to the front and
+ * nothing else should cover it while it runs.
  */
 import { spawn } from "node:child_process";
 import { existsSync, mkdtempSync, writeFileSync } from "node:fs";
@@ -57,10 +61,12 @@ const args = process.argv.slice(2);
 const opt = {
   base: "http://localhost:5173",
   seconds: 5,
+  settle: 6,
   throttle: 4,
   motion: "on",
   width: 390,
   json: null,
+  headful: false,
 };
 const slugs = [];
 for (let i = 0; i < args.length; i++) {
@@ -72,6 +78,7 @@ for (let i = 0; i < args.length; i++) {
   else if (a === "--motion") opt.motion = args[++i];
   else if (a === "--width") opt.width = Number(args[++i]);
   else if (a === "--json") opt.json = args[++i];
+  else if (a === "--headful") opt.headful = true;
   else slugs.push(a);
 }
 if (slugs.length === 0) slugs.push(...DEFAULT_SLUGS);
@@ -87,11 +94,12 @@ async function launch() {
   const proc = spawn(
     exe,
     [
-      "--headless=new",
+      ...(opt.headful
+        ? ["--window-position=0,0", "--disable-features=CalculateNativeWinOcclusion"]
+        : ["--headless=new", "--disable-gpu"]),
       `--remote-debugging-port=${port}`,
       `--user-data-dir=${profile}`,
       "--no-first-run",
-      "--disable-gpu",
       "--hide-scrollbars",
       `--window-size=${opt.width},844`,
       "about:blank",
@@ -132,6 +140,15 @@ async function launch() {
   await send("Page.enable");
   await send("Runtime.enable");
   await send("Performance.enable");
+  if (opt.headful) {
+    // A window spawned from a script can start hidden; a hidden page gets no frames at all.
+    const { windowId } = await send("Browser.getWindowForTarget");
+    await send("Browser.setWindowBounds", {
+      windowId,
+      bounds: { left: 0, top: 0, width: opt.width + 16, height: 900, windowState: "normal" },
+    });
+    await send("Page.bringToFront");
+  }
   await send("Emulation.setDeviceMetricsOverride", {
     width: opt.width,
     height: 844,
@@ -198,10 +215,24 @@ async function measure(b, slug, motion) {
       break;
     await sleep(300);
   }
-  // Only the card: the page's header, footer and strips around it would count too.
+  // Only the card: the page's header, footer, the column beside the card and
+  // the "more templates" strip would count too. The strip's thumbnails carry
+  // their own animations (floating balloons, foil), which once hid the card's
+  // own cost in this tool. The selectors follow app/(marketing)/templates/[slug]/page.tsx.
   await b.evaluate(
-    "(() => { const s = document.createElement('style'); s.textContent = 'header, footer, main > *:not(:has(.gift-sheet)) { display: none !important }'; document.head.appendChild(s); })()",
+    "(() => { const s = document.createElement('style'); s.textContent = 'header, footer, main > div > section:not([aria-labelledby=\"template-demo\"]), main > div > div > *:not([aria-labelledby=\"template-demo\"]) { display: none !important }'; document.head.appendChild(s); })()",
   );
+  // The demo section must be the only thing left: a card can hold its sheet
+  // out of view until it opens, so the check is "nothing outside the demo".
+  const onlyDemo = await b.evaluate(
+    "(() => { const demo = document.querySelector('[aria-labelledby=\"template-demo\"]'); if (!demo || !demo.getClientRects().length) return false; return [...document.querySelectorAll('.gift-sheet')].every((e) => demo.contains(e) || !e.getClientRects().length); })()",
+  );
+  if (!onlyDemo)
+    return {
+      slug,
+      motion,
+      error: "the page's structure changed; only the demo section should be left",
+    };
   const opened = await b.evaluate(
     "(() => { const btn = [...document.querySelectorAll('main button')].find((x) => /open your gift|open the invitation/i.test(x.textContent || '') || (x.textContent || '').includes('ဖွင့်')); if (!btn) return false; btn.click(); return true; })()",
   );
@@ -238,7 +269,7 @@ const b = await launch();
 const rows = [];
 try {
   console.log(
-    `Idle cost of opened cards at ${opt.base}, ${opt.width}px, CPU ×${opt.throttle}, ${opt.seconds}s windows, motion ${opt.motion}\n`,
+    `Idle cost of opened cards at ${opt.base}, ${opt.width}px, CPU ×${opt.throttle}, ${opt.seconds}s windows, motion ${opt.motion}, ${opt.headful ? "visible window with the GPU on" : "headless"}\n`,
   );
   console.log(
     "template".padEnd(22) + "motion  busy  task ms  style (n)   layout (n)  script  long tasks",
