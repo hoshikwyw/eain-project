@@ -13,6 +13,7 @@ import { getTemplateStyle, isAvailableTemplate } from "@/features/gifts/template
 export default async function AdminTemplatesPage() {
   await requireAdmin();
   const t = await getTranslations("admin");
+  const tCreate = await getTranslations("create");
   const templates = await listTemplatesAdmin();
 
   return (
@@ -48,7 +49,7 @@ export default async function AdminTemplatesPage() {
                 {tp.is_featured && <Chip tone="brand">{t("templates.featured")}</Chip>}
                 <Chip tone={tp.paid_only ? "gold" : tp.is_premium ? "primary" : "neutral"}>
                   {tp.paid_only
-                    ? `${t("templates.paidOnly")} · ${tp.price_mmk ?? "?"} Ks`
+                    ? `${t("templates.paidOnly")} · ${tp.price_mmk ? tCreate("priceKs", { price: tp.price_mmk }) : "?"}`
                     : tp.is_premium
                       ? `${t("templates.premium")} · ${tp.point_price}`
                       : t("templates.free")}
