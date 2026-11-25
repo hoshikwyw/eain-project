@@ -1,16 +1,22 @@
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/brand/logo";
 import { LocaleToggle } from "@/components/settings/locale-toggle";
 import { ThemeToggle } from "@/components/settings/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { hasSessionCookie } from "@/lib/session-hint";
 
 // Every link in the bar is at least 44px tall to tap, however short its words.
 const navLink =
   "inline-flex min-h-11 items-center rounded-lg text-sm text-muted-foreground transition-colors hover:text-foreground";
 
-export function SiteHeader() {
-  const t = useTranslations("nav");
+/**
+ * The public site's bar. A signed-in visitor sees "My gifts" where others
+ * see "Log in", so the public pages never look as if they were signed out.
+ */
+export async function SiteHeader() {
+  const t = await getTranslations("nav");
+  const signedIn = await hasSessionCookie();
 
   return (
     <header className="sticky top-0 z-40 border-b glass-bar">
@@ -31,8 +37,11 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <LocaleToggle />
           <ThemeToggle />
-          <Link href="/auth/login" className={`${navLink} px-3 max-sm:hidden`}>
-            {t("login")}
+          <Link
+            href={signedIn ? "/dashboard" : "/auth/login"}
+            className={`${navLink} px-3 max-sm:hidden`}
+          >
+            {signedIn ? t("myGifts") : t("login")}
           </Link>
           <Button asChild variant="ink" size="sm" className="px-5">
             <Link href="/templates">{t("createGift")}</Link>

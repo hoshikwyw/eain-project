@@ -37,6 +37,7 @@ Costs, at about 4,900 MMK to the dollar: about 6,500 MMK a month (the domain) wh
 - [ ] First deploy succeeds. Open the URL on a phone.
 - [ ] After every later deploy, a tab that was already open may show "A newer Eain is live" once and reload itself: that is the stale-page recovery (`lib/stale-page.ts`), not a bug. Vercel's Skew Protection would avoid even that, but it is Pro-only.
 - [ ] Cron: Settings → Cron Jobs shows `/api/cron/keepalive` daily. Trigger it once and confirm `{ "ok": true }` in the logs. This keeps the free Supabase project from pausing.
+- [ ] Pages run in Singapore, next to the database: `vercel.json` sets `"regions": ["sin1"]`. Check a response header: `x-vercel-id` should read `…::sin1::…`, not `iad1` (Washington, Vercel's default, which made every page cross the Pacific to the database and back, about 0.8 to 1 s a page). Also visible under Settings → Functions.
 - [ ] Hobby plan is for non-commercial use. Payments are off, so this is fine for the validation launch. Move to Pro before real payments.
 
 ## 4. Smoke test on production

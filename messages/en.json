@@ -10,7 +10,8 @@
     "howItWorks": "How it works",
     "login": "Log in",
     "createGift": "Create a Gift",
-    "menu": "Menu"
+    "menu": "Menu",
+    "myGifts": "My gifts"
   },
   "invitations": {
     "previewName": "Wedding Invitation",
@@ -169,7 +170,8 @@
   "notFound": {
     "title": "This page is not here",
     "text": "The link may be wrong, or the page may have moved.",
-    "home": "Back to home"
+    "home": "Back to home",
+    "dashboard": "Back to my dashboard"
   },
   "create": {
     "demo": {
@@ -1167,6 +1169,11 @@
         "admin": "Admin accounts cannot delete themselves.",
         "error": "Your account could not be deleted. Nothing was removed. Please try again."
       }
+    },
+    "giftGone": {
+      "title": "This gift was deleted",
+      "text": "It is no longer in your gifts, so its replies and link are gone too.",
+      "back": "Back to my gifts"
     }
   },
   "buy": {
