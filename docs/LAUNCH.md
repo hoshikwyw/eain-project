@@ -2,9 +2,12 @@
 
 Zero-cost first launch on Vercel Hobby and Supabase Free. Work through the sections in order. Tick each line as you go.
 
+Costs, at about 4,900 MMK to the dollar: about 6,500 MMK a month (the domain) while nothing is sold, about 240,000 MMK a month from the first sale (Vercel Pro, Supabase Pro, domain, card or agent fees). Vercel and Supabase bill in dollars by card, so arrange a dollar card before the first sale.
+
 ## 1. Supabase, before deploying
 
-- [ ] All migrations applied (`supabase/migrations/0001` to `0009`). Check in SQL editor: `select version, name from supabase_migrations.schema_migrations order by version;`
+- [ ] All migrations applied (`supabase/migrations/0001` to `0023`). Check in SQL editor: `select version, name from supabase_migrations.schema_migrations order by version;` (files pasted by hand do not appear there; check one of their changes instead, for 0023: `select slug, paid_only, price_mmk from public.templates where paid_only;` lists the wedding and engagement invitations).
+- [ ] Migrations go in **before** the code that needs them. The template picker and template pages read `paid_only` and `price_mmk` from 0023 and fail to load without them; saving an invitation needs 0022.
 - [ ] Authentication → Sign In / Providers → Email: Confirm email is your choice (ON in production). The free mailer sends only a few emails per hour.
 - [ ] Authentication → Sign In / Providers → Google: enabled with the Client ID and secret from Google Cloud, the Client ID also in Authorized Client IDs, and `NEXT_PUBLIC_GOOGLE_CLIENT_ID` set in Vercel.
 - [ ] Authentication → URL Configuration: Site URL set to the production URL (email links are built from it), and Redirect URLs contain `https://<your-domain>/**` (keep `http://localhost:5173/**` for development). Only links from the older `{{ .ConfirmationURL }}` templates depend on the allow-list.
@@ -30,6 +33,7 @@ Zero-cost first launch on Vercel Hobby and Supabase Free. Work through the secti
   - `CRON_SECRET` = a long random string (`openssl rand -base64 32`)
   - `NEXT_PUBLIC_CONTACT_EMAIL` (optional)
   - `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST` (optional; leave unset to keep analytics off)
+  - `EAIN_PAY_NAME`, `EAIN_PAY_KBZPAY`, `EAIN_PAY_WAVEPAY`, `EAIN_SALES_CONTACT_URL` (server only; where customers pay for paid templates, shown on `/dashboard/buy/<template>`. With no wallet number the page says buying opens soon. The contact link must be https: m.me, Viber or t.me)
 - [ ] First deploy succeeds. Open the URL on a phone.
 - [ ] After every later deploy, a tab that was already open may show "A newer Eain is live" once and reload itself: that is the stale-page recovery (`lib/stale-page.ts`), not a bug. Vercel's Skew Protection would avoid even that, but it is Pro-only.
 - [ ] Cron: Settings → Cron Jobs shows `/api/cron/keepalive` daily. Trigger it once and confirm `{ "ok": true }` in the logs. This keeps the free Supabase project from pausing.
@@ -39,13 +43,15 @@ Zero-cost first launch on Vercel Hobby and Supabase Free. Work through the secti
 
 Run through with two devices, or one browser plus a private window.
 
-- [ ] Sign up with email. Dashboard opens with 100 points.
+- [ ] Sign up with email. Dashboard opens with 20 points.
 - [ ] Sign in with Google on a second account.
 - [ ] Create a gift from Birthday Postcard, add a photo, add a question, save, publish.
 - [ ] Copy the link and open it in the private window. Tap "Open your gift". Answer the question.
-- [ ] Back on the dashboard: gift shows Opened, timeline has times, Responses shows the answer, Notifications has two entries, points went up by 5 + 10 + 20.
+- [ ] Back on the dashboard: gift shows Opened, timeline has times, Responses shows the answer, Notifications has two entries, points went up by 20 in all (5 for publishing, 10 for the open, and the reply stops at the daily cap of 20).
 - [ ] Share the link into a Messenger or Viber chat to yourself. The preview shows the generic text and the Eain image, never the message. Opening from the chat still shows "Not opened" until the button is tapped.
 - [ ] Regenerate the link. Old link shows "not available". Delete the gift. New link shows "not available".
+- [ ] Open the Wedding Invitation in the picker: it shows its kyat price and "How to buy", never an unlock button. The buy page shows your wallet numbers and contact link.
+- [ ] As admin, open the second account in `/admin/users`, give it the Wedding Invitation from Premium templates with a test note. The second account can now use it, and the audit log has `grant_template`.
 - [ ] Report a gift from the public page. In /admin/reports it appears. Take it offline; owner gets a notification; audit log has the entry.
 - [ ] Switch to Burmese on a phone. Check line heights on the gift page and the editor.
 - [ ] Turn on airplane-mode throttling in DevTools (Slow 3G). The gift page reaches "Open your gift" in under a few seconds and images load lazily.
@@ -63,6 +69,7 @@ pnpm test:core
 pnpm test:responses
 pnpm test:reachability
 pnpm test:email-links
+pnpm test:account
 ```
 
 The RLS test uses the same Supabase project either way. The others need `NEXT_PUBLIC_SITE_URL` to point at the deployed site. They create and delete throwaway users. The reachability test is the one that proves the deployed pages never send the browser to the Supabase host, which is blocked on some networks in Myanmar.
@@ -73,17 +80,30 @@ The RLS test uses the same Supabase project either way. The others need `NEXT_PU
 - [ ] Retention periods decided and written into the Privacy page.
 - [ ] Contact email decided and set in `NEXT_PUBLIC_CONTACT_EMAIL`.
 
-## 7. Monitoring, weekly
+## 7. Before the first sale
+
+The closed test can run without these. The first kyat taken needs all of them.
+
+- [ ] Vercel moved to Pro (the Hobby plan is non-commercial only).
+- [ ] Terms updated: the points section in `content/legal/en.ts` and `my.ts` still says payments are off. Add what a paid template is, that it stays on the account, and a short refund rule (for example: a refund if we have not unlocked it within 24 hours), in both languages.
+- [ ] Wallet numbers and the contact link set in Vercel (section 3). Send a test payment to yourself and read the buy page on a phone.
+
+**Selling a template by hand.** The customer pays by KBZPay or WavePay and sends the screenshot with their account email. Check the money arrived in the wallet app, not only the screenshot. Find the account in `/admin/users`, open it, and give the template under Premium templates with a note such as "KBZPay 25 Nov, last 4 digits 1234". The note is kept in the audit log. Prices and the paid-only flag are changed in the SQL editor for now: `update public.templates set price_mmk = 35000 where slug = 'wedding-invitation';`
+
+## 8. Monitoring, weekly
 
 - [ ] Supabase → Usage: database size, storage, egress. Storage (1 GB) and egress (5 GB/month) are the first limits to reach.
 - [ ] Vercel → Usage: bandwidth, function invocations, image optimisation (should stay near zero; Eain bypasses it).
-- [ ] `/admin` overview: open reports, published gifts in the last 7 days. Published gifts per week is the one number that matters most.
+- [ ] `/admin` overview: open reports, published gifts in the last 7 days. Published gifts per week is the one number that matters most, then paid templates sold (`grant_template` entries in the audit log).
 - [ ] Rotate `CRON_SECRET` and the Supabase service role key if they were ever pasted anywhere unsafe.
 
-## 8. Known gaps for after launch
+## 9. Known gaps for after launch
 
-- Daily caps on earned points.
-- Real point purchases with a Myanmar payment provider, server-verified.
-- Account self-deletion and the scheduled cleanup of deleted gifts' photos.
+Done since the first version of this list: daily caps on earned points (now 20 a day), account self-deletion, and the daily cleanup of deleted gifts' photos (the keepalive cron).
+
+- Paid-only and the kyat price set from the admin template page (SQL editor for now).
+- Payment straight from KBZPay or WavePay, server-verified, once about 50 sales have gone through by hand.
+- Ahlu, shinbyu and kathina invitation templates.
 - Email or push notifications.
 - Per-recipient links (`/r/token`) for multiple recipients.
+- Night garden: one `<svg>` per plant with compositor transforms, after a real-phone check.

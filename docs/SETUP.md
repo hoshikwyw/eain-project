@@ -48,7 +48,7 @@ The project ref is the part before `.supabase.co` in the project URL. Login open
 
 **If the CLI cannot reach the database** (the direct host is IPv6 only, and some networks also block the pooler), run the migrations by hand instead: `powershell -File scripts/combine-migrations.ps1` writes `supabase/ALL_MIGRATIONS.sql`. Paste that file into the Supabase SQL editor and run it once on an empty project. It records the versions, so a later `db push` skips them. For a new migration added afterwards, paste only that file's contents.
 
-7. Restart `pnpm dev` so the new `.env.local` is read. Sign up at http://localhost:5173/auth/signup. The new profile receives 100 welcome points.
+7. Restart `pnpm dev` so the new `.env.local` is read. Sign up at http://localhost:5173/auth/signup. The new profile receives 20 welcome points.
 
 8. Run the tests. They work against this Supabase project and the running dev server, create throwaway users (emails ending in `@example.com`) and delete them at the end. The env values are read from `.env.local`, or from `.env` if that is the file you use.
 
