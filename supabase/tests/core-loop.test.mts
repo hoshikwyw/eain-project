@@ -159,7 +159,7 @@ describe("core loop", () => {
     ]);
 
     const { data: profile } = await user.from("profiles").select("points_balance").single();
-    assert.equal(profile?.points_balance, 115);
+    assert.equal(profile?.points_balance, 35, "20 welcome + 5 publish + 10 open");
   });
 
   it("viewed is recorded once per session", async () => {

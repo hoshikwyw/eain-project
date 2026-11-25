@@ -121,7 +121,7 @@ describe("row level security", () => {
       .eq("id", a.id);
     assert.ok(points.error, "points update should be denied");
     const { data } = await a.client.from("profiles").select("role, points_balance").single();
-    assert.deepEqual(data, { role: "user", points_balance: 100 });
+    assert.deepEqual(data, { role: "user", points_balance: 20 });
   });
 
   it("a user can save a drawn avatar on their own row", async () => {
