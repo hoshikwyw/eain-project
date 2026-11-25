@@ -614,7 +614,8 @@
       "reports": "တိုင်ကြားမှုများ",
       "points": "ပွိုင့်",
       "payments": "ငွေပေးချေမှု",
-      "audit": "စစ်ဆေးမှတ်တမ်း"
+      "audit": "စစ်ဆေးမှတ်တမ်း",
+      "waiting": "ငွေလွှဲ {count, number, digits} ခု စောင့်နေသည်"
     },
     "flash": {
       "ok": {
@@ -1101,7 +1102,8 @@
         "giftDisabled": "တိုင်ကြားမှုကြောင့် သင့်လက်ဆောင် \"{giftTitle}\" ကို Eain မှ ပိတ်လိုက်ပါပြီ။",
         "generic": "အသိပေးချက်အသစ် ရှိပါတယ်။",
         "paymentApproved": "သင့် {templateName} အဆင်သင့်ဖြစ်ပါပြီ။ ငွေပေးချေမှုအတွက် ကျေးဇူးတင်ပါတယ်။",
-        "paymentRejected": "{templateName} အတွက် ငွေလွှဲမှုကို အတည်မပြုနိုင်ခဲ့ပါ။"
+        "paymentRejected": "{templateName} အတွက် ငွေလွှဲမှုကို အတည်မပြုနိုင်ခဲ့ပါ။",
+        "paymentWaiting": "ငွေလွှဲ အသစ် စောင့်နေသည်: {templateName}၊ {wallet} ဖြင့် {amount, number, digits} ကျပ်။"
       }
     },
     "nav": {

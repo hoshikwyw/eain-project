@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { requireAdmin } from "@/features/admin/queries";
+import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/features/auth/actions";
 import { userHref } from "@/lib/app-mode";
 
@@ -19,13 +20,19 @@ export const metadata: Metadata = { robots: { index: false, follow: false } };
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const me = await requireAdmin();
   const t = await getTranslations("admin");
+  // Waiting payments, for the count on the Payments tab.
+  const supabase = await createClient();
+  const { count: pendingPayments } = await supabase
+    .from("payments")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "pending");
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-3 px-4">
           <div className="flex items-center gap-3">
-            <Link href="/admin" aria-label="Eain admin">
+            <Link href="/admin" aria-label="Eain admin" className="flex min-h-11 items-center">
               <Logo />
             </Link>
             <Chip tone="primary">{t("badge")}</Chip>
@@ -51,7 +58,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
           </div>
         </div>
         <div className="mx-auto w-full max-w-6xl px-4">
-          <AdminNav />
+          <AdminNav pendingPayments={pendingPayments ?? 0} />
         </div>
       </header>
       <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">

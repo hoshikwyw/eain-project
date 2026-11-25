@@ -614,7 +614,8 @@
       "reports": "Reports",
       "points": "Points",
       "payments": "Payments",
-      "audit": "Audit log"
+      "audit": "Audit log",
+      "waiting": "{count, plural, one {# payment waiting} other {# payments waiting}}"
     },
     "flash": {
       "ok": {
@@ -1101,7 +1102,8 @@
         "giftDisabled": "Your gift \"{giftTitle}\" was taken offline by Eain after a report.",
         "generic": "You have a new notification.",
         "paymentApproved": "Your {templateName} is ready. Thank you for your payment.",
-        "paymentRejected": "We could not confirm your payment for {templateName}."
+        "paymentRejected": "We could not confirm your payment for {templateName}.",
+        "paymentWaiting": "New payment waiting: {templateName}, {amount, number} Ks by {wallet}."
       }
     },
     "nav": {

@@ -268,6 +268,17 @@ describe("earn cap and account deletion", () => {
     const again = await ask(valentine, "wavepay", "999999");
     assert.equal(again.data.id, first.data.id, "asking twice returns the same pending payment");
 
+    // Needs migration 0030: the admin hears about it once, not once per press.
+    const { data: alerts } = await adminUser.client
+      .from("notifications")
+      .select("payload")
+      .eq("title_key", "paymentWaiting");
+    const mine = (alerts ?? []).filter(
+      (a) => (a.payload as { paymentId?: string }).paymentId === first.data.id,
+    );
+    assert.equal(mine.length, 1, "one alert for the admin");
+    assert.equal((mine[0]!.payload as { amountMmk?: number }).amountMmk, 3000);
+
     const review = (client: typeof member.client, id: string, approve: boolean, note = "") =>
       client.rpc("admin_review_payment", { p_payment_id: id, p_approve: approve, p_note: note });
 

@@ -1,5 +1,6 @@
 import {
   Bell,
+  Banknote,
   ChevronRight,
   CircleAlert,
   Crown,
@@ -10,13 +11,20 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
+import { adminHref } from "@/lib/app-mode";
 import { cn } from "@/lib/utils";
 import type { Notification } from "@/types/database";
 
 const KINDS: Record<
   string,
   {
-    key: "giftOpened" | "responseReceived" | "giftDisabled" | "paymentApproved" | "paymentRejected";
+    key:
+      | "giftOpened"
+      | "responseReceived"
+      | "giftDisabled"
+      | "paymentApproved"
+      | "paymentRejected"
+      | "paymentWaiting";
     icon: LucideIcon;
   }
 > = {
@@ -25,6 +33,7 @@ const KINDS: Record<
   giftDisabled: { key: "giftDisabled", icon: ShieldAlert },
   paymentApproved: { key: "paymentApproved", icon: Crown },
   paymentRejected: { key: "paymentRejected", icon: CircleAlert },
+  paymentWaiting: { key: "paymentWaiting", icon: Banknote },
 };
 
 /**
@@ -46,16 +55,22 @@ export async function NotificationItem({ notification: n }: { notification: Noti
     templateSlug?: string;
     templateName?: string;
     templateNameMy?: string;
+    amountMmk?: number;
+    provider?: string;
   };
   const templateName =
     (locale === "my" ? payload.templateNameMy : payload.templateName) ?? payload.templateName ?? "";
+  // A waiting payment is for an admin: it opens the payments queue, on the
+  // admin site when that is a site of its own.
   const href = n.gift_id
     ? `/dashboard/gifts/${n.gift_id}`
-    : payload.templateSlug && n.title_key === "paymentApproved"
-      ? `/create?template=${encodeURIComponent(payload.templateSlug)}`
-      : payload.templateSlug && n.title_key === "paymentRejected"
-        ? `/dashboard/buy/${encodeURIComponent(payload.templateSlug)}`
-        : null;
+    : n.title_key === "paymentWaiting"
+      ? adminHref("/admin/payments")
+      : payload.templateSlug && n.title_key === "paymentApproved"
+        ? `/create?template=${encodeURIComponent(payload.templateSlug)}`
+        : payload.templateSlug && n.title_key === "paymentRejected"
+          ? `/dashboard/buy/${encodeURIComponent(payload.templateSlug)}`
+          : null;
   // A reply's answers in a few words (migration 0021); a moderation reason otherwise.
   const detail = payload.summary || payload.reason;
   const unread = !n.read_at;
@@ -82,6 +97,8 @@ export async function NotificationItem({ notification: n }: { notification: Noti
           {t(`titles.${kind?.key ?? "generic"}`, {
             giftTitle: payload.giftTitle ?? "",
             templateName,
+            amount: payload.amountMmk ?? 0,
+            wallet: payload.provider === "wavepay" ? "WavePay" : "KBZPay",
           })}
         </span>
         {detail && (

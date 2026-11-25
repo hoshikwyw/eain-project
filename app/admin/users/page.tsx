@@ -31,6 +31,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/admin
             type="search"
             defaultValue={query}
             placeholder={t("users.search")}
+            aria-label={t("users.search")}
             className="pl-10"
           />
         </form>
