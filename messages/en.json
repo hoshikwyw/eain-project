@@ -856,7 +856,7 @@
       "approve": "Approve",
       "reject": "Reject",
       "note": "Reason for rejecting",
-      "notePlaceholder": "Reason, shown to the customer if you reject",
+      "notePlaceholder": "Reason the customer will see",
       "approveConfirm": "Did {amount} arrive in {wallet} with a transaction ending {reference}? Approving unlocks the template and tells the customer.",
       "rejectConfirm": "Reject this payment? The customer is told, with your reason, and can send it again.",
       "status": {
