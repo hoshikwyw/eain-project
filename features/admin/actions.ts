@@ -93,6 +93,39 @@ export async function grantTemplate(formData: FormData): Promise<void> {
   back(to, "ok", "granted");
 }
 
+/**
+ * Approve (unlocks the template) or reject a pending payment, from
+ * /admin/payments. The database function notifies the customer and logs it.
+ */
+export async function reviewPayment(formData: FormData): Promise<void> {
+  const parsed = z
+    .object({
+      paymentId: z.uuid(),
+      approve: z.enum(["1", "0"]),
+      note: z.string().trim().max(200).default(""),
+    })
+    .safeParse({
+      paymentId: formData.get("paymentId"),
+      approve: formData.get("approve"),
+      note: formData.get("note") ?? "",
+    });
+  if (!parsed.success) back("/admin/payments", "error", "invalid");
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("admin_review_payment", {
+    p_payment_id: parsed.data.paymentId,
+    p_approve: parsed.data.approve === "1",
+    p_note: parsed.data.note,
+  });
+  revalidatePath("/admin", "layout");
+  if (error)
+    back(
+      "/admin/payments",
+      "error",
+      error.message.includes("already decided") ? "decided" : "failed",
+    );
+  back("/admin/payments", "ok", parsed.data.approve === "1" ? "approved" : "rejected");
+}
+
 /** Full template edit from /admin/templates/[templateId]. */
 export async function updateTemplateDetails(formData: FormData): Promise<void> {
   const templateId = String(formData.get("templateId") ?? "");

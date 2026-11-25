@@ -14,6 +14,8 @@ const OK_KEYS = [
   "deleted",
   "giftsOffline",
   "granted",
+  "approved",
+  "rejected",
 ] as const;
 const ERROR_KEYS = [
   "invalid",
@@ -22,6 +24,7 @@ const ERROR_KEYS = [
   "insufficient",
   "premiumPrice",
   "paidPrice",
+  "decided",
   "self",
   "confirmEmail",
   "deleteFailed",

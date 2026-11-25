@@ -5,6 +5,7 @@ import { appMode } from "@/lib/app-mode";
 import { signMedia } from "@/features/gifts/media";
 import { lookFromTheme, sectionsFromRows } from "@/features/gifts/sections";
 import { getTemplateStyle } from "@/features/gifts/templates";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/types/database";
 
@@ -128,14 +129,58 @@ export async function listRecentTransactions() {
   return tx.map((t) => ({ ...t, userName: nameById.get(t.user_id) ?? t.user_id.slice(0, 8) }));
 }
 
+/**
+ * Payments for the admin queue: pending first (oldest first, so nobody waits
+ * longest), then the latest decisions. Each comes with its template and the
+ * customer's name and email, which the admin needs to match the wallet app.
+ */
 export async function listPayments() {
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("payments")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(100);
-  return data ?? [];
+  const [{ data: pending }, { data: decided }, { data: templates }] = await Promise.all([
+    supabase
+      .from("payments")
+      .select("*")
+      .eq("status", "pending")
+      .order("created_at", { ascending: true })
+      .limit(100),
+    supabase
+      .from("payments")
+      .select("*")
+      .neq("status", "pending")
+      .order("verified_at", { ascending: false })
+      .limit(50),
+    supabase.from("templates").select("id, slug, name_en"),
+  ]);
+  const rows = [...(pending ?? []), ...(decided ?? [])];
+
+  const userIds = [
+    ...new Set(rows.map((r) => r.user_id).filter((id): id is string => Boolean(id))),
+  ];
+  const { data: profiles } = userIds.length
+    ? await supabase.from("profiles").select("id, display_name").in("id", userIds)
+    : { data: [] };
+  // Emails live in Auth, not in profiles: read them with the service client, one per customer.
+  const admin = createAdminClient();
+  const emails = new Map<string, string>();
+  await Promise.all(
+    userIds.map(async (id) => {
+      const { data } = await admin.auth.admin.getUserById(id);
+      if (data?.user?.email) emails.set(id, data.user.email);
+    }),
+  );
+
+  const templateById = new Map((templates ?? []).map((t) => [t.id, t]));
+  const nameById = new Map((profiles ?? []).map((p) => [p.id, p.display_name]));
+  const shape = (r: (typeof rows)[number]) => ({
+    ...r,
+    templateName: (r.template_id && templateById.get(r.template_id)?.name_en) || "",
+    customerName: (r.user_id && nameById.get(r.user_id)) || "",
+    customerEmail: (r.user_id && emails.get(r.user_id)) || "",
+  });
+  return {
+    pending: (pending ?? []).map(shape),
+    decided: (decided ?? []).map(shape),
+  };
 }
 
 export async function listAuditLogs() {
