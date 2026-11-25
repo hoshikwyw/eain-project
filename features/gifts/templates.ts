@@ -146,8 +146,19 @@ const guestName = (l: Locale): Section => ({
     options: [],
   },
 });
-/** A yes-or-no question the guest must answer: the RSVP, with its two answers in the guest's words. */
-const rsvp = (l: Locale, prompt: string): Section => ({
+/**
+ * A yes-or-no question the guest must answer: the RSVP, with its two answers
+ * in the guest's words. Formal occasions pass their own answers, so a polite
+ * question does not get casual replies.
+ */
+const rsvp = (
+  l: Locale,
+  prompt: string,
+  answers: { yes: string; no: string } = {
+    yes: my(l, "Yes, I'll be there", "လာမယ်"),
+    no: my(l, "Sorry, I can't make it", "မလာနိုင်ပါဘူး"),
+  },
+): Section => ({
   id: sid(),
   type: "question",
   content: {
@@ -156,19 +167,22 @@ const rsvp = (l: Locale, prompt: string): Section => ({
     prompt,
     required: true,
     options: [
-      { id: crypto.randomUUID(), label: my(l, "Yes, I'll be there", "လာမယ်") },
-      { id: crypto.randomUUID(), label: my(l, "Sorry, I can't make it", "မလာနိုင်ပါဘူး") },
+      { id: crypto.randomUUID(), label: answers.yes },
+      { id: crypto.randomUUID(), label: answers.no },
     ],
   },
 });
 /** How many are coming, so the host can count plates. Optional: a "no" needs no number. */
-const headcount = (l: Locale): Section => ({
+const headcount = (
+  l: Locale,
+  prompt = my(l, "How many of you are coming?", "ဘယ်နှယောက် လာမလဲ?"),
+): Section => ({
   id: sid(),
   type: "question",
   content: {
     questionId: crypto.randomUUID(),
     kind: "count",
-    prompt: my(l, "How many of you are coming?", "ဘယ်နှယောက် လာမလဲ?"),
+    prompt,
     required: false,
     options: [],
   },
@@ -699,8 +713,11 @@ const invitations: Record<string, TemplateDefinition> = {
         ),
       ),
       guestName(l),
-      rsvp(l, my(l, "Will you be able to join us?", "ကြွရောက်နိုင်ပါမည်လား?")),
-      headcount(l),
+      rsvp(l, my(l, "Will you be able to join us?", "ကြွရောက်နိုင်ပါမည်လား?"), {
+        yes: my(l, "I will attend", "ကြွရောက်ပါမည်"),
+        no: my(l, "I regret I cannot attend", "မကြွရောက်နိုင်ပါ"),
+      }),
+      headcount(l, my(l, "How many will attend?", "ကြွရောက်မည့် ဦးရေ")),
       final(my(l, "With gratitude,", "သာဓု သာဓု သာဓု")),
     ],
   },
@@ -754,8 +771,11 @@ const invitations: Record<string, TemplateDefinition> = {
         },
       ]),
       guestName(l),
-      rsvp(l, my(l, "Will you be able to join us?", "ကြွရောက်နိုင်ပါမည်လား?")),
-      headcount(l),
+      rsvp(l, my(l, "Will you be able to join us?", "ကြွရောက်နိုင်ပါမည်လား?"), {
+        yes: my(l, "I will attend", "ကြွရောက်ပါမည်"),
+        no: my(l, "I regret I cannot attend", "မကြွရောက်နိုင်ပါ"),
+      }),
+      headcount(l, my(l, "How many will attend?", "ကြွရောက်မည့် ဦးရေ")),
       final(
         my(l, "With gratitude,", "သာဓု သာဓု သာဓု"),
         my(l, "U Kyaw Win, Daw Hnin Si and family", "ဦးကျော်ဝင်း + ဒေါ်နှင်းဆီ နှင့် မိသားစု"),
