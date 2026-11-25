@@ -1,6 +1,6 @@
 /**
- * Daily earn cap and self-service account deletion UI.
- * Needs the dev server. The cap check needs migration 0013.
+ * Daily earn cap, paid template grants and self-service account deletion UI.
+ * Needs the dev server. The cap check needs migration 0023 (20 a day).
  * Run:  pnpm test:account
  */
 import assert from "node:assert/strict";
@@ -58,13 +58,13 @@ describe("earn cap and account deletion", () => {
       if (u) await service.auth.admin.deleteUser(u.id).catch(() => undefined);
   });
 
-  it("earned points stop at 100 a day while publishing and opening keep working", async () => {
-    // Five gifts earn 25 by being published, so the day starts at 90 earned:
+  it("earned points stop at 20 a day while publishing and opening keep working", async () => {
+    // Five gifts earn 25 by being published, so the day starts at 10 earned:
     // the cap is then reached part-way through the publishes.
     const seeded = await service.rpc("apply_point_transaction", {
       p_user_id: member.id,
       p_type: "earn",
-      p_amount: 90,
+      p_amount: 10,
       p_reference_type: "test_seed",
       p_reference_id: `cap-${Date.now()}`,
       p_description: "Earned earlier today",
@@ -100,13 +100,56 @@ describe("earn cap and account deletion", () => {
       .select("amount")
       .eq("type", "earn");
     const total = (earned ?? []).reduce((s, r) => s + r.amount, 0);
-    assert.equal(total, 100, `earned today should be capped at 100, got ${total}`);
+    assert.equal(total, 20, `earned today should be capped at 20, got ${total}`);
 
     const { data: profile } = await member.client
       .from("profiles")
       .select("points_balance")
       .single();
-    assert.equal(profile?.points_balance, 200, "100 welcome + 100 earned");
+    assert.equal(profile?.points_balance, 40, "20 welcome + 20 earned");
+  });
+
+  it("only an admin grants a paid template, once, and it is logged", async () => {
+    const { data: wedding } = await member.client
+      .from("templates")
+      .select("id")
+      .eq("slug", "wedding-invitation")
+      .single();
+    const args = { p_user_id: member.id, p_template_id: wedding!.id, p_note: "KBZPay test" };
+
+    const self = await member.client.rpc("admin_grant_template", args);
+    assert.ok(self.error, "a member cannot grant themselves a template");
+
+    const first = await adminUser.client.rpc("admin_grant_template", args);
+    assert.equal(first.error, null, first.error?.message);
+    assert.equal(first.data.transaction_id, null, "no points behind a paid grant");
+    const second = await adminUser.client.rpc("admin_grant_template", args);
+    assert.equal(second.error, null, "granting twice is fine");
+
+    const { data: unlocks } = await member.client
+      .from("template_unlocks")
+      .select("template_id")
+      .eq("template_id", wedding!.id);
+    assert.equal(unlocks?.length, 1, "the member now owns it");
+
+    const { data: logs } = await service
+      .from("admin_audit_logs")
+      .select("action, details")
+      .eq("target_id", member.id)
+      .eq("action", "grant_template");
+    assert.equal(logs?.length, 1, "logged once");
+    assert.equal((logs![0].details as { template: string }).template, "wedding-invitation");
+
+    const { data: free } = await member.client
+      .from("templates")
+      .select("id")
+      .eq("slug", "thank-you")
+      .single();
+    const freeGrant = await adminUser.client.rpc("admin_grant_template", {
+      ...args,
+      p_template_id: free!.id,
+    });
+    assert.ok(freeGrant.error, "a free template is not granted");
   });
 
   it("settings shows the delete form to members", async () => {

@@ -113,7 +113,7 @@ describe("core loop", () => {
     assert.equal(second.error, null);
 
     const { data: profile } = await user.from("profiles").select("points_balance").single();
-    assert.equal(profile?.points_balance, 105, "100 welcome + 5 publish, paid once");
+    assert.equal(profile?.points_balance, 25, "20 welcome + 5 publish, paid once");
   });
 
   it("the public page serves the content but no private data", async () => {

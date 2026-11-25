@@ -100,13 +100,13 @@ describe("row level security", () => {
     );
   });
 
-  it("a user gets 100 welcome points through the ledger", async () => {
+  it("a user gets 20 welcome points through the ledger", async () => {
     const { data: profile } = await a.client.from("profiles").select("points_balance").single();
-    assert.equal(profile?.points_balance, 100);
+    assert.equal(profile?.points_balance, 20);
     const { data: tx } = await a.client
       .from("point_transactions")
       .select("type, amount, balance_after");
-    assert.deepEqual(tx, [{ type: "bonus", amount: 100, balance_after: 100 }]);
+    assert.deepEqual(tx, [{ type: "bonus", amount: 20, balance_after: 20 }]);
   });
 
   it("a user cannot change their own role or balance", async () => {

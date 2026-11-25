@@ -166,7 +166,8 @@ export interface GiftAnswer extends Record<string, unknown> {
 export interface TemplateUnlock extends Record<string, unknown> {
   user_id: string;
   template_id: string;
-  transaction_id: string;
+  /** Null when Eain granted the template after a payment. */
+  transaction_id: string | null;
   created_at: string;
 }
 
@@ -240,6 +241,8 @@ export interface Template extends Record<string, unknown> {
   description_my: string;
   preview_path: string | null;
   is_premium: boolean;
+  /** Points never unlock it; Eain grants it after a payment. */
+  paid_only: boolean;
   point_price: number;
   default_theme: Json;
   default_sections: Json;
@@ -359,6 +362,10 @@ export interface Database {
       admin_adjust_points: {
         Args: { p_user_id: string; p_amount: number; p_description: string };
         Returns: PointTransaction;
+      };
+      admin_grant_template: {
+        Args: { p_user_id: string; p_template_id: string; p_note: string };
+        Returns: TemplateUnlock;
       };
       admin_update_template: {
         Args: {

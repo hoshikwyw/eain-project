@@ -350,6 +350,21 @@ describe("responses and premium unlock", () => {
       .select("id, point_price")
       .eq("slug", "birthday-surprise")
       .single();
+    // New accounts start with 20 points, less than any premium template, so
+    // top up to exactly the price: the next test then has nothing left.
+    const start = await user.from("profiles").select("points_balance").single();
+    const short = premium!.point_price - start.data!.points_balance;
+    if (short > 0) {
+      const topUp = await admin.rpc("apply_point_transaction", {
+        p_user_id: userId,
+        p_type: "bonus",
+        p_amount: short,
+        p_reference_type: "test_seed",
+        p_reference_id: `unlock-${Date.now()}`,
+        p_description: "Test top-up",
+      } as never);
+      assert.equal(topUp.error, null, topUp.error?.message);
+    }
     const before = await user.from("profiles").select("points_balance").single();
     assert.ok(before.data!.points_balance >= premium!.point_price, "test user needs enough points");
 
@@ -402,6 +417,37 @@ describe("responses and premium unlock", () => {
       .from("template_unlocks")
       .select("template_id")
       .eq("template_id", pricey!.id);
+    assert.equal(unlocks?.length, 0);
+  });
+
+  it("points never unlock a paid-only template", async () => {
+    const { data: wedding } = await user
+      .from("templates")
+      .select("id, paid_only")
+      .eq("slug", "wedding-invitation")
+      .single();
+    assert.equal(wedding?.paid_only, true, "the wedding invitation is paid only");
+    const big = await admin.rpc("apply_point_transaction", {
+      p_user_id: userId,
+      p_type: "bonus",
+      p_amount: 1000,
+      p_reference_type: "test_seed",
+      p_reference_id: `paid-${Date.now()}`,
+      p_description: "Test top-up",
+    } as never);
+    assert.equal(big.error, null, big.error?.message);
+    const before = await user.from("profiles").select("points_balance").single();
+
+    const res = await user.rpc("unlock_template", { p_template_id: wedding!.id });
+    assert.ok(res.error, "should fail");
+    assert.match(res.error!.message, /paid only/);
+
+    const after = await user.from("profiles").select("points_balance").single();
+    assert.equal(after.data!.points_balance, before.data!.points_balance, "nothing charged");
+    const { data: unlocks } = await user
+      .from("template_unlocks")
+      .select("template_id")
+      .eq("template_id", wedding!.id);
     assert.equal(unlocks?.length, 0);
   });
 

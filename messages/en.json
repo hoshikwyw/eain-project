@@ -29,7 +29,7 @@
     "subtitle": "Make something special. Give it to someone.",
     "primaryCta": "Start a gift",
     "secondaryCta": "See how it works",
-    "meta": "Try it free, no account needed · 100 welcome points when you sign up · Nothing asked of the receiver",
+    "meta": "Try it free, no account needed · 20 welcome points when you sign up · Nothing asked of the receiver",
     "occasionsLabel": "For every occasion",
     "howLabel": "How it works",
     "howTitle": "Five quiet steps from a thought to a reply.",
@@ -232,7 +232,7 @@
         "keep": "Keep your gifts and come back to them from any device",
         "link": "Get a private link and QR code to share",
         "opened": "See when it is opened and read the reply",
-        "points": "Start with 100 welcome points"
+        "points": "Start with 20 welcome points"
       }
     },
     "back": "Back",
@@ -845,7 +845,7 @@
     "back": "All templates",
     "tryFree": "Try it free",
     "tryNote": "Opens in the editor right away, no account needed. Save it with a free account when it is ready.",
-    "premiumNote": "A premium template. Sign in and unlock it with points; new accounts start with 100.",
+    "premiumNote": "A premium template. Sign in and unlock it with points.",
     "demoTitle": "As the receiver sees it",
     "more": "More templates",
     "facts": {
@@ -864,7 +864,7 @@
     "guestDraftKept": "The gift you made is kept on this device. Sign in and it will be saved to your account.",
     "welcomeBack": "Welcome back",
     "loginSubtitle": "Log in to see your gifts and responses.",
-    "signupSubtitle": "Start with 100 welcome points.",
+    "signupSubtitle": "Start with 20 welcome points.",
     "createAccount": "Create account",
     "logIn": "Log in",
     "signUp": "Sign up",
@@ -1090,7 +1090,7 @@
       "buySoon": "Buying points is coming soon.",
       "title": "Points & Rewards",
       "subtitle": "Points unlock premium templates and effects.",
-      "dailyCap": "You can earn up to 100 points a day from activity.",
+      "dailyCap": "You can earn up to 20 points a day from activity.",
       "total": "Total points",
       "history": "Point history",
       "empty": "No transactions yet.",
