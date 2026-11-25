@@ -1,5 +1,5 @@
 /**
- * Responses and premium unlock, against the live project and a running dev
+ * Responses, and premium templates that points do not unlock, against the live project and a running dev
  * server. Run:  pnpm test:responses
  */
 import assert from "node:assert/strict";
@@ -351,80 +351,36 @@ describe("responses and premium unlock", () => {
     assert.equal(answers?.length, 0, "its answers go with it");
   });
 
-  it("premium unlock spends points once and enables the template", async () => {
+  it("every premium template is sold in kyat, and points unlock none of them", async () => {
+    // Needs migration 0027. Rich in points on purpose: the money is what unlocks.
+    const topUp = await admin.rpc("apply_point_transaction", {
+      p_user_id: userId,
+      p_type: "bonus",
+      p_amount: 5000,
+      p_reference_type: "test_seed",
+      p_reference_id: `kyat-${Date.now()}`,
+      p_description: "Test top-up",
+    } as never);
+    assert.equal(topUp.error, null, topUp.error?.message);
+    const before = await user.from("profiles").select("points_balance").single();
+
     const { data: premium } = await user
       .from("templates")
-      .select("id, point_price")
-      .eq("slug", "birthday-surprise")
-      .single();
-    // New accounts start with 20 points, less than any premium template, so
-    // top up to exactly the price: the next test then has nothing left.
-    const start = await user.from("profiles").select("points_balance").single();
-    const short = premium!.point_price - start.data!.points_balance;
-    if (short > 0) {
-      const topUp = await admin.rpc("apply_point_transaction", {
-        p_user_id: userId,
-        p_type: "bonus",
-        p_amount: short,
-        p_reference_type: "test_seed",
-        p_reference_id: `unlock-${Date.now()}`,
-        p_description: "Test top-up",
-      } as never);
-      assert.equal(topUp.error, null, topUp.error?.message);
+      .select("id, slug, paid_only, price_mmk")
+      .eq("is_premium", true)
+      .eq("is_active", true);
+    assert.ok(premium && premium.length >= 5, "the premium templates are listed");
+    for (const t of premium!) {
+      assert.equal(t.paid_only, true, `${t.slug} is paid only`);
+      assert.ok((t.price_mmk ?? 0) >= 100, `${t.slug} has a kyat price`);
+      const res = await user.rpc("unlock_template", { p_template_id: t.id });
+      assert.match(res.error?.message ?? "", /paid only/, `${t.slug} refuses points`);
     }
-    const before = await user.from("profiles").select("points_balance").single();
-    assert.ok(before.data!.points_balance >= premium!.point_price, "test user needs enough points");
-
-    const first = await user.rpc("unlock_template", { p_template_id: premium!.id });
-    assert.equal(first.error, null, first.error?.message);
-    const second = await user.rpc("unlock_template", { p_template_id: premium!.id });
-    assert.equal(second.error, null);
 
     const after = await user.from("profiles").select("points_balance").single();
-    assert.equal(
-      after.data!.points_balance,
-      before.data!.points_balance - premium!.point_price,
-      "charged exactly once",
-    );
-
+    assert.equal(after.data!.points_balance, before.data!.points_balance, "nothing charged");
     const { data: unlocks } = await user.from("template_unlocks").select("template_id");
-    assert.deepEqual(
-      unlocks?.map((u) => u.template_id),
-      [premium!.id],
-    );
-    const { data: tx } = await user
-      .from("point_transactions")
-      .select("type, amount")
-      .eq("reference_type", "template_unlock");
-    assert.deepEqual(tx, [{ type: "spend", amount: -premium!.point_price }]);
-  });
-
-  it("unlock fails cleanly without enough points", async () => {
-    const { data: pricey } = await user
-      .from("templates")
-      .select("id, point_price")
-      .eq("slug", "memory-timeline")
-      .single();
-    const { data: profile } = await user.from("profiles").select("points_balance").single();
-    if (profile!.points_balance >= pricey!.point_price) {
-      // Spend down first so the check is meaningful.
-      const { data: other } = await user
-        .from("templates")
-        .select("id")
-        .eq("slug", "anniversary")
-        .single();
-      await user.rpc("unlock_template", { p_template_id: other!.id });
-    }
-    const { data: now } = await user.from("profiles").select("points_balance").single();
-    if (now!.points_balance >= pricey!.point_price) return; // still rich; nothing to assert
-    const res = await user.rpc("unlock_template", { p_template_id: pricey!.id });
-    assert.ok(res.error, "should fail");
-    assert.match(res.error!.message, /insufficient/);
-    const { data: unlocks } = await user
-      .from("template_unlocks")
-      .select("template_id")
-      .eq("template_id", pricey!.id);
-    assert.equal(unlocks?.length, 0);
+    assert.equal(unlocks?.length, 0, "nothing unlocked");
   });
 
   it("points never unlock a paid-only template", async () => {

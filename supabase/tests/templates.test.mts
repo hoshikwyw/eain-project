@@ -1,7 +1,7 @@
 /**
  * Template pages test against a running dev server: each template has a
  * public page that shows the receiver's view and the way to start from it,
- * premium ones point at unlocking, made-up names are not found, and the
+ * premium ones point at the buy page with their kyat price, made-up names are not found, and the
  * sitemap lists the pages.
  *
  * Run:  pnpm test:templates   (dev server must be running on port 5173)
@@ -23,12 +23,12 @@ const notFound = (res: Response, html: string) =>
 
 describe("template pages", () => {
   let free: { slug: string; name_en: string };
-  let premium: { slug: string; name_en: string; point_price: number };
+  let premium: { slug: string; name_en: string; price_mmk: number | null };
 
   before(async () => {
     const { data } = await anon
       .from("templates")
-      .select("slug, name_en, is_premium, point_price")
+      .select("slug, name_en, is_premium, price_mmk")
       .eq("is_active", true)
       .order("sort_order");
     free = data!.find((t) => !t.is_premium && t.slug !== "blank")!;
@@ -46,12 +46,15 @@ describe("template pages", () => {
     assert.ok(!html.includes(`href="/create?template=${free.slug}"`), "no unlock link");
   });
 
-  it("points a premium template at unlocking instead", async () => {
+  it("points a premium template at the buy page, priced in kyat", async () => {
     const res = await fetch(`${site}/templates/${premium.slug}`);
     assert.equal(res.status, 200);
     const html = await res.text();
-    assert.ok(html.includes(`href="/create?template=${premium.slug}"`), "unlock link");
-    assert.ok(html.includes(`Unlock for ${premium.point_price} points`), "price");
+    assert.ok(html.includes(`href="/dashboard/buy/${premium.slug}"`), "buy link");
+    assert.ok(html.includes("How to buy"), "buy wording");
+    const price = `${new Intl.NumberFormat("en").format(premium.price_mmk ?? 0)} Ks`;
+    assert.ok(html.includes(price), `price ${price}`);
+    assert.ok(!/Unlock for d+ points/.test(html), "no points price");
     assert.ok(!html.includes(`href="/try/${premium.slug}"`), "no try link");
   });
 
