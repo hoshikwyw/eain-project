@@ -1,6 +1,6 @@
 # Eain Sales Kit (Facebook, Messenger, Partners)
 
-Ready-to-use Burmese text for the first weeks of selling, with short English notes for you. Replace everything in `<angle brackets>` before posting. Prices match the database today: Wedding Invitation 35,000 Ks, Engagement Party 25,000 Ks. If you change them in `/admin/templates`, change them here too.
+Ready-to-use Burmese text for the first weeks of selling, with short English notes for you. Replace everything in `<angle brackets>` before posting. Prices match the database today: Wedding Invitation 35,000 Ks, Engagement Party 25,000 Ks, Donation Ceremony (Ahlu) 10,000 Ks, Novitiation Ceremony (Shinbyu) 15,000 Ks. If you change them in `/admin/templates`, change them here too.
 
 **Rules for every post and message**
 
@@ -25,6 +25,7 @@ Use these facts; they are all in the app now.
 - မြန်မာလို အပြည့်အစုံ။ VPN မလိုဘဲ မြန်မာပြည်ထဲမှာ ဖွင့်လို့ရတယ်။
 - Chat ထဲမှာ link preview ပေါ်ရင် စာ၊ နာမည်၊ ဓာတ်ပုံ မပေါ်ပါ။
 - ဝယ်ထားတဲ့ ဖိတ်စာ ဒီဇိုင်းမှာ Eain အမှတ်တံဆိပ် မပါပါ။
+- အလှူဖိတ်စာနဲ့ ရှင်ပြုဖိတ်စာ ရှိတယ်။ အစီအစဉ် (အချိန်နဲ့ အလုပ်)၊ အလှူရှင်၊ ရှင်လောင်း နာမည်တွေ ထည့်လို့ရပြီး ဆွမ်းကျွေးဖို့ ဧည့်သည် ဘယ်နှယောက် လာမလဲ သိနိုင်တယ်။
 
 ---
 
@@ -43,6 +44,7 @@ Use these facts; they are all in the app now.
 > Eain က ဖုန်းထဲမှာ ဖွင့်ကြည့်ရတဲ့ ဒစ်ဂျစ်တယ် ဖိတ်စာနဲ့ လက်ဆောင်ကတ်တွေ လုပ်ပေးတဲ့ မြန်မာ app ပါ။
 >
 > 💍 မင်္ဂလာဖိတ်စာ ၃၅,၀၀၀ ကျပ် · စေ့စပ်ပွဲ ဖိတ်စာ ၂၅,၀၀၀ ကျပ်
+> 🙏 ရှင်ပြုအလှူ ဖိတ်စာ ၁၅,၀၀၀ ကျပ် · အလှူဖိတ်စာ ၁၀,၀၀၀ ကျပ်
 > 🎂 မွေးနေ့၊ ပွဲ၊ အိမ်တက် ဖိတ်စာနဲ့ ကတ်တွေ အခမဲ့
 >
 > ✔️ ဧည့်သည်က လာမလား၊ ဘယ်နှယောက်လဲ ဖိတ်စာထဲမှာတင် ဖြေ
@@ -70,7 +72,7 @@ In Meta Business Suite, **Inbox**, **Automations**.
 
 | Button         | Reply                                                                                                                                                                                                     |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ဈေးနှုန်း      | မင်္ဂလာဖိတ်စာ ၃၅,၀၀၀ ကျပ်၊ စေ့စပ်ပွဲ ၂၅,၀၀၀ ကျပ်ပါ။ တစ်ကြိမ်ပေးရုံပါ။ မွေးနေ့၊ ပွဲ၊ အိမ်တက် ဖိတ်စာတွေ အခမဲ့ပါ။                                                                                            |
+| ဈေးနှုန်း      | မင်္ဂလာဖိတ်စာ ၃၅,၀၀၀ ကျပ်၊ စေ့စပ်ပွဲ ၂၅,၀၀၀ ကျပ်၊ ရှင်ပြုဖိတ်စာ ၁၅,၀၀၀ ကျပ်၊ အလှူဖိတ်စာ ၁၀,၀၀၀ ကျပ်ပါ။ တစ်ကြိမ်ပေးရုံပါ။ မွေးနေ့၊ ပွဲ၊ အိမ်တက် ဖိတ်စာတွေ အခမဲ့ပါ။                                         |
 | ဘယ်လို ဝယ်ရမလဲ | ၁။ <site address> မှာ အကောင့်ဖွင့်ပါ။ ၂။ မင်္ဂလာဖိတ်စာမှာ "ဝယ်ယူနည်း" ကို နှိပ်ပါ။ ၃။ KBZPay / WavePay နဲ့ လွှဲပြီး screenshot နဲ့ အကောင့် အီးမေးလ်ကို ဒီမှာ ပို့ပေးပါ။ နာရီအနည်းငယ်အတွင်း ဖွင့်ပေးပါမယ်။ |
 | နမူနာ ကြည့်မယ် | 👉 <site address>/templates/wedding-invitation (ဖွင့်ကြည့်ပုံကို အဲဒီမှာ တန်းကြည့်လို့ရပါတယ်)                                                                                                             |
 | VPN လိုလား     | မလိုပါ။ မြန်မာပြည်ထဲမှာ ဖုန်းဒေတာနဲ့ တန်းဖွင့်လို့ရပါတယ်။                                                                                                                                                 |
@@ -152,6 +154,13 @@ Post every two or three days, in the evening (7 to 9 pm is when most people scro
 6. **Day 12:** trust post.
    > 🔒 Eain က သင့် KBZPay / WavePay PIN၊ စကားဝှက်၊ OTP ကုဒ်ကို ဘယ်တော့မှ မတောင်းပါ။ ငွေလွှဲရင် Eain website ပေါ်က နံပါတ်ကိုပဲ လွှဲပါ။ ငွေပေးပြီး ၂၄ နာရီအတွင်း မဖွင့်ပေးနိုင်ရင် ငွေပြန်အမ်းပါတယ်။
 7. **Day 14:** the first real customer story, only with their permission, names and faces as they agree.
+8. **Any week, and every week from February (shinbyu season is March to April):** the ceremony invitations.
+
+   > 🙏 ရှင်ပြုအလှူ၊ အလှူမင်္ဂလာ ဖိတ်စာကိုလည်း ဖုန်းထဲကနေ ပို့နိုင်ပါပြီ။ အစီအစဉ်၊ ရှင်လောင်းနာမည်၊ အလှူရှင်တွေ ထည့်ပြီး ဆွမ်းကျွေးဖို့ ဧည့်သည် ဘယ်နှယောက် လာမလဲ ကြိုသိနိုင်ပါတယ်။
+   > ရှင်ပြုဖိတ်စာ ၁၅,၀၀၀ ကျပ် · အလှူဖိတ်စာ ၁၀,၀၀၀ ကျပ်
+   > 👉 <site address>/templates/shinbyu
+
+   Use a real card made on the live site for the picture. Never show monks, Buddha images or a pagoda in a sales post or boosted ad: it reads as using religion to sell. The bowl, the umbrella, lotus flowers and the family's own words are enough.
 
 **Boosting:** after the first week, boost the best-performing video with 10,000 to 20,000 Ks for 5 days. Audience: Myanmar, ages 22 to 40, interests "Wedding", "Engagement". Stop if a week brings no messages.
 
