@@ -1,6 +1,6 @@
 # Eain Sales Kit (Facebook, Messenger, Partners)
 
-Ready-to-use Burmese text for the first weeks of selling, with short English notes for you. Replace everything in `<angle brackets>` before posting. Prices match the database today: Wedding Invitation 35,000 Ks, Engagement Party 25,000 Ks, Donation Ceremony (Ahlu) 10,000 Ks, Novitiation Ceremony (Shinbyu) 15,000 Ks, Valentine 3,000 Ks (seasonal, section 10). If you change them in `/admin/templates`, change them here too.
+Ready-to-use Burmese text for the first weeks of selling, with short English notes for you. Replace everything in `<angle brackets>` before posting. Every premium template is sold in kyat; points are retired. Prices match the database today: Wedding Invitation 35,000 Ks, Engagement Party 25,000 Ks, Novitiation Ceremony (Shinbyu) 15,000 Ks, Donation Ceremony (Ahlu) 10,000 Ks, Night Garden 5,000 Ks, Anniversary, Memory Timeline and Places We've Been 3,000 Ks each, Birthday Surprise 2,000 Ks, Valentine 3,000 Ks (seasonal, section 10). If you change them in `/admin/templates`, change them here too.
 
 **Rules for every post and message**
 
@@ -45,6 +45,7 @@ Use these facts; they are all in the app now.
 >
 > 💍 မင်္ဂလာဖိတ်စာ ၃၅,၀၀၀ ကျပ် · စေ့စပ်ပွဲ ဖိတ်စာ ၂၅,၀၀၀ ကျပ်
 > 🙏 ရှင်ပြုအလှူ ဖိတ်စာ ၁၅,၀၀၀ ကျပ် · အလှူဖိတ်စာ ၁၀,၀၀၀ ကျပ်
+> 💝 ညဥယျာဉ် ၅,၀၀၀ ကျပ် · နှစ်ပတ်လည်၊ အမှတ်တရ အချိန်ဇယား၊ ရောက်ခဲ့တဲ့ နေရာများ ၃,၀၀၀ ကျပ် · မွေးနေ့ အံ့အားသင့်စရာ ၂,၀၀၀ ကျပ်
 > 🎂 မွေးနေ့၊ ပွဲ၊ အိမ်တက် ဖိတ်စာနဲ့ ကတ်တွေ အခမဲ့
 >
 > ✔️ ဧည့်သည်က လာမလား၊ ဘယ်နှယောက်လဲ ဖိတ်စာထဲမှာတင် ဖြေ
@@ -70,12 +71,12 @@ In Meta Business Suite, **Inbox**, **Automations**.
 
 **Frequently asked questions (quick buttons):**
 
-| Button         | Reply                                                                                                                                                                                                     |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ဈေးနှုန်း      | မင်္ဂလာဖိတ်စာ ၃၅,၀၀၀ ကျပ်၊ စေ့စပ်ပွဲ ၂၅,၀၀၀ ကျပ်၊ ရှင်ပြုဖိတ်စာ ၁၅,၀၀၀ ကျပ်၊ အလှူဖိတ်စာ ၁၀,၀၀၀ ကျပ်ပါ။ တစ်ကြိမ်ပေးရုံပါ။ မွေးနေ့၊ ပွဲ၊ အိမ်တက် ဖိတ်စာတွေ အခမဲ့ပါ။                                         |
-| ဘယ်လို ဝယ်ရမလဲ | ၁။ <site address> မှာ အကောင့်ဖွင့်ပါ။ ၂။ မင်္ဂလာဖိတ်စာမှာ "ဝယ်ယူနည်း" ကို နှိပ်ပါ။ ၃။ KBZPay / WavePay နဲ့ လွှဲပြီး screenshot နဲ့ အကောင့် အီးမေးလ်ကို ဒီမှာ ပို့ပေးပါ။ နာရီအနည်းငယ်အတွင်း ဖွင့်ပေးပါမယ်။ |
-| နမူနာ ကြည့်မယ် | 👉 <site address>/templates/wedding-invitation (ဖွင့်ကြည့်ပုံကို အဲဒီမှာ တန်းကြည့်လို့ရပါတယ်)                                                                                                             |
-| VPN လိုလား     | မလိုပါ။ မြန်မာပြည်ထဲမှာ ဖုန်းဒေတာနဲ့ တန်းဖွင့်လို့ရပါတယ်။                                                                                                                                                 |
+| Button         | Reply                                                                                                                                                                                                                                    |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ဈေးနှုန်း      | မင်္ဂလာဖိတ်စာ ၃၅,၀၀၀ ကျပ်၊ စေ့စပ်ပွဲ ၂၅,၀၀၀ ကျပ်၊ ရှင်ပြုဖိတ်စာ ၁၅,၀၀၀ ကျပ်၊ အလှူဖိတ်စာ ၁၀,၀၀၀ ကျပ်ပါ။ ချစ်သူ၊ မွေးနေ့ ပရီမီယံ ကတ်တွေက ၂,၀၀၀ ကနေ ၅,၀၀၀ ကျပ်ပါ။ တစ်ကြိမ်ပေးရုံပါ။ မွေးနေ့၊ ပွဲ၊ အိမ်တက် ဖိတ်စာနဲ့ ရိုးရိုးကတ်တွေ အခမဲ့ပါ။ |
+| ဘယ်လို ဝယ်ရမလဲ | ၁။ <site address> မှာ အကောင့်ဖွင့်ပါ။ ၂။ မင်္ဂလာဖိတ်စာမှာ "ဝယ်ယူနည်း" ကို နှိပ်ပါ။ ၃။ KBZPay / WavePay နဲ့ လွှဲပြီး screenshot နဲ့ အကောင့် အီးမေးလ်ကို ဒီမှာ ပို့ပေးပါ။ နာရီအနည်းငယ်အတွင်း ဖွင့်ပေးပါမယ်။                                |
+| နမူနာ ကြည့်မယ် | 👉 <site address>/templates/wedding-invitation (ဖွင့်ကြည့်ပုံကို အဲဒီမှာ တန်းကြည့်လို့ရပါတယ်)                                                                                                                                            |
+| VPN လိုလား     | မလိုပါ။ မြန်မာပြည်ထဲမှာ ဖုန်းဒေတာနဲ့ တန်းဖွင့်လို့ရပါတယ်။                                                                                                                                                                                |
 
 ---
 

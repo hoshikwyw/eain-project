@@ -9,7 +9,7 @@ This guide takes Eain from your computer to a live site for the closed test. Fol
 
 | Part | Where         | What you get                                                      |
 | ---- | ------------- | ----------------------------------------------------------------- |
-| 1    | Supabase      | A new, empty production database with all 26 migrations           |
+| 1    | Supabase      | A new, empty production database with all 28 migrations           |
 | 2    | Vercel        | The live site at a free address such as `eain-project.vercel.app` |
 | 3    | Supabase      | Sign-in emails that work in Myanmar (Brevo)                       |
 | 4    | Google Cloud  | The "Continue with Google" button                                 |
@@ -50,7 +50,7 @@ Use a **new** project for production. Your current project (`ljtdeixurhaexzmgbiu
    ```
    powershell -File scripts/combine-migrations.ps1
    ```
-   It writes `supabase/ALL_MIGRATIONS.sql` with migrations 0001 to 0026 in one file.
+   It writes `supabase/ALL_MIGRATIONS.sql` with migrations 0001 to 0028 in one file.
 2. Open `supabase/ALL_MIGRATIONS.sql` in VS Code, press **Ctrl + A**, then **Ctrl + C**.
 3. In Supabase, left sidebar, **SQL Editor**, then **+ New query**. Paste with **Ctrl + V**. Click **Run**. If it warns about destructive operations, click **Run this query**.
 4. **You should see:** "Success. No rows returned." It can take up to a minute.
@@ -59,7 +59,7 @@ Use a **new** project for production. Your current project (`ljtdeixurhaexzmgbiu
    select count(*) as templates from public.templates;
    select slug, paid_only, price_mmk from public.templates where paid_only;
    ```
-   You should see about 23 templates, then five paid-only ones: the wedding invitation (35000), the engagement party (25000), ahlu (10000), shinbyu (15000) and valentine (3000).
+   You should see about 23 templates, then ten paid-only ones, every premium template with its kyat price: night garden (5000), birthday surprise (2000), anniversary (3000), memory timeline (3000), wedding invitation (35000), engagement party (25000), places we've been (3000), ahlu (10000), shinbyu (15000) and valentine (3000).
 6. Left sidebar, **Storage**. A bucket named `gift-media` exists and shows **Private**.
 
 `supabase/ALL_MIGRATIONS.sql` is generated; you can delete it afterwards. Do not run it twice on the same project.
@@ -189,7 +189,7 @@ You can add a Burmese line under each; keep the link exactly as it is.
 
 1. On your phone, open the site, **Sign up** with a real email you can read.
 2. **You should see** a "check your email" message. The email arrives from "Eain" within a minute (check Spam the first time and mark it Not spam).
-3. Tap the link. It opens the Eain site, signed in, and the dashboard shows **20 points**.
+3. Tap the link. It opens the Eain site, signed in, on the dashboard.
 
 **If no email arrives:** in Brevo, **Transactional**, **Logs** shows whether Supabase sent it. If it is not there, recheck 3.2 (the username is the Brevo login, not your Gmail).
 
@@ -248,7 +248,7 @@ Do section 4 of [LAUNCH.md](LAUNCH.md) on the live site, with two devices or one
 
 1. Sign up, make a gift from **Birthday Postcard** with a photo and a question, publish.
 2. Open the link in the private window, tap **Open your gift**, answer.
-3. Back on the dashboard: Opened, the answer, two notifications, points up by 20.
+3. Back on the dashboard: Opened, the answer, two notifications.
 4. Share the link to yourself on Messenger or Viber: the preview shows the generic text, never the message.
 5. Open the **Wedding Invitation**: it shows 35,000 Ks and **How to buy**. The buy page says buying opens soon (the wallet numbers come in part 8).
 6. In `/admin/users`, give your second account the Wedding Invitation with a test note. The second account can now use it.

@@ -6,8 +6,8 @@ Costs, at about 4,900 MMK to the dollar: about 6,500 MMK a month (the domain) wh
 
 ## 1. Supabase, before deploying
 
-- [ ] All migrations applied (`supabase/migrations/0001` to `0026`). Check in SQL editor: `select version, name from supabase_migrations.schema_migrations order by version;` (files pasted by hand do not appear there; check one of their changes instead, for 0023: `select slug, paid_only, price_mmk from public.templates where paid_only;` lists the wedding and engagement invitations).
-- [ ] Migrations go in **before** the code that needs them. The template picker and template pages read `paid_only` and `price_mmk` from 0023 and fail to load without them; saving an invitation needs 0022; saving a template in `/admin/templates` needs 0024; the ahlu and shinbyu invitations appear once 0025 is in, and the Valentine template once 0026 is in.
+- [ ] All migrations applied (`supabase/migrations/0001` to `0028`). Check in SQL editor: `select version, name from supabase_migrations.schema_migrations order by version;` (files pasted by hand do not appear there; check one of their changes instead, for 0023: `select slug, paid_only, price_mmk from public.templates where paid_only;` lists the wedding and engagement invitations).
+- [ ] Migrations go in **before** the code that needs them. The template picker and template pages read `paid_only` and `price_mmk` from 0023 and fail to load without them; saving an invitation needs 0022; saving a template in `/admin/templates` needs 0024; the ahlu and shinbyu invitations appear once 0025 is in, and the Valentine template once 0026 is in; 0027 prices the remaining premium templates in kyat, and 0028 retires points (no welcome bonus, nothing earned) to match the app, which no longer shows them.
 - [ ] Authentication → Sign In / Providers → Email: Confirm email is your choice (ON in production). The free mailer sends only a few emails per hour.
 - [ ] Authentication → Sign In / Providers → Google: enabled with the Client ID and secret from Google Cloud, the Client ID also in Authorized Client IDs, and `NEXT_PUBLIC_GOOGLE_CLIENT_ID` set in Vercel.
 - [ ] Authentication → URL Configuration: Site URL set to the production URL (email links are built from it), and Redirect URLs contain `https://<your-domain>/**` (keep `http://localhost:5173/**` for development). Only links from the older `{{ .ConfirmationURL }}` templates depend on the allow-list.
@@ -43,11 +43,11 @@ Costs, at about 4,900 MMK to the dollar: about 6,500 MMK a month (the domain) wh
 
 Run through with two devices, or one browser plus a private window.
 
-- [ ] Sign up with email. Dashboard opens with 20 points.
+- [ ] Sign up with email. The dashboard opens, with no points anywhere (retired in 0028).
 - [ ] Sign in with Google on a second account.
 - [ ] Create a gift from Birthday Postcard, add a photo, add a question, save, publish.
 - [ ] Copy the link and open it in the private window. Tap "Open your gift". Answer the question.
-- [ ] Back on the dashboard: gift shows Opened, timeline has times, Responses shows the answer, Notifications has two entries, points went up by 20 in all (5 for publishing, 10 for the open, and the reply stops at the daily cap of 20).
+- [ ] Back on the dashboard: gift shows Opened, timeline has times, Responses shows the answer, Notifications has two entries.
 - [ ] Share the link into a Messenger or Viber chat to yourself. The preview shows the generic text and the Eain image, never the message. Opening from the chat still shows "Not opened" until the button is tapped.
 - [ ] Regenerate the link. Old link shows "not available". Delete the gift. New link shows "not available".
 - [ ] Open the Wedding Invitation in the picker: it shows its kyat price and "How to buy", never an unlock button. The buy page shows your wallet numbers and contact link.
@@ -104,7 +104,7 @@ The closed test can run without these. The first kyat taken needs all of them.
 
 ## 9. Known gaps for after launch
 
-Done since the first version of this list: daily caps on earned points (now 20 a day), account self-deletion, and the daily cleanup of deleted gifts' photos (the keepalive cron).
+Done since the first version of this list: account self-deletion and the daily cleanup of deleted gifts' photos (the keepalive cron). Points were retired on 2026-11-25: every premium template is sold in kyat.
 
 - Payment straight from KBZPay or WavePay, server-verified, once about 50 sales have gone through by hand.
 - Ahlu, shinbyu and kathina invitation templates.

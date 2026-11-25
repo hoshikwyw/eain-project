@@ -18,7 +18,7 @@ Everything is free tier. Nothing is paid.
 | Part                     | Service                   | Needed for                                 | Cost |
 | ------------------------ | ------------------------- | ------------------------------------------ | ---- |
 | A. Foundation            | None                      | Landing page, theme, language              | $0   |
-| B. Accounts and database | Supabase (hosted, free)   | Sign up, log in, gifts, points             | $0   |
+| B. Accounts and database | Supabase (hosted, free)   | Sign up, log in, gifts, purchases          | $0   |
 | B. Accounts              | Google Cloud OAuth client | "Continue with Google" button              | $0   |
 | C onward                 | Same Supabase project     | Photos (Storage), responses, notifications | $0   |
 | Deploy                   | Vercel Hobby              | Public URL such as eain.vercel.app         | $0   |
@@ -48,7 +48,7 @@ The project ref is the part before `.supabase.co` in the project URL. Login open
 
 **If the CLI cannot reach the database** (the direct host is IPv6 only, and some networks also block the pooler), run the migrations by hand instead: `powershell -File scripts/combine-migrations.ps1` writes `supabase/ALL_MIGRATIONS.sql`. Paste that file into the Supabase SQL editor and run it once on an empty project. It records the versions, so a later `db push` skips them. For a new migration added afterwards, paste only that file's contents.
 
-7. Restart `pnpm dev` so the new `.env.local` is read. Sign up at http://localhost:5173/auth/signup. The new profile receives 20 welcome points.
+7. Restart `pnpm dev` so the new `.env.local` is read. Sign up at http://localhost:5173/auth/signup. The new profile starts with no points: points were retired (migration 0028) and premium templates are sold in kyat.
 
 8. Run the tests. They work against this Supabase project and the running dev server, create throwaway users (emails ending in `@example.com`) and delete them at the end. The env values are read from `.env.local`, or from `.env` if that is the file you use.
 
@@ -90,7 +90,7 @@ The app already contains the button. It is drawn by Google's own sign-in library
 5. Put the Client ID in `.env.local` as `NEXT_PUBLIC_GOOGLE_CLIENT_ID`, and in the Vercel project settings.
 6. Reload the login page. The Google button appears within five minutes, or immediately after restarting `pnpm dev`.
 
-A Google sign-up creates the profile through the same trigger as email sign-up, using the Google name and picture, and grants the welcome points.
+A Google sign-up creates the profile through the same trigger as email sign-up, using the Google name and picture.
 
 Facebook sign-in is deferred. It needs Meta business verification.
 
