@@ -18,6 +18,8 @@ const INVITATIONS = [
   "housewarming",
   "engagement-party",
   "farewell-party",
+  "ahlu",
+  "shinbyu",
 ];
 
 describe("invitation templates", () => {

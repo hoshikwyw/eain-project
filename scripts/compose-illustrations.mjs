@@ -778,6 +778,111 @@ const scenes = {
       over: svg(""),
     };
   },
+  // Ahlu: the couple beside a lacquered alms bowl on its stand, lotus flowers and gold sparkles.
+  // Objects only: no monks and no Buddha images, out of respect.
+  ahlu: async () => {
+    const couple = await bird("lovebirds", 470);
+    const x = Math.round(W / 2 + 10);
+    const y = H - couple.h - 30;
+    const bx = 330;
+    const bowl =
+      `<g transform="translate(${bx} ${H - 40})">` +
+      // Stand, then a round lacquer bowl with a domed lid of the same width, a gold seam and a small spire.
+      `<path d="M-80 0 l18 -56 h124 l18 56 z" fill="#7a2a22"/>` +
+      `<rect x="-70" y="-66" width="140" height="12" rx="5" fill="#d9a441"/>` +
+      `<path d="M-150 -170 a150 112 0 0 0 300 0 z" fill="#2f1d1a"/>` +
+      `<path d="M-150 -170 a150 120 0 0 1 300 0 z" fill="#3b2622"/>` +
+      `<path d="M-150 -170 h300" stroke="#d9a441" stroke-width="9"/>` +
+      `<path d="M-112 -218 q112 -40 224 0" stroke="#d9a441" stroke-width="4" fill="none" opacity="0.7"/>` +
+      `<path d="M-16 -286 l16 -46 l16 46 z" fill="#d9a441"/>` +
+      `<rect x="-24" y="-292" width="48" height="10" rx="5" fill="#d9a441"/>` +
+      `</g>`;
+    const lotus = (lx, ly, s) => {
+      let out = "";
+      for (const [r, c] of [
+        [-50, "#f4a3b5"],
+        [50, "#f4a3b5"],
+        [-25, "#f7c0cc"],
+        [25, "#f7c0cc"],
+        [0, "#fbd5dd"],
+      ])
+        out += `<ellipse cx="${lx}" cy="${ly - s * 0.45}" rx="${s * 0.2}" ry="${s * 0.5}" fill="${c}" transform="rotate(${r} ${lx} ${ly})"/>`;
+      return (
+        out +
+        `<ellipse cx="${lx}" cy="${ly + 4}" rx="${s * 0.55}" ry="${s * 0.12}" fill="#8fd6b4"/>`
+      );
+    };
+    return {
+      under: svg(
+        shadow(bx, H - 30, 300) +
+          shadow(x + couple.w / 2, H - 30, couple.w) +
+          bowl +
+          lotus(110, H - 46, 110) +
+          lotus(560, H - 46, 90) +
+          scatter("sparkle", 16, ["#e2b25a", "#ffd27a"], 1001, {
+            band: [60, 440],
+            size: [20, 42],
+            opacity: [0.6, 1],
+            keepOut: [x + 20, y + 20, x + couple.w - 20, H],
+          }),
+      ),
+      layers: [{ input: couple.buf, left: x, top: y }],
+      over: svg(""),
+    };
+  },
+  // Shinbyu: the couple under a golden ceremonial umbrella, lotus at its foot, gold sparkles.
+  shinbyu: async () => {
+    const couple = await bird("lovebirds", 440);
+    const x = Math.round((W - couple.w) / 2);
+    const y = H - couple.h - 30;
+    const cx = W / 2;
+    let scallops = "";
+    for (let i = 0; i < 10; i++) {
+      const sx = cx - 300 + i * 60;
+      scallops += `<path d="M${sx} 250 q30 34 60 0" fill="#e2b25a"/>`;
+    }
+    const umbrella =
+      `<path d="M${cx - 300} 250 C ${cx - 260} 90, ${cx + 260} 90, ${cx + 300} 250 z" fill="#d9a441"/>` +
+      `<path d="M${cx - 240} 222 C ${cx - 200} 120, ${cx + 200} 120, ${cx + 240} 222" stroke="#f3d48a" stroke-width="8" fill="none"/>` +
+      scallops +
+      `<path d="M${cx - 300} 250 h600" stroke="#b9852e" stroke-width="6"/>` +
+      `<rect x="${cx - 7}" y="250" width="14" height="${y - 230}" rx="6" fill="#b9852e"/>` +
+      // A tapering spire of three tiers at the top, as on a ceremonial umbrella (never a cross).
+      `<path d="M${cx - 30} 124 h60 l-8 -16 h-44 z" fill="#b9852e"/>` +
+      `<path d="M${cx - 20} 108 h40 l-7 -16 h-26 z" fill="#d9a441"/>` +
+      `<path d="M${cx - 12} 92 h24 l-12 -40 z" fill="#f3d48a"/>`;
+    const lotus = (lx, ly, s) => {
+      let out = "";
+      for (const [r, c] of [
+        [-50, "#f4a3b5"],
+        [50, "#f4a3b5"],
+        [-25, "#f7c0cc"],
+        [25, "#f7c0cc"],
+        [0, "#fbd5dd"],
+      ])
+        out += `<ellipse cx="${lx}" cy="${ly - s * 0.45}" rx="${s * 0.2}" ry="${s * 0.5}" fill="${c}" transform="rotate(${r} ${lx} ${ly})"/>`;
+      return (
+        out +
+        `<ellipse cx="${lx}" cy="${ly + 4}" rx="${s * 0.55}" ry="${s * 0.12}" fill="#8fd6b4"/>`
+      );
+    };
+    return {
+      under: svg(
+        shadow(x + couple.w / 2, H - 30, couple.w) +
+          umbrella +
+          lotus(170, H - 46, 120) +
+          lotus(1030, H - 46, 120) +
+          scatter("sparkle", 16, ["#e2b25a", "#ffd27a"], 1101, {
+            band: [40, 520],
+            size: [20, 42],
+            opacity: [0.6, 1],
+            keepOut: [cx - 320, 40, cx + 320, H],
+          }),
+      ),
+      layers: [{ input: couple.buf, left: x, top: y }],
+      over: svg(""),
+    };
+  },
   // Places we've been: the couple at the end of a dashed route that loops between three map pins.
   "places-weve-been": async () => {
     const couple = await bird("lovebirds", 480);

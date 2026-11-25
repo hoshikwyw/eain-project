@@ -58,7 +58,17 @@ export type TemplateStyle = {
 };
 
 /** The line drawings an invitation can carry at its head. */
-export type Motif = "rings" | "glasses" | "rattle" | "cap" | "house" | "plane";
+export type Motif =
+  | "rings"
+  | "glasses"
+  | "rattle"
+  | "cap"
+  | "house"
+  | "plane"
+  /** A lacquered alms bowl on its stand, for an ahlu (donation ceremony). */
+  | "bowl"
+  /** A ceremonial umbrella, carried over the novice in a shinbyu procession. */
+  | "umbrella";
 
 const illustrationFor = (slug: string) => `/brand/illustrations/${slug}.webp`;
 
@@ -630,6 +640,126 @@ const invitations: Record<string, TemplateDefinition> = {
       rsvp(l, my(l, "Can you come?", "လာနိုင်မလား?")),
       headcount(l),
       final(my(l, "See you soon,", "မကြာခင် ပြန်တွေ့မယ်")),
+    ],
+  },
+  // Myanmar ceremonies. Both are formal: the wedding design in gold, the
+  // programme as a timeline (times in the date line), the hosts in the
+  // message, and the guest count so the family knows how many to feed.
+  ahlu: {
+    design: "wedding",
+    motif: "bowl",
+    decoration: "sparkles",
+    layout: "scroll",
+    defaultVariant: "ivory",
+    defaultSections: (l) => [
+      cover(
+        my(l, "A merit-making ceremony", "ကုသိုလ်ရေး အလှူမင်္ဂလာ"),
+        my(
+          l,
+          "Our family warmly invites you to our donation ceremony.",
+          "ကျွန်ုပ်တို့ မိသားစု ကျင်းပမည့် အလှူမင်္ဂလာသို့ ကြွရောက်ချီးမြှင့်ပါရန် လေးစားစွာ ဖိတ်ကြားအပ်ပါသည်။",
+        ),
+      ),
+      event({
+        date: my(l, "Sunday 18 January", "ဇန်နဝါရီ ၁၈ ရက်၊ တနင်္ဂနွေနေ့"),
+        time: my(l, "From 7 am", "နံနက် ၇ နာရီမှစ၍"),
+        place: my(l, "Our home, Bahan, Yangon", "နေအိမ်၊ ဗဟန်းမြို့နယ်၊ ရန်ကုန်"),
+        note: my(
+          l,
+          "A meal is offered to all guests.",
+          "ဧည့်သည်တော်များကို ဆွမ်းကျွေး ဧည့်ခံပါမည်။",
+        ),
+      }),
+      timeline([
+        {
+          date: my(l, "7:00 am", "နံနက် ၇:၀၀"),
+          title: my(
+            l,
+            "Monks arrive, paritta chanting",
+            "သံဃာတော်များ ကြွရောက်၊ ပရိတ်တရားတော် နာယူ",
+          ),
+          text: "",
+        },
+        {
+          date: my(l, "9:00 am", "နံနက် ၉:၀၀"),
+          title: my(l, "Offering of the meal to the monks", "ဆွမ်းဆက်ကပ် လှူဒါန်း"),
+          text: "",
+        },
+        {
+          date: my(l, "9:30 am", "နံနက် ၉:၃၀"),
+          title: my(l, "Guests are served", "ဧည့်သည်တော်များ ဧည့်ခံကျွေးမွေး"),
+          text: "",
+        },
+      ]),
+      message(
+        my(
+          l,
+          "Hosts: U Maung Maung, Daw Aye Aye and family",
+          "အလှူရှင် − ဦးမောင်မောင် + ဒေါ်အေးအေး နှင့် သားသမီးများ",
+        ),
+      ),
+      guestName(l),
+      rsvp(l, my(l, "Will you be able to join us?", "ကြွရောက်နိုင်ပါမည်လား?")),
+      headcount(l),
+      final(my(l, "With gratitude,", "သာဓု သာဓု သာဓု")),
+    ],
+  },
+  shinbyu: {
+    design: "wedding",
+    motif: "umbrella",
+    decoration: "sparkles",
+    layout: "scroll",
+    defaultVariant: "champagne",
+    defaultSections: (l) => [
+      cover(
+        my(l, "A novitiation ceremony", "ရှင်ပြုအလှူ မင်္ဂလာ"),
+        my(
+          l,
+          "We warmly invite you to the shinbyu of our son.",
+          "ကျွန်ုပ်တို့၏ သားရတနာ ရှင်ပြုအလှူမင်္ဂလာသို့ ကြွရောက်ချီးမြှင့်ပါရန် လေးစားစွာ ဖိတ်ကြားအပ်ပါသည်။",
+        ),
+      ),
+      message(
+        my(l, "Novice-to-be: Maung Htet Aung, aged 9", "ရှင်လောင်း − မောင်ထက်အောင် (အသက် ၉ နှစ်)"),
+      ),
+      event({
+        date: my(l, "Saturday 21 March", "မတ် ၂၁ ရက်၊ စနေနေ့"),
+        time: my(l, "From 6 am", "နံနက် ၆ နာရီမှစ၍"),
+        place: my(l, "Shwe Taung Monastery, Mandalay", "ရွှေတောင်ကျောင်းတိုက်၊ မန္တလေး"),
+        note: my(
+          l,
+          "A meal is offered to all guests.",
+          "ဧည့်သည်တော်များကို ဆွမ်းကျွေး ဧည့်ခံပါမည်။",
+        ),
+      }),
+      timeline([
+        {
+          date: my(l, "6:00 am", "နံနက် ၆:၀၀"),
+          title: my(l, "Procession of the novice-to-be", "ရှင်လောင်းလှည့်"),
+          text: "",
+        },
+        {
+          date: my(l, "9:00 am", "နံနက် ၉:၀၀"),
+          title: my(
+            l,
+            "Offering of the meal, guests are served",
+            "ဆွမ်းဆက်ကပ်လှူဒါန်း၊ ဧည့်ခံကျွေးမွေး",
+          ),
+          text: "",
+        },
+        {
+          date: my(l, "11:00 am", "နံနက် ၁၁:၀၀"),
+          title: my(l, "Robing as a novice", "သင်္ကန်းဆက်ကပ်၊ ရှင်ပြုခြင်း"),
+          text: "",
+        },
+      ]),
+      guestName(l),
+      rsvp(l, my(l, "Will you be able to join us?", "ကြွရောက်နိုင်ပါမည်လား?")),
+      headcount(l),
+      final(
+        my(l, "With gratitude,", "သာဓု သာဓု သာဓု"),
+        my(l, "U Kyaw Win, Daw Hnin Si and family", "ဦးကျော်ဝင်း + ဒေါ်နှင်းဆီ နှင့် မိသားစု"),
+      ),
     ],
   },
 };

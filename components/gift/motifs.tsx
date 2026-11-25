@@ -53,6 +53,23 @@ export function InvitationMotif({ kind, className }: { kind: Motif; className?: 
           <path d="M42 18 v-5 h4 v9" />
         </>
       )}
+      {kind === "bowl" && (
+        <>
+          <path d="M12 32 a20 13 0 0 1 40 0" />
+          <path d="M12 32 a20 12 0 0 0 40 0" />
+          <path d="M12 32 h40" opacity="0.55" />
+          <path d="M29 19.5 l3 -8 l3 8" />
+          <path d="M24 44 l-2 8 h20 l-2 -8" />
+        </>
+      )}
+      {kind === "umbrella" && (
+        <>
+          <path d="M8 30 c4 -15 44 -15 48 0" />
+          <path d="M8 30 q4 5 8 0 q4 5 8 0 q4 5 8 0 q4 5 8 0 q4 5 8 0 q4 5 8 0" />
+          <path d="M28 17 h8 l-4 -9 z M32 30 v26" />
+          <path d="M20 24 l-1 6 M44 24 l1 6" opacity="0.55" />
+        </>
+      )}
       {kind === "plane" && (
         <>
           <path d="M8 30 l48 -18 l-14 42 l-8 -16 z M34 38 l22 -26" />
