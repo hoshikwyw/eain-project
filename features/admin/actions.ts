@@ -110,6 +110,12 @@ export async function updateTemplateDetails(formData: FormData): Promise<void> {
       isFeatured: z.boolean(),
       isPremium: z.boolean(),
       pointPrice: z.coerce.number().int().min(0).max(100000),
+      paidOnly: z.boolean(),
+      // Empty means no kyat price; only a paid-only template needs one.
+      priceMmk: z.preprocess(
+        (v) => (v === "" || v === null ? null : v),
+        z.coerce.number().int().min(100).max(10000000).nullable(),
+      ),
     })
     .safeParse({
       templateId,
@@ -123,10 +129,14 @@ export async function updateTemplateDetails(formData: FormData): Promise<void> {
       isFeatured: formData.get("isFeatured") === "on",
       isPremium: formData.get("isPremium") === "on",
       pointPrice: formData.get("pointPrice") ?? 0,
+      paidOnly: formData.get("paidOnly") === "on",
+      priceMmk: formData.get("priceMmk") ?? null,
     });
   if (!parsed.success) back(editPath, "error", "invalid");
   const v = parsed.data;
   if (v.isPremium && v.pointPrice < 1) back(editPath, "error", "premiumPrice");
+  if (v.paidOnly && !v.isPremium) back(editPath, "error", "paidPremium");
+  if (v.paidOnly && v.priceMmk === null) back(editPath, "error", "paidPrice");
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("admin_update_template_details", {
@@ -141,6 +151,8 @@ export async function updateTemplateDetails(formData: FormData): Promise<void> {
     p_is_featured: v.isFeatured,
     p_is_premium: v.isPremium,
     p_point_price: v.pointPrice,
+    p_paid_only: v.paidOnly,
+    p_price_mmk: v.paidOnly ? v.priceMmk : null,
   });
   revalidatePath("/", "layout");
   if (error) back(editPath, "error", "failed");

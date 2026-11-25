@@ -393,6 +393,8 @@ export interface Database {
           p_is_featured: boolean;
           p_is_premium: boolean;
           p_point_price: number;
+          p_paid_only: boolean;
+          p_price_mmk: number | null;
         };
         Returns: undefined;
       };

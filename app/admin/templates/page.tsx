@@ -46,10 +46,12 @@ export default async function AdminTemplatesPage() {
                   {tp.is_active ? t("templates.active") : t("templates.inactive")}
                 </Chip>
                 {tp.is_featured && <Chip tone="brand">{t("templates.featured")}</Chip>}
-                <Chip tone={tp.is_premium ? "primary" : "neutral"}>
-                  {tp.is_premium
-                    ? `${t("templates.premium")} · ${tp.point_price}`
-                    : t("templates.free")}
+                <Chip tone={tp.paid_only ? "gold" : tp.is_premium ? "primary" : "neutral"}>
+                  {tp.paid_only
+                    ? `${t("templates.paidOnly")} · ${tp.price_mmk ?? "?"} Ks`
+                    : tp.is_premium
+                      ? `${t("templates.premium")} · ${tp.point_price}`
+                      : t("templates.free")}
                 </Chip>
                 <Chip tone="neutral">{tp.categoryName}</Chip>
                 {!isAvailableTemplate(tp.slug) && (

@@ -6,8 +6,8 @@ Costs, at about 4,900 MMK to the dollar: about 6,500 MMK a month (the domain) wh
 
 ## 1. Supabase, before deploying
 
-- [ ] All migrations applied (`supabase/migrations/0001` to `0023`). Check in SQL editor: `select version, name from supabase_migrations.schema_migrations order by version;` (files pasted by hand do not appear there; check one of their changes instead, for 0023: `select slug, paid_only, price_mmk from public.templates where paid_only;` lists the wedding and engagement invitations).
-- [ ] Migrations go in **before** the code that needs them. The template picker and template pages read `paid_only` and `price_mmk` from 0023 and fail to load without them; saving an invitation needs 0022.
+- [ ] All migrations applied (`supabase/migrations/0001` to `0024`). Check in SQL editor: `select version, name from supabase_migrations.schema_migrations order by version;` (files pasted by hand do not appear there; check one of their changes instead, for 0023: `select slug, paid_only, price_mmk from public.templates where paid_only;` lists the wedding and engagement invitations).
+- [ ] Migrations go in **before** the code that needs them. The template picker and template pages read `paid_only` and `price_mmk` from 0023 and fail to load without them; saving an invitation needs 0022; saving a template in `/admin/templates` needs 0024.
 - [ ] Authentication → Sign In / Providers → Email: Confirm email is your choice (ON in production). The free mailer sends only a few emails per hour.
 - [ ] Authentication → Sign In / Providers → Google: enabled with the Client ID and secret from Google Cloud, the Client ID also in Authorized Client IDs, and `NEXT_PUBLIC_GOOGLE_CLIENT_ID` set in Vercel.
 - [ ] Authentication → URL Configuration: Site URL set to the production URL (email links are built from it), and Redirect URLs contain `https://<your-domain>/**` (keep `http://localhost:5173/**` for development). Only links from the older `{{ .ConfirmationURL }}` templates depend on the allow-list.
@@ -88,7 +88,7 @@ The closed test can run without these. The first kyat taken needs all of them.
 - [x] Terms and Privacy cover paid templates (2026-11-25, both languages): price in kyat before paying, unlock within a few hours, full refund if not unlocked within 24 hours or broken and not fixed within 7 days, never a wallet PIN. The buy page links to it. A lawyer reviews it with the rest (section 6).
 - [ ] Wallet numbers and the contact link set in Vercel (section 3). Send a test payment to yourself and read the buy page on a phone.
 
-**Selling a template by hand.** The customer pays by KBZPay or WavePay and sends the screenshot with their account email. Check the money arrived in the wallet app, not only the screenshot. Find the account in `/admin/users`, open it, and give the template under Premium templates with a note such as "KBZPay 25 Nov, last 4 digits 1234". The note is kept in the audit log. Prices and the paid-only flag are changed in the SQL editor for now: `update public.templates set price_mmk = 35000 where slug = 'wedding-invitation';`
+**Selling a template by hand.** The customer pays by KBZPay or WavePay and sends the screenshot with their account email. Check the money arrived in the wallet app, not only the screenshot. Find the account in `/admin/users`, open it, and give the template under Premium templates with a note such as "KBZPay 25 Nov, last 4 digits 1234". The note is kept in the audit log. Prices and the paid-only flag are set on each template's page in `/admin/templates` (Pricing: Paid only, Price in kyat).
 
 ## 8. Monitoring, weekly
 
@@ -101,7 +101,6 @@ The closed test can run without these. The first kyat taken needs all of them.
 
 Done since the first version of this list: daily caps on earned points (now 20 a day), account self-deletion, and the daily cleanup of deleted gifts' photos (the keepalive cron).
 
-- Paid-only and the kyat price set from the admin template page (SQL editor for now).
 - Payment straight from KBZPay or WavePay, server-verified, once about 50 sales have gone through by hand.
 - Ahlu, shinbyu and kathina invitation templates.
 - Email or push notifications.

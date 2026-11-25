@@ -152,6 +152,84 @@ describe("earn cap and account deletion", () => {
     assert.ok(freeGrant.error, "a free template is not granted");
   });
 
+  it("an admin sets paid only and the kyat price; the database checks both", async () => {
+    // Needs migration 0024. Edits the engagement invitation and puts it back.
+    const { data: before } = await service
+      .from("templates")
+      .select("*")
+      .eq("slug", "engagement-party")
+      .single();
+    const row = before as Record<string, unknown>;
+    const args = (paidOnly: boolean, priceMmk: number | null, isPremium = true) => ({
+      p_template_id: row.id,
+      p_name_en: row.name_en,
+      p_name_my: row.name_my,
+      p_description_en: row.description_en,
+      p_description_my: row.description_my,
+      p_category_id: row.category_id,
+      p_sort_order: row.sort_order,
+      p_is_active: row.is_active,
+      p_is_featured: row.is_featured,
+      p_is_premium: isPremium,
+      p_point_price: isPremium ? Math.max(Number(row.point_price), 1) : 0,
+      p_paid_only: paidOnly,
+      p_price_mmk: priceMmk,
+    });
+    const read = async () =>
+      (
+        await service
+          .from("templates")
+          .select("paid_only, price_mmk")
+          .eq("id", row.id as string)
+          .single()
+      ).data;
+    try {
+      const asMember = await member.client.rpc("admin_update_template_details", args(true, 30000));
+      assert.ok(asMember.error, "a member cannot edit templates");
+
+      const set = await adminUser.client.rpc("admin_update_template_details", args(true, 30000));
+      assert.equal(set.error, null, set.error?.message);
+      assert.deepEqual(await read(), { paid_only: true, price_mmk: 30000 });
+
+      const noPrice = await adminUser.client.rpc("admin_update_template_details", args(true, null));
+      assert.match(noPrice.error?.message ?? "", /kyat price/);
+      const tooLow = await adminUser.client.rpc("admin_update_template_details", args(true, 50));
+      assert.match(tooLow.error?.message ?? "", /kyat price/);
+      const notPremium = await adminUser.client.rpc(
+        "admin_update_template_details",
+        args(true, 30000, false),
+      );
+      assert.match(notPremium.error?.message ?? "", /needs premium/);
+      assert.deepEqual(
+        await read(),
+        { paid_only: true, price_mmk: 30000 },
+        "refused edits change nothing",
+      );
+
+      const off = await adminUser.client.rpc("admin_update_template_details", args(false, 30000));
+      assert.equal(off.error, null, off.error?.message);
+      assert.deepEqual(
+        await read(),
+        { paid_only: false, price_mmk: null },
+        "no kyat price unless paid only",
+      );
+    } finally {
+      await adminUser.client.rpc(
+        "admin_update_template_details",
+        args(
+          Boolean(row.paid_only),
+          (row.price_mmk as number | null) ?? null,
+          Boolean(row.is_premium),
+        ),
+      );
+    }
+    assert.deepEqual(
+      await read(),
+      { paid_only: row.paid_only, price_mmk: row.price_mmk },
+      "put back",
+    );
+  });
+
   it("settings shows the delete form to members", async () => {
     const res = await fetch(`${site}/dashboard/settings`, {
       headers: { cookie: cookieFor(member.session) },

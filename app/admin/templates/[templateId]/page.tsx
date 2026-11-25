@@ -173,6 +173,31 @@ export default async function AdminTemplateEditPage({
                     className="max-w-40"
                   />
                 </Field>
+                <div className="flex flex-col gap-3 border-t border-border pt-3">
+                  <Toggle
+                    name="paidOnly"
+                    defaultChecked={tp.paid_only}
+                    label={t("templates.paidOnly")}
+                    hint={t("templates.fields.paidOnlyHint")}
+                  />
+                  <Field
+                    label={t("templates.priceMmk")}
+                    htmlFor="priceMmk"
+                    hint={t("templates.fields.priceMmkHint")}
+                  >
+                    <Input
+                      id="priceMmk"
+                      name="priceMmk"
+                      type="number"
+                      inputMode="numeric"
+                      min={100}
+                      max={10000000}
+                      step={100}
+                      defaultValue={tp.price_mmk ?? ""}
+                      className="max-w-40"
+                    />
+                  </Field>
+                </div>
               </fieldset>
 
               <SubmitButton className="self-start">{t("templates.save")}</SubmitButton>
