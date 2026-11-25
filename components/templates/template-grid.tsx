@@ -25,6 +25,10 @@ export type TemplateCard = {
   category: string;
   isPremium: boolean;
   pointPrice: number;
+  /** Bought with money, never with points. */
+  paidOnly: boolean;
+  /** Kyat price of a paid-only template. */
+  priceMmk: number | null;
   /** Free, or premium and already paid for by this user. */
   unlocked: boolean;
   /** Has a layout in code and is unlocked. */
@@ -145,7 +149,9 @@ export function TemplateGrid({
                   {template.isPremium ? (
                     <Chip tone="gold" className="shrink-0">
                       <Crown className="size-3" />
-                      {format.number(template.pointPrice, "digits")}
+                      {template.paidOnly && template.priceMmk
+                        ? t("priceKs", { price: template.priceMmk })
+                        : format.number(template.pointPrice, "digits")}
                     </Chip>
                   ) : (
                     <Chip tone="success" className="shrink-0">
@@ -206,6 +212,17 @@ function TemplateAction({
   }
 
   if (template.isPremium && !template.unlocked) {
+    // Points never unlock it: the buy page says how to pay.
+    if (template.paidOnly) {
+      return (
+        <Button asChild variant="soft" className="w-full">
+          <Link href={`/dashboard/buy/${template.slug}`}>
+            <Lock />
+            {t("howToBuy")}
+          </Link>
+        </Button>
+      );
+    }
     if (mode === "browse" || pointsBalance === null) {
       return (
         <Button asChild variant="secondary" className="w-full">

@@ -243,6 +243,8 @@ export interface Template extends Record<string, unknown> {
   is_premium: boolean;
   /** Points never unlock it; Eain grants it after a payment. */
   paid_only: boolean;
+  /** Price in kyat for a paid-only template. */
+  price_mmk: number | null;
   point_price: number;
   default_theme: Json;
   default_sections: Json;

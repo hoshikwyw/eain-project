@@ -199,7 +199,9 @@
       "premium": "This is a premium template. Unlock it with points to use it.",
       "points": "Not enough points for that template yet.",
       "unknown": "Could not create the gift. Please try again."
-    }
+    },
+    "howToBuy": "How to buy",
+    "priceKs": "{price, number} Ks"
   },
   "editor": {
     "guest": {
@@ -628,7 +630,8 @@
         "suspended": "Account suspended. They can no longer sign in.",
         "unsuspended": "Account restored. They can sign in again.",
         "deleted": "Account deleted with its gifts, photos and replies.",
-        "giftsOffline": "Their published gifts were taken offline and they were notified."
+        "giftsOffline": "Their published gifts were taken offline and they were notified.",
+        "granted": "Template given. It is in their templates now."
       },
       "error": {
         "invalid": "Please check the form.",
@@ -674,8 +677,14 @@
       "active": "Active",
       "suspended": "Suspended",
       "back": "All users",
-      "roles": { "user": "User", "admin": "Admin" },
-      "providers": { "email": "Email", "google": "Google" },
+      "roles": {
+        "user": "User",
+        "admin": "Admin"
+      },
+      "providers": {
+        "email": "Email",
+        "google": "Google"
+      },
       "lastSeen": "last signed in {when}",
       "neverSignedIn": "never signed in",
       "giftsCount": "{count, plural, one {# gift} other {# gifts}}",
@@ -719,7 +728,17 @@
         "deleteHint": "Permanently removes the account, its gifts, photos, replies, notifications and points. This cannot be undone.",
         "typeEmail": "Type {email} to confirm",
         "delete": "Delete account permanently",
-        "deleteConfirm": "Delete this account and everything in it? This cannot be undone."
+        "deleteConfirm": "Delete this account and everything in it? This cannot be undone.",
+        "templatesTitle": "Premium templates",
+        "grantHint": "After a payment is confirmed, give the template here. It is logged.",
+        "noTemplates": "None yet.",
+        "paid": "Paid",
+        "withPoints": "Points",
+        "grantTemplate": "Template to give",
+        "paidOnly": "paid only",
+        "grantNote": "Payment note, e.g. KBZPay 25 Nov, last 4 digits",
+        "grantConfirm": "Give this template to {email}? Do this only after the payment has arrived.",
+        "grant": "Give template"
       }
     },
     "templates": {
@@ -857,7 +876,8 @@
       "points": "{points} points",
       "reply": "Replies",
       "replyText": "They can answer, no account needed"
-    }
+    },
+    "paidNote": "A paid template. Pay by KBZPay or WavePay and we unlock it for your account."
   },
   "auth": {
     "signupIntro": "An account keeps your gifts, gives each one a private link, and shows you when it is opened.",
@@ -1157,5 +1177,22 @@
         "error": "Your account could not be deleted. Nothing was removed. Please try again."
       }
     }
+  },
+  "buy": {
+    "back": "Back to templates",
+    "title": "Buy {name}",
+    "subtitle": "This template is bought with money, not points. It takes three steps.",
+    "price": "Price",
+    "soon": "Buying this template opens soon. Until then, write to us from the Contact page.",
+    "step1Title": "Send {price, number} Ks by KBZPay or WavePay",
+    "accountName": "Account name: {name}",
+    "step2Title": "Send us the screenshot",
+    "step2Text": "Send the payment screenshot with your account email below, so we know whose account to unlock.",
+    "yourEmail": "Your account email:",
+    "template": "Template:",
+    "message": "Message us",
+    "email": "Email us",
+    "step3Title": "We unlock it for you",
+    "step3Text": "Usually within a few hours. It then shows in your templates, ready to use, and stays yours."
   }
 }

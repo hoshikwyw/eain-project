@@ -10,7 +10,9 @@
 -- 3. A template can be paid only. Points never unlock it; Eain grants it
 --    after the customer pays (KBZPay or WavePay, checked by hand at first),
 --    through admin_grant_template, which is logged like every admin action.
---    The wedding and engagement invitations start as paid only.
+--    The wedding and engagement invitations start as paid only. Their price
+--    is in kyat (price_mmk), shown on the card and the "how to buy" page;
+--    point_price stays as the premium flag requires but is not used for them.
 --
 -- Existing balances and unlocks are kept: no one loses what they have.
 -- Same signatures as before, so every caller keeps working.
@@ -127,8 +129,13 @@ alter table public.templates
 alter table public.templates
   add constraint templates_paid_only_premium check (not paid_only or is_premium);
 
-update public.templates set paid_only = true
-where slug in ('wedding-invitation', 'engagement-party');
+alter table public.templates
+  add column if not exists price_mmk integer check (price_mmk is null or price_mmk > 0);
+
+update public.templates set paid_only = true, price_mmk = 35000
+where slug = 'wedding-invitation';
+update public.templates set paid_only = true, price_mmk = 25000
+where slug = 'engagement-party';
 
 -- An unlock granted after a payment has no points transaction behind it.
 alter table public.template_unlocks

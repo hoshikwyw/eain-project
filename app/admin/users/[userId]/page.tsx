@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
-import { adjustPoints, setUserRole } from "@/features/admin/actions";
+import { adjustPoints, grantTemplate, setUserRole } from "@/features/admin/actions";
 import { requireAdmin } from "@/features/admin/queries";
 import {
   deleteUserAccount,
@@ -211,6 +211,61 @@ export default async function AdminUserDetailPage({ params }: PageProps<"/admin/
                   {t("users.adjust")}
                 </SubmitButton>
               </form>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("users.detail.templatesTitle")}</CardTitle>
+              <CardDescription>{t("users.detail.grantHint")}</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              {u.unlocks.length === 0 ? (
+                <p className="text-sm text-muted-foreground">{t("users.detail.noTemplates")}</p>
+              ) : (
+                <ul className="flex flex-col gap-2">
+                  {u.unlocks.map((x) => (
+                    <li
+                      key={x.templateId}
+                      className="flex items-center justify-between gap-2 text-sm"
+                    >
+                      <span className="truncate">{x.name}</span>
+                      <Chip tone={x.paid ? "gold" : "neutral"} className="shrink-0">
+                        {x.paid ? t("users.detail.paid") : t("users.detail.withPoints")}
+                      </Chip>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {u.grantable.length > 0 && (
+                <form
+                  action={grantTemplate}
+                  className="flex flex-col gap-2 border-t border-border pt-4"
+                >
+                  <input type="hidden" name="userId" value={u.id} />
+                  <input type="hidden" name="returnTo" value={`/admin/users/${u.id}`} />
+                  <select
+                    name="templateId"
+                    required
+                    className={selectClass}
+                    aria-label={t("users.detail.grantTemplate")}
+                  >
+                    {u.grantable.map((x) => (
+                      <option key={x.id} value={x.id}>
+                        {x.paidOnly ? `${x.name} · ${t("users.detail.paidOnly")}` : x.name}
+                      </option>
+                    ))}
+                  </select>
+                  <Input name="note" placeholder={t("users.detail.grantNote")} maxLength={200} />
+                  <ConfirmButton
+                    variant="secondary"
+                    className="self-start"
+                    confirmText={t("users.detail.grantConfirm", { email: u.email })}
+                  >
+                    {t("users.detail.grant")}
+                  </ConfirmButton>
+                </form>
+              )}
             </CardContent>
           </Card>
 

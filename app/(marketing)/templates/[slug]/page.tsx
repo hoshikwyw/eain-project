@@ -102,7 +102,11 @@ export default async function TemplatePage({ params }: Props) {
             <div>
               <dt className="text-muted-foreground">{t("facts.price")}</dt>
               <dd className="mt-0.5 font-semibold">
-                {card.isPremium ? t("facts.points", { points: card.pointPrice }) : t("facts.free")}
+                {card.paidOnly && card.priceMmk
+                  ? tCreate("priceKs", { price: card.priceMmk })
+                  : card.isPremium
+                    ? t("facts.points", { points: card.pointPrice })
+                    : t("facts.free")}
               </dd>
             </div>
             <div>
@@ -113,9 +117,11 @@ export default async function TemplatePage({ params }: Props) {
           <div className="flex flex-col gap-2.5">
             {card.isPremium ? (
               <Button asChild size="lg" className="w-full sm:w-fit sm:px-8">
-                <Link href={`/create?template=${slug}`}>
+                <Link href={card.paidOnly ? `/dashboard/buy/${slug}` : `/create?template=${slug}`}>
                   <Lock />
-                  {tCreate("unlockFor", { points: card.pointPrice })}
+                  {card.paidOnly
+                    ? tCreate("howToBuy")
+                    : tCreate("unlockFor", { points: card.pointPrice })}
                 </Link>
               </Button>
             ) : (
@@ -127,7 +133,7 @@ export default async function TemplatePage({ params }: Props) {
               </Button>
             )}
             <p className="text-xs text-muted-foreground">
-              {card.isPremium ? t("premiumNote") : t("tryNote")}
+              {card.paidOnly ? t("paidNote") : card.isPremium ? t("premiumNote") : t("tryNote")}
             </p>
           </div>
         </div>
@@ -175,7 +181,9 @@ export default async function TemplatePage({ params }: Props) {
                     {o.isPremium ? (
                       <Chip tone="brand" className="shrink-0">
                         <Lock className="size-3" />
-                        {format.number(o.pointPrice, "digits")}
+                        {o.paidOnly && o.priceMmk
+                          ? tCreate("priceKs", { price: o.priceMmk })
+                          : format.number(o.pointPrice, "digits")}
                       </Chip>
                     ) : (
                       <Chip tone="success" className="shrink-0">

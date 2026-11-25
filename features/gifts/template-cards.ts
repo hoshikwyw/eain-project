@@ -15,7 +15,7 @@ export async function loadTemplateCards(locale: "en" | "my"): Promise<{
     supabase
       .from("templates")
       .select(
-        "id, slug, category_id, name_en, name_my, description_en, description_my, is_premium, point_price, is_featured",
+        "id, slug, category_id, name_en, name_my, description_en, description_my, is_premium, paid_only, price_mmk, point_price, is_featured",
       )
       .eq("is_active", true)
       .order("sort_order")
@@ -49,6 +49,8 @@ export async function loadTemplateCards(locale: "en" | "my"): Promise<{
         category: catName.get(r.category_id) ?? "",
         isPremium: r.is_premium,
         pointPrice: r.point_price,
+        paidOnly: r.paid_only,
+        priceMmk: r.price_mmk,
         unlocked: isUnlocked,
         available: isAvailableTemplate(r.slug) && isUnlocked,
         featured: r.is_featured,

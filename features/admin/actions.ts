@@ -67,6 +67,32 @@ export async function adjustPoints(formData: FormData): Promise<void> {
   back(to, "ok", "points");
 }
 
+/** Gives a user a premium template after they paid (KBZPay, WavePay). Logged by the database. */
+export async function grantTemplate(formData: FormData): Promise<void> {
+  const to = returnPath(formData);
+  const parsed = z
+    .object({
+      userId: z.uuid(),
+      templateId: z.uuid(),
+      note: z.string().trim().max(200).default(""),
+    })
+    .safeParse({
+      userId: formData.get("userId"),
+      templateId: formData.get("templateId"),
+      note: formData.get("note") ?? "",
+    });
+  if (!parsed.success) back(to, "error", "invalid");
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("admin_grant_template", {
+    p_user_id: parsed.data.userId,
+    p_template_id: parsed.data.templateId,
+    p_note: parsed.data.note,
+  });
+  revalidatePath("/admin", "layout");
+  if (error) back(to, "error", "failed");
+  back(to, "ok", "granted");
+}
+
 /** Full template edit from /admin/templates/[templateId]. */
 export async function updateTemplateDetails(formData: FormData): Promise<void> {
   const templateId = String(formData.get("templateId") ?? "");

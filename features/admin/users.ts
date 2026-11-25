@@ -79,6 +79,7 @@ export async function getUserAdmin(userId: string) {
     { data: transactions },
     { data: templates },
     { data: audit },
+    { data: unlocks },
   ] = await Promise.all([
     admin.from("profiles").select("*").eq("id", userId).maybeSingle(),
     admin
@@ -92,13 +93,17 @@ export async function getUserAdmin(userId: string) {
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(50),
-    admin.from("templates").select("id, name_en"),
+    admin.from("templates").select("id, name_en, is_premium, paid_only, is_active, sort_order"),
     admin
       .from("admin_audit_logs")
       .select("*")
       .eq("target_id", userId)
       .order("created_at", { ascending: false })
       .limit(20),
+    admin
+      .from("template_unlocks")
+      .select("template_id, transaction_id, created_at")
+      .eq("user_id", userId),
   ]);
 
   const giftIds = (gifts ?? []).map((g) => g.id);
@@ -139,6 +144,20 @@ export async function getUserAdmin(userId: string) {
     transactions: transactions ?? [],
     reports: reports ?? [],
     audit: audit ?? [],
+    /** Premium templates they own; paid ones have no transaction behind them. */
+    unlocks: (unlocks ?? []).map((x) => ({
+      templateId: x.template_id,
+      name: templateName.get(x.template_id) ?? "",
+      paid: x.transaction_id === null,
+      createdAt: x.created_at,
+    })),
+    /** Premium templates they could still be given, paid-only ones first. */
+    grantable: (templates ?? [])
+      .filter(
+        (x) => x.is_premium && x.is_active && !(unlocks ?? []).some((o) => o.template_id === x.id),
+      )
+      .sort((a, b) => Number(b.paid_only) - Number(a.paid_only) || a.sort_order - b.sort_order)
+      .map((x) => ({ id: x.id, name: x.name_en, paidOnly: x.paid_only })),
     storageBytes: (media ?? []).reduce((sum, m) => sum + (m.bytes ?? 0), 0),
   };
 }

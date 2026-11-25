@@ -13,6 +13,7 @@ const OK_KEYS = [
   "unsuspended",
   "deleted",
   "giftsOffline",
+  "granted",
 ] as const;
 const ERROR_KEYS = [
   "invalid",

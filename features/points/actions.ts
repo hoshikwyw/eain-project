@@ -24,6 +24,7 @@ export async function unlockTemplate(formData: FormData): Promise<void> {
   revalidatePath("/dashboard", "layout");
   revalidatePath("/create");
 
+  if (error?.message.includes("paid only")) redirect(`/dashboard/buy/${slug}`);
   if (error) {
     redirect(
       error.message.includes("insufficient") ? "/create?error=points" : "/create?error=unknown",
