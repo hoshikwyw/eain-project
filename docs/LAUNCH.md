@@ -6,8 +6,8 @@ Costs, at about 4,900 MMK to the dollar: about 6,500 MMK a month (the domain) wh
 
 ## 1. Supabase, before deploying
 
-- [ ] All migrations applied (`supabase/migrations/0001` to `0028`). Check in SQL editor: `select version, name from supabase_migrations.schema_migrations order by version;` (files pasted by hand do not appear there; check one of their changes instead, for 0023: `select slug, paid_only, price_mmk from public.templates where paid_only;` lists the wedding and engagement invitations).
-- [ ] Migrations go in **before** the code that needs them. The template picker and template pages read `paid_only` and `price_mmk` from 0023 and fail to load without them; saving an invitation needs 0022; saving a template in `/admin/templates` needs 0024; the ahlu and shinbyu invitations appear once 0025 is in, and the Valentine template once 0026 is in; 0027 prices the remaining premium templates in kyat, and 0028 retires points (no welcome bonus, nothing earned) to match the app, which no longer shows them.
+- [ ] All migrations applied (`supabase/migrations/0001` to `0029`). Check in SQL editor: `select version, name from supabase_migrations.schema_migrations order by version;` (files pasted by hand do not appear there; check one of their changes instead, for 0023: `select slug, paid_only, price_mmk from public.templates where paid_only;` lists the wedding and engagement invitations).
+- [ ] Migrations go in **before** the code that needs them. The template picker and template pages read `paid_only` and `price_mmk` from 0023 and fail to load without them; saving an invitation needs 0022; saving a template in `/admin/templates` needs 0024; the ahlu and shinbyu invitations appear once 0025 is in, and the Valentine template once 0026 is in; 0027 prices the remaining premium templates in kyat, and 0028 retires points (no welcome bonus, nothing earned) to match the app, which no longer shows them; the buy page's "I've paid" form and `/admin/payments` need 0029.
 - [ ] Authentication → Sign In / Providers → Email: Confirm email is your choice (ON in production). The free mailer sends only a few emails per hour.
 - [ ] Authentication → Sign In / Providers → Google: enabled with the Client ID and secret from Google Cloud, the Client ID also in Authorized Client IDs, and `NEXT_PUBLIC_GOOGLE_CLIENT_ID` set in Vercel.
 - [ ] Authentication → URL Configuration: Site URL set to the production URL (email links are built from it), and Redirect URLs contain `https://<your-domain>/**` (keep `http://localhost:5173/**` for development). Only links from the older `{{ .ConfirmationURL }}` templates depend on the allow-list.
@@ -51,7 +51,8 @@ Run through with two devices, or one browser plus a private window.
 - [ ] Share the link into a Messenger or Viber chat to yourself. The preview shows the generic text and the Eain image, never the message. Opening from the chat still shows "Not opened" until the button is tapped.
 - [ ] Regenerate the link. Old link shows "not available". Delete the gift. New link shows "not available".
 - [ ] Open the Wedding Invitation in the picker: it shows its kyat price and "How to buy", never an unlock button. The buy page shows your wallet numbers and contact link.
-- [ ] As admin, open the second account in `/admin/users`, give it the Wedding Invitation from Premium templates with a test note. The second account can now use it, and the audit log has `grant_template`.
+- [ ] As the second account, open the Wedding Invitation's buy page and press **I've paid** with KBZPay and `1234`. The page then says the payment is being checked.
+- [ ] As admin, open `/admin/payments`: the payment waits there with the amount, wallet and digits. Approve it. The second account gets a notification that opens the template, and the audit log has `approve_payment`. Try a reject too, with a reason: the customer sees the reason.
 - [ ] Report a gift from the public page. In /admin/reports it appears. Take it offline; owner gets a notification; audit log has the entry.
 - [ ] Switch to Burmese on a phone. Check line heights on the gift page and the editor.
 - [ ] Turn on airplane-mode throttling in DevTools (Slow 3G). The gift page reaches "Open your gift" in under a few seconds and images load lazily.
@@ -93,13 +94,13 @@ The closed test can run without these. The first kyat taken needs all of them.
 - [x] Terms and Privacy cover paid templates (2026-11-25, both languages): price in kyat before paying, unlock within a few hours, full refund if not unlocked within 24 hours or broken and not fixed within 7 days, never a wallet PIN. The buy page links to it. A lawyer reviews it with the rest (section 6).
 - [ ] Wallet numbers and the contact link set in Vercel (section 3). Send a test payment to yourself and read the buy page on a phone.
 
-**Selling a template by hand.** The customer pays by KBZPay or WavePay and sends the screenshot with their account email. Check the money arrived in the wallet app, not only the screenshot. Find the account in `/admin/users`, open it, and give the template under Premium templates with a note such as "KBZPay 25 Nov, last 4 digits 1234". The note is kept in the audit log. Prices and the paid-only flag are set on each template's page in `/admin/templates` (Pricing: Paid only, Price in kyat).
+**Selling a template.** The customer pays by KBZPay or WavePay, then on the buy page presses **I've paid** with the wallet and the last digits of the transaction. It waits in `/admin/payments`. Open your wallet app, find that amount with those digits, and press **Approve**: the template unlocks and the customer is told. If you cannot find it, press **Reject** with a reason ("No such payment in WavePay"); the customer sees it and can send again. Check the wallet app itself, never only a screenshot. Every decision is in the audit log. For a sale that came through Messenger or a partner, you can still give a template from the buyer's page in `/admin/users`. Prices are set on each template's page in `/admin/templates`.
 
 ## 8. Monitoring, weekly
 
 - [ ] Supabase → Usage: database size, storage, egress. Storage (1 GB) and egress (5 GB/month) are the first limits to reach.
 - [ ] Vercel → Usage: bandwidth, function invocations, image optimisation (should stay near zero; Eain bypasses it).
-- [ ] `/admin` overview: open reports, published gifts in the last 7 days. Published gifts per week is the one number that matters most, then paid templates sold (`grant_template` entries in the audit log).
+- [ ] `/admin` overview: open reports, published gifts in the last 7 days. Published gifts per week is the one number that matters most, then paid templates sold (the Recent decisions list in `/admin/payments`). Clear the waiting list at least twice a day.
 - [ ] Rotate `CRON_SECRET` and the Supabase service role key if they were ever pasted anywhere unsafe.
 
 ## 9. Known gaps for after launch

@@ -9,7 +9,7 @@ This guide takes Eain from your computer to a live site for the closed test. Fol
 
 | Part | Where         | What you get                                                      |
 | ---- | ------------- | ----------------------------------------------------------------- |
-| 1    | Supabase      | A new, empty production database with all 28 migrations           |
+| 1    | Supabase      | A new, empty production database with all 29 migrations           |
 | 2    | Vercel        | The live site at a free address such as `eain-project.vercel.app` |
 | 3    | Supabase      | Sign-in emails that work in Myanmar (Brevo)                       |
 | 4    | Google Cloud  | The "Continue with Google" button                                 |
@@ -50,7 +50,7 @@ Use a **new** project for production. Your current project (`ljtdeixurhaexzmgbiu
    ```
    powershell -File scripts/combine-migrations.ps1
    ```
-   It writes `supabase/ALL_MIGRATIONS.sql` with migrations 0001 to 0028 in one file.
+   It writes `supabase/ALL_MIGRATIONS.sql` with migrations 0001 to 0029 in one file.
 2. Open `supabase/ALL_MIGRATIONS.sql` in VS Code, press **Ctrl + A**, then **Ctrl + C**.
 3. In Supabase, left sidebar, **SQL Editor**, then **+ New query**. Paste with **Ctrl + V**. Click **Run**. If it warns about destructive operations, click **Run this query**.
 4. **You should see:** "Success. No rows returned." It can take up to a minute.
@@ -251,7 +251,7 @@ Do section 4 of [LAUNCH.md](LAUNCH.md) on the live site, with two devices or one
 3. Back on the dashboard: Opened, the answer, two notifications.
 4. Share the link to yourself on Messenger or Viber: the preview shows the generic text, never the message.
 5. Open the **Wedding Invitation**: it shows 35,000 Ks and **How to buy**. The buy page says buying opens soon (the wallet numbers come in part 8).
-6. In `/admin/users`, give your second account the Wedding Invitation with a test note. The second account can now use it.
+6. As your second account, press **I've paid** on the Wedding Invitation's buy page (KBZPay, `1234`). As admin, approve it in `/admin/payments`. The second account gets a notification that opens the template.
 7. Report a gift from its page; it appears in `/admin/reports`.
 
 **The Myanmar test, the one that matters most.** Ask someone in Myanmar, on mobile data, with no VPN, to: open the site, sign up with email and confirm from the email, sign in with Google, reset the password, and open a gift with a photo. If any step hangs, ask for a screenshot of the error and the exact address in it.
@@ -302,7 +302,7 @@ When all of this passes, invite the 20 to 30 closed-test people.
    | `EAIN_SALES_CONTACT_URL` | Your Facebook page's Messenger link, `https://m.me/<page>` (or a Viber or Telegram https link) |
 
 3. Open `/dashboard/buy/wedding-invitation` on your phone: the three steps show your numbers and the **Message us** button opens your page.
-4. Send yourself a small test payment and do the whole sale once: screenshot, find the account in `/admin/users`, give the template with a note.
+4. Send yourself a small test payment and do the whole sale once: pay, press **I've paid** with the real digits, find it in your wallet app, approve it in `/admin/payments`.
 5. Supabase Pro ($25 a month) can wait until the Usage page shows storage near 1 GB or egress near 5 GB a month.
 
 ---

@@ -71,12 +71,12 @@ In Meta Business Suite, **Inbox**, **Automations**.
 
 **Frequently asked questions (quick buttons):**
 
-| Button         | Reply                                                                                                                                                                                                                                    |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ဈေးနှုန်း      | မင်္ဂလာဖိတ်စာ ၃၅,၀၀၀ ကျပ်၊ စေ့စပ်ပွဲ ၂၅,၀၀၀ ကျပ်၊ ရှင်ပြုဖိတ်စာ ၁၅,၀၀၀ ကျပ်၊ အလှူဖိတ်စာ ၁၀,၀၀၀ ကျပ်ပါ။ ချစ်သူ၊ မွေးနေ့ ပရီမီယံ ကတ်တွေက ၂,၀၀၀ ကနေ ၅,၀၀၀ ကျပ်ပါ။ တစ်ကြိမ်ပေးရုံပါ။ မွေးနေ့၊ ပွဲ၊ အိမ်တက် ဖိတ်စာနဲ့ ရိုးရိုးကတ်တွေ အခမဲ့ပါ။ |
-| ဘယ်လို ဝယ်ရမလဲ | ၁။ <site address> မှာ အကောင့်ဖွင့်ပါ။ ၂။ မင်္ဂလာဖိတ်စာမှာ "ဝယ်ယူနည်း" ကို နှိပ်ပါ။ ၃။ KBZPay / WavePay နဲ့ လွှဲပြီး screenshot နဲ့ အကောင့် အီးမေးလ်ကို ဒီမှာ ပို့ပေးပါ။ နာရီအနည်းငယ်အတွင်း ဖွင့်ပေးပါမယ်။                                |
-| နမူနာ ကြည့်မယ် | 👉 <site address>/templates/wedding-invitation (ဖွင့်ကြည့်ပုံကို အဲဒီမှာ တန်းကြည့်လို့ရပါတယ်)                                                                                                                                            |
-| VPN လိုလား     | မလိုပါ။ မြန်မာပြည်ထဲမှာ ဖုန်းဒေတာနဲ့ တန်းဖွင့်လို့ရပါတယ်။                                                                                                                                                                                |
+| Button         | Reply                                                                                                                                                                                                                                                           |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ဈေးနှုန်း      | မင်္ဂလာဖိတ်စာ ၃၅,၀၀၀ ကျပ်၊ စေ့စပ်ပွဲ ၂၅,၀၀၀ ကျပ်၊ ရှင်ပြုဖိတ်စာ ၁၅,၀၀၀ ကျပ်၊ အလှူဖိတ်စာ ၁၀,၀၀၀ ကျပ်ပါ။ ချစ်သူ၊ မွေးနေ့ ပရီမီယံ ကတ်တွေက ၂,၀၀၀ ကနေ ၅,၀၀၀ ကျပ်ပါ။ တစ်ကြိမ်ပေးရုံပါ။ မွေးနေ့၊ ပွဲ၊ အိမ်တက် ဖိတ်စာနဲ့ ရိုးရိုးကတ်တွေ အခမဲ့ပါ။                        |
+| ဘယ်လို ဝယ်ရမလဲ | ၁။ <site address> မှာ အကောင့်ဖွင့်ပါ။ ၂။ မင်္ဂလာဖိတ်စာမှာ "ဝယ်ယူနည်း" ကို နှိပ်ပါ။ ၃။ KBZPay / WavePay နဲ့ လွှဲပြီး အဲဒီ စာမျက်နှာမှာပဲ "ငွေပေးပြီးပါပြီ" ကို နှိပ်၊ ငွေလွှဲ ID နောက်ဆုံးဂဏန်းတွေ ထည့်ပါ။ နာရီအနည်းငယ်အတွင်း ဖွင့်ပေးပြီး အသိပေးချက် ပို့ပါမယ်။ |
+| နမူနာ ကြည့်မယ် | 👉 <site address>/templates/wedding-invitation (ဖွင့်ကြည့်ပုံကို အဲဒီမှာ တန်းကြည့်လို့ရပါတယ်)                                                                                                                                                                   |
+| VPN လိုလား     | မလိုပါ။ မြန်မာပြည်ထဲမှာ ဖုန်းဒေတာနဲ့ တန်းဖွင့်လို့ရပါတယ်။                                                                                                                                                                                                       |
 
 ---
 
@@ -185,7 +185,7 @@ Send one at a time, by Messenger, to people who post wedding work. Never mass-se
 > - နောက်ပိုင်း: တစ်စုံလျှင် ၂၅,၀၀၀ ကျပ် (ပုံမှန် ၃၅,၀၀၀)။ <name> က client ကို ကြိုက်တဲ့ဈေးနဲ့ ရောင်းနိုင်ပါတယ်။
 > - ၁၀ စုံ တစ်ခါတည်းယူရင်: ၂၅၀,၀၀၀ ကျပ်
 
-**How you deliver a partner sale:** the partner sends you the couple's Eain account email and the payment; you give the template in `/admin/users` with the note `partner <name>`.
+**How you deliver a partner sale:** the couple presses "ငွေပေးပြီးပါပြီ" on the buy page like anyone else and you approve it in `/admin/payments`; or the partner sends you the couple's Eain account email and the payment, and you give the template from the couple's page in `/admin/users` with the note `partner <name>`.
 
 ---
 
@@ -200,19 +200,15 @@ Send one at a time, by Messenger, to people who post wedding work. Never mass-se
 > ကျေးဇူးပါ 🌸
 > ၁။ <site address> မှာ အကောင့်ဖွင့်ပါ (Google နဲ့ ဝင်လည်း ရပါတယ်)။
 > ၂။ "မင်္ဂလာဖိတ်စာ" မှာ "ဝယ်ယူနည်း" ကို နှိပ်ပါ။ ငွေလွှဲရမယ့် နံပါတ် ပေါ်ပါမယ်။
-> ၃။ ၃၅,၀၀၀ ကျပ် လွှဲပြီး screenshot နဲ့ အကောင့် အီးမေးလ်ကို ဒီမှာ ပို့ပေးပါ။
+> ၃။ ၃၅,၀၀၀ ကျပ် လွှဲပြီး အဲဒီ စာမျက်နှာမှာ "ငွေပေးပြီးပါပြီ" ကို နှိပ်ပါ။ Wallet ကို ရွေးပြီး ငွေလွှဲ ID ရဲ့ နောက်ဆုံးဂဏန်းတွေ ထည့်ရုံပါပဲ။
 
-**After the screenshot (check the money in the wallet app first, not only the screenshot):**
-
-> ငွေရောက်ပါပြီ၊ ကျေးဇူးတင်ပါတယ် 🙏 မိနစ်ပိုင်းအတွင်း ဖွင့်ပေးပါမယ်။
-
-**After you give the template in `/admin/users`:**
+**When it waits in `/admin/payments` (find the amount and the digits in the wallet app first, never only a screenshot):** press Approve. The customer gets a notification that opens the template; this message is optional, for a personal touch.
 
 > ✅ ဖွင့်ပေးပြီးပါပြီ။ Eain မှာ "ဖန်တီး" (+) ကို နှိပ်ပြီး မင်္ဂလာဖိတ်စာရဲ့ "ဒီပုံစံ သုံးမယ်" ကို နှိပ်ရင် စပြင်လို့ရပါပြီ။ ပြင်ဆင်ရင်း မေးစရာရှိရင် ဒီမှာ မေးနိုင်ပါတယ်။ မင်္ဂလာ အပေါင်းနဲ့ ပြည့်စုံပါစေ 💍
 
-**The screenshot does not match a payment:**
+**The payment is not in your wallet:** press Reject in `/admin/payments` with a short reason, such as "WavePay ထဲမှာ ဒီငွေလွှဲ မတွေ့ပါ". The customer sees it on the buy page. If they message you:
 
-> စိတ်မရှိပါနဲ့၊ ဒီ screenshot အတိုင်း ငွေ မရောက်သေးပါဘူး။ ငွေလွှဲချိန်နဲ့ နောက်ဆုံးဂဏန်း ၄ လုံးကို ပို့ပေးလို့ရမလား။ စစ်ပေးပါမယ်။
+> စိတ်မရှိပါနဲ့၊ ပို့ထားတဲ့ ဂဏန်းနဲ့ ငွေ မတွေ့သေးပါဘူး။ ငွေလွှဲချိန်နဲ့ ငွေလွှဲ ID ကို စစ်ပြီး "ငွေပေးပြီးပါပြီ" ကို ထပ်နှိပ်ပေးပါ၊ ဒါမှမဟုတ် ဒီမှာ ပို့ပေးပါ။ စစ်ပေးပါမယ်။
 
 **A refund (terms: not unlocked within 24 hours, or broken and not fixed within 7 days):**
 
@@ -261,7 +257,7 @@ Write these in a notebook or a sheet every Sunday:
 | New Messenger conversations         | Meta Business Suite, Inbox                                                           |
 | Visits to the wedding template page | PostHog, once `NEXT_PUBLIC_POSTHOG_KEY` is set (Eain has no other page-view counter) |
 | New Eain accounts                   | `/admin` overview                                                                    |
-| Paid templates given                | `/admin/users`, or audit log `grant_template`                                        |
+| Paid templates sold                 | `/admin/payments`, Recent decisions                                                  |
 | Money in                            | Your wallet apps                                                                     |
 | Partners talking to you             | Your notes                                                                           |
 
@@ -312,6 +308,6 @@ Only promise "today" on 13 and 14 February if you can really unlock within hours
 
 **Reply when they ask**
 
-> ချစ်သူများနေ့ ကတ်က ၃,၀၀၀ ကျပ်ပါ 💕 ဓာတ်ပုံ၊ စာ၊ မေးခွန်းကို ကြိုက်သလို ပြင်လို့ရပါတယ်။ ဝယ်နည်း: <site address> မှာ အကောင့်ဖွင့်၊ "ချစ်သူများနေ့" မှာ "ဝယ်ယူနည်း" ကို နှိပ်၊ KBZPay / WavePay နဲ့ လွှဲပြီး screenshot နဲ့ အကောင့် အီးမေးလ် ပို့ပေးပါ။
+> ချစ်သူများနေ့ ကတ်က ၃,၀၀၀ ကျပ်ပါ 💕 ဓာတ်ပုံ၊ စာ၊ မေးခွန်းကို ကြိုက်သလို ပြင်လို့ရပါတယ်။ ဝယ်နည်း: <site address> မှာ အကောင့်ဖွင့်၊ "ချစ်သူများနေ့" မှာ "ဝယ်ယူနည်း" ကို နှိပ်၊ KBZPay / WavePay နဲ့ လွှဲပြီး "ငွေပေးပြီးပါပြီ" ကို နှိပ်ပါ။
 
 **Free alternatives to point to:** if 3,000 Ks is too much for someone, the free "Love / Miss You" card exists. Say so. A happy free user tells friends; a pushed one does not come back.
