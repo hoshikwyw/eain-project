@@ -9,7 +9,7 @@ This guide takes Eain from your computer to a live site for the closed test. Fol
 
 | Part | Where         | What you get                                                      |
 | ---- | ------------- | ----------------------------------------------------------------- |
-| 1    | Supabase      | A new, empty production database with all 29 migrations           |
+| 1    | Supabase      | A new, empty production database with all 30 migrations           |
 | 2    | Vercel        | The live site at a free address such as `eain-project.vercel.app` |
 | 3    | Supabase      | Sign-in emails that work in Myanmar (Brevo)                       |
 | 4    | Google Cloud  | The "Continue with Google" button                                 |
@@ -50,7 +50,7 @@ Use a **new** project for production. Your current project (`ljtdeixurhaexzmgbiu
    ```
    powershell -File scripts/combine-migrations.ps1
    ```
-   It writes `supabase/ALL_MIGRATIONS.sql` with migrations 0001 to 0029 in one file.
+   It writes `supabase/ALL_MIGRATIONS.sql` with migrations 0001 to 0030 in one file.
 2. Open `supabase/ALL_MIGRATIONS.sql` in VS Code, press **Ctrl + A**, then **Ctrl + C**.
 3. In Supabase, left sidebar, **SQL Editor**, then **+ New query**. Paste with **Ctrl + V**. Click **Run**. If it warns about destructive operations, click **Run this query**.
 4. **You should see:** "Success. No rows returned." It can take up to a minute.
@@ -63,6 +63,8 @@ Use a **new** project for production. Your current project (`ljtdeixurhaexzmgbiu
 6. Left sidebar, **Storage**. A bucket named `gift-media` exists and shows **Private**.
 
 `supabase/ALL_MIGRATIONS.sql` is generated; you can delete it afterwards. Do not run it twice on the same project.
+
+**A database that already has some migrations** (for example one set up before a new migration was added): do not run the combined file again. Paste each missing migration file on its own, oldest first, in a **+ New query** (never a saved query, which keeps its old text), and check its result.
 
 **If you see a red error:** copy the whole message. Nothing is half-applied: the file runs as one transaction, so an error means nothing changed. Send the message and fix before going on.
 
