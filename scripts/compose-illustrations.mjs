@@ -883,6 +883,53 @@ const scenes = {
       over: svg(""),
     };
   },
+  // Valentine: the couple in front of a big soft heart, a rose at the side, hearts floating up.
+  valentine: async () => {
+    const couple = await bird("lovebirds", 500);
+    const x = Math.round((W - couple.w) / 2);
+    const y = H - couple.h - 30;
+    const big =
+      `<g transform="translate(${W / 2 - 330} 40) scale(27.5)">` +
+      `<path fill="#f7c0cc" d="M12 21s-7-4.6-9.5-9.2C.6 8 3 4 6.8 4c2 0 3.6 1.2 5.2 3 1.6-1.8 3.2-3 5.2-3 3.8 0 6.2 4 4.3 7.8C19 16.4 12 21 12 21z"/>` +
+      `</g>` +
+      `<g transform="translate(${W / 2 - 290} 70) scale(24.2)">` +
+      `<path fill="#e8476c" opacity="0.18" d="M12 21s-7-4.6-9.5-9.2C.6 8 3 4 6.8 4c2 0 3.6 1.2 5.2 3 1.6-1.8 3.2-3 5.2-3 3.8 0 6.2 4 4.3 7.8C19 16.4 12 21 12 21z"/>` +
+      `</g>`;
+    const rose =
+      `<g transform="translate(1010 ${H - 40})">` +
+      `<path d="M0 0 C -6 -90, 10 -170, 0 -262" stroke="#4f9a6e" stroke-width="10" fill="none"/>` +
+      `<ellipse cx="-34" cy="-120" rx="34" ry="14" fill="#6fbf8e" transform="rotate(-30 -34 -120)"/>` +
+      `<ellipse cx="30" cy="-170" rx="30" ry="12" fill="#6fbf8e" transform="rotate(25 30 -170)"/>` +
+      // A rosebud: two back petals, a folded centre, and a cupped front petal over the stem.
+      `<path d="M-8 -262 C -70 -270, -62 -340, -22 -352 C -30 -320, -20 -290, -8 -262 z" fill="#a3233d"/>` +
+      `<path d="M8 -262 C 70 -270, 62 -340, 22 -352 C 30 -320, 20 -290, 8 -262 z" fill="#a3233d"/>` +
+      `<path d="M0 -268 C -34 -290, -28 -352, 0 -360 C 28 -352, 34 -290, 0 -268 z" fill="#c9304f"/>` +
+      `<path d="M-6 -336 C 6 -350, 22 -338, 10 -322" stroke="#8e1d34" stroke-width="5" fill="none" stroke-linecap="round"/>` +
+      `<path d="M-48 -312 C -40 -262, 40 -262, 48 -312 C 30 -292, -30 -292, -48 -312 z" fill="#e8476c"/>` +
+      `<path d="M-26 -258 l-22 -14 M26 -258 l22 -14" stroke="#4f9a6e" stroke-width="8" stroke-linecap="round"/>` +
+      `</g>`;
+    return {
+      under: svg(
+        big +
+          shadow(x + couple.w / 2, H - 30, couple.w) +
+          rose +
+          scatter("heart", 26, ["#e8476c", "#f4a3b5", "#c9304f"], 1201, {
+            band: [40, 600],
+            size: [18, 44],
+            opacity: [0.55, 0.95],
+            keepOut: [W / 2 - 340, 40, W / 2 + 340, H],
+          }) +
+          scatter("sparkle", 10, ["#ffd27a"], 1202, {
+            band: [40, 400],
+            size: [18, 34],
+            opacity: [0.6, 1],
+            keepOut: [W / 2 - 340, 40, W / 2 + 340, H],
+          }),
+      ),
+      layers: [{ input: couple.buf, left: x, top: y }],
+      over: svg(""),
+    };
+  },
   // Places we've been: the couple at the end of a dashed route that loops between three map pins.
   "places-weve-been": async () => {
     const couple = await bird("lovebirds", 480);

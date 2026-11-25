@@ -372,6 +372,37 @@ export const templates: Record<string, TemplateDefinition> = {
       final(my(l, "Until soon,", "မကြာမီ ပြန်တွေ့မယ်")),
     ],
   },
+  // Valentine's Day: the elegant design in berry, a photo, a letter and the
+  // question at its heart. Both answers say yes; that is the joke and the point.
+  valentine: {
+    design: "elegant",
+    decoration: "hearts",
+    layout: "scroll",
+    defaultVariant: "berry",
+    defaultSections: (l) => [
+      cover(
+        my(l, "Happy Valentine's Day", "ချစ်သူများနေ့ မင်္ဂလာပါ"),
+        my(
+          l,
+          "For the one who makes every day feel like the fourteenth.",
+          "နေ့တိုင်းကို ဖေဖော်ဝါရီ ၁၄ ရက်လို ခံစားရစေတဲ့ သင့်အတွက်။",
+        ),
+      ),
+      image(my(l, "Us", "ကိုယ်တို့")),
+      message(
+        my(
+          l,
+          "I could write a hundred reasons, but the shortest one is this: life is better with you in it.",
+          "အကြောင်းပြချက် အများကြီး ရေးလို့ရပေမယ့် အတိုဆုံးကတော့ ဒါပါ။ မင်းရှိနေတော့ ဘဝက ပိုလှတယ်။",
+        ),
+      ),
+      rsvp(l, my(l, "Will you be my Valentine?", "ကိုယ့်ရဲ့ ချစ်သူ ဖြစ်ပေးမလား?"), {
+        yes: my(l, "Yes 💕", "ဟုတ်ကဲ့ 💕"),
+        no: my(l, "Of course, yes 💖", "ဒါပေါ့၊ ဟုတ်ကဲ့ 💖"),
+      }),
+      final(my(l, "All my love,", "ချစ်ခြင်းအားလုံးနဲ့")),
+    ],
+  },
   "general-postcard": {
     design: "minimal",
     decoration: "petals",
