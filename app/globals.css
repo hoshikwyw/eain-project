@@ -922,6 +922,16 @@
   }
 }
 
+/*
+ * Burmese has no italic: a slanted Burmese line is the browser faking one, and
+ * it reads as a mistake. Where a design sets a line in italic (signatures,
+ * subheadings, notes on the elegant, wedding and stationery cards), Burmese
+ * text stays upright. A creator's own italic is an inline style and still wins.
+ */
+.gift-sheet [data-burmese] {
+  font-style: normal;
+}
+
 /* Spaced capitals are a Latin device; on a Burmese page the stationery's send line keeps its letters together. */
 :lang(my) .gift-sheet .send {
   letter-spacing: 0.03em;
