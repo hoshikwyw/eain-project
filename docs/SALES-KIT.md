@@ -1,6 +1,6 @@
 # Eain Sales Kit (Facebook, Messenger, Partners)
 
-Ready-to-use Burmese text for the first weeks of selling, with short English notes for you. Replace everything in `<angle brackets>` before posting. Prices match the database today: Wedding Invitation 35,000 Ks, Engagement Party 25,000 Ks, Donation Ceremony (Ahlu) 10,000 Ks, Novitiation Ceremony (Shinbyu) 15,000 Ks. If you change them in `/admin/templates`, change them here too.
+Ready-to-use Burmese text for the first weeks of selling, with short English notes for you. Replace everything in `<angle brackets>` before posting. Prices match the database today: Wedding Invitation 35,000 Ks, Engagement Party 25,000 Ks, Donation Ceremony (Ahlu) 10,000 Ks, Novitiation Ceremony (Shinbyu) 15,000 Ks, Valentine 3,000 Ks (seasonal, section 10). If you change them in `/admin/templates`, change them here too.
 
 **Rules for every post and message**
 
@@ -265,3 +265,52 @@ Write these in a notebook or a sheet every Sunday:
 | Partners talking to you             | Your notes                                                                           |
 
 The target from the business review: about 4 weddings and 6 events a month cover the running cost of about 240,000 Ks once you pay for Vercel and Supabase.
+
+---
+
+## 10. Valentine's Day (from 25 January to 14 February)
+
+The Valentine template costs 3,000 Ks: small enough to buy on impulse, so this season is about many small sales, not a few big ones. People decide late, so the last week sells the most.
+
+**Calendar**
+
+| Date        | Do                                                                                                                                         |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| 25 January  | In `/admin/templates`, open Valentine and turn on **Featured**. Make your own Valentine card on the live site to film.                     |
+| 27 January  | Video D and the first post.                                                                                                                |
+| 3 February  | Second post. Boost video D with 10,000 to 15,000 Ks for 7 days, ages 18 to 35, Myanmar and Thailand, Singapore, Malaysia (workers abroad). |
+| 10 February | Third post, "four days left".                                                                                                              |
+| 13 February | Fourth post, "tomorrow". Check Messenger every hour: these buyers want it today.                                                           |
+| 15 February | Turn **Featured** off. Note how many you sold for next year.                                                                               |
+
+**Video D: the question (20 s)**
+
+| Time    | Shot                                                                 | Text on screen                           |
+| ------- | -------------------------------------------------------------------- | ---------------------------------------- |
+| 0–4 s   | A phone gets a link in Messenger                                     | `ဖေဖော်ဝါရီ ၁၄ ရက်နေ့ ရောက်လာတဲ့ လင့်ခ်` |
+| 4–11 s  | The curtain opens; the photo and the letter                          | `ဓာတ်ပုံနဲ့ ချစ်စာ`                      |
+| 11–17 s | The question; the thumb hovers between the two answers; both say yes | `ဘယ်ဟာ နှိပ်နှိပ် ဟုတ်ကဲ့ပဲ 😄`          |
+| 17–20 s | Price and logo                                                       | `၃,၀၀၀ ကျပ် · Eain`                      |
+
+Caption: `ချစ်သူကို မေးကြည့်လိုက်ပါ 💕 အဖြေက တစ်ခုတည်းပါ။ 👉 <site address>/templates/valentine`
+
+**Posts**
+
+1. **27 January**
+   > 💕 ဒီနှစ် ချစ်သူများနေ့မှာ ပန်းစည်းနဲ့အတူ ချစ်စာလေးတစ်စောင်ပါ ပို့ကြည့်ပါ။
+   > ဓာတ်ပုံ၊ ကိုယ်တိုင်ရေးတဲ့ စာ၊ ပြီးတော့ "ကိုယ့်ရဲ့ ချစ်သူ ဖြစ်ပေးမလား?" ဆိုတဲ့ မေးခွန်း။ အဖြေ နှစ်ခုလုံးက "ဟုတ်ကဲ့" ပါ 😄
+   > ၃,၀၀၀ ကျပ် · 👉 <site address>/templates/valentine
+2. **3 February**, for people far apart
+   > ✈️ ဘန်ကောက်၊ စင်္ကာပူ၊ ဂျပန်မှာ ရှိနေလား။ ချစ်သူဆီ ချက်ချင်း ရောက်တဲ့ ချစ်သူများနေ့ ကတ်တစ်ခု ပို့လိုက်ပါ။ ဖွင့်ကြည့်ပြီး ဖြေလိုက်တာနဲ့ သင့်ဖုန်းကို အသိပေးချက် ရောက်လာပါမယ်။
+3. **10 February**
+   > ⏳ ချစ်သူများနေ့ကို ၄ ရက်ပဲ လိုပါတော့တယ်။ ဝယ်ပြီး နာရီအနည်းငယ်အတွင်း ဖွင့်ပေးပါတယ်။
+4. **13 February**
+   > 💌 မနက်ဖြန် ချစ်သူများနေ့ပါ။ ဒီနေ့ ဝယ်ရင် ဒီနေ့ပဲ ဖွင့်ပေးပါတယ်။ ပန်းစည်း ပို့စရာ မလိုဘဲ ဖုန်းထဲကနေ ရောက်သွားမယ်။
+
+Only promise "today" on 13 and 14 February if you can really unlock within hours on those days.
+
+**Reply when they ask**
+
+> ချစ်သူများနေ့ ကတ်က ၃,၀၀၀ ကျပ်ပါ 💕 ဓာတ်ပုံ၊ စာ၊ မေးခွန်းကို ကြိုက်သလို ပြင်လို့ရပါတယ်။ ဝယ်နည်း: <site address> မှာ အကောင့်ဖွင့်၊ "ချစ်သူများနေ့" မှာ "ဝယ်ယူနည်း" ကို နှိပ်၊ KBZPay / WavePay နဲ့ လွှဲပြီး screenshot နဲ့ အကောင့် အီးမေးလ် ပို့ပေးပါ။
+
+**Free alternatives to point to:** if 3,000 Ks is too much for someone, the free "Love / Miss You" card exists. Say so. A happy free user tells friends; a pushed one does not come back.
