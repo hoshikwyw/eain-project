@@ -274,7 +274,11 @@ export default async function HomePage() {
                     {tp.category}
                     {tp.isPremium && (
                       <Lock
-                        aria-label={t("templatePage.facts.points", { points: tp.pointPrice })}
+                        aria-label={
+                          tp.priceMmk
+                            ? t("create.priceKs", { price: tp.priceMmk })
+                            : t("templatePage.facts.points", { points: tp.pointPrice })
+                        }
                         className="size-3 text-brand"
                       />
                     )}

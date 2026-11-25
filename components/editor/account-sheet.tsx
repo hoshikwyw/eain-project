@@ -14,7 +14,7 @@ type Props = {
   next: string;
 };
 
-const REASONS = ["keep", "link", "opened", "points"] as const;
+const REASONS = ["keep", "link", "opened"] as const;
 
 /**
  * Asked for at the moment an account is needed: when a visitor trying a

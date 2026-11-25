@@ -26,7 +26,6 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         avatarUrl={profile.avatar_url}
         displayName={profile.display_name}
         email={userData.user?.email ?? ""}
-        pointsBalance={profile.points_balance}
         unreadCount={unreadCount}
         isAdmin={profile.role === "admin"}
       />

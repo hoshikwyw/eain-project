@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  * gift is kept in their browser; an account is asked for when they want to
  * save or publish it. A signed-in creator gets a saved gift instead: made
  * from their draft of this template if the browser holds one, fresh if not.
- * A premium template is unlocked with points, so it needs an account first.
+ * A premium template is bought in kyat, so it needs an account first.
  */
 export default async function TryTemplatePage({ params }: Props) {
   const { template: slug } = await params;

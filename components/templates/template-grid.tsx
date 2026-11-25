@@ -11,7 +11,6 @@ import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { createGift } from "@/features/gifts/actions";
 import type { ThemeVariant } from "@/features/gifts/schemas";
-import { unlockTemplate } from "@/features/points/actions";
 import { cn } from "@/lib/utils";
 import { TemplatePreview } from "./template-preview";
 import { TemplatePreviewDialog } from "./template-preview-dialog";
@@ -43,8 +42,6 @@ type Props = {
   categories: { id: string; name: string }[];
   /** create: buttons create a gift. browse: buttons link to /create. */
   mode: "create" | "browse";
-  /** Signed-in user's balance, for unlock buttons. Null when browsing signed out. */
-  pointsBalance?: number | null;
   /** Slug to scroll to and highlight, e.g. after a premium redirect. */
   highlightSlug?: string;
   /** Language for the preview's starting text. */
@@ -58,7 +55,6 @@ export function TemplateGrid({
   templates,
   categories,
   mode,
-  pointsBalance = null,
   highlightSlug,
   locale,
   initialCategory = null,
@@ -171,10 +167,10 @@ export function TemplateGrid({
                   locale={locale}
                   triggerClassName="shrink-0"
                 >
-                  <TemplateAction template={template} mode={mode} pointsBalance={pointsBalance} />
+                  <TemplateAction template={template} mode={mode} />
                 </TemplatePreviewDialog>
                 <div className="min-w-0 flex-1">
-                  <TemplateAction template={template} mode={mode} pointsBalance={pointsBalance} />
+                  <TemplateAction template={template} mode={mode} />
                 </div>
               </div>
             </article>
@@ -185,15 +181,7 @@ export function TemplateGrid({
   );
 }
 
-function TemplateAction({
-  template,
-  mode,
-  pointsBalance,
-}: {
-  template: TemplateCard;
-  mode: "create" | "browse";
-  pointsBalance: number | null;
-}) {
+function TemplateAction({ template, mode }: { template: TemplateCard; mode: "create" | "browse" }) {
   const t = useTranslations("create");
 
   if (template.available) {
@@ -211,43 +199,13 @@ function TemplateAction({
     );
   }
 
+  // A premium template is bought once in kyat: the buy page says how to pay.
   if (template.isPremium && !template.unlocked) {
-    // Points never unlock it: the buy page says how to pay.
-    if (template.paidOnly) {
-      return (
-        <Button asChild variant="soft" className="w-full">
-          <Link href={`/dashboard/buy/${template.slug}`}>
-            <Lock />
-            {t("howToBuy")}
-          </Link>
-        </Button>
-      );
-    }
-    if (mode === "browse" || pointsBalance === null) {
-      return (
-        <Button asChild variant="secondary" className="w-full">
-          <Link href={`/create?template=${template.slug}`}>
-            <Lock />
-            {t("unlockFor", { points: template.pointPrice })}
-          </Link>
-        </Button>
-      );
-    }
-    if (pointsBalance >= template.pointPrice) {
-      return (
-        <form action={unlockTemplate}>
-          <input type="hidden" name="template" value={template.slug} />
-          <SubmitButton variant="soft" className="w-full" pendingLabel={t("unlocking")}>
-            <Lock />
-            {t("unlockFor", { points: template.pointPrice })}
-          </SubmitButton>
-        </form>
-      );
-    }
     return (
-      <Button asChild variant="secondary" className="w-full">
-        <Link href="/dashboard/points">
-          {t("needMorePoints", { points: template.pointPrice - pointsBalance })}
+      <Button asChild variant="soft" className="w-full">
+        <Link href={`/dashboard/buy/${template.slug}`}>
+          <Lock />
+          {t("howToBuy")}
         </Link>
       </Button>
     );

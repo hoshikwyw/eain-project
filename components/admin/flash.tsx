@@ -21,7 +21,6 @@ const ERROR_KEYS = [
   "ownRole",
   "insufficient",
   "premiumPrice",
-  "paidPremium",
   "paidPrice",
   "self",
   "confirmEmail",

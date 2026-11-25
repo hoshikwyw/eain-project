@@ -1,4 +1,4 @@
-import { ArrowRight, Gift, Lock, MailOpen, MessageCircleHeart, Plus, Star } from "lucide-react";
+import { ArrowRight, Crown, Gift, Lock, MailOpen, MessageCircleHeart, Plus } from "lucide-react";
 import Link from "next/link";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { Bird, Lovebirds } from "@/components/brand/lovebirds";
@@ -18,7 +18,6 @@ import { isAvailableTemplate } from "@/features/gifts/templates";
 import { getCurrentProfile, getDashboardStats } from "@/features/profile/queries";
 import { createClient } from "@/lib/supabase/server";
 import { QueryToasts } from "@/components/ui/query-toasts";
-import { CapsLabel } from "@/components/ui/caps-label";
 
 /** How many of each thing the home screen shows before "see all". */
 const GIFTS_SHOWN = 4;
@@ -183,7 +182,9 @@ export default async function HomePage() {
                     {tp.isPremium && !tp.unlocked ? (
                       <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-brand-soft px-2 py-0.5 text-xs font-bold text-accent-foreground dark:text-brand">
                         <Lock className="size-3" />
-                        {format.number(tp.pointPrice, "digits")}
+                        {tp.priceMmk
+                          ? tCreate("priceKs", { price: tp.priceMmk })
+                          : format.number(tp.pointPrice, "digits")}
                       </span>
                     ) : (
                       !tp.isPremium && (
@@ -226,8 +227,8 @@ export default async function HomePage() {
                       <StartTemplateButton className={cardClass}>{card}</StartTemplateButton>
                     </form>
                   ) : (
-                    // Locked: the picker is where it can be unlocked with points.
-                    <Link href="/create" className={cardClass}>
+                    // Locked: a premium template is bought in kyat on its buy page.
+                    <Link href={`/dashboard/buy/${tp.slug}`} className={cardClass}>
                       {card}
                     </Link>
                   )}
@@ -259,40 +260,20 @@ export default async function HomePage() {
           )}
         </section>
 
-        {/* Points */}
+        {/* Premium designs, sold once in kyat */}
         <section className="bg-hero flex flex-col gap-4 self-start rounded-3xl p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-muted-foreground">{t("points.total")}</p>
-              <p className="flex items-center gap-2 font-display text-4xl font-semibold">
-                <Star className="size-7 fill-current text-brand" />
-                {format.number(profile.points_balance, "digits")}
+              <p className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+                <Crown className="size-4 text-[color:var(--gold)]" />
+                {t("home.premiumTitle")}
               </p>
+              <p className="mt-1 text-sm">{t("home.premiumText")}</p>
             </div>
-            <Bird variant="blue" className="w-16" />
-          </div>
-          <div>
-            <CapsLabel>{t("home.waysToEarn")}</CapsLabel>
-            <ul className="mt-2 flex flex-col gap-1.5 text-sm">
-              {(
-                [
-                  [t("points.earn.create"), 5],
-                  [t("points.earn.opened"), 10],
-                  [t("points.earn.response"), 20],
-                ] as const
-              ).map(([label, amount]) => (
-                <li
-                  key={label}
-                  className="flex items-center justify-between gap-3 rounded-xl bg-background/60 px-3 py-2"
-                >
-                  <span>{label}</span>
-                  <span className="font-bold text-success">+{format.number(amount, "digits")}</span>
-                </li>
-              ))}
-            </ul>
+            <Bird variant="blue" className="w-16 shrink-0" />
           </div>
           <Button asChild variant="secondary" size="sm">
-            <Link href="/dashboard/points">{t("points.history")}</Link>
+            <Link href="/create">{t("home.premiumCta")}</Link>
           </Button>
         </section>
       </div>

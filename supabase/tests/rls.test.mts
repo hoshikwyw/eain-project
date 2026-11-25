@@ -10,7 +10,7 @@
  *   - the anon role can read nothing private
  *   - creator A cannot read or change creator B's profile, gifts, responses, points
  *   - a user cannot change their own role or points balance
- *   - welcome points arrive through the ledger
+ *   - a new account starts with no points (retired in 0028)
  */
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
@@ -100,13 +100,13 @@ describe("row level security", () => {
     );
   });
 
-  it("a user gets 20 welcome points through the ledger", async () => {
+  it("a new user starts with no points and no ledger entries", async () => {
     const { data: profile } = await a.client.from("profiles").select("points_balance").single();
-    assert.equal(profile?.points_balance, 20);
+    assert.equal(profile?.points_balance, 0);
     const { data: tx } = await a.client
       .from("point_transactions")
       .select("type, amount, balance_after");
-    assert.deepEqual(tx, [{ type: "bonus", amount: 20, balance_after: 20 }]);
+    assert.deepEqual(tx, []);
   });
 
   it("a user cannot change their own role or balance", async () => {
@@ -121,7 +121,7 @@ describe("row level security", () => {
       .eq("id", a.id);
     assert.ok(points.error, "points update should be denied");
     const { data } = await a.client.from("profiles").select("role, points_balance").single();
-    assert.deepEqual(data, { role: "user", points_balance: 20 });
+    assert.deepEqual(data, { role: "user", points_balance: 0 });
   });
 
   it("a user can save a drawn avatar on their own row", async () => {

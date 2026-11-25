@@ -129,13 +129,13 @@ export async function updateTemplateDetails(formData: FormData): Promise<void> {
       isFeatured: formData.get("isFeatured") === "on",
       isPremium: formData.get("isPremium") === "on",
       pointPrice: formData.get("pointPrice") ?? 0,
-      paidOnly: formData.get("paidOnly") === "on",
+      // Premium is always sold in kyat (migration 0028).
+      paidOnly: formData.get("isPremium") === "on",
       priceMmk: formData.get("priceMmk") ?? null,
     });
   if (!parsed.success) back(editPath, "error", "invalid");
   const v = parsed.data;
   if (v.isPremium && v.pointPrice < 1) back(editPath, "error", "premiumPrice");
-  if (v.paidOnly && !v.isPremium) back(editPath, "error", "paidPremium");
   if (v.paidOnly && v.priceMmk === null) back(editPath, "error", "paidPrice");
 
   const supabase = await createClient();

@@ -160,13 +160,8 @@ describe("responses and premium unlock", () => {
     assert.equal(res.status, 400);
   });
 
-  it("accepts a valid response, notifies and pays +20 once, within the daily cap", async () => {
+  it("accepts a valid response and notifies, earning no points", async () => {
     const before = await user.from("profiles").select("points_balance").single();
-    const { data: earnedRows } = await user
-      .from("point_transactions")
-      .select("amount")
-      .eq("type", "earn");
-    const earnedToday = (earnedRows ?? []).reduce((s, r) => s + r.amount, 0);
     const res = await post(`/api/g/${token}/responses`, {
       sessionId: session,
       answers: [
@@ -214,9 +209,7 @@ describe("responses and premium unlock", () => {
     else assert.ok(summary.includes("The trip") && summary.includes("Miss you!"), summary);
 
     const after = await user.from("profiles").select("points_balance").single();
-    // +20 for a reply, cut to what is left of the 20-a-day cap (publishing already earned 5).
-    const expected = Math.max(0, Math.min(20, 20 - earnedToday));
-    assert.equal(after.data!.points_balance, before.data!.points_balance + expected);
+    assert.equal(after.data!.points_balance, before.data!.points_balance, "a reply earns nothing");
   });
 
   it("one response per browser session", async () => {

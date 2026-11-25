@@ -11,7 +11,6 @@ import { getCurrentProfile } from "@/features/profile/queries";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { PageTitle } from "@/components/ui/page-title";
 import { UserAvatar } from "@/components/ui/user-avatar";
-import { PointsPill } from "@/components/dashboard/points-pill";
 
 /** An action in the account group: icon and label, full width, left aligned. */
 const ACTION = "h-12 w-full justify-start gap-3 rounded-2xl px-3";
@@ -23,7 +22,6 @@ const ACTION = "h-12 w-full justify-start gap-3 rounded-2xl px-3";
  */
 export default async function SettingsPage() {
   const t = await getTranslations("dashboard.settings");
-  const tNav = await getTranslations("dashboard.nav");
   const profile = await getCurrentProfile();
   const user = await getCurrentUser();
   const email = user?.email ?? "";
@@ -46,12 +44,6 @@ export default async function SettingsPage() {
             {profile.display_name}
           </p>
           <p className="max-w-full truncate text-sm text-muted-foreground">{email}</p>
-          <PointsPill
-            balance={profile.points_balance}
-            label={tNav("points")}
-            tone="plain"
-            className="mt-2.5"
-          />
         </div>
       </section>
 

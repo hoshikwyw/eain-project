@@ -6,9 +6,8 @@ import { isAvailableTemplate } from "@/features/gifts/templates";
 import { getCurrentProfile } from "@/features/profile/queries";
 import { QueryToasts } from "@/components/ui/query-toasts";
 import { PageTitle } from "@/components/ui/page-title";
-import { PointsPill } from "@/components/dashboard/points-pill";
 
-const ERRORS = ["template", "premium", "points", "unknown"] as const;
+const ERRORS = ["template", "premium", "unknown"] as const;
 
 /** The template picker: every template, searchable, inside the app frame. */
 export default async function CreatePage({ searchParams }: PageProps<"/create">) {
@@ -23,26 +22,18 @@ export default async function CreatePage({ searchParams }: PageProps<"/create">)
   }
 
   const t = await getTranslations("create");
-  const tNav = await getTranslations("dashboard.nav");
   const locale = await getLocale();
-  const [{ templates, categories }, profile] = await Promise.all([
+  // The profile read keeps the page for signed-in creators only.
+  const [{ templates, categories }] = await Promise.all([
     loadTemplateCards(locale === "my" ? "my" : "en"),
     getCurrentProfile(),
   ]);
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <PageTitle>{t("title")}</PageTitle>
-          <p className="mt-1 text-muted-foreground">{t("subtitle")}</p>
-        </div>
-        {/* Phones have no balance in the top bar, and it decides what can be unlocked here. */}
-        <PointsPill
-          balance={profile.points_balance}
-          label={tNav("points")}
-          className="mt-1 shrink-0 md:hidden"
-        />
+      <div>
+        <PageTitle>{t("title")}</PageTitle>
+        <p className="mt-1 text-muted-foreground">{t("subtitle")}</p>
       </div>
 
       <QueryToasts
@@ -58,7 +49,6 @@ export default async function CreatePage({ searchParams }: PageProps<"/create">)
         templates={templates}
         categories={categories}
         mode="create"
-        pointsBalance={profile.points_balance}
         highlightSlug={error === "premium" ? requested : undefined}
         locale={locale === "my" ? "my" : "en"}
       />

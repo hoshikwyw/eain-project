@@ -29,7 +29,7 @@
     "subtitle": "Make something special. Give it to someone.",
     "primaryCta": "Start a gift",
     "secondaryCta": "See how it works",
-    "meta": "Try it free, no account needed · 20 welcome points when you sign up · Nothing asked of the receiver",
+    "meta": "Try it free, no account needed · Free templates for every occasion · Nothing asked of the receiver",
     "occasionsLabel": "For every occasion",
     "howLabel": "How it works",
     "howTitle": "Five quiet steps from a thought to a reply.",
@@ -187,17 +187,14 @@
     "free": "Free",
     "useTemplate": "Use this template",
     "creating": "Creating your gift",
-    "unlocking": "Unlocking",
     "comingSoon": "Coming soon",
     "unlockFor": "Unlock for {points} points",
-    "needMorePoints": "Need {points} more points",
     "searchPlaceholder": "Search templates",
     "allCategories": "All",
     "noResults": "No templates match. Try another word or category.",
     "errors": {
       "template": "That template is not available yet.",
       "premium": "This is a premium template. Unlock it with points to use it.",
-      "points": "Not enough points for that template yet.",
       "unknown": "Could not create the gift. Please try again."
     },
     "howToBuy": "How to buy",
@@ -233,8 +230,7 @@
       "reasons": {
         "keep": "Keep your gifts and come back to them from any device",
         "link": "Get a private link and QR code to share",
-        "opened": "See when it is opened and read the reply",
-        "points": "Start with 20 welcome points"
+        "opened": "See when it is opened and read the reply"
       }
     },
     "back": "Back",
@@ -642,8 +638,7 @@
         "self": "You cannot do that to your own account.",
         "confirmEmail": "The email you typed does not match this account.",
         "deleteFailed": "The account could not be deleted. Nothing was removed.",
-        "paidPremium": "Paid only needs Premium turned on.",
-        "paidPrice": "A paid-only template needs a kyat price, from 100 to 10,000,000."
+        "paidPrice": "A premium template needs a kyat price, from 100 to 10,000,000."
       }
     },
     "overview": {
@@ -778,9 +773,8 @@
         "activeHint": "Hidden templates disappear from the library. Existing gifts keep working.",
         "featuredHint": "Shown first on the landing page and highlighted in the library.",
         "pricing": "Pricing",
-        "premiumHint": "Users spend points once to unlock it for good. Existing unlocks stay valid.",
-        "paidOnlyHint": "Points never unlock it. Customers pay by KBZPay or WavePay and you give it from their user page. Needs Premium on.",
-        "priceMmkHint": "Shown on the card and the buy page. Needed when Paid only is on."
+        "premiumHint": "Sold once in kyat (KBZPay or WavePay); you give it from the buyer's user page after the payment. Existing unlocks stay valid.",
+        "priceMmkHint": "Shown on the card and the buy page. Needed for a premium template."
       },
       "designs": {
         "postcard": "Postcard",
@@ -870,7 +864,7 @@
     "back": "All templates",
     "tryFree": "Try it free",
     "tryNote": "Opens in the editor right away, no account needed. Save it with a free account when it is ready.",
-    "premiumNote": "A premium template. Sign in and unlock it with points.",
+    "premiumNote": "A premium template, bought once in kyat by KBZPay or WavePay.",
     "demoTitle": "As the receiver sees it",
     "more": "More templates",
     "facts": {
@@ -890,7 +884,7 @@
     "guestDraftKept": "The gift you made is kept on this device. Sign in and it will be saved to your account.",
     "welcomeBack": "Welcome back",
     "loginSubtitle": "Log in to see your gifts and responses.",
-    "signupSubtitle": "Start with 20 welcome points.",
+    "signupSubtitle": "Free to start. No card needed.",
     "createAccount": "Create account",
     "logIn": "Log in",
     "signUp": "Sign up",
@@ -987,10 +981,12 @@
       "free": "Free",
       "lately": "Lately",
       "latelyEmpty": "When someone opens or answers one of your gifts, you'll see it here.",
-      "waysToEarn": "Ways to earn",
       "statGifts": "{count, plural, one {# gift} other {# gifts}}",
       "statOpened": "{count} opened",
-      "statReplies": "{count, plural, one {# reply} other {# replies}}"
+      "statReplies": "{count, plural, one {# reply} other {# replies}}",
+      "premiumTitle": "Premium designs",
+      "premiumText": "Wedding, ceremony and love designs. Buy once in kyat; it stays yours.",
+      "premiumCta": "See all templates"
     },
     "gifts": {
       "filters": {
@@ -1096,42 +1092,10 @@
       "account": "Account menu",
       "gifts": "My Gifts",
       "templates": "Templates",
-      "points": "Points",
       "notifications": "Notifications",
       "settings": "Settings",
       "create": "Create",
       "admin": "Admin"
-    },
-    "points": {
-      "entries": {
-        "welcome": "Welcome to Eain",
-        "gift_publish": "Published a gift",
-        "gift_opened": "Your gift was opened",
-        "gift_responded": "Someone replied to your gift",
-        "template_unlock": "Unlocked {name}",
-        "template_unlock_unknown": "Unlocked a template",
-        "admin_adjustment": "Adjustment by Eain"
-      },
-      "spend": "Browse templates",
-      "buySoon": "Buying points is coming soon.",
-      "title": "Points & Rewards",
-      "subtitle": "Points unlock premium templates and effects.",
-      "dailyCap": "You can earn up to 20 points a day from activity.",
-      "total": "Total points",
-      "history": "Point history",
-      "empty": "No transactions yet.",
-      "earn": {
-        "create": "Create a gift",
-        "opened": "Someone opens it",
-        "response": "Receive a response"
-      },
-      "types": {
-        "earn": "Earned",
-        "purchase": "Purchased",
-        "spend": "Spent",
-        "refund": "Refunded",
-        "bonus": "Bonus"
-      }
     },
     "settings": {
       "preferences": "Preferences",

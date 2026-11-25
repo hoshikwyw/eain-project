@@ -162,42 +162,25 @@ export default async function AdminTemplateEditPage({
                   label={t("templates.premium")}
                   hint={t("templates.fields.premiumHint")}
                 />
-                <Field label={t("templates.price")} htmlFor="pointPrice">
+                {/* Premium is sold in kyat; the point price stays only because the database still asks for one. */}
+                <input type="hidden" name="pointPrice" value={Math.max(tp.point_price, 1)} />
+                <Field
+                  label={t("templates.priceMmk")}
+                  htmlFor="priceMmk"
+                  hint={t("templates.fields.priceMmkHint")}
+                >
                   <Input
-                    id="pointPrice"
-                    name="pointPrice"
+                    id="priceMmk"
+                    name="priceMmk"
                     type="number"
-                    min={0}
-                    max={100000}
-                    defaultValue={tp.point_price}
+                    inputMode="numeric"
+                    min={100}
+                    max={10000000}
+                    step={100}
+                    defaultValue={tp.price_mmk ?? ""}
                     className="max-w-40"
                   />
                 </Field>
-                <div className="flex flex-col gap-3 border-t border-border pt-3">
-                  <Toggle
-                    name="paidOnly"
-                    defaultChecked={tp.paid_only}
-                    label={t("templates.paidOnly")}
-                    hint={t("templates.fields.paidOnlyHint")}
-                  />
-                  <Field
-                    label={t("templates.priceMmk")}
-                    htmlFor="priceMmk"
-                    hint={t("templates.fields.priceMmkHint")}
-                  >
-                    <Input
-                      id="priceMmk"
-                      name="priceMmk"
-                      type="number"
-                      inputMode="numeric"
-                      min={100}
-                      max={10000000}
-                      step={100}
-                      defaultValue={tp.price_mmk ?? ""}
-                      className="max-w-40"
-                    />
-                  </Field>
-                </div>
               </fieldset>
 
               <SubmitButton className="self-start">{t("templates.save")}</SubmitButton>

@@ -1,6 +1,6 @@
 /**
  * Daily earn cap, paid template grants and self-service account deletion UI.
- * Needs the dev server. The cap check needs migration 0023 (20 a day).
+ * Needs the dev server. The no-earning check needs migration 0028.
  * Run:  pnpm test:account
  */
 import assert from "node:assert/strict";
@@ -58,9 +58,8 @@ describe("earn cap and account deletion", () => {
       if (u) await service.auth.admin.deleteUser(u.id).catch(() => undefined);
   });
 
-  it("earned points stop at 20 a day while publishing and opening keep working", async () => {
-    // Five gifts earn 25 by being published, so the day starts at 10 earned:
-    // the cap is then reached part-way through the publishes.
+  it("activity earns no points while publishing and opening keep working", async () => {
+    // An earn entry is skipped quietly (0028), never an error.
     const seeded = await service.rpc("apply_point_transaction", {
       p_user_id: member.id,
       p_type: "earn",
@@ -69,7 +68,7 @@ describe("earn cap and account deletion", () => {
       p_reference_id: `cap-${Date.now()}`,
       p_description: "Earned earlier today",
     } as never);
-    assert.equal(seeded.error, null);
+    assert.equal(seeded.error, null, "an earn entry is skipped, not refused");
 
     const { data: template } = await member.client
       .from("templates")
@@ -100,13 +99,13 @@ describe("earn cap and account deletion", () => {
       .select("amount")
       .eq("type", "earn");
     const total = (earned ?? []).reduce((s, r) => s + r.amount, 0);
-    assert.equal(total, 20, `earned today should be capped at 20, got ${total}`);
+    assert.equal(total, 0, `nothing is earned, got ${total}`);
 
     const { data: profile } = await member.client
       .from("profiles")
       .select("points_balance")
       .single();
-    assert.equal(profile?.points_balance, 40, "20 welcome + 20 earned");
+    assert.equal(profile?.points_balance, 0, "no welcome points, nothing earned");
   });
 
   it("only an admin grants a paid template, once, and it is logged", async () => {
@@ -206,12 +205,21 @@ describe("earn cap and account deletion", () => {
         "refused edits change nothing",
       );
 
-      const off = await adminUser.client.rpc("admin_update_template_details", args(false, 30000));
+      // Premium and paid only go together (0028): one without the other is refused.
+      const halfway = await adminUser.client.rpc(
+        "admin_update_template_details",
+        args(false, 30000),
+      );
+      assert.ok(halfway.error, "premium that is not paid only is refused");
+      const off = await adminUser.client.rpc(
+        "admin_update_template_details",
+        args(false, 30000, false),
+      );
       assert.equal(off.error, null, off.error?.message);
       assert.deepEqual(
         await read(),
         { paid_only: false, price_mmk: null },
-        "no kyat price unless paid only",
+        "a free template keeps no kyat price",
       );
     } finally {
       await adminUser.client.rpc(

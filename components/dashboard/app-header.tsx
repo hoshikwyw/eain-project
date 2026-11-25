@@ -10,14 +10,12 @@ import { LinkPending } from "@/components/ui/link-pending";
 import { cn } from "@/lib/utils";
 import { isActivePath, navItems, topNavKeys } from "./nav-items";
 import { UserMenu } from "./user-menu";
-import { PointsPill } from "./points-pill";
 
 type Props = {
   userId: string;
   avatarUrl: string | null;
   displayName: string;
   email: string;
-  pointsBalance: number;
   unreadCount: number;
   isAdmin?: boolean;
 };
@@ -25,19 +23,11 @@ type Props = {
 /**
  * The bar across the top of every signed-in page, in the same style as the
  * public site's header so signing in does not feel like entering a
- * different product. Wide screens get the main links, a create button, the
- * points balance and the notification bell; phones get the logo and the
+ * different product. Wide screens get the main links, a create button and
+ * the notification bell; phones get the logo and the
  * avatar, since their bottom bar carries the rest.
  */
-export function AppHeader({
-  userId,
-  avatarUrl,
-  displayName,
-  email,
-  pointsBalance,
-  unreadCount,
-  isAdmin,
-}: Props) {
+export function AppHeader({ userId, avatarUrl, displayName, email, unreadCount, isAdmin }: Props) {
   const pathname = usePathname();
   const t = useTranslations("dashboard");
   const format = useFormatter();
@@ -82,8 +72,6 @@ export function AppHeader({
               {t("createNewGift")}
             </Link>
           </Button>
-
-          <PointsPill balance={pointsBalance} label={t("nav.points")} className="max-md:hidden" />
 
           <Link
             href="/dashboard/notifications"

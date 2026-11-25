@@ -105,7 +105,7 @@ describe("core loop", () => {
     assert.ok(!html.includes("Happy Birthday, Su!"), "draft content must not leak");
   });
 
-  it("publishes, records the event and pays +5 once", async () => {
+  it("publishes and records the event, earning no points", async () => {
     const first = await user.rpc("publish_gift", { p_gift_id: giftId });
     assert.equal(first.error, null);
     assert.equal(first.data.status, "published");
@@ -113,7 +113,7 @@ describe("core loop", () => {
     assert.equal(second.error, null);
 
     const { data: profile } = await user.from("profiles").select("points_balance").single();
-    assert.equal(profile?.points_balance, 25, "20 welcome + 5 publish, paid once");
+    assert.equal(profile?.points_balance, 0, "points are retired: nothing earned");
   });
 
   it("the public page serves the content but no private data", async () => {
@@ -127,7 +127,7 @@ describe("core loop", () => {
     assert.ok(!html.includes("core-"), "sender email must not appear");
   });
 
-  it("receiver tap records opened, notifies and pays +10 once", async () => {
+  it("receiver tap records opened and notifies once", async () => {
     const body = JSON.stringify({ type: "opened", sessionId });
     const headers = { "Content-Type": "application/json" };
     const r1 = await fetch(`${site}/api/g/${token}/events`, { method: "POST", headers, body });
@@ -159,7 +159,7 @@ describe("core loop", () => {
     ]);
 
     const { data: profile } = await user.from("profiles").select("points_balance").single();
-    assert.equal(profile?.points_balance, 35, "20 welcome + 5 publish + 10 open");
+    assert.equal(profile?.points_balance, 0, "an open earns nothing");
   });
 
   it("viewed is recorded once per session", async () => {
