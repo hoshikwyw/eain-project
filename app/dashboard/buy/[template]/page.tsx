@@ -145,6 +145,15 @@ export default async function BuyTemplatePage({ params }: PageProps<"/dashboard/
 
           <Step n={3} icon={Sparkles} title={t("step3Title")}>
             <p className="text-sm text-muted-foreground">{t("step3Text")}</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {t("refund")}{" "}
+              <Link
+                href="/terms"
+                className="font-semibold text-foreground underline underline-offset-4"
+              >
+                {t("terms")}
+              </Link>
+            </p>
           </Step>
         </ol>
       )}

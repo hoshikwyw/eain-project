@@ -1,12 +1,14 @@
 import type { LegalContent } from "./types";
 
 const updated = "2026-09-28";
+/** Privacy and Terms changed when paid templates arrived. */
+const updatedPayments = "2026-11-25";
 
 export const en: LegalContent = {
   privacy: {
     title: "Privacy",
     intro: "Your memories are yours. This page explains what Eain collects, why, and the control you have.",
-    updated,
+    updated: updatedPayments,
     summary: [
       "We collect only what is needed to run Eain: your account details, the gifts you create, and basic technical logs.",
       "Gift content is private by default and visible only through the link you choose to share.",
@@ -22,6 +24,7 @@ export const en: LegalContent = {
           "Gift data: the titles, text, photos, questions, recipient names and theme choices you add to a gift, and the replies receivers send you.",
           "Activity data: events such as created, published, opened, viewed and responded, with timestamps. Receiver events carry a random browser session id so repeat views are not double counted. They do not carry an IP address, location or device details.",
           "Technical data: server logs kept by our hosting providers for security and debugging, and short-lived rate-limit counters that store a salted hash of an IP address, never the address itself.",
+          "Purchase data: when you buy a template, the template, the date and a short payment note written by our team (the wallet used and the last digits of the transaction), kept with your account. The payment screenshot you send stays in the messaging app or email you used to send it.",
         ],
       },
       {
@@ -52,6 +55,7 @@ export const en: LegalContent = {
         body: [
           "Eain runs on Supabase (database, authentication, file storage) and Vercel (web hosting). They process data on our behalf under their own security commitments.",
           "If you use Google sign-in, Google processes your login under its own privacy policy.",
+          "If you buy a template, the payment goes through KBZPay or WavePay, and your message to us through the app you choose (Messenger, Viber, Telegram or email). Their own terms and privacy policies apply.",
           "We do not sell personal data. We do not share gift content with advertisers.",
         ],
       },
@@ -93,12 +97,13 @@ export const en: LegalContent = {
   terms: {
     title: "Terms of Service",
     intro: "The short version: make gifts, be kind, respect other people's content and privacy.",
-    updated,
+    updated: updatedPayments,
     summary: [
       "Eain lets you create digital gifts and share them by link or QR code. Receivers do not need an account.",
       "You own what you create and upload. You give Eain only the permission needed to store and show it.",
       "Do not use Eain to harass, scam, spam or share content you have no right to share.",
-      "Eain Points are a virtual currency inside Eain. During the first launch they are earned, not bought, and have no cash value.",
+      "Eain Points are earned, not bought, and have no cash value.",
+      "Some templates are bought with money, by KBZPay or WavePay. If we have not unlocked yours within 24 hours of payment, you get your money back.",
       "The service is provided as is while we are in early launch. We can suspend accounts that break these rules.",
     ],
     sections: [
@@ -141,9 +146,18 @@ export const en: LegalContent = {
       {
         heading: "Eain Points",
         body: [
-          "Points unlock premium templates and features. They are recorded in an auditable ledger and cannot be transferred between accounts.",
-          "During the first launch, payments are switched off. Points are granted as a welcome bonus and earned through activity. They have no cash value and cannot be refunded or exchanged.",
-          "When paid points are introduced, this section and a refund policy will be updated before purchases are possible.",
+          "Points unlock some premium templates. They come from a small welcome bonus and from activity, up to a daily limit, and are recorded in an auditable ledger.",
+          "Points cannot be bought, transferred between accounts, exchanged or refunded, and have no cash value.",
+        ],
+      },
+      {
+        heading: "Paid templates",
+        body: [
+          "Some templates, such as the wedding and engagement invitations, are bought with money and cannot be unlocked with points. The price in kyat is shown on the template and on its buy page before you pay.",
+          "To buy one, pay the price by KBZPay or WavePay to the account shown on the Eain buy page, then send us the payment screenshot with your Eain account email. We unlock the template for that account once we see the payment arrive, usually within a few hours.",
+          "Pay only to the numbers shown on the Eain buy page. Eain never asks for your wallet PIN, password or one-time code.",
+          "A bought template stays on your account for as long as the account exists. If you delete your account, bought templates are deleted with it.",
+          "Refunds. If we have not unlocked the template within 24 hours of your payment, or we cannot unlock it, we return the full amount to the wallet it came from. Once a template is unlocked the purchase is final, unless it does not work as shown and we cannot fix it within 7 days; then we refund it. To ask for a refund, write to us from the Contact page with the date and the last digits of the transaction.",
         ],
       },
       {

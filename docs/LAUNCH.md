@@ -85,7 +85,7 @@ The RLS test uses the same Supabase project either way. The others need `NEXT_PU
 The closed test can run without these. The first kyat taken needs all of them.
 
 - [ ] Vercel moved to Pro (the Hobby plan is non-commercial only).
-- [ ] Terms updated: the points section in `content/legal/en.ts` and `my.ts` still says payments are off. Add what a paid template is, that it stays on the account, and a short refund rule (for example: a refund if we have not unlocked it within 24 hours), in both languages.
+- [x] Terms and Privacy cover paid templates (2026-11-25, both languages): price in kyat before paying, unlock within a few hours, full refund if not unlocked within 24 hours or broken and not fixed within 7 days, never a wallet PIN. The buy page links to it. A lawyer reviews it with the rest (section 6).
 - [ ] Wallet numbers and the contact link set in Vercel (section 3). Send a test payment to yourself and read the buy page on a phone.
 
 **Selling a template by hand.** The customer pays by KBZPay or WavePay and sends the screenshot with their account email. Check the money arrived in the wallet app, not only the screenshot. Find the account in `/admin/users`, open it, and give the template under Premium templates with a note such as "KBZPay 25 Nov, last 4 digits 1234". The note is kept in the audit log. Prices and the paid-only flag are changed in the SQL editor for now: `update public.templates set price_mmk = 35000 where slug = 'wedding-invitation';`

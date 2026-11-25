@@ -1193,6 +1193,8 @@
     "message": "Message us",
     "email": "Email us",
     "step3Title": "We unlock it for you",
-    "step3Text": "Usually within a few hours. It then shows in your templates, ready to use, and stays yours."
+    "step3Text": "Usually within a few hours. It then shows in your templates, ready to use, and stays yours.",
+    "refund": "If we have not unlocked it within 24 hours of your payment, you get your money back.",
+    "terms": "Read the terms"
   }
 }
