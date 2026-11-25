@@ -1,6 +1,6 @@
 # Eain Launch Checklist
 
-Zero-cost first launch on Vercel Hobby and Supabase Free. Work through the sections in order. Tick each line as you go.
+Zero-cost first launch on Vercel Hobby and Supabase Free. Work through the sections in order. Tick each line as you go. The click-by-click version, with what you should see at each step, is [LAUNCH-GUIDE.md](LAUNCH-GUIDE.md).
 
 Costs, at about 4,900 MMK to the dollar: about 6,500 MMK a month (the domain) while nothing is sold, about 240,000 MMK a month from the first sale (Vercel Pro, Supabase Pro, domain, card or agent fees). Vercel and Supabase bill in dollars by card, so arrange a dollar card before the first sale.
 
@@ -59,20 +59,25 @@ Run through with two devices, or one browser plus a private window.
 
 ## 5. Automated checks against production
 
-Point the tests at production once, then reset the values to local:
+The tests make throwaway users and gifts in the database they are given, then open the site as those users. Production has its own Supabase project, so for this run every value points at production. Step by step in [LAUNCH-GUIDE.md](LAUNCH-GUIDE.md), part 6.
 
 ```
-# in .env.local (or .env) temporarily
+# .env.local, only for this run, then delete it
+NEXT_PUBLIC_SUPABASE_URL=https://<production-ref>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<production anon key>
+SUPABASE_SERVICE_ROLE_KEY=<production service role key>
 NEXT_PUBLIC_SITE_URL=https://<your-domain>
-pnpm test:rls
-pnpm test:core
-pnpm test:responses
+```
+
+```
 pnpm test:reachability
 pnpm test:email-links
-pnpm test:account
+pnpm test:core
+pnpm test:responses
+pnpm test:rls
 ```
 
-The RLS test uses the same Supabase project either way. The others need `NEXT_PUBLIC_SITE_URL` to point at the deployed site. They create and delete throwaway users. The reachability test is the one that proves the deployed pages never send the browser to the Supabase host, which is blocked on some networks in Myanmar.
+The reachability test is the one that matters most: it proves the deployed pages never send the browser to the Supabase host, which is blocked on some networks in Myanmar. Leave out `test:account` and `test:admin*` here: they edit templates and roles. Delete `.env.local` straight after, or `pnpm dev` and every later test run would use the production database. If a run was interrupted, remove leftover `@example.com` users under Authentication, Users.
 
 ## 6. Legal and content
 
