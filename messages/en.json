@@ -1156,15 +1156,30 @@
     "soon": "Buying this template opens soon. Until then, write to us from the Contact page.",
     "step1Title": "Send {price, number} Ks by KBZPay or WavePay",
     "accountName": "Account name: {name}",
-    "step2Title": "Send us the screenshot",
-    "step2Text": "Send the payment screenshot with your account email below, so we know whose account to unlock.",
+    "step2Title": "Tell us you paid",
+    "step2Text": "Choose the wallet you paid with and type the last digits of the transaction ID from your receipt. We check it against our wallet and unlock the template.",
     "yourEmail": "Your account email:",
-    "template": "Template:",
     "message": "Message us",
     "email": "Email us",
     "step3Title": "We unlock it for you",
     "step3Text": "Usually within a few hours. It then shows in your templates, ready to use, and stays yours.",
     "refund": "If we have not unlocked it within 24 hours of your payment, you get your money back.",
-    "terms": "Read the terms"
+    "terms": "Read the terms",
+    "wallet": "Wallet",
+    "reference": "Last digits of the transaction ID",
+    "referenceHint": "At least 4 characters, as they appear on your receipt.",
+    "submit": "I've paid",
+    "sending": "Sending",
+    "sent": "Thank you. We'll check your payment and unlock the template soon.",
+    "pendingTitle": "We're checking your payment",
+    "pendingText": "{wallet} · ending {reference} · {price, number} Ks, sent {when}. Usually within a few hours; you'll get a notification when it's ready.",
+    "rejectedText": "We could not confirm your last payment. {note} Check the wallet and the digits and send it again, or message us.",
+    "help": "Questions, or can't find the transaction ID? Message us with your account email.",
+    "errors": {
+      "reference": "Please check the wallet and the digits (at least 4).",
+      "owned": "You already have this template.",
+      "pending": "You have several payments waiting. We'll check those first.",
+      "unknown": "That did not work. Please try again."
+    }
   }
 }

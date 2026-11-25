@@ -202,15 +202,24 @@ export type PaymentStatus = "pending" | "verified" | "failed" | "refunded";
 
 export interface Payment extends Record<string, unknown> {
   id: string;
-  user_id: string;
+  /** Null once the account is deleted; the money record stays. */
+  user_id: string | null;
+  /** "kbzpay" or "wavepay". */
   provider: string;
+  /** What the customer typed: the last digits of the transaction. */
   provider_reference: string;
   amount_mmk: number;
-  points: number;
+  /** From the points era (0005); null for a template payment. */
+  points: number | null;
   status: PaymentStatus;
   point_transaction_id: string | null;
   created_at: string;
+  /** When the admin approved or rejected it. */
   verified_at: string | null;
+  /** The template paid for (0029). */
+  template_id: string | null;
+  reviewed_by: string | null;
+  review_note: string | null;
 }
 
 export interface GiftResponse extends Record<string, unknown> {
@@ -364,6 +373,14 @@ export interface Database {
       admin_adjust_points: {
         Args: { p_user_id: string; p_amount: number; p_description: string };
         Returns: PointTransaction;
+      };
+      request_template_purchase: {
+        Args: { p_template_id: string; p_provider: string; p_reference: string };
+        Returns: Payment;
+      };
+      admin_review_payment: {
+        Args: { p_payment_id: string; p_approve: boolean; p_note: string };
+        Returns: Payment;
       };
       admin_grant_template: {
         Args: { p_user_id: string; p_template_id: string; p_note: string };

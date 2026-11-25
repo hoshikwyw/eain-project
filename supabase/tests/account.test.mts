@@ -238,6 +238,86 @@ describe("earn cap and account deletion", () => {
     );
   });
 
+  it("a customer says they paid; an admin approves or rejects, once, and they are told", async () => {
+    // Needs migration 0029. The member already owns the wedding invitation
+    // (granted above), so this uses Valentine (approved) and Anniversary (rejected).
+    const slugId = async (slug: string) =>
+      (await member.client.from("templates").select("id").eq("slug", slug).single()).data!.id;
+    const valentine = await slugId("valentine");
+    const anniversary = await slugId("anniversary");
+    const wedding = await slugId("wedding-invitation");
+    const free = await slugId("thank-you");
+
+    const ask = (templateId: string, provider: string, reference: string) =>
+      member.client.rpc("request_template_purchase", {
+        p_template_id: templateId,
+        p_provider: provider,
+        p_reference: reference,
+      });
+
+    assert.match((await ask(valentine, "cash", "1234")).error?.message ?? "", /unknown wallet/);
+    assert.match((await ask(valentine, "kbzpay", "12")).error?.message ?? "", /bad reference/);
+    assert.match((await ask(free, "kbzpay", "1234")).error?.message ?? "", /not for sale/);
+    assert.match((await ask(wedding, "kbzpay", "1234")).error?.message ?? "", /already owned/);
+
+    const first = await ask(valentine, "kbzpay", "12 34-56");
+    assert.equal(first.error, null, first.error?.message);
+    assert.equal(first.data.status, "pending");
+    assert.equal(first.data.provider_reference, "123456", "spaces and dashes are dropped");
+    assert.equal(first.data.amount_mmk, 3000, "the template price, not what the customer says");
+    const again = await ask(valentine, "wavepay", "999999");
+    assert.equal(again.data.id, first.data.id, "asking twice returns the same pending payment");
+
+    const review = (client: typeof member.client, id: string, approve: boolean, note = "") =>
+      client.rpc("admin_review_payment", { p_payment_id: id, p_approve: approve, p_note: note });
+
+    assert.ok((await review(member.client, first.data.id, true)).error, "a member cannot approve");
+
+    const ok = await review(adminUser.client, first.data.id, true, "seen in KBZPay");
+    assert.equal(ok.error, null, ok.error?.message);
+    assert.equal(ok.data.status, "verified");
+    const { data: owned } = await member.client
+      .from("template_unlocks")
+      .select("template_id")
+      .eq("template_id", valentine);
+    assert.equal(owned?.length, 1, "approving unlocks the template");
+    assert.match(
+      (await review(adminUser.client, first.data.id, false)).error?.message ?? "",
+      /already decided/,
+      "a decision is final",
+    );
+
+    const second = await ask(anniversary, "wavepay", "7777");
+    assert.equal(second.error, null, second.error?.message);
+    const no = await review(adminUser.client, second.data.id, false, "No such payment in WavePay");
+    assert.equal(no.error, null, no.error?.message);
+    assert.equal(no.data.status, "failed");
+    const { data: notOwned } = await member.client
+      .from("template_unlocks")
+      .select("template_id")
+      .eq("template_id", anniversary);
+    assert.equal(notOwned?.length, 0, "rejecting unlocks nothing");
+
+    const { data: notes } = await member.client
+      .from("notifications")
+      .select("title_key, payload")
+      .in("title_key", ["paymentApproved", "paymentRejected"])
+      .order("created_at");
+    assert.deepEqual(
+      notes?.map((n) => n.title_key),
+      ["paymentApproved", "paymentRejected"],
+      "the customer is told both times",
+    );
+    assert.equal((notes![1].payload as { reason?: string }).reason, "No such payment in WavePay");
+
+    const { data: logs } = await service
+      .from("admin_audit_logs")
+      .select("action")
+      .eq("target_id", member.id)
+      .in("action", ["approve_payment", "reject_payment"]);
+    assert.equal(logs?.length, 2, "both decisions are in the audit log");
+  });
+
   it("settings shows the delete form to members", async () => {
     const res = await fetch(`${site}/dashboard/settings`, {
       headers: { cookie: cookieFor(member.session) },
