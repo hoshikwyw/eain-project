@@ -132,7 +132,11 @@ export function GoogleSignIn({ clientId, next }: Props) {
             ref={slot}
             aria-busy={pending}
             className={cn(
-              "flex justify-center transition-opacity",
+              // Google draws the signed-in version of its button in a light-scheme
+              // frame. Inside a dark-scheme page Chrome gives such a frame an
+              // opaque white backdrop; matching the scheme on the frame element
+              // keeps it transparent.
+              "flex justify-center transition-opacity [&_iframe]:[color-scheme:light]",
               pending && "pointer-events-none opacity-0",
             )}
           />
