@@ -63,7 +63,9 @@ export function GoogleSignIn({ clientId, next }: Props) {
   const draw = useCallback(async () => {
     const google = window.google?.accounts.id;
     const parent = slot.current;
-    if (!google || !parent) return;
+    // Until the theme is known there is nothing right to draw; the effect
+    // below calls again once it is.
+    if (!google || !parent || !resolvedTheme) return;
     if (!nonce.current) {
       const raw = crypto.randomUUID();
       nonce.current = raw;
@@ -103,12 +105,21 @@ export function GoogleSignIn({ clientId, next }: Props) {
     if (window.google) void draw();
   }, [draw]);
 
+  // next/script keeps the onLoad it was given on mount. By the time the
+  // script arrives the theme has usually resolved, so the handler must reach
+  // the current draw, not the first render's, or it paints the light button
+  // on a dark page.
+  const drawRef = useRef(draw);
+  useEffect(() => {
+    drawRef.current = draw;
+  }, [draw]);
+
   return (
     <div className="flex flex-col gap-3">
       <Script
         src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
-        onLoad={() => void draw()}
+        onLoad={() => void drawRef.current()}
         onError={() => {
           setStatus("failed");
           toast.warning(t("googleUnavailable"));
@@ -122,16 +133,18 @@ export function GoogleSignIn({ clientId, next }: Props) {
             aria-busy={pending}
             className={cn(
               "flex justify-center transition-opacity",
-              pending && "pointer-events-none opacity-40",
+              pending && "pointer-events-none opacity-0",
             )}
           />
           {status === "loading" && (
             <Skeleton className="absolute inset-x-0 top-0 h-11 rounded-full" />
           )}
           {pending && (
+            // Google's button steps out of view while we finish the sign-in,
+            // and this pill takes its place.
             <p
               role="status"
-              className="absolute inset-0 flex items-center justify-center gap-2 text-sm font-semibold"
+              className="absolute inset-x-0 top-0 mx-auto flex h-11 w-full max-w-[400px] items-center justify-center gap-2 rounded-full border bg-card text-sm font-semibold"
             >
               <Loader2 className="size-4 animate-spin" />
               {t("googleWorking")}

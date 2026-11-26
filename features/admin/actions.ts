@@ -1,8 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { TEMPLATES_TAG } from "@/features/gifts/template-cards";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -187,6 +188,8 @@ export async function updateTemplateDetails(formData: FormData): Promise<void> {
     p_paid_only: v.paidOnly,
     p_price_mmk: v.paidOnly ? v.priceMmk : null,
   });
+  // The template catalog is cached; drop it so the next visit shows this edit.
+  updateTag(TEMPLATES_TAG);
   revalidatePath("/", "layout");
   if (error) back(editPath, "error", "failed");
   back(editPath, "ok", "template");
